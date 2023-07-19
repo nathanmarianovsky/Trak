@@ -35,20 +35,22 @@ var checkSubset = (parentArray, subsetArray) => {
 
 
 
-// Append the app menu to the appropriate html files.
-console.log("Adding Menu to Appropriate HTML Files.");
+// // Append the app menu to the appropriate html files.
+// console.log("Adding Menu to Appropriate HTML Files.");
+// const htmlMenuList = [],
 const htmlMenuList = [],
-	htmlMenuListFolders = [],
-	htmlMenu = fs.readFileSync(path.join(__dirname, "pages", "dev", "menu.html"));
-for(let t = 0; t < htmlMenuList.length; t++) {
-	let data = fs.readFileSync(path.join(__dirname, "pages", "dev", htmlMenuListFolders[t], htmlMenuList[t]), "UTF8"),
-		$ = cheerio.load(data);
-	$("#menu").html(htmlMenu);
-	if(!fs.existsSync(path.join(__dirname, "pages", "dev", "menuAttached", htmlMenuListFolders[t]))) {
-		fs.mkdirSync(path.join(__dirname, "pages", "dev", "menuAttached", htmlMenuListFolders[t]), { "recursive": true });
-	}
-	fs.writeFileSync(path.join(__dirname, "pages", "dev", "menuAttached", htmlMenuListFolders[t], "menuAttached" + htmlMenuList[t].charAt(0).toUpperCase() + htmlMenuList[t].slice(1)), $.html(), "UTF8");
-}
+	htmlMenuListFolders = [];
+// 	htmlMenuListFolders = [],
+// 	htmlMenu = fs.readFileSync(path.join(__dirname, "pages", "dev", "menu.html"));
+// for(let t = 0; t < htmlMenuList.length; t++) {
+// 	let data = fs.readFileSync(path.join(__dirname, "pages", "dev", htmlMenuListFolders[t], htmlMenuList[t]), "UTF8"),
+// 		$ = cheerio.load(data);
+// 	$("#menu").html(htmlMenu);
+// 	if(!fs.existsSync(path.join(__dirname, "pages", "dev", "menuAttached", htmlMenuListFolders[t]))) {
+// 		fs.mkdirSync(path.join(__dirname, "pages", "dev", "menuAttached", htmlMenuListFolders[t]), { "recursive": true });
+// 	}
+// 	fs.writeFileSync(path.join(__dirname, "pages", "dev", "menuAttached", htmlMenuListFolders[t], "menuAttached" + htmlMenuList[t].charAt(0).toUpperCase() + htmlMenuList[t].slice(1)), $.html(), "UTF8");
+// }
 
 
 
