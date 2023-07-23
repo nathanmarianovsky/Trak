@@ -19,7 +19,7 @@ h2 {
 	font-size: 25px !important;
 }
 
-select {
+.select-wrapper input.select-dropdown {
 	text-align: center;
 }
 
@@ -30,8 +30,7 @@ button {
 footer {
 	position: absolute;
 	bottom: 0;
-	left: 100px;
-	width: calc(100% - 100px);
+	width: 100%;
 	height: 50px;
 	text-align: center;
 }
@@ -101,6 +100,10 @@ footer {
 	color: rgba(0,0,0,0.3) !important;
 }
 
+.select-dropdown li>span {
+	text-align: center;
+}
+
 .checkboxSpan {
 	top: 5px;
 	left: 10px;
@@ -151,41 +154,33 @@ footer {
   	margin-top: 15px;
 }
 
-
-
-/*---------------------------------------------------------------------------------------------------------------------*/
-
-/* Styling applicable for the contacts portion of the app. */
-
-
-
-#contactsFormFilesDiv {
+#formFilesDiv {
 	background-color: #2A2A8E;
 }
 
-#contactsTable, #contactsHeadersTable {
+#table, #headersTable {
 	width: 95%;
 	margin-left: 50px;
 }
 
-#contactCardTable {
+#cardTable {
 	width: 95%;
 	margin: 25px auto 50px auto;
 	table-layout: fixed;
 }
 
-#contactNotes {
+#notes {
 	word-wrap: break-word;
 }
 
-#contactsAdd {
+#add {
 	background-color: #2A2A8E;
 	position: fixed;
   	bottom: 60px;
   	right: 25px;
 }
 
-#contactsRemove {
+#remove {
 	background-color: #2A2A8E;
 	position: fixed;
   	bottom: 365px;
@@ -193,54 +188,54 @@ footer {
   	display: none;
 }
 
-#contactsTableDiv, #contactsHeadersTableDiv {
+#tableDiv, #headersTableDiv {
 	position: relative;
 	bottom: 15px;
 }
 
-#contactsTableDiv {
+#tableDiv {
 	height: 357px;
 	overflow-y: auto;
 	overflow-x: hidden;
 }
 
-#contactsSearchBarDiv1 {
+#searchBarDiv1 {
 	margin-left: 40px;
 	margin-bottom: 0;
 }
 
-#contactsSearchBarDiv2 {
+#searchBarDiv2 {
 	margin-bottom: 0;
 }
 
-#contactsSearchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
-#contactsSearchBarDiv1 input.valid[type="text"]:not(.browser-default) {
+#searchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
+#searchBarDiv1 input.valid[type="text"]:not(.browser-default) {
 	border-bottom-color: #2A2A8E;
 	box-shadow: 0 1px 0 0 #2A2A8E;
 }
 
-#contactsSearchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly])+label {
+#searchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly])+label {
 	color: #2A2A8E !important;
 }
 
-#contactsSearchBarDiv1 .input-field .prefix.active {
+#searchBarDiv1 .input-field .prefix.active {
 	color: #2A2A8E !important;
 }
 
-#contactsPreloader {
+#preloader {
 	display: block !important;
 	position: relative !important;
   	margin: 0 auto;
   	bottom: 225px;
 }
 
-#tripDatesItem {
+/*#tripDatesItem {
 	margin-right: 35px;
 }
 
 #contactCardNavList {
 	display: none;
-}
+}*/
 
 #defModalBtn {
 	background-color: #2A2A8E !important;
@@ -248,7 +243,7 @@ footer {
 	margin-left: 15px;
 }
 
-#smallModalBtn, #mediumModalBtn, #largeModalBtn, #allModalBtn {
+/*#smallModalBtn, #mediumModalBtn, #largeModalBtn, #allModalBtn {
 	background-color: #D9D9DB !important;
 	margin-left: 3px;
 }
@@ -260,9 +255,9 @@ footer {
   	top: 30px;
   	bottom: initial;
   	right: initial;
-}
+}*/
 
-#tripDatesTable {
+/*#tripDatesTable {
 	border-collapse: inherit;
 }
 
@@ -273,9 +268,9 @@ footer {
 
 #tripDatesTable tr td:last-child {
 	border-right: none;
-}
+}*/
 
-.contactsNameRowDiv {
+/*.contactsNameRowDiv {
 	line-height: 20px;
 	cursor: pointer;
 }
@@ -284,14 +279,18 @@ footer {
 	height: 20px;
 	position: relative;
 	bottom: 58px;
-}
+}*/
 
-.addContactsDiv {
+.addRecordDiv {
 	margin-left: 50px;
 	width: 85%;
 }
 
-.contactCardTitle {
+.categoryDiv {
+	display: none;
+}
+
+/*.contactCardTitle {
 	width: 80%;
 }
 
@@ -314,4 +313,29 @@ footer {
 
 .removePhoneIcon {
 	line-height: inherit !important;
+}*/
+
+#categorySelection li {
+	width: 20%;
+    text-align: center;
+}
+
+#addRecordFilesDiv {
+	background-color: #2A2A8E;
+}
+
+.row {
+	margin-bottom: 0 !important;
+}
+
+.genreRow {
+	margin-bottom: 10px !important;
+}
+
+#genresTitle {
+	margin-top: 15px;
+}
+
+.btn-floating {
+	background-color: #2A2A8E !important;
 }
