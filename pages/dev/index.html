@@ -8,8 +8,8 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-        <script type="text/javascript" src="../../scripts/dist/frontEnd/buttons.js" async></script>
-        <script type="text/javascript" src="../../scripts/dist/frontEnd/reactions.js" async></script>
+        <script type="text/javascript" src="../../scripts/dist/frontEnd/indexButtons.js" async></script>
+        <script type="text/javascript" src="../../scripts/dist/frontEnd/indexReactions.js" async></script>
     </head>
     <body>
         <nav class="z-depth-2">
@@ -18,43 +18,43 @@
             </div>
         </nav>
         <div id="outerLayer">
-            <div id="contactsSearchBarDiv1" class="row">
+            <div id="searchBarDiv1" class="row">
                 <form class="col s12">
-                    <div id="contactsSearchBarDiv2" class="row">
+                    <div id="searchBarDiv2" class="row">
                         <div class="input-field col s12">
                             <i class="material-icons prefix">search</i>
-                            <input id="contactsSearchBar" type="text" class="validate">
-                            <label for="contactsSearchBar">Search:</label>
+                            <input id="searchBar" type="text" class="validate">
+                            <label for="searchBar">Search:</label>
                         </div>
                     </div>
                 </form>
             </div>
-            <div id="contactsHeadersTableDiv">
-                <table id="contactsHeadersTable" class="centered">
+            <div id="headersTableDiv">
+                <table id="headersTable" class="centered">
                     <colgroup>
                         <col span="1" style="width: 5%;">
                         <col span="1" style="width: 50%;">
-                        <col span="1" style="width: 15%;">
-                        <col span="1" style="width: 15%;">
-                        <col span="1" style="width: 15%;">
+                        <col span="1" style="width: 10%;">
+                        <col span="1" style="width: 30%;">
+                        <col span="1" style="width: 5%;">
                     </colgroup>
                     <thead>
                         <tr>
                             <th>
                                 <label>
-                                    <input type="checkbox" class="filled-in contactsChecks" id="contactsCheckAll" />
+                                    <input type="checkbox" class="filled-in checks" id="checkAll" />
                                 </label>
                             </th>
                             <th>Name</th>
-                            <th>Update</th>
-                            <th>Remove</th>
+                            <th>Classification</th>
+                            <th>Genres</th>
                             <th>Files</th>
                         </tr>
                     </thead>
                 </table>
             </div>
-            <div id="contactsTableDiv">
-                <table id="contactsTable" class="highlight centered">
+            <div id="tableDiv">
+                <table id="table" class="highlight centered">
                     <colgroup>
                         <col span="1" style="width: 5%;">
                         <col span="1" style="width: 50%;">
@@ -62,10 +62,10 @@
                         <col span="1" style="width: 15%;">
                         <col span="1" style="width: 15%;">
                     </colgroup>
-                    <tbody id="contactsTableBody"></tbody>
+                    <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <div id="contactsPreloader" class="preloader-wrapper big active">
+            <div id="preloader" class="preloader-wrapper big active">
                 <div class="spinner-layer spinner-blue-only">
                     <div class="circle-clipper left">
                         <div class="circle"></div>
@@ -78,8 +78,8 @@
                     </div>
                 </div>
             </div>
-            <a id="contactsAdd" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Add Contact"><i class="material-icons">add</i></a>
-            <a id="contactsRemove" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Remove Contacts"><i class="material-icons">remove</i></a>
+            <a id="add" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Add Record"><i class="material-icons">add</i></a>
+            <a id="remove" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Remove Record"><i class="material-icons">remove</i></a>
         </div>
         <footer>Copyright© 2023 by Nathan Marianovsky. All Rights Reserved.</footer>
     </body>

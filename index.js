@@ -61,6 +61,9 @@ app.whenReady().then(() => {
 
 	// Create the primary window.
   	let primaryWindow = tools.createWindow("index", BrowserWindow, path);
+	primaryWindow.webContents.on("did-finish-load", () => {
+		primaryWindow.webContents.send("loadRows");
+	});
 
   	// Create the system tray icon and menu. 
   	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
