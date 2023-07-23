@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Add Record</title>
+        <link rel="stylesheet" type="text/css" href="../../styles/dist/styles.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+        <script type="text/javascript" src="../../scripts/dist/frontEnd/addRecordButtons.js" async></script>
+        <script type="text/javascript" src="../../scripts/dist/frontEnd/addRecordReactions.js" async></script>
+        <!-- <script type="text/javascript" src="../../scripts/dist/frontEnd/tools.js" async></script> -->
+    </head>
+    <div class="navbar-fixed">
+        <nav class="z-depth-2">
+            <div class="nav-wrapper">
+                <!-- <span id="pageTitle" class="brand-logo center">Add Contact</span> -->
+                <ul id="categorySelection">
+                    <li><a id="categoryAnime">Anime</a></li>
+                    <li><a id="categoryBook">Book</a></li>
+                    <li><a id="categoryFilm">Film</a></li>
+                    <li><a id="categoryManga">Manga</a></li>
+                    <li><a id="categoryShow">Show</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <body>
+        <h2 id="directionsTitle">Directions:</h2>
+        <div class="text formInfo" id="directionsText">
+            Select the type of record you would like to add by clicking on the options available in the top bar.
+        </div>
+        <div class="categoryDiv" id="categoryAnimeDiv">
+            <h2>Directions:</h2>
+            <div class="text formInfo">
+                The only field required to add a record is the name. All other fields are optional.
+            </div>
+            <div class="row addRecordDiv">
+                <form class="col s12" id="categoryAnimeForm1">
+                    <div class="row">
+                        <div class="input-field col s4">
+                            <input id="animeName" type="text" class="validate center">
+                            <label for="animeName">English Name:</label>
+                        </div>
+                        <div class="input-field col s4">
+                            <input id="animeJapaneseName" type="text" class="validate center">
+                            <label for="animeJapaneseName">Japanese Name:</label>
+                        </div>
+                        <div class="input-field col s2">
+                            <input id="animeStartDate" type="date" class="validate center">
+                            <label for="animeStartDate">Start Date:</label>
+                        </div>
+                        <div class="input-field col s2">
+                            <input id="animeEndDate" type="date" class="validate center">
+                            <label for="animeEndDate">End Date:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s2">
+                            <select>
+                                <option value="" selected>N/A</option>
+                                <option value="0">0/10</option>
+                                <option value="1">1/10</option>
+                                <option value="2">2/10</option>
+                                <option value="3">3/10</option>
+                                <option value="4">4/10</option>
+                                <option value="5">5/10</option>
+                                <option value="6">6/10</option>
+                                <option value="7">7/10</option>
+                                <option value="8">8/10</option>
+                                <option value="9">9/10</option>
+                                <option value="10">10/10</option>
+                            </select>
+                            <label>Rating:</label>
+                        </div>
+                        <div class="input-field col s10">
+                            <textarea id="animeReview" class="materialize-textarea"></textarea>
+                            <label for="animeReview">Review</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s4">
+                            <input id="animeDirectors" type="text" class="validate center">
+                            <label for="animeDirectors">Directed By:</label>
+                        </div>
+                        <div class="input-field col s4">
+                            <input id="animeProducers" type="text" class="validate center">
+                            <label for="animeProducers">Produced By:</label>
+                        </div>
+                        <div class="input-field col s4">
+                            <input id="animeWriters" type="text" class="validate center">
+                            <label for="animeWriters">Written By:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s4">
+                            <input id="animeMusicians" type="text" class="validate center">
+                            <label for="animeMusicians">Music By:</label>
+                        </div>
+                        <div class="input-field col s4">
+                            <input id="animeStudio" type="text" class="validate center">
+                            <label for="animeStudio">Studio:</label>
+                        </div>
+                        <div class="input-field col s4">
+                            <input id="animeLicense" type="text" class="validate center">
+                            <label for="animeLicense">Licensed By:</label>
+                        </div>
+                    </div>
+                    <div id="addRecordFilesOuterDiv" class="file-field input-field">
+                        <div id="addRecordFilesDiv" class="btn">
+                            <span>
+                                File<i class="material-icons right">add</i>
+                            </span>
+                            <input id="addRecordFiles" type="file" multiple>
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input id="addRecordFilesText" class="file-path validate" type="text">
+                            <label for="addRecordFilesText">Upload one or more files.</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <h2 id="genresTitle">Genres/Tags:</h2>
+            <div class="row addRecordDiv">
+                <form class="col s12" id="categoryAnimeForm2">
+                    <div class="genreRow">
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreAction" class="filled-in"/>
+                            <span class="checkboxText">Action</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreAdventure" class="filled-in"/>
+                            <span class="checkboxText">Adventure</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreComedy" class="filled-in"/>
+                            <span class="checkboxText">Comedy</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreCyberpunk" class="filled-in"/>
+                            <span class="checkboxText">Cyberpunk</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreDemon" class="filled-in"/>
+                            <span class="checkboxText">Demon</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreDrama" class="filled-in"/>
+                            <span class="checkboxText">Drama</span>
+                        </label>
+                    </div>
+                    <div class="genreRow">
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreEcchi" class="filled-in"/>
+                            <span class="checkboxText">Ecchi</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreFantasy" class="filled-in"/>
+                            <span class="checkboxText">Fantasy</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreGame" class="filled-in"/>
+                            <span class="checkboxText">Game</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreHarem" class="filled-in"/>
+                            <span class="checkboxText">Harem</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreHentai" class="filled-in"/>
+                            <span class="checkboxText">Hentai</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreHistorical" class="filled-in"/>
+                            <span class="checkboxText">Historical</span>
+                        </label>
+                    </div>
+                    <div class="genreRow">
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreHorror" class="filled-in"/>
+                            <span class="checkboxText">Horror</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreIsekai" class="filled-in"/>
+                            <span class="checkboxText">Isekai</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreJosei" class="filled-in"/>
+                            <span class="checkboxText">Josei</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreKids" class="filled-in"/>
+                            <span class="checkboxText">Kids</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreMagic" class="filled-in"/>
+                            <span class="checkboxText">Magic</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreMartialArts" class="filled-in"/>
+                            <span class="checkboxText">Martial Arts</span>
+                        </label>
+                    </div>
+                    <div class="genreRow">
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreMecha" class="filled-in"/>
+                            <span class="checkboxText">Mecha</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreMilitary" class="filled-in"/>
+                            <span class="checkboxText">Military</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreMusic" class="filled-in"/>
+                            <span class="checkboxText">Music</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreMystery" class="filled-in"/>
+                            <span class="checkboxText">Mystery</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreParody" class="filled-in"/>
+                            <span class="checkboxText">Parody</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenrePolice" class="filled-in"/>
+                            <span class="checkboxText">Police</span>
+                        </label>
+                    </div>
+                    <div class="genreRow">
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenrePostApocalyptic" class="filled-in"/>
+                            <span class="checkboxText">Post-Apocalyptic</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenrePsychological" class="filled-in"/>
+                            <span class="checkboxText">Psychological</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreReverseHarem" class="filled-in"/>
+                            <span class="checkboxText">Reverse Harem</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreRomance" class="filled-in"/>
+                            <span class="checkboxText">Romance</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreSchool" class="filled-in"/>
+                            <span class="checkboxText">School</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreSciFi" class="filled-in"/>
+                            <span class="checkboxText">Sci-Fi</span>
+                        </label>
+                    </div>
+                    <div class="genreRow">
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreSeinen" class="filled-in"/>
+                            <span class="checkboxText">Seinen</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreShoujo" class="filled-in"/>
+                            <span class="checkboxText">Shoujo</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreShounen" class="filled-in"/>
+                            <span class="checkboxText">Shounen</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreSliceOfLife" class="filled-in"/>
+                            <span class="checkboxText">Slice Of Life</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreSpace" class="filled-in"/>
+                            <span class="checkboxText">Space</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreSports" class="filled-in"/>
+                            <span class="checkboxText">Sports</span>
+                        </label>
+                    </div>
+                    <div class="genreRow">
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreSuperPower" class="filled-in"/>
+                            <span class="checkboxText">Super Power</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreSupernatural" class="filled-in"/>
+                            <span class="checkboxText">Supernatural</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreTragedy" class="filled-in"/>
+                            <span class="checkboxText">Tragedy</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreVampire" class="filled-in"/>
+                            <span class="checkboxText">Vampire</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreYaoi" class="filled-in"/>
+                            <span class="checkboxText">Yaoi</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreYuri" class="filled-in"/>
+                            <span class="checkboxText">Yuri</span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="fixed-action-btn">
+                <a class="btn-floating btn-large">
+                    <i class="large material-icons">mode_edit</i>
+                </a>
+                <ul>
+                    <li><a id="animeSeasons" href="#animeModal" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Seasons"><i class="material-icons">library_add</i></a></li>
+                    <li><a id="animeSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="animeModal" class="modal">
+            <div class="modal-content">
+                <h4>Modal Header</h4>
+                <p>A bunch of text</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+        </div>
+    </body>
+</html>
