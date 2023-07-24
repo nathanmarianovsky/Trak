@@ -339,3 +339,14 @@ footer {
 .btn-floating {
 	background-color: #2A2A8E !important;
 }
+
+.modal {
+	border-radius: 30px !important;
+}
+
+.animeAddButtons {
+	background-color: #2A2A8E !important;
+	margin-left: 3px !important;
+	border-radius: 30px !important;
+	color: white !important;
+}

@@ -313,18 +313,57 @@
                     <i class="large material-icons">mode_edit</i>
                 </a>
                 <ul>
-                    <li><a id="animeSeasons" href="#animeModal" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Seasons"><i class="material-icons">library_add</i></a></li>
+                    <li><a id="animeSeasons" href="#animeModal" class="btn-floating btn-large waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Seasons"><i class="material-icons">library_add</i></a></li>
                     <li><a id="animeSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a></li>
                 </ul>
             </div>
-        </div>
-        <div id="animeModal" class="modal">
-            <div class="modal-content">
-                <h4>Modal Header</h4>
-                <p>A bunch of text</p>
-            </div>
-            <div class="modal-footer">
-                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+            <div id="animeModal" class="modal">
+                <div class="modal-content">
+                    <h4>Associated Films/ONAs/OVAs/Seasons</h4>
+                    <div id="headersTableDiv">
+                        <table id="headersTable" class="centered">
+                            <colgroup>
+                                <col span="1" style="width: 5%;">
+                                <col span="1" style="width: 50%;">
+                                <col span="1" style="width: 10%;">
+                                <col span="1" style="width: 30%;">
+                                <col span="1" style="width: 5%;">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <label>
+                                            <input type="checkbox" class="filled-in checks" id="checkAll" />
+                                        </label>
+                                    </th>
+                                    <th>Name</th>
+                                    <th>Classification</th>
+                                    <th>Genres</th>
+                                    <th>Files</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div id="tableDiv">
+                        <table id="table" class="highlight centered">
+                            <colgroup>
+                                <col span="1" style="width: 5%;">
+                                <col span="1" style="width: 50%;">
+                                <col span="1" style="width: 10%;">
+                                <col span="1" style="width: 30%;">
+                                <col span="1" style="width: 5%;">
+                            </colgroup>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a id="animeAddFilm" class="waves-effect waves-light btn-flat left animeAddButtons">+ Film</a>
+                    <a id="animeAddONA" class="waves-effect waves-light btn-flat left animeAddButtons">+ ONA</a>
+                    <a id="animeAddOVA" class="waves-effect waves-light btn-flat left animeAddButtons">+ OVA</a>
+                    <a id="animeAddSeason" class="waves-effect waves-light btn-flat left animeAddButtons">+ Season</a>
+                    <a class="modal-close waves-effect waves-light btn-flat animeAddButtons">Save</a>
+                </div>
             </div>
         </div>
     </body>
