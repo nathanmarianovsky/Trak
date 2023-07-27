@@ -220,6 +220,24 @@ window.addEventListener("load", () => {
         //     <label for="animeName">English Name:</label>
         // </div>
 
+        // <div class="input-field col s2">
+        //     <select>
+        //         <option value="" selected>N/A</option>
+        //         <option value="0">0/10</option>
+        //         <option value="1">1/10</option>
+        //         <option value="2">2/10</option>
+        //         <option value="3">3/10</option>
+        //         <option value="4">4/10</option>
+        //         <option value="5">5/10</option>
+        //         <option value="6">6/10</option>
+        //         <option value="7">7/10</option>
+        //         <option value="8">8/10</option>
+        //         <option value="9">9/10</option>
+        //         <option value="10">10/10</option>
+        //     </select>
+        //     <label>Rating:</label>
+        // </div>
+
         itemDivBodyForm.classList.add("col", "s12");
         itemDivBody.append(itemDivBodyForm);
 
@@ -243,23 +261,88 @@ window.addEventListener("load", () => {
             instancesTooltips = M.Tooltip.init(elemsTooltips);
         });
         iconAdd.addEventListener("click", e => {
+            // Remove the menu tooltips.
+            let elemsTooltips = document.querySelectorAll(".tooltipped"),
+                instancesTooltips = M.Tooltip.init(elemsTooltips);
+            for(let j = 0; j < instancesTooltips.length; j++) { instancesTooltips[j].destroy(); }
+
             let addTarget = e.target.parentNode.parentNode.parentNode.parentNode,
                 addTargetNum = e.target.id.split("_")[1];
             addTarget.classList.remove("active");
             let rowDiv = document.createElement("div"),
                 seasonEpisodeNameDiv = document.createElement("span"),
                 seasonEpisodeNameLabel = document.createElement("label"),
-                seasonEpisodeNameInput = document.createElement("input");
+                seasonEpisodeNameInput = document.createElement("input"),
+                seasonEpisodeLastWatchedDiv = document.createElement("div"),
+                seasonEpisodeLastWatchedInput = document.createElement("input"),
+                seasonEpisodeLastWatchedLabel = document.createElement("label"),
+                seasonEpisodeRatingDiv = document.createElement("div"),
+                seasonEpisodeRatingSelect = document.createElement("select"),
+                seasonEpisodeRatingLabel = document.createElement("label"),
+                seasonEpisodeRatingDefOption = document.createElement("option"),
+                seasonEpisodeReviewDiv = document.createElement("span"),
+                seasonEpisodeReviewLabel = document.createElement("label"),
+                seasonEpisodeReviewInput = document.createElement("textarea"),
+                seasonEpisodeDeleteDiv = document.createElement("div"),
+                seasonEpisodeDeleteSpan = document.createElement("span"),
+                seasonEpisodeDeleteIcon = document.createElement("i");
             seasonEpisodeNameInput.setAttribute("type", "text");
-            seasonEpisodeNameInput.setAttribute("id", "li_" + addTargetNum + "_SeasonEpisode_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeNameInput.setAttribute("id", "li_" + addTargetNum + "_EpisodeName_" + (addTarget.children[1].children[0].children.length + 1));
             seasonEpisodeNameInput.classList.add("validate", "center");
-            seasonEpisodeNameLabel.setAttribute("for", "li_" + addTargetNum + "_SeasonEpisode_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeNameLabel.setAttribute("for", "li_" + addTargetNum + "_EpisodeName_" + (addTarget.children[1].children[0].children.length + 1));
             seasonEpisodeNameLabel.textContent = "Episode Name:";
-            seasonEpisodeNameDiv.classList.add("input-field", "col", "s4");
+            seasonEpisodeNameDiv.classList.add("input-field", "col", "s2");
+
+            seasonEpisodeLastWatchedInput.classList.add("validate", "center");
+            seasonEpisodeLastWatchedInput.setAttribute("id", "li_" + addTargetNum + "_EpisodeLastWatched_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeLastWatchedInput.setAttribute("type", "date");
+            seasonEpisodeLastWatchedLabel.setAttribute("for", "li_" + addTargetNum + "_EpisodeLastWatched_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeLastWatchedLabel.textContent = "Last Watched:";
+            seasonEpisodeLastWatchedDiv.classList.add("input-field", "col", "s2");
+
+            seasonEpisodeRatingDefOption.setAttribute("value", "");
+            seasonEpisodeRatingDefOption.setAttribute("selected", "true");
+            seasonEpisodeRatingDefOption.textContent = "N/A";
+            seasonEpisodeRatingSelect.append(seasonEpisodeRatingDefOption);
+            for(let t = 0; t < 11; t++) {
+                let newOption = document.createElement("option");
+                newOption.setAttribute("value", t);
+                newOption.textContent = t + "/10";
+                seasonEpisodeRatingSelect.append(newOption);
+            }
+            seasonEpisodeRatingLabel.textContent = "Rating:";
+            seasonEpisodeRatingDiv.classList.add("input-field", "col", "s2");
+
+            seasonEpisodeReviewInput.setAttribute("id", "li_" + addTargetNum + "_EpisodeReview_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeReviewInput.classList.add("validate", "materialize-textarea");
+            seasonEpisodeReviewLabel.setAttribute("for", "li_" + addTargetNum + "_EpisodeReview_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeReviewLabel.textContent = "Review:";
+            seasonEpisodeReviewDiv.classList.add("input-field", "col", "s5");
+
+            seasonEpisodeDeleteDiv.classList.add("input-field", "col", "s1", "modalContentEpisodeDelete");
+            seasonEpisodeDeleteSpan.classList.add("center", "tooltipped");
+            seasonEpisodeDeleteSpan.setAttribute("data-position", "top");
+            seasonEpisodeDeleteSpan.setAttribute("data-tooltip", "Delete");
+            seasonEpisodeDeleteSpan.classList.add("modalContentDelete");
+            seasonEpisodeDeleteIcon.textContent = "delete";
+            seasonEpisodeDeleteIcon.classList.add("material-icons");
+
             rowDiv.classList.add("row");
             seasonEpisodeNameDiv.append(seasonEpisodeNameInput, seasonEpisodeNameLabel);
-            rowDiv.append(seasonEpisodeNameDiv);
+            seasonEpisodeLastWatchedDiv.append(seasonEpisodeLastWatchedInput, seasonEpisodeLastWatchedLabel);
+            seasonEpisodeRatingDiv.append(seasonEpisodeRatingSelect, seasonEpisodeRatingLabel);
+            seasonEpisodeReviewDiv.append(seasonEpisodeReviewInput, seasonEpisodeReviewLabel);
+            seasonEpisodeDeleteSpan.append(seasonEpisodeDeleteIcon);
+            seasonEpisodeDeleteDiv.append(seasonEpisodeDeleteSpan);
+            rowDiv.append(seasonEpisodeNameDiv, seasonEpisodeLastWatchedDiv, seasonEpisodeRatingDiv, seasonEpisodeReviewDiv, seasonEpisodeDeleteDiv);
             addTarget.children[1].children[0].append(rowDiv);
+
+            // Initialize the select tags on the page.
+            const elemsSelect = document.querySelectorAll("select"),
+                instancesSelect = M.FormSelect.init(elemsSelect);
+            // Initialize the menu tooltips.
+            elemsTooltips = document.querySelectorAll(".tooltipped");
+            instancesTooltips = M.Tooltip.init(elemsTooltips);
 
         });
         // labelAverageRating.addEventListener("click", e => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none");

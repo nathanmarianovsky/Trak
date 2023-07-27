@@ -371,7 +371,12 @@ footer {
 	color: red;
 }
 
-.collapsible-body {
+.modalContentEpisodeDelete {
+	padding-top: 1% !important;
+    padding-left: 4.2% !important;
+}
+
+/*.collapsible-body {
 	padding-bottom: 5px !important;
 	padding-top: 5px !important;
-}
+}*/
