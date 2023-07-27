@@ -350,3 +350,23 @@ footer {
 	border-radius: 30px !important;
 	color: white !important;
 }
+
+.modal {
+	max-height: 75% !important;
+	height: 75% !important;
+	width: 75% !important;
+}
+
+.modalContentButtons {
+    position: relative;
+    top: 25%;
+    left: 25%;
+}
+
+.modalContentAdd {
+	color: #2A2A8E;
+}
+
+.modalContentDelete {
+	color: red;
+}
