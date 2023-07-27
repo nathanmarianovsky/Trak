@@ -445,4 +445,7 @@ window.addEventListener("load", () => {
     // Initialize the modals.
     const elemsModal = document.querySelectorAll(".modal"),
         instancesModal = M.Modal.init(elemsModal);
+    // Initialize the collapsible divs.
+    const elemsCollapsible = document.querySelectorAll(".collapsible"),
+        instancesCollapsible = M.Collapsible.init(elemsCollapsible);
 });
