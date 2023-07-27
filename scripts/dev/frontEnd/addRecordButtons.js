@@ -162,15 +162,6 @@ window.addEventListener("load", () => {
         spanDelete.classList.add("modalContentButtons", "modalContentDelete");
         iconDelete.textContent = "delete_sweep";
         iconDelete.classList.add("material-icons");
-        // spanAverageRating.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_Delete");
-        // spanAverageRating.setAttribute("type", "text");
-        // spanAverageRating.readOnly = "true";
-        // spanAverageRating.value = "N/A";
-        // labelAverageRating.classList.add("active");
-        // labelAverageRating.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_AverageRating");
-        // labelAverageRating.textContent = "Average Rating";
-
-        // <span class="solution_del edit-tooltipped" data-position="top" data-tooltip="Delete Box" data-tooltip-id="bba77981-1736-8185-2eb3-a7c53ba14d6c"><i class="material-icons del-box">delete_sweep</i></span>
 
         itemDivHeader.classList.add("collapsible-header");
         itemDivBody.classList.add("collapsible-body");
@@ -184,59 +175,6 @@ window.addEventListener("load", () => {
         divDelete.append(spanDelete);
         divStatus.append(selectStatus, labelStatus);
         itemDivHeader.append(divName, divStartDate, divEndDate, divStatus, divAverageRating, divAdd, divDelete);
-
-
-
-        // <form class="col s12" id="categoryAnimeForm2">
-        //     <div class="genreRow">
-        //         <label class="col s2">
-        //             <input type="checkbox" id="animeGenreAction" class="filled-in"/>
-        //             <span class="checkboxText">Action</span>
-        //         </label>
-        //         <label class="col s2">
-        //             <input type="checkbox" id="animeGenreAdventure" class="filled-in"/>
-        //             <span class="checkboxText">Adventure</span>
-        //         </label>
-        //         <label class="col s2">
-        //             <input type="checkbox" id="animeGenreComedy" class="filled-in"/>
-        //             <span class="checkboxText">Comedy</span>
-        //         </label>
-        //         <label class="col s2">
-        //             <input type="checkbox" id="animeGenreCyberpunk" class="filled-in"/>
-        //             <span class="checkboxText">Cyberpunk</span>
-        //         </label>
-        //         <label class="col s2">
-        //             <input type="checkbox" id="animeGenreDemon" class="filled-in"/>
-        //             <span class="checkboxText">Demon</span>
-        //         </label>
-        //         <label class="col s2">
-        //             <input type="checkbox" id="animeGenreDrama" class="filled-in"/>
-        //             <span class="checkboxText">Drama</span>
-        //         </label>
-        //     </div>
-
-        // <div class="input-field col s4">
-        //     <input id="animeName" type="text" class="validate center">
-        //     <label for="animeName">English Name:</label>
-        // </div>
-
-        // <div class="input-field col s2">
-        //     <select>
-        //         <option value="" selected>N/A</option>
-        //         <option value="0">0/10</option>
-        //         <option value="1">1/10</option>
-        //         <option value="2">2/10</option>
-        //         <option value="3">3/10</option>
-        //         <option value="4">4/10</option>
-        //         <option value="5">5/10</option>
-        //         <option value="6">6/10</option>
-        //         <option value="7">7/10</option>
-        //         <option value="8">8/10</option>
-        //         <option value="9">9/10</option>
-        //         <option value="10">10/10</option>
-        //     </select>
-        //     <label>Rating:</label>
-        // </div>
 
         itemDivBodyForm.classList.add("col", "s12");
         itemDivBody.append(itemDivBodyForm);
@@ -287,22 +225,23 @@ window.addEventListener("load", () => {
                 seasonEpisodeDeleteSpan = document.createElement("span"),
                 seasonEpisodeDeleteIcon = document.createElement("i");
             seasonEpisodeNameInput.setAttribute("type", "text");
-            seasonEpisodeNameInput.setAttribute("id", "li_" + addTargetNum + "_EpisodeName_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeNameInput.setAttribute("id", "li_" + addTargetNum + "_Episode_Name_" + (addTarget.children[1].children[0].children.length + 1));
             seasonEpisodeNameInput.classList.add("validate", "center");
-            seasonEpisodeNameLabel.setAttribute("for", "li_" + addTargetNum + "_EpisodeName_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeNameLabel.setAttribute("for", "li_" + addTargetNum + "_Episode_Name_" + (addTarget.children[1].children[0].children.length + 1));
             seasonEpisodeNameLabel.textContent = "Episode Name:";
             seasonEpisodeNameDiv.classList.add("input-field", "col", "s2");
 
             seasonEpisodeLastWatchedInput.classList.add("validate", "center");
-            seasonEpisodeLastWatchedInput.setAttribute("id", "li_" + addTargetNum + "_EpisodeLastWatched_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeLastWatchedInput.setAttribute("id", "li_" + addTargetNum + "_Episode_LastWatched_" + (addTarget.children[1].children[0].children.length + 1));
             seasonEpisodeLastWatchedInput.setAttribute("type", "date");
-            seasonEpisodeLastWatchedLabel.setAttribute("for", "li_" + addTargetNum + "_EpisodeLastWatched_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeLastWatchedLabel.setAttribute("for", "li_" + addTargetNum + "_Episode_LastWatched_" + (addTarget.children[1].children[0].children.length + 1));
             seasonEpisodeLastWatchedLabel.textContent = "Last Watched:";
             seasonEpisodeLastWatchedDiv.classList.add("input-field", "col", "s2");
 
             seasonEpisodeRatingDefOption.setAttribute("value", "");
             seasonEpisodeRatingDefOption.setAttribute("selected", "true");
             seasonEpisodeRatingDefOption.textContent = "N/A";
+            seasonEpisodeRatingSelect.setAttribute("id", "li_" + addTargetNum + "_Episode_Rating_" + (addTarget.children[1].children[0].children.length + 1))
             seasonEpisodeRatingSelect.append(seasonEpisodeRatingDefOption);
             for(let t = 0; t < 11; t++) {
                 let newOption = document.createElement("option");
@@ -313,9 +252,9 @@ window.addEventListener("load", () => {
             seasonEpisodeRatingLabel.textContent = "Rating:";
             seasonEpisodeRatingDiv.classList.add("input-field", "col", "s2");
 
-            seasonEpisodeReviewInput.setAttribute("id", "li_" + addTargetNum + "_EpisodeReview_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeReviewInput.setAttribute("id", "li_" + addTargetNum + "_Episode_Review_" + (addTarget.children[1].children[0].children.length + 1));
             seasonEpisodeReviewInput.classList.add("validate", "materialize-textarea");
-            seasonEpisodeReviewLabel.setAttribute("for", "li_" + addTargetNum + "_EpisodeReview_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeReviewLabel.setAttribute("for", "li_" + addTargetNum + "_Episode_Review_" + (addTarget.children[1].children[0].children.length + 1));
             seasonEpisodeReviewLabel.textContent = "Review:";
             seasonEpisodeReviewDiv.classList.add("input-field", "col", "s5");
 
@@ -325,7 +264,7 @@ window.addEventListener("load", () => {
             seasonEpisodeDeleteSpan.setAttribute("data-tooltip", "Delete");
             seasonEpisodeDeleteSpan.classList.add("modalContentDelete");
             seasonEpisodeDeleteIcon.textContent = "delete";
-            seasonEpisodeDeleteIcon.classList.add("material-icons");
+            seasonEpisodeDeleteIcon.classList.add("material-icons", "modalContentEpisodeDeleteIcon");
 
             rowDiv.classList.add("row");
             seasonEpisodeNameDiv.append(seasonEpisodeNameInput, seasonEpisodeNameLabel);
@@ -343,6 +282,19 @@ window.addEventListener("load", () => {
             // Initialize the menu tooltips.
             elemsTooltips = document.querySelectorAll(".tooltipped");
             instancesTooltips = M.Tooltip.init(elemsTooltips);
+
+            seasonEpisodeRatingSelect.addEventListener("change", e => {
+                let selectIdArr = e.target.id.split("_"),
+                    seasonNum = selectIdArr[1],
+                    episodesArr = document.querySelectorAll('[id^="li_' + seasonNum + '_Episode_Rating_"]'),
+                    episodesArrFiltered = Array.from(episodesArr).filter(elem => elem.value != ""),
+                    avg = episodesArrFiltered.reduce((total, current) => total + parseInt(current.value), 0) / episodesArrFiltered.length;
+                document.getElementById("li_" + seasonNum + "_Season_AverageRating").value = avg.toFixed(2);
+                console.log(episodesArrFiltered.map(elem => elem.value));
+                console.log(episodesArrFiltered.reduce((lhs, rhs) => parseInt(lhs.value) + parseInt(rhs.value), 0));
+                console.log(episodesArrFiltered.length);
+                console.log(episodesArrFiltered.reduce((lhs, rhs) => parseInt(lhs.value) + parseInt(rhs.value), 0) / episodesArrFiltered.length);
+            });
 
         });
         // labelAverageRating.addEventListener("click", e => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none");
@@ -375,146 +327,4 @@ window.addEventListener("load", () => {
         //     lst[i].addEventListener("click", e => e.target.parentNode.parentNode.parentNode.classList.add("active"));
         // }
     });
-
-    // <div class="input-field col s2">
-    //     <select>
-    //         <option value="" selected>N/A</option>
-    //         <option value="0">0/10</option>
-    //         <option value="1">1/10</option>
-    //         <option value="2">2/10</option>
-    //         <option value="3">3/10</option>
-    //         <option value="4">4/10</option>
-    //         <option value="5">5/10</option>
-    //         <option value="6">6/10</option>
-    //         <option value="7">7/10</option>
-    //         <option value="8">8/10</option>
-    //         <option value="9">9/10</option>
-    //         <option value="10">10/10</option>
-    //     </select>
-    //     <label>Rating:</label>
-    // </div>
-
-    // // Listen for a click event on the add button in order to add a phone number input.
-    // addPhoneNumber.addEventListener("click", e => {
-    //     e.preventDefault();
-    //     const row = document.createElement("div"),
-    //         div1 = document.createElement("div"),
-    //         div2 = document.createElement("div"),
-    //         div3 = document.createElement("div"),
-    //         labelInput = document.createElement("input"),
-    //         numberInput = document.createElement("input"),
-    //         btnDiv = document.createElement("div"),
-    //         btn = document.createElement("button"),
-    //         labelLabel = document.createElement("label"),
-    //         numberLabel = document.createElement("label"),
-    //         delIcon = document.createElement("icon");
-    //     row.classList.add("row");
-    //     div1.classList.add("input-field", "col", "s6");
-    //     div2.classList.add("input-field", "col", "s5");
-    //     div3.classList.add("input-field", "col", "s1");
-    //     const form = document.getElementById("contactsForm"),
-    //         formRow = form.children[form.children.length - 1],
-    //         newIdentifier = formRow.id != "contactFilesDiv" ? parseInt(formRow.children[0].children[0].children[0].id.split("-")[1]) + 1 : 0;
-    //     row.setAttribute("id", "outerDiv-" + newIdentifier);
-    //     labelInput.setAttribute("id", "phoneLabel_" + newIdentifier);
-    //     labelInput.setAttribute("type", "text");
-    //     labelInput.setAttribute("data-length", "25");
-    //     labelInput.classList.add("validate", "center", "characterCounter");
-    //     labelLabel.setAttribute("for", "phoneLabel_" + newIdentifier);
-    //     labelLabel.textContent = "Phone # Label:";
-    //     numberInput.setAttribute("id", "phoneNumber_" + newIdentifier);
-    //     numberInput.setAttribute("type", "text");
-    //     numberInput.setAttribute("data-length", "14");
-    //     numberInput.classList.add("validate", "center", "characterCounter");
-    //     numberLabel.setAttribute("for", "phoneNumber_" + newIdentifier);
-    //     numberLabel.textContent = "Phone #:";
-    //     btnDiv.classList.add("removePhoneButtonDiv");
-    //     btn.setAttribute("type", "submit");
-    //     btn.setAttribute("id", "remove-" + newIdentifier);
-    //     btn.classList.add("btn", "waves-effect", "waves-light", "removePhoneButton");
-    //     delIcon.classList.add("material-icons", "center", "removePhoneIcon");
-    //     delIcon.setAttribute("id", "removePhoneIcon-" + newIdentifier);
-    //     delIcon.textContent = "remove";
-    //     btn.append(delIcon);
-    //     btnDiv.append(btn);
-    //     div1.append(labelInput, labelLabel);
-    //     div2.append(numberInput, numberLabel);
-    //     div3.append(btnDiv);
-    //     row.append(div3, div1, div2);
-    //     form.append(row);
-    //     btn.addEventListener("click", e => {
-    //         e.preventDefault();
-    //         let num = parseInt(e.target.id.split("-")[1]);
-    //         document.getElementById("outerDiv-" + num).remove();
-    //         num++;
-    //         while(document.getElementById("outerDiv-" + num) != null) {
-    //             let newNum = num - 1;
-    //             document.getElementById("outerDiv-" + num).setAttribute("id", "outerDiv-" + newNum);
-    //             document.getElementById("remove-" + num).setAttribute("id", "remove-" + newNum);
-    //             document.getElementById("removePhoneIcon-" + num).setAttribute("id", "removePhoneIcon-" + newNum);
-    //             document.getElementById("phoneNumber_" + num).nextElementSibling.setAttribute("for", "phoneNumber_" + newNum);
-    //             document.getElementById("phoneNumber_" + num).setAttribute("id", "phoneNumber_" + newNum);
-    //             document.getElementById("phoneLabel_" + num).nextElementSibling.setAttribute("for", "phoneLabel_" + newNum);
-    //             document.getElementById("phoneLabel_" + num).setAttribute("id", "phoneLabel_" + newNum);
-    //             num++;
-    //         }
-    //     });
-    //     numberInput.addEventListener("keydown", event => {
-    //         phoneNumberFormatter(numberInput);
-    //     });
-    // });
-    // // Listen for a click event on the submit button in order to create a new contact.
-    // submit.addEventListener("click", e => {
-    //     e.preventDefault();
-    //     if(!checkInput()) {
-    //         const firstName = document.getElementById("firstName").value,
-    //             middleName = document.getElementById("middleName").value,
-    //             lastName = document.getElementById("lastName").value;
-    //         let phoneLabelArr = [],
-    //             phoneNumberArr = [],
-    //             iter = 0;
-    //         while(document.getElementById("phoneNumber_" + iter) != null) {
-    //             if(document.getElementById("phoneLabel_" + iter).value != "" && document.getElementById("phoneNumber_" + iter).value != "") {
-    //                 phoneLabelArr.push(document.getElementById("phoneLabel_" + iter).value);
-    //                 phoneNumberArr.push(document.getElementById("phoneNumber_" + iter).value);
-    //             }
-    //             iter++;
-    //         }
-    //         let submissionArr = [
-    //             firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase(),
-    //             middleName.charAt(0).toUpperCase() + middleName.slice(1).toLowerCase(),
-    //             lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase(),
-    //             document.getElementById("birthday").value,
-    //             document.getElementById("notes").value,
-    //             Array.from(document.getElementById("contactsFormFiles").files).map(elem => elem.path),
-    //             phoneLabelArr,
-    //             phoneNumberArr
-    //         ];
-    //         if(document.getElementById("MAVTDate") != null) {
-    //             submissionArr.push(
-    //                 document.getElementById("MAVTDate").value,
-    //                 document.getElementById("CPRDate").value,
-    //                 document.getElementById("employmentDate").value,
-    //                 document.getElementById("terminationDate").value,
-    //                 document.getElementById("driverCheckbox").checked
-    //             );
-    //             if(document.getElementById("infoDiv") != null) {
-    //                 submissionArr.push(document.getElementById("infoDiv").title);
-    //                 ipcRenderer.send("updateDriverSubmission", submissionArr);
-    //             }
-    //             else {
-    //                 ipcRenderer.send("addDriverSubmission", submissionArr);
-    //             }
-    //         }
-    //         else {
-    //             if(document.getElementById("infoDiv") != null) {
-    //                 submissionArr.push(document.getElementById("infoDiv").title);
-    //                 ipcRenderer.send("updateContactSubmission", submissionArr);
-    //             }
-    //             else {
-    //                 ipcRenderer.send("addContactSubmission", submissionArr);
-    //             }
-    //         }
-    //     }
-    // });
 });
