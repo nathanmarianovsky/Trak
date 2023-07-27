@@ -370,3 +370,8 @@ footer {
 .modalContentDelete {
 	color: red;
 }
+
+.collapsible-body {
+	padding-bottom: 5px !important;
+	padding-top: 5px !important;
+}

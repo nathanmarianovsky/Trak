@@ -94,7 +94,7 @@ window.addEventListener("load", () => {
         inputName.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_Name");
         inputName.setAttribute("type", "text");
         labelName.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_Name");
-        labelName.textContent = "Season Name";
+        labelName.textContent = "Season Name:";
         divStartDate.classList.add("input-field");
         divStartDate.style.width = "12.5%";
         divStartDate.style.marginLeft = "25px";
@@ -102,7 +102,7 @@ window.addEventListener("load", () => {
         inputStartDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_Start");
         inputStartDate.setAttribute("type", "date");
         labelStartDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_Start");
-        labelStartDate.textContent = "Start Date";
+        labelStartDate.textContent = "Start Date:";
         divEndDate.classList.add("input-field");
         divEndDate.style.width = "12.5%";
         divEndDate.style.marginLeft = "25px";
@@ -110,7 +110,7 @@ window.addEventListener("load", () => {
         inputEndDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_End");
         inputEndDate.setAttribute("type", "date");
         labelEndDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_End");
-        labelEndDate.textContent = "End Date";
+        labelEndDate.textContent = "End Date:";
 
         divStatus.classList.add("input-field");
         divStatus.style.width = "15%";
@@ -140,7 +140,7 @@ window.addEventListener("load", () => {
         inputAverageRating.value = "N/A";
         labelAverageRating.classList.add("active");
         labelAverageRating.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_AverageRating");
-        labelAverageRating.textContent = "Average Rating";
+        labelAverageRating.textContent = "Average Rating:";
 
         divAdd.classList.add("input-field");
         divAdd.style.width = "5%";
@@ -151,6 +151,7 @@ window.addEventListener("load", () => {
         spanAdd.classList.add("modalContentButtons", "modalContentAdd");
         iconAdd.textContent = "add";
         iconAdd.classList.add("material-icons");
+        iconAdd.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_AddEpisode")
 
         divDelete.classList.add("input-field");
         divDelete.style.width = "5%";
@@ -214,6 +215,11 @@ window.addEventListener("load", () => {
         //         </label>
         //     </div>
 
+        // <div class="input-field col s4">
+        //     <input id="animeName" type="text" class="validate center">
+        //     <label for="animeName">English Name:</label>
+        // </div>
+
         itemDivBodyForm.classList.add("col", "s12");
         itemDivBody.append(itemDivBodyForm);
 
@@ -237,17 +243,24 @@ window.addEventListener("load", () => {
             instancesTooltips = M.Tooltip.init(elemsTooltips);
         });
         iconAdd.addEventListener("click", e => {
-            let addTarget = e.target.parentNode.parentNode.parentNode.parentNode;
-            // addTarget.click();
+            let addTarget = e.target.parentNode.parentNode.parentNode.parentNode,
+                addTargetNum = e.target.id.split("_")[1];
             addTarget.classList.remove("active");
-            // setTimeout(() => addTarget.children[1].style.display = "block", 1);
-            console.log(addTarget.children[1]);
-            // let 
-            // elemsTooltips = document.querySelectorAll(".tooltipped");
-            // instancesTooltips = M.Tooltip.init(elemsTooltips);
-            // for(let j = 0; j < instancesTooltips.length; j++) { instancesTooltips[j].destroy(); }
-            // delTarget.remove();
-            // instancesTooltips = M.Tooltip.init(elemsTooltips);
+            let rowDiv = document.createElement("div"),
+                seasonEpisodeNameDiv = document.createElement("span"),
+                seasonEpisodeNameLabel = document.createElement("label"),
+                seasonEpisodeNameInput = document.createElement("input");
+            seasonEpisodeNameInput.setAttribute("type", "text");
+            seasonEpisodeNameInput.setAttribute("id", "li_" + addTargetNum + "_SeasonEpisode_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeNameInput.classList.add("validate", "center");
+            seasonEpisodeNameLabel.setAttribute("for", "li_" + addTargetNum + "_SeasonEpisode_" + (addTarget.children[1].children[0].children.length + 1));
+            seasonEpisodeNameLabel.textContent = "Episode Name:";
+            seasonEpisodeNameDiv.classList.add("input-field", "col", "s4");
+            rowDiv.classList.add("row");
+            seasonEpisodeNameDiv.append(seasonEpisodeNameInput, seasonEpisodeNameLabel);
+            rowDiv.append(seasonEpisodeNameDiv);
+            addTarget.children[1].children[0].append(rowDiv);
+
         });
         // labelAverageRating.addEventListener("click", e => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none");
 
