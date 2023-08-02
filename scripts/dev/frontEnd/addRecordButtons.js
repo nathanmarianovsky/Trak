@@ -180,7 +180,9 @@ window.addEventListener("load", () => {
         itemDivBody.append(itemDivBodyForm);
 
 
-
+        itemLI.setAttribute("draggable", "true");
+        itemLI.classList.add("dropzone");
+        itemLI.setAttribute("id", "li_" + (animeList.children.length + 1));
         itemLI.append(itemDivHeader, itemDivBody);
         animeList.append(itemLI);
 
@@ -290,10 +292,15 @@ window.addEventListener("load", () => {
                     episodesArrFiltered = Array.from(episodesArr).filter(elem => elem.value != ""),
                     avg = episodesArrFiltered.reduce((total, current) => total + parseInt(current.value), 0) / episodesArrFiltered.length;
                 document.getElementById("li_" + seasonNum + "_Season_AverageRating").value = avg.toFixed(2);
-                console.log(episodesArrFiltered.map(elem => elem.value));
-                console.log(episodesArrFiltered.reduce((lhs, rhs) => parseInt(lhs.value) + parseInt(rhs.value), 0));
-                console.log(episodesArrFiltered.length);
-                console.log(episodesArrFiltered.reduce((lhs, rhs) => parseInt(lhs.value) + parseInt(rhs.value), 0) / episodesArrFiltered.length);
+            });
+
+            seasonEpisodeDeleteIcon.addEventListener("click", e => {
+                let delTarget = e.target.parentNode.parentNode.parentNode;
+                elemsTooltips = document.querySelectorAll(".tooltipped");
+                instancesTooltips = M.Tooltip.init(elemsTooltips);
+                for(let j = 0; j < instancesTooltips.length; j++) { instancesTooltips[j].destroy(); }
+                delTarget.remove();
+                instancesTooltips = M.Tooltip.init(elemsTooltips);
             });
 
         });
@@ -318,6 +325,45 @@ window.addEventListener("load", () => {
         for(let i = 0; i < lst.length; i++) {
             observer.observe(lst[i], { "attributes": true, "attributeFilter": ["style"] });
         }
+
+        let dragged = "", id = 0, index = 0, indexDrop = 0, list = [];
+
+        document.addEventListener("dragstart", ({target}) => {
+            if(target.nodeName != "LI") { target = target.closest(".dropzone"); }
+            dragged = target;
+            id = target.id.split("_")[1];
+            list = target.parentNode.children;
+            for(let i = 0; i < list.length; i += 1) {
+                if(list[i] === dragged){
+                    index = i;
+                }
+            }
+        });
+
+        document.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            event.target.classList.add("border-gray-500");
+        });
+
+        document.addEventListener("drop", ({target}) => {
+            if(target.nodeName != "LI") { target = target.closest(".dropzone"); }
+            if(target.className == "dropzone" && target.id.split("_")[1] !== id) {
+                dragged.remove(dragged);
+                for(let i = 0; i < list.length; i += 1) {
+                    if(list[i] === target) {
+                        indexDrop = i;
+                    }
+                }
+                // console.log(index, indexDrop);
+                if(index > indexDrop) {
+                    target.before(dragged);
+                }
+                else {
+                    target.after(dragged);
+                }
+            }
+            target.classList.remove("border-gray-500");
+        });
 
         // console.log(lst);
         // observer.observe(selectStatus.parentNode.children[1], { "attributes": true, "attributeFilter": ["style"] });
