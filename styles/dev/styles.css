@@ -100,8 +100,14 @@ footer {
 	color: rgba(0,0,0,0.3) !important;
 }
 
+.select-dropdown li {
+	min-height: 0px !important;
+}
+
 .select-dropdown li>span {
 	text-align: center;
+	font-size: 14px !important;
+	line-height: 12px !important;
 }
 
 .checkboxSpan {

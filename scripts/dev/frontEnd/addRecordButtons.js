@@ -21,20 +21,95 @@ var { ipcRenderer } = require("electron");
 
 
 
+/*
+
+Remove all tooltips on the page.
+
+*/
+var clearTooltips = () => {
+    // Define the current instances of tooltips found on the page.
+    let elemsTooltips = document.querySelectorAll(".tooltipped"),
+        instancesTooltips = M.Tooltip.init(elemsTooltips);
+    // Destroy each tooltip.
+    for(let j = 0; j < instancesTooltips.length; j++) { instancesTooltips[j].destroy(); }
+};
+
+
+
+/*
+
+Initialize all tooltips on the page.
+
+*/
+var initTooltips = () => {
+    // Define the current instances of tooltips found on the page.
+    let elemsTooltips = document.querySelectorAll(".tooltipped"),
+        instancesTooltips = M.Tooltip.init(elemsTooltips);
+};
+
+
+
+/*
+
+Initialize all select tags on the page.
+
+*/
+var initSelect = () => {
+    // Define the current instances of select tags fonud on the page.
+    let elemsSelect = document.querySelectorAll("select"),
+        instancesSelect = M.FormSelect.init(elemsSelect);
+};
+
+
+
+/*
+
+Initialize the listeners associated to related content dragging.
+
+*/
+var initContentDrag = () => {
+    // Define the variables associated to the drag action.
+    let dragged = "", id = 0, index = 0, indexDrop = 0, list = [];
+    // Listen for the start of a drag event on the related content.
+    document.addEventListener("dragstart", ({target}) => {
+        // If the target does not correspond to the necessary li container, then switch it accordingly.
+        if(target.nodeName != "LI") { target = target.closest(".dropzone"); }
+        dragged = target;
+        id = target.id.split("_")[1];
+        list = target.parentNode.children;
+        for(let i = 0; i < list.length; i += 1) {
+            if(list[i] === dragged){ index = i; }
+        }
+    });
+    // Prevent the default action duruing a drag over.
+    document.addEventListener("dragover", (event) => { event.preventDefault(); });
+    // Listen for the end of a drag event on the related content.
+    document.addEventListener("drop", ({target}) => {
+        // If the target does not correspond to the necessary li container, then switch it accordingly.
+        if(target.nodeName != "LI") { target = target.closest(".dropzone"); }
+        if(target.className == "dropzone" && target.id.split("_")[1] !== id) {
+            dragged.remove(dragged);
+            for(let i = 0; i < list.length; i += 1) {
+                if(list[i] === target) { indexDrop = i; }
+            }
+            index > indexDrop ? target.before(dragged) : target.after(dragged);
+        }
+    });
+};
+
+
+
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
     // Define the buttons for all actions.
-    // const addPhoneNumber = document.getElementById("addPhoneNumber"),
     const categoryAnime = document.getElementById("categoryAnime"),
-        animeAddSeason = document.getElementById("animeAddSeason"),
-        submit = document.getElementById("submit");
-
+        animeAddFilm = document.getElementById("animeAddFilm"),
+        animeAddSeason = document.getElementById("animeAddSeason");
     // Define the relevant portions of the page that are in the rotation of record forms.
     const directionsTitle = document.getElementById("directionsTitle"),
         directionsText = document.getElementById("directionsText"),
         categoryDivs = document.getElementsByClassName("categoryDiv"),
         categoryAnimeDiv = document.getElementById("categoryAnimeDiv");
-
     // Listen for a click event on the categoryAnime button on the top bar to display the form corresponding to an anime record.
     categoryAnime.addEventListener("click", e => {
         e.preventDefault();
@@ -48,13 +123,10 @@ window.addEventListener("load", () => {
         categoryAnimeDiv.style.display = "initial";
         categoryAnime.parentNode.classList.add("active");
     });
-
     // Listen for a click event on the animeAddSeason button on the anime associated modal to add a season listing.
     animeAddSeason.addEventListener("click", e => {
-        // Remove the menu tooltips.
-        let elemsTooltips = document.querySelectorAll(".tooltipped"),
-            instancesTooltips = M.Tooltip.init(elemsTooltips);
-        for(let j = 0; j < instancesTooltips.length; j++) { instancesTooltips[j].destroy(); }
+        // Remove the tooltips.
+        clearTooltips();
 
         const animeList = document.getElementById("animeList");
         let itemLI = document.createElement("li"),
@@ -89,28 +161,28 @@ window.addEventListener("load", () => {
             itemDivBody = document.createElement("div"),
             itemDivBodyForm = document.createElement("form");
         divName.classList.add("input-field");
-        divName.style.width = "20%";
+        divName.style.width = "17%";
         inputName.classList.add("validate", "center");
         inputName.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_Name");
         inputName.setAttribute("type", "text");
         labelName.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_Name");
         labelName.textContent = "Season Name:";
         divStartDate.classList.add("input-field");
-        divStartDate.style.width = "12.5%";
+        divStartDate.style.width = "15%";
         divStartDate.style.marginLeft = "25px";
         inputStartDate.classList.add("validate", "center");
         inputStartDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_Start");
         inputStartDate.setAttribute("type", "date");
         labelStartDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_Start");
-        labelStartDate.textContent = "Start Date:";
+        labelStartDate.textContent = "Season Start Date:";
         divEndDate.classList.add("input-field");
-        divEndDate.style.width = "12.5%";
+        divEndDate.style.width = "15%";
         divEndDate.style.marginLeft = "25px";
         inputEndDate.classList.add("validate", "center");
         inputEndDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_End");
         inputEndDate.setAttribute("type", "date");
         labelEndDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_End");
-        labelEndDate.textContent = "End Date:";
+        labelEndDate.textContent = "Season End Date:";
 
         divStatus.classList.add("input-field");
         divStatus.style.width = "15%";
@@ -131,7 +203,7 @@ window.addEventListener("load", () => {
         labelStatus.textContent = "Status:";
 
         divAverageRating.classList.add("input-field");
-        divAverageRating.style.width = "15%";
+        divAverageRating.style.width = "13%";
         divAverageRating.style.marginLeft = "25px";
         inputAverageRating.classList.add("center");
         inputAverageRating.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_AverageRating");
@@ -194,17 +266,15 @@ window.addEventListener("load", () => {
         iconDelete.addEventListener("click", e => { 
             let delTarget = e.target.parentNode.parentNode.parentNode.parentNode;
             setTimeout(() => delTarget.children[1].style.display = "none", 1);
-            elemsTooltips = document.querySelectorAll(".tooltipped");
-            instancesTooltips = M.Tooltip.init(elemsTooltips);
-            for(let j = 0; j < instancesTooltips.length; j++) { instancesTooltips[j].destroy(); }
+            // Remove the tooltips.
+            clearTooltips();
             delTarget.remove();
-            instancesTooltips = M.Tooltip.init(elemsTooltips);
+            // Initialize the tooltips.
+            initTooltips();
         });
         iconAdd.addEventListener("click", e => {
-            // Remove the menu tooltips.
-            let elemsTooltips = document.querySelectorAll(".tooltipped"),
-                instancesTooltips = M.Tooltip.init(elemsTooltips);
-            for(let j = 0; j < instancesTooltips.length; j++) { instancesTooltips[j].destroy(); }
+            // Remove the tooltips.
+            clearTooltips();
 
             let addTarget = e.target.parentNode.parentNode.parentNode.parentNode,
                 addTargetNum = e.target.id.split("_")[1];
@@ -278,12 +348,10 @@ window.addEventListener("load", () => {
             rowDiv.append(seasonEpisodeNameDiv, seasonEpisodeLastWatchedDiv, seasonEpisodeRatingDiv, seasonEpisodeReviewDiv, seasonEpisodeDeleteDiv);
             addTarget.children[1].children[0].append(rowDiv);
 
-            // Initialize the select tags on the page.
-            const elemsSelect = document.querySelectorAll("select"),
-                instancesSelect = M.FormSelect.init(elemsSelect);
-            // Initialize the menu tooltips.
-            elemsTooltips = document.querySelectorAll(".tooltipped");
-            instancesTooltips = M.Tooltip.init(elemsTooltips);
+            // Initialize the select tags.
+            initSelect();
+            // Initialize the tooltips.
+            initTooltips();
 
             seasonEpisodeRatingSelect.addEventListener("change", e => {
                 let selectIdArr = e.target.id.split("_"),
@@ -296,81 +364,31 @@ window.addEventListener("load", () => {
 
             seasonEpisodeDeleteIcon.addEventListener("click", e => {
                 let delTarget = e.target.parentNode.parentNode.parentNode;
-                elemsTooltips = document.querySelectorAll(".tooltipped");
-                instancesTooltips = M.Tooltip.init(elemsTooltips);
-                for(let j = 0; j < instancesTooltips.length; j++) { instancesTooltips[j].destroy(); }
+                // Remove the tooltips.
+                clearTooltips();
                 delTarget.remove();
-                instancesTooltips = M.Tooltip.init(elemsTooltips);
+                // Initialize the tooltips.
+                initTooltips();
             });
 
         });
         // labelAverageRating.addEventListener("click", e => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none");
 
-        // Initialize the select tags on the page.
-        const elemsSelect = document.querySelectorAll("select"),
-            instancesSelect = M.FormSelect.init(elemsSelect);
-        // Initialize the menu tooltips.
-        elemsTooltips = document.querySelectorAll(".tooltipped");
-        instancesTooltips = M.Tooltip.init(elemsTooltips);
+        // Initialize the select tags.
+        initSelect();
+        // Initialize the tooltips.
+        initTooltips();
 
         let observer = new MutationObserver(mutations => {
             let target = mutations[0].target.parentNode.parentNode.parentNode.parentNode;
             setTimeout(() => target.children[1].style.display = "none", 1);
-            // target.children[1].style.display = "none";
         });
-
-        // var target = selectStatus.parentNode.children[1];
 
         let lst = document.querySelectorAll(".modal .dropdown-content");
         for(let i = 0; i < lst.length; i++) {
             observer.observe(lst[i], { "attributes": true, "attributeFilter": ["style"] });
         }
 
-        let dragged = "", id = 0, index = 0, indexDrop = 0, list = [];
-
-        document.addEventListener("dragstart", ({target}) => {
-            if(target.nodeName != "LI") { target = target.closest(".dropzone"); }
-            dragged = target;
-            id = target.id.split("_")[1];
-            list = target.parentNode.children;
-            for(let i = 0; i < list.length; i += 1) {
-                if(list[i] === dragged){
-                    index = i;
-                }
-            }
-        });
-
-        document.addEventListener("dragover", (event) => {
-            event.preventDefault();
-            event.target.classList.add("border-gray-500");
-        });
-
-        document.addEventListener("drop", ({target}) => {
-            if(target.nodeName != "LI") { target = target.closest(".dropzone"); }
-            if(target.className == "dropzone" && target.id.split("_")[1] !== id) {
-                dragged.remove(dragged);
-                for(let i = 0; i < list.length; i += 1) {
-                    if(list[i] === target) {
-                        indexDrop = i;
-                    }
-                }
-                // console.log(index, indexDrop);
-                if(index > indexDrop) {
-                    target.before(dragged);
-                }
-                else {
-                    target.after(dragged);
-                }
-            }
-            target.classList.remove("border-gray-500");
-        });
-
-        // console.log(lst);
-        // observer.observe(selectStatus.parentNode.children[1], { "attributes": true, "attributeFilter": ["style"] });
-
-        // let lst = selectStatus.parentNode.children[1].children;
-        // for(let i = 0; i < lst.length; i++) {
-        //     lst[i].addEventListener("click", e => e.target.parentNode.parentNode.parentNode.classList.add("active"));
-        // }
+        initContentDrag();
     });
 });
