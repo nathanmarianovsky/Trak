@@ -64,6 +64,31 @@ var initSelect = () => {
 
 /*
 
+Initialize the observers for style mutations on related content select tags.
+
+*/
+var initSelectObservers = () => {
+    // Define the select tags observer.
+    let observer = new MutationObserver(mutations => {
+        // Define the listed item target in the unordered list.
+        let target = mutations[0].target.parentNode.parentNode.parentNode.parentNode;
+        // If this select tag is a desired target then hide the body of episodes associated to an anime season.
+        if(target.classList.contains("dropzone")) {
+            setTimeout(() => target.children[1].style.display = "none", 1);
+        }
+    });
+    // Define the list of all relevant select tags on the modal.
+    let lst = document.querySelectorAll(".modal .dropdown-content");
+    // For each relevant select tag tell the observe to watch for changes.
+    for(let i = 0; i < lst.length; i++) {
+        observer.observe(lst[i], { "attributes": true, "attributeFilter": ["style"] });
+    }
+};
+
+
+
+/*
+
 Initialize the listeners associated to related content dragging.
 
 */
@@ -128,8 +153,8 @@ window.addEventListener("load", () => {
         // Remove the tooltips.
         clearTooltips();
 
-        const animeList = document.getElementById("animeList");
-        let itemLI = document.createElement("li"),
+        const animeList = document.getElementById("animeList"),
+            itemLI = document.createElement("li"),
             itemDivHeader = document.createElement("div"),
             divName = document.createElement("div"),
             inputName = document.createElement("input"),
@@ -261,7 +286,6 @@ window.addEventListener("load", () => {
         inputName.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
         inputStartDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
         inputEndDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
-        // divAverageRating.addEventListener("click", e => e.target.parentNode.parentNode.children[1].style.display = "none");
         inputAverageRating.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
         iconDelete.addEventListener("click", e => { 
             let delTarget = e.target.parentNode.parentNode.parentNode.parentNode;
@@ -371,6 +395,9 @@ window.addEventListener("load", () => {
                 initTooltips();
             });
 
+            // Initialize the observers for all relevant select tags.
+            initSelectObservers();
+
         });
         // labelAverageRating.addEventListener("click", e => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none");
 
@@ -378,16 +405,8 @@ window.addEventListener("load", () => {
         initSelect();
         // Initialize the tooltips.
         initTooltips();
-
-        let observer = new MutationObserver(mutations => {
-            let target = mutations[0].target.parentNode.parentNode.parentNode.parentNode;
-            setTimeout(() => target.children[1].style.display = "none", 1);
-        });
-
-        let lst = document.querySelectorAll(".modal .dropdown-content");
-        for(let i = 0; i < lst.length; i++) {
-            observer.observe(lst[i], { "attributes": true, "attributeFilter": ["style"] });
-        }
+        // Initialize the observers for all relevant select tags.
+        initSelectObservers();
 
         initContentDrag();
     });
