@@ -2,6 +2,16 @@
 
 BASIC DETAILS: This file handles all buttons on the addRecord.html page.
 
+    - clearTooltips: Remove all tooltips on the page.
+    - initTooltips: Initialize all tooltips on the page.
+    - initSelect: Initialize all select tags on the page.
+    - initSelectObservers: Initialize the observers for style mutations on related content select tags.
+    - initContentDrag: Initialize the listeners associated to related content dragging.
+    - recordChoicesButtons: Listen for click events on the record choices.
+    - animeSeasonContentButtons: Listen for click events on the related content anime episode table items.
+    - animeContentButtons: Listen for click events on the related content anime season table items.
+    - animeModalButtons: Listen for click events on the related content anime modal buttons.
+
 */
 
 
@@ -156,7 +166,37 @@ var recordChoicesButtons = () => {
 
 /*
 
-Listen for click events on the related content table items.
+Listen for click events on the related content anime episode table items.
+
+    - ratingSelect is the input corresponding to the episode rating.
+    - delButton is the button that deletes an episode.
+
+*/
+var animeSeasonContentButtons = (ratingSelect, delButton) => {
+    ratingSelect.addEventListener("change", e => {
+        let selectIdArr = e.target.id.split("_"),
+            seasonNum = selectIdArr[1],
+            episodesArr = document.querySelectorAll('[id^="li_' + seasonNum + '_Episode_Rating_"]'),
+            episodesArrFiltered = Array.from(episodesArr).filter(elem => elem.value != ""),
+            avg = episodesArrFiltered.reduce((total, current) => total + parseInt(current.value), 0) / episodesArrFiltered.length;
+        document.getElementById("li_" + seasonNum + "_Season_AverageRating").value = avg.toFixed(2);
+    });
+
+    delButton.addEventListener("click", e => {
+        let delTarget = e.target.parentNode.parentNode.parentNode;
+        // Remove the tooltips.
+        clearTooltips();
+        delTarget.remove();
+        // Initialize the tooltips.
+        initTooltips();
+    });
+};
+
+
+
+/*
+
+Listen for click events on the related content anime season table items.
 
     - formName is the input corresponding to the season name.
     - formStartDate is the input corresponding to the season start date.
@@ -167,10 +207,12 @@ Listen for click events on the related content table items.
 
 */
 var animeContentButtons = (formName, formStartDate, formEndDate, formAverageRating, addBtn, delBtn) => {
+    // Listen for a click on the season name, season start date, season end date, or season average rating in order to prevent the listed item body from displaying.
     formName.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formStartDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formEndDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formAverageRating.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
+    // Listen for a click event on the delete button for a season on the anime associated modal to delete the season.
     delBtn.addEventListener("click", e => { 
         let delTarget = e.target.parentNode.parentNode.parentNode.parentNode;
         setTimeout(() => delTarget.children[1].style.display = "none", 1);
@@ -180,14 +222,16 @@ var animeContentButtons = (formName, formStartDate, formEndDate, formAverageRati
         // Initialize the tooltips.
         initTooltips();
     });
+    // Listen for a click event on the add button for a season on the anime associated modal to add an episode listing.
     addBtn.addEventListener("click", e => {
         // Remove the tooltips.
         clearTooltips();
-
-        let addTarget = e.target.parentNode.parentNode.parentNode.parentNode,
+        // Define the list item target.
+        const addTarget = e.target.parentNode.parentNode.parentNode.parentNode,
             addTargetNum = e.target.id.split("_")[1];
         addTarget.classList.remove("active");
-        let rowDiv = document.createElement("div"),
+        // Define and construct all components needed to attach an anime season episode to the related content table.
+        const rowDiv = document.createElement("div"),
             seasonEpisodeNameDiv = document.createElement("span"),
             seasonEpisodeNameLabel = document.createElement("label"),
             seasonEpisodeNameInput = document.createElement("input"),
@@ -204,20 +248,21 @@ var animeContentButtons = (formName, formStartDate, formEndDate, formAverageRati
             seasonEpisodeDeleteDiv = document.createElement("div"),
             seasonEpisodeDeleteSpan = document.createElement("span"),
             seasonEpisodeDeleteIcon = document.createElement("i");
+        // Prepare the season episode name.
         seasonEpisodeNameInput.setAttribute("type", "text");
         seasonEpisodeNameInput.setAttribute("id", "li_" + addTargetNum + "_Episode_Name_" + (addTarget.children[1].children[0].children.length + 1));
         seasonEpisodeNameInput.classList.add("validate", "center");
         seasonEpisodeNameLabel.setAttribute("for", "li_" + addTargetNum + "_Episode_Name_" + (addTarget.children[1].children[0].children.length + 1));
         seasonEpisodeNameLabel.textContent = "Episode Name:";
         seasonEpisodeNameDiv.classList.add("input-field", "col", "s2");
-
+        // Prepare the season episode last watched date.
         seasonEpisodeLastWatchedInput.classList.add("validate", "center");
         seasonEpisodeLastWatchedInput.setAttribute("id", "li_" + addTargetNum + "_Episode_LastWatched_" + (addTarget.children[1].children[0].children.length + 1));
         seasonEpisodeLastWatchedInput.setAttribute("type", "date");
         seasonEpisodeLastWatchedLabel.setAttribute("for", "li_" + addTargetNum + "_Episode_LastWatched_" + (addTarget.children[1].children[0].children.length + 1));
         seasonEpisodeLastWatchedLabel.textContent = "Last Watched:";
         seasonEpisodeLastWatchedDiv.classList.add("input-field", "col", "s2");
-
+        // Prepare the season episode rating.
         seasonEpisodeRatingDefOption.setAttribute("value", "");
         seasonEpisodeRatingDefOption.setAttribute("selected", "true");
         seasonEpisodeRatingDefOption.textContent = "N/A";
@@ -231,13 +276,13 @@ var animeContentButtons = (formName, formStartDate, formEndDate, formAverageRati
         }
         seasonEpisodeRatingLabel.textContent = "Rating:";
         seasonEpisodeRatingDiv.classList.add("input-field", "col", "s2");
-
+        // Prepare the season episode review.
         seasonEpisodeReviewInput.setAttribute("id", "li_" + addTargetNum + "_Episode_Review_" + (addTarget.children[1].children[0].children.length + 1));
         seasonEpisodeReviewInput.classList.add("validate", "materialize-textarea");
         seasonEpisodeReviewLabel.setAttribute("for", "li_" + addTargetNum + "_Episode_Review_" + (addTarget.children[1].children[0].children.length + 1));
         seasonEpisodeReviewLabel.textContent = "Review:";
         seasonEpisodeReviewDiv.classList.add("input-field", "col", "s5");
-
+        // Prepare the season episode button for deleting the episode.
         seasonEpisodeDeleteDiv.classList.add("input-field", "col", "s1", "modalContentEpisodeDelete");
         seasonEpisodeDeleteSpan.classList.add("center", "tooltipped");
         seasonEpisodeDeleteSpan.setAttribute("data-position", "top");
@@ -245,7 +290,7 @@ var animeContentButtons = (formName, formStartDate, formEndDate, formAverageRati
         seasonEpisodeDeleteSpan.classList.add("modalContentDelete");
         seasonEpisodeDeleteIcon.textContent = "delete";
         seasonEpisodeDeleteIcon.classList.add("material-icons", "modalContentEpisodeDeleteIcon");
-
+        // Attach all season episodes components to the form item.
         rowDiv.classList.add("row");
         seasonEpisodeNameDiv.append(seasonEpisodeNameInput, seasonEpisodeNameLabel);
         seasonEpisodeLastWatchedDiv.append(seasonEpisodeLastWatchedInput, seasonEpisodeLastWatchedLabel);
@@ -254,51 +299,64 @@ var animeContentButtons = (formName, formStartDate, formEndDate, formAverageRati
         seasonEpisodeDeleteSpan.append(seasonEpisodeDeleteIcon);
         seasonEpisodeDeleteDiv.append(seasonEpisodeDeleteSpan);
         rowDiv.append(seasonEpisodeNameDiv, seasonEpisodeLastWatchedDiv, seasonEpisodeRatingDiv, seasonEpisodeReviewDiv, seasonEpisodeDeleteDiv);
+        // Attach the form item to the page modal.
         addTarget.children[1].children[0].append(rowDiv);
-
         // Initialize the select tags.
         initSelect();
         // Initialize the tooltips.
         initTooltips();
         // Initialize the observers for all relevant select tags.
         initSelectObservers();
-
-        seasonEpisodeRatingSelect.addEventListener("change", e => {
-            let selectIdArr = e.target.id.split("_"),
-                seasonNum = selectIdArr[1],
-                episodesArr = document.querySelectorAll('[id^="li_' + seasonNum + '_Episode_Rating_"]'),
-                episodesArrFiltered = Array.from(episodesArr).filter(elem => elem.value != ""),
-                avg = episodesArrFiltered.reduce((total, current) => total + parseInt(current.value), 0) / episodesArrFiltered.length;
-            document.getElementById("li_" + seasonNum + "_Season_AverageRating").value = avg.toFixed(2);
-        });
-
-        seasonEpisodeDeleteIcon.addEventListener("click", e => {
-            let delTarget = e.target.parentNode.parentNode.parentNode;
-            // Remove the tooltips.
-            clearTooltips();
-            delTarget.remove();
-            // Initialize the tooltips.
-            initTooltips();
-        });
-
-
+        // Add the button listeners associated to an anime season episode.
+        animeSeasonContentButtons(seasonEpisodeRatingSelect, seasonEpisodeDeleteIcon);
     });
 };
 
 
 
-// Wait for the window to finish loading.
-window.addEventListener("load", () => {
+/*
+
+Listen for click events on the related content anime modal buttons.
+
+*/
+var animeModalButtons = () => {
     // Define the buttons for all actions.
-    const animeAddFilm = document.getElementById("animeAddFilm"),
+    const animeAddSingle = document.getElementById("animeAddSingle"),
         animeAddSeason = document.getElementById("animeAddSeason");
-    // Add the listeners corresponding to the record choices.
-    recordChoicesButtons();
+    animeAddSingle.addEventListener("click", e => {
+        // Remove the tooltips.
+        clearTooltips();
+        // Define and construct all components needed to attach an anime film to the related content table.
+        const animeList = document.getElementById("animeList"),
+            itemSingleLI = document.createElement("li"),
+            itemSingleDivHeader = document.createElement("div"),
+            divSingleName = document.createElement("div"),
+            inputSingleName = document.createElement("input"),
+            labelSingleName = document.createElement("label"),
+            divSingleReleaseDate = document.createElement("div"),
+            inputSingleReleaseDate = document.createElement("input"),
+            labelSingleReleaseDate = document.createElement("label"),
+            divSingleLastWatchedDate = document.createElement("div"),
+            inputSingleLastWatchedDate = document.createElement("input"),
+            labelSingleLastWatchedDate = document.createElement("label"),
+            divSingleRating = document.createElement("div"),
+            selectSingleRating = document.createElement("select"),
+            labelSingleRating = document.createElement("label"),
+            defOptionSingleRating = document.createElement("option"),
+            divSingleReview = document.createElement("span"),
+            labelSingleReview = document.createElement("label"),
+            inputSingleReview = document.createElement("textarea"),
+            divSingleDelete = document.createElement("div"),
+            spanSingleDelete = document.createElement("span"),
+            iconSingleDelete = document.createElement("i");
+    });
+
+
     // Listen for a click event on the animeAddSeason button on the anime associated modal to add a season listing.
     animeAddSeason.addEventListener("click", e => {
         // Remove the tooltips.
         clearTooltips();
-
+        // Define and construct all components needed to attach an anime season to the related content table.
         const animeList = document.getElementById("animeList"),
             itemLI = document.createElement("li"),
             itemDivHeader = document.createElement("div"),
@@ -331,6 +389,7 @@ window.addEventListener("load", () => {
             iconDelete = document.createElement("i"),
             itemDivBody = document.createElement("div"),
             itemDivBodyForm = document.createElement("form");
+        // Prepare the season name.
         divName.classList.add("input-field");
         divName.style.width = "17%";
         inputName.classList.add("validate", "center");
@@ -338,6 +397,7 @@ window.addEventListener("load", () => {
         inputName.setAttribute("type", "text");
         labelName.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_Name");
         labelName.textContent = "Season Name:";
+        // Prepare the season start date.
         divStartDate.classList.add("input-field");
         divStartDate.style.width = "15%";
         divStartDate.style.marginLeft = "25px";
@@ -346,6 +406,7 @@ window.addEventListener("load", () => {
         inputStartDate.setAttribute("type", "date");
         labelStartDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_Start");
         labelStartDate.textContent = "Season Start Date:";
+        // Prepare the season end date.
         divEndDate.classList.add("input-field");
         divEndDate.style.width = "15%";
         divEndDate.style.marginLeft = "25px";
@@ -354,7 +415,7 @@ window.addEventListener("load", () => {
         inputEndDate.setAttribute("type", "date");
         labelEndDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_End");
         labelEndDate.textContent = "Season End Date:";
-
+        // Prepare the season status.
         divStatus.classList.add("input-field");
         divStatus.style.width = "15%";
         divStatus.style.marginLeft = "25px";
@@ -372,7 +433,7 @@ window.addEventListener("load", () => {
         option6Status.textContent = "Plan To Watch";
         selectStatus.append(option1Status, option2Status, option3Status, option4Status, option5Status, option6Status);
         labelStatus.textContent = "Status:";
-
+        // Prepare the season average rating.
         divAverageRating.classList.add("input-field");
         divAverageRating.style.width = "13%";
         divAverageRating.style.marginLeft = "25px";
@@ -384,7 +445,7 @@ window.addEventListener("load", () => {
         labelAverageRating.classList.add("active");
         labelAverageRating.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_AverageRating");
         labelAverageRating.textContent = "Average Rating:";
-
+        // Prepare the season button for adding an episode.
         divAdd.classList.add("input-field");
         divAdd.style.width = "5%";
         divAdd.style.marginLeft = "25px";
@@ -395,7 +456,7 @@ window.addEventListener("load", () => {
         iconAdd.textContent = "add";
         iconAdd.classList.add("material-icons");
         iconAdd.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_AddEpisode")
-
+        // Prepare the season button for deleting the season.
         divDelete.classList.add("input-field");
         divDelete.style.width = "5%";
         divDelete.style.marginLeft = "25px";
@@ -405,7 +466,7 @@ window.addEventListener("load", () => {
         spanDelete.classList.add("modalContentButtons", "modalContentDelete");
         iconDelete.textContent = "delete_sweep";
         iconDelete.classList.add("material-icons");
-
+        // Attach all season components to the list item.
         itemDivHeader.classList.add("collapsible-header");
         itemDivBody.classList.add("collapsible-body");
         divName.append(inputName, labelName);
@@ -418,17 +479,15 @@ window.addEventListener("load", () => {
         divDelete.append(spanDelete);
         divStatus.append(selectStatus, labelStatus);
         itemDivHeader.append(divName, divStartDate, divEndDate, divStatus, divAverageRating, divAdd, divDelete);
-
+        // Attach the div designed to house all season episodes.
         itemDivBodyForm.classList.add("col", "s12");
         itemDivBody.append(itemDivBodyForm);
-
-
+        // Attach the list item to the page modal.
         itemLI.setAttribute("draggable", "true");
         itemLI.classList.add("dropzone");
         itemLI.setAttribute("id", "li_" + (animeList.children.length + 1));
         itemLI.append(itemDivHeader, itemDivBody);
         animeList.append(itemLI);
-
         // Add the button listeners associated to an anime season.
         animeContentButtons(inputName, inputStartDate, inputEndDate, inputAverageRating, iconAdd, iconDelete);
         // Initialize the select tags.
@@ -440,4 +499,14 @@ window.addEventListener("load", () => {
         // Initialize the dragging of the related content.
         initContentDrag();
     });
+};
+
+
+
+// Wait for the window to finish loading.
+window.addEventListener("load", () => {
+    // Add the listeners corresponding to the record choices.
+    recordChoicesButtons();
+    // Add the listeners corresponding to the anime related content options.
+    animeModalButtons();
 });
