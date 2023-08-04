@@ -9,7 +9,7 @@ BASIC DETAILS: This file handles all buttons on the addRecord.html page.
     - initContentDrag: Initialize the listeners associated to related content dragging.
     - recordChoicesButtons: Listen for click events on the record choices.
     - animeSeasonContentButtons: Listen for click events on the related content anime episode table items.
-    - animeContentButtons: Listen for click events on the related content anime season table items.
+    - animeContentSeasonButtons: Listen for click events on the related content anime season table items.
     - animeModalButtons: Listen for click events on the related content anime modal buttons.
 
 */
@@ -198,6 +198,35 @@ var animeSeasonContentButtons = (ratingSelect, delButton) => {
 
 Listen for click events on the related content anime season table items.
 
+    - formSingleName is the input corresponding to the film/ONA/OVA name.
+    - formSingleReleaseDate is the input corresponding to the film/ONA/OVA release date.
+    - formSingleLastWatchedDate is the input corresponding to the film/ONA/OVA last watched date.
+    - delSingleBtn is the button that deletes a film/ONA/OVA.
+
+*/
+var animeContentSingleButtons = (formSingleName, formSingleReleaseDate, formSingleLastWatchedDate, delSingleBtn) => {
+    // Listen for a click on the season name, season start date, season end date, or season average rating in order to prevent the listed item body from displaying.
+    formSingleName.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
+    formSingleReleaseDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
+    formSingleLastWatchedDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
+    // Listen for a click event on the delete button for a season on the anime associated modal to delete the season.
+    delSingleBtn.addEventListener("click", e => { 
+        let delTarget = e.target.parentNode.parentNode.parentNode.parentNode;
+        setTimeout(() => delTarget.children[1].style.display = "none", 1);
+        // Remove the tooltips.
+        clearTooltips();
+        delTarget.remove();
+        // Initialize the tooltips.
+        initTooltips();
+    });
+};
+
+
+
+/*
+
+Listen for click events on the related content anime season table items.
+
     - formName is the input corresponding to the season name.
     - formStartDate is the input corresponding to the season start date.
     - formEndDate is the input corresponding to the season end date.
@@ -206,7 +235,7 @@ Listen for click events on the related content anime season table items.
     - delBtn is the button that deletes a season.
 
 */
-var animeContentButtons = (formName, formStartDate, formEndDate, formAverageRating, addBtn, delBtn) => {
+var animeContentSeasonButtons = (formName, formStartDate, formEndDate, formAverageRating, addBtn, delBtn) => {
     // Listen for a click on the season name, season start date, season end date, or season average rating in order to prevent the listed item body from displaying.
     formName.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formStartDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
@@ -266,7 +295,7 @@ var animeContentButtons = (formName, formStartDate, formEndDate, formAverageRati
         seasonEpisodeRatingDefOption.setAttribute("value", "");
         seasonEpisodeRatingDefOption.setAttribute("selected", "true");
         seasonEpisodeRatingDefOption.textContent = "N/A";
-        seasonEpisodeRatingSelect.setAttribute("id", "li_" + addTargetNum + "_Episode_Rating_" + (addTarget.children[1].children[0].children.length + 1))
+        seasonEpisodeRatingSelect.setAttribute("id", "li_" + addTargetNum + "_Episode_Rating_" + (addTarget.children[1].children[0].children.length + 1));
         seasonEpisodeRatingSelect.append(seasonEpisodeRatingDefOption);
         for(let t = 0; t < 11; t++) {
             let newOption = document.createElement("option");
@@ -333,6 +362,13 @@ var animeModalButtons = () => {
             divSingleName = document.createElement("div"),
             inputSingleName = document.createElement("input"),
             labelSingleName = document.createElement("label"),
+            divSingleType = document.createElement("div"),
+            selectSingleType = document.createElement("select"),
+            option1SingleType = document.createElement("option"),
+            option2SingleType = document.createElement("option"),
+            option3SingleType = document.createElement("option"),
+            option4SingleType = document.createElement("option"),
+            labelSingleType = document.createElement("label"),
             divSingleReleaseDate = document.createElement("div"),
             inputSingleReleaseDate = document.createElement("input"),
             labelSingleReleaseDate = document.createElement("label"),
@@ -343,12 +379,121 @@ var animeModalButtons = () => {
             selectSingleRating = document.createElement("select"),
             labelSingleRating = document.createElement("label"),
             defOptionSingleRating = document.createElement("option"),
-            divSingleReview = document.createElement("span"),
-            labelSingleReview = document.createElement("label"),
-            inputSingleReview = document.createElement("textarea"),
             divSingleDelete = document.createElement("div"),
             spanSingleDelete = document.createElement("span"),
-            iconSingleDelete = document.createElement("i");
+            iconSingleDelete = document.createElement("i"),
+            itemSingleDivBody = document.createElement("div"),
+            itemSingleDivBodyForm = document.createElement("form"),
+            divSingleReview = document.createElement("div"),
+            spanSingleReview = document.createElement("span"),
+            inputSingleReview = document.createElement("textarea"),
+            labelSingleReview = document.createElement("label");
+        // Prepare the film/ONA/OVA name.
+        divSingleName.classList.add("input-field");
+        divSingleName.style.width = "20%";
+        inputSingleName.classList.add("validate", "center");
+        inputSingleName.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Name");
+        inputSingleName.setAttribute("type", "text");
+        labelSingleName.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_Name");
+        labelSingleName.textContent = "Name:";
+        // Prepare the season status.
+        divSingleType.classList.add("input-field");
+        divSingleType.style.width = "17.5%";
+        divSingleType.style.marginLeft = "25px";
+        option1SingleType.setAttribute("value", "");
+        option1SingleType.textContent = "N/A";
+        option2SingleType.setAttribute("value", "Film");
+        option2SingleType.textContent = "Film";
+        option3SingleType.setAttribute("value", "ONA");
+        option3SingleType.textContent = "ONA";
+        option4SingleType.setAttribute("value", "OVA");
+        option4SingleType.textContent = "OVA";
+        selectSingleType.append(option1SingleType, option2SingleType, option3SingleType, option4SingleType);
+        labelSingleType.textContent = "Type:";
+        // Prepare the film/ONA/OVA release date.
+        divSingleReleaseDate.classList.add("input-field");
+        divSingleReleaseDate.style.width = "20%";
+        divSingleReleaseDate.style.marginLeft = "25px";
+        inputSingleReleaseDate.classList.add("validate", "center");
+        inputSingleReleaseDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Release");
+        inputSingleReleaseDate.setAttribute("type", "date");
+        labelSingleReleaseDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_Release");
+        labelSingleReleaseDate.textContent = "Release Date:";
+        // Prepare the film/ONA/OVA last watched date.
+        divSingleLastWatchedDate.classList.add("input-field");
+        divSingleLastWatchedDate.style.width = "20%";
+        divSingleLastWatchedDate.style.marginLeft = "25px";
+        inputSingleLastWatchedDate.classList.add("validate", "center");
+        inputSingleLastWatchedDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_LastWatched");
+        inputSingleLastWatchedDate.setAttribute("type", "date");
+        labelSingleLastWatchedDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_LastWatched");
+        labelSingleLastWatchedDate.textContent = "Last Watched Date:";
+        // Prepare the film/ONA/OVA rating.
+        divSingleRating.classList.add("input-field");
+        divSingleRating.style.width = "17.5%";
+        divSingleRating.style.marginLeft = "25px";
+        defOptionSingleRating.setAttribute("value", "");
+        defOptionSingleRating.setAttribute("selected", "true");
+        defOptionSingleRating.textContent = "N/A";
+        selectSingleRating.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Rating");
+        selectSingleRating.append(defOptionSingleRating);
+        for(let t = 0; t < 11; t++) {
+            let newOption = document.createElement("option");
+            newOption.setAttribute("value", t);
+            newOption.textContent = t + "/10";
+            selectSingleRating.append(newOption);
+        }
+        labelSingleRating.textContent = "Rating:";
+        // Prepare the season button for deleting the season.
+        divSingleDelete.classList.add("input-field");
+        divSingleDelete.style.width = "5%";
+        divSingleDelete.style.marginLeft = "25px";
+        spanSingleDelete.classList.add("center", "tooltipped");
+        spanSingleDelete.setAttribute("data-position", "top");
+        spanSingleDelete.setAttribute("data-tooltip", "Delete");
+        spanSingleDelete.classList.add("modalContentButtons", "modalContentDelete");
+        iconSingleDelete.textContent = "delete_sweep";
+        iconSingleDelete.classList.add("material-icons");
+        // Prepare the film/ONA/OVA review.
+        divSingleReview.classList.add("row");
+        spanSingleReview.classList.add("input-field", "col", "s12");
+        inputSingleReview.classList.add("validate", "materialize-textarea");
+        inputSingleReview.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Review");
+        labelSingleReview.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_Review");
+        labelSingleReview.textContent = "Review";
+        // Attach all season components to the list item.
+        itemSingleDivHeader.classList.add("collapsible-header");
+        itemSingleDivBody.classList.add("collapsible-body");
+        divSingleName.append(inputSingleName, labelSingleName);
+        divSingleType.append(selectSingleType, labelSingleType);
+        divSingleReleaseDate.append(inputSingleReleaseDate, labelSingleReleaseDate);
+        divSingleLastWatchedDate.append(inputSingleLastWatchedDate, labelSingleLastWatchedDate);
+        divSingleRating.append(selectSingleRating, labelSingleRating);
+        spanSingleReview.append(inputSingleReview, labelSingleReview);
+        divSingleReview.append(spanSingleReview);
+        spanSingleDelete.append(iconSingleDelete);
+        divSingleDelete.append(spanSingleDelete);
+        itemSingleDivHeader.append(divSingleName, divSingleType, divSingleReleaseDate, divSingleLastWatchedDate, divSingleRating, divSingleDelete);
+        // Attach the div designed to house the film/ONA/OVA review.
+        itemSingleDivBodyForm.classList.add("col", "s12");
+        itemSingleDivBodyForm.append(divSingleReview);
+        itemSingleDivBody.append(itemSingleDivBodyForm);
+        // Attach the list item to the page modal.
+        itemSingleLI.setAttribute("draggable", "true");
+        itemSingleLI.classList.add("dropzone");
+        itemSingleLI.setAttribute("id", "li_" + (animeList.children.length + 1));
+        itemSingleLI.append(itemSingleDivHeader, itemSingleDivBody);
+        animeList.append(itemSingleLI);
+        // Add the button listeners associated to a film/ONA/OVA.
+        animeContentSingleButtons(inputSingleName, inputSingleReleaseDate, inputSingleLastWatchedDate, iconSingleDelete);
+        // Initialize the select tags.
+        initSelect();
+        // Initialize the tooltips.
+        initTooltips();
+        // Initialize the observers for all relevant select tags.
+        initSelectObservers();
+        // Initialize the dragging of the related content.
+        initContentDrag();
     });
 
 
@@ -489,7 +634,7 @@ var animeModalButtons = () => {
         itemLI.append(itemDivHeader, itemDivBody);
         animeList.append(itemLI);
         // Add the button listeners associated to an anime season.
-        animeContentButtons(inputName, inputStartDate, inputEndDate, inputAverageRating, iconAdd, iconDelete);
+        animeContentSeasonButtons(inputName, inputStartDate, inputEndDate, inputAverageRating, iconAdd, iconDelete);
         // Initialize the select tags.
         initSelect();
         // Initialize the tooltips.
