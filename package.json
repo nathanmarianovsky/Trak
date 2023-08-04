@@ -16,7 +16,7 @@
     "node-minify": "^3.6.0"
   },
   "devDependencies": {
-    "electron": "^25.2.0",
+    "electron": "^25.4.0",
     "electron-installer-debian": "^3.1.0",
     "electron-packager": "^17.1.1",
     "electron-wix-msi": "^5.0.0"
