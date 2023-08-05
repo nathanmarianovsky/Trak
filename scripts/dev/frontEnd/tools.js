@@ -116,3 +116,41 @@ var initContentDrag = () => {
         }
     });
 };
+
+
+
+var animeListReorganize = () => {
+    const animeModalList = document.getElementById("animeList");
+    for(let i = 1; i < animeModalList.children.length + 1; i++) {
+        let child = animeModalList.children[i],
+            currentNum = child.id.split("_")[1]
+            childType = child.id.split("_")[2],
+            childHeader = child.children[0],
+            childBody = child.children[1];
+        if(parseInt(currentNum) != i) {
+            if(childType == "Single") {
+                let singleNameInput = childHeader.children[0].children[0],
+                    singleNameLabel = childHeader.children[0].children[1],
+                    singleTypeSelect = childHeader.children[1].children[0].children[3],
+                    singleReleaseInput = childHeader.children[2].children[0],
+                    singleReleaseLabel = childHeader.children[2].children[1],
+                    singleLastWatchedInput = childHeader.children[3].children[0],
+                    singleLastWatchedLabel = childHeader.children[3].children[1],
+                    singleRatingSelect = childHeader.children[4].children[0].children[3],
+                    singleReviewInput = childBody.children[0].children[0].children[0].children[0],
+                    singleReviewLabel = childBody.children[0].children[0].children[0].children[1];
+                child.setAttribute("id", "li_" + i + "_Single");
+                singleNameInput.setAttribute("id", "li_" + i + "_Single_Name");
+                singleNameLabel.setAttribute("for", "li_" + i + "_Single_Name");
+                singleTypeSelect.setAttribute("id", "li_" + i + "_Single_Type");
+                singleReleaseInput.setAttribute("id", "li_" + i + "_Single_Release");
+                singleReleaseLabel.setAttribute("for", "li_" + i + "_Single_Release");
+                singleLastWatchedInput.setAttribute("id", "li_" + i + "_Single_LastWatched");
+                singleLastWatchedLabel.setAttribute("for", "li_" + i + "_Single_LastWatched");
+                singleRatingSelect.setAttribute("id", "li_" + i + "_Single_Rating");
+                singleReviewInput.setAttribute("id", "li_" + i + "_Single_Review");
+                singleReviewLabel.setAttribute("for", "li_" + i + "_Single_Review");
+            }
+        }
+    }
+};

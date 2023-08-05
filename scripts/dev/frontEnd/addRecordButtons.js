@@ -290,6 +290,7 @@ var animeModalButtons = () => {
         option4SingleType.setAttribute("value", "OVA");
         option4SingleType.textContent = "OVA";
         selectSingleType.append(option1SingleType, option2SingleType, option3SingleType, option4SingleType);
+        selectSingleType.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Type");
         labelSingleType.textContent = "Type:";
         // Prepare the film/ONA/OVA release date.
         divSingleReleaseDate.classList.add("input-field");
@@ -362,7 +363,7 @@ var animeModalButtons = () => {
         // Attach the list item to the page modal.
         itemSingleLI.setAttribute("draggable", "true");
         itemSingleLI.classList.add("dropzone");
-        itemSingleLI.setAttribute("id", "li_" + (animeList.children.length + 1));
+        itemSingleLI.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single");
         itemSingleLI.append(itemSingleDivHeader, itemSingleDivBody);
         animeList.append(itemSingleLI);
         // Add the button listeners associated to a film/ONA/OVA.
@@ -376,8 +377,6 @@ var animeModalButtons = () => {
         // Initialize the dragging of the related content.
         initContentDrag();
     });
-
-
     // Listen for a click event on the animeAddSeason button on the anime associated modal to add a season listing.
     animeAddSeason.addEventListener("click", e => {
         // Remove the tooltips.
@@ -458,6 +457,7 @@ var animeModalButtons = () => {
         option6Status.setAttribute("value", "Plan To Watch");
         option6Status.textContent = "Plan To Watch";
         selectStatus.append(option1Status, option2Status, option3Status, option4Status, option5Status, option6Status);
+        selectStatus.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_Status");
         labelStatus.textContent = "Status:";
         // Prepare the season average rating.
         divAverageRating.classList.add("input-field");
@@ -511,7 +511,7 @@ var animeModalButtons = () => {
         // Attach the list item to the page modal.
         itemLI.setAttribute("draggable", "true");
         itemLI.classList.add("dropzone");
-        itemLI.setAttribute("id", "li_" + (animeList.children.length + 1));
+        itemLI.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season");
         itemLI.append(itemDivHeader, itemDivBody);
         animeList.append(itemLI);
         // Add the button listeners associated to an anime season.
