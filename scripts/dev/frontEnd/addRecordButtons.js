@@ -70,6 +70,8 @@ var animeSeasonContentButtons = (ratingSelect, delButton) => {
         delTarget.remove();
         // Initialize the tooltips.
         initTooltips();
+        // Reoganize the ids of the modal list items.
+        animeListReorganize();
     });
 };
 
@@ -99,6 +101,8 @@ var animeContentSingleButtons = (formSingleName, formSingleReleaseDate, formSing
         delTarget.remove();
         // Initialize the tooltips.
         initTooltips();
+        // Reoganize the ids of the modal list items.
+        animeListReorganize();
     });
 };
 
@@ -131,6 +135,8 @@ var animeContentSeasonButtons = (formName, formStartDate, formEndDate, formAvera
         delTarget.remove();
         // Initialize the tooltips.
         initTooltips();
+        // Reoganize the ids of the modal list items.
+        animeListReorganize();
     });
     // Listen for a click event on the add button for a season on the anime associated modal to add an episode listing.
     addBtn.addEventListener("click", e => {

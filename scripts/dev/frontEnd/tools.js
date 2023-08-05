@@ -7,6 +7,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - initSelect: Initialize all select tags on the page.
     - initSelectObservers: Initialize the observers for style mutations on related content select tags.
     - initContentDrag: Initialize the listeners associated to related content dragging.
+    - animeListReorganize: Reorganize the list items in the associated anime modal.
 
 */
 
@@ -114,42 +115,85 @@ var initContentDrag = () => {
             }
             index > indexDrop ? target.before(dragged) : target.after(dragged);
         }
+        // Reoganize the ids of the modal list items.
+        animeListReorganize();
     });
 };
 
 
 
+/*
+
+Reorganize the list items in the associated anime modal.
+
+*/
 var animeListReorganize = () => {
     const animeModalList = document.getElementById("animeList");
     for(let i = 1; i < animeModalList.children.length + 1; i++) {
-        let child = animeModalList.children[i],
-            currentNum = child.id.split("_")[1]
+        let child = animeModalList.children[i - 1],
+            currentNum = child.id.split("_")[1],
             childType = child.id.split("_")[2],
             childHeader = child.children[0],
             childBody = child.children[1];
-        if(parseInt(currentNum) != i) {
-            if(childType == "Single") {
-                let singleNameInput = childHeader.children[0].children[0],
-                    singleNameLabel = childHeader.children[0].children[1],
-                    singleTypeSelect = childHeader.children[1].children[0].children[3],
-                    singleReleaseInput = childHeader.children[2].children[0],
-                    singleReleaseLabel = childHeader.children[2].children[1],
-                    singleLastWatchedInput = childHeader.children[3].children[0],
-                    singleLastWatchedLabel = childHeader.children[3].children[1],
-                    singleRatingSelect = childHeader.children[4].children[0].children[3],
-                    singleReviewInput = childBody.children[0].children[0].children[0].children[0],
-                    singleReviewLabel = childBody.children[0].children[0].children[0].children[1];
-                child.setAttribute("id", "li_" + i + "_Single");
-                singleNameInput.setAttribute("id", "li_" + i + "_Single_Name");
-                singleNameLabel.setAttribute("for", "li_" + i + "_Single_Name");
-                singleTypeSelect.setAttribute("id", "li_" + i + "_Single_Type");
-                singleReleaseInput.setAttribute("id", "li_" + i + "_Single_Release");
-                singleReleaseLabel.setAttribute("for", "li_" + i + "_Single_Release");
-                singleLastWatchedInput.setAttribute("id", "li_" + i + "_Single_LastWatched");
-                singleLastWatchedLabel.setAttribute("for", "li_" + i + "_Single_LastWatched");
-                singleRatingSelect.setAttribute("id", "li_" + i + "_Single_Rating");
-                singleReviewInput.setAttribute("id", "li_" + i + "_Single_Review");
-                singleReviewLabel.setAttribute("for", "li_" + i + "_Single_Review");
+        if(childType == "Single" && parseInt(currentNum) != i) {
+            let singleNameInput = childHeader.children[0].children[0],
+                singleNameLabel = childHeader.children[0].children[1],
+                singleTypeSelect = childHeader.children[1].children[0].children[3],
+                singleReleaseInput = childHeader.children[2].children[0],
+                singleReleaseLabel = childHeader.children[2].children[1],
+                singleLastWatchedInput = childHeader.children[3].children[0],
+                singleLastWatchedLabel = childHeader.children[3].children[1],
+                singleRatingSelect = childHeader.children[4].children[0].children[3],
+                singleReviewInput = childBody.children[0].children[0].children[0].children[0],
+                singleReviewLabel = childBody.children[0].children[0].children[0].children[1];
+            child.setAttribute("id", "li_" + i + "_Single");
+            singleNameInput.setAttribute("id", "li_" + i + "_Single_Name");
+            singleNameLabel.setAttribute("for", "li_" + i + "_Single_Name");
+            singleTypeSelect.setAttribute("id", "li_" + i + "_Single_Type");
+            singleReleaseInput.setAttribute("id", "li_" + i + "_Single_Release");
+            singleReleaseLabel.setAttribute("for", "li_" + i + "_Single_Release");
+            singleLastWatchedInput.setAttribute("id", "li_" + i + "_Single_LastWatched");
+            singleLastWatchedLabel.setAttribute("for", "li_" + i + "_Single_LastWatched");
+            singleRatingSelect.setAttribute("id", "li_" + i + "_Single_Rating");
+            singleReviewInput.setAttribute("id", "li_" + i + "_Single_Review");
+            singleReviewLabel.setAttribute("for", "li_" + i + "_Single_Review");
+        }
+        else if(childType == "Season") {
+            let seasonNameInput = childHeader.children[0].children[0],
+                seasonNameLabel = childHeader.children[0].children[1],
+                seasonStartInput = childHeader.children[1].children[0],
+                seasonStartLabel = childHeader.children[1].children[1],
+                seasonEndInput = childHeader.children[2].children[0],
+                seasonEndLabel = childHeader.children[2].children[1],
+                seasonStatusSelect = childHeader.children[3].children[0].children[3],
+                seasonAverageRatingInput = childHeader.children[4].children[0],
+                seasonAverageRatingLabel = childHeader.children[4].children[1];
+            child.setAttribute("id", "li_" + i + "_Season");
+            seasonNameInput.setAttribute("id", "li_" + i + "_Season_Name");
+            seasonNameLabel.setAttribute("for", "li_" + i + "_Season_Name");
+            seasonStartInput.setAttribute("id", "li_" + i + "_Season_Start");
+            seasonStartLabel.setAttribute("for", "li_" + i + "_Season_Start");
+            seasonEndInput.setAttribute("id", "li_" + i + "_Season_End");
+            seasonEndLabel.setAttribute("for", "li_" + i + "_Season_End");
+            seasonStatusSelect.setAttribute("id", "li_" + i + "_Season_Status");
+            seasonAverageRatingInput.setAttribute("id", "li_" + i + "_Season_AverageRating");
+            seasonAverageRatingLabel.setAttribute("for", "li_" + i + "_Season_AverageRating");
+            for(let j = 1; j < childBody.children[0].children.length + 1; j++) {
+                let episodeChild = childBody.children[0].children[j - 1],
+                    episodeChildNameInput = episodeChild.children[0].children[0],
+                    episodeChildNameLabel = episodeChild.children[0].children[1],
+                    episodeChildLastWatchedInput = episodeChild.children[1].children[0],
+                    episodeChildLastWatchedLabel = episodeChild.children[1].children[1],
+                    episodeChildRatingSelect = episodeChild.children[2].children[0].children[3],
+                    episodeChildReviewInput = episodeChild.children[3].children[0],
+                    episodeChildReviewLabel = episodeChild.children[3].children[1];
+                episodeChildNameInput.setAttribute("id", "li_" + i + "_Episode_Name_" + j);
+                episodeChildNameLabel.setAttribute("for", "li_" + i + "_Episode_Name_" + j);
+                episodeChildLastWatchedInput.setAttribute("id", "li_" + i + "_Episode_LastWatched_" + j);
+                episodeChildLastWatchedLabel.setAttribute("for", "li_" + i + "_Episode_LastWatched_" + j);
+                episodeChildRatingSelect.setAttribute("id", "li_" + i + "_Episode_Rating_" + j);
+                episodeChildReviewInput.setAttribute("id", "li_" + i + "_Episode_Review_" + j);
+                episodeChildReviewLabel.setAttribute("for", "li_" + i + "_Episode_Review_" + j);
             }
         }
     }
