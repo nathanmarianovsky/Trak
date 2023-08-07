@@ -3,7 +3,8 @@
 BASIC DETAILS: This file handles all buttons on the addRecord.html page.
 
     - recordChoicesButtons: Listen for click events on the record choices.
-    - animeSeasonContentButtons: Listen for click events on the related content anime episode table items.
+    - animeSeasonContentButtons: Listen for change and click events on the related content anime episode table items.
+    - animeContentSingleButtons: Listen for click events on the related content anime season table items.
     - animeContentSeasonButtons: Listen for click events on the related content anime season table items.
     - animeModalButtons: Listen for click events on the related content anime modal buttons.
 
@@ -47,24 +48,31 @@ var recordChoicesButtons = () => {
 
 /*
 
-Listen for click events on the related content anime episode table items.
+Listen for change and click events on the related content anime episode table items.
 
     - ratingSelect is the input corresponding to the episode rating.
     - delButton is the button that deletes an episode.
 
 */
 var animeSeasonContentButtons = (ratingSelect, delButton) => {
+    // Listen for a change in the rating of an anime episode.
     ratingSelect.addEventListener("change", e => {
+        // Calculate the new average of the anime season rating based on the ratings of the episodes.
         let selectIdArr = e.target.id.split("_"),
             seasonNum = selectIdArr[1],
             episodesArr = document.querySelectorAll('[id^="li_' + seasonNum + '_Episode_Rating_"]'),
             episodesArrFiltered = Array.from(episodesArr).filter(elem => elem.value != ""),
             avg = episodesArrFiltered.reduce((total, current) => total + parseInt(current.value), 0) / episodesArrFiltered.length;
+        // Write the new rating average to the page.
         document.getElementById("li_" + seasonNum + "_Season_AverageRating").value = avg.toFixed(2);
+        // Calculate and write the new anime global rating.
+        calculateAnimeRating();
     });
-
+    // Listen for a click on the delete button of an anime season episode.
     delButton.addEventListener("click", e => {
-        let delTarget = e.target.parentNode.parentNode.parentNode;
+        let selectIdArr = e.target.id.split("_"),
+            seasonNum = selectIdArr[1],
+            delTarget = e.target.parentNode.parentNode.parentNode;
         // Remove the tooltips.
         clearTooltips();
         delTarget.remove();
@@ -72,6 +80,14 @@ var animeSeasonContentButtons = (ratingSelect, delButton) => {
         initTooltips();
         // Reoganize the ids of the modal list items.
         animeListReorganize();
+        // Calculate the new average of the anime season rating based on the ratings of the episodes.
+        let episodesArr = document.querySelectorAll('[id^="li_' + seasonNum + '_Episode_Rating_"]'),
+            episodesArrFiltered = Array.from(episodesArr).filter(elem => elem.value != ""),
+            avg = episodesArrFiltered.reduce((total, current) => total + parseInt(current.value), 0) / episodesArrFiltered.length;
+        // Write the new rating average to the page.
+        document.getElementById("li_" + seasonNum + "_Season_AverageRating").value = avg.toFixed(2);
+        // Calculate and write the new anime global rating.
+        calculateAnimeRating();
     });
 };
 
@@ -84,10 +100,11 @@ Listen for click events on the related content anime season table items.
     - formSingleName is the input corresponding to the film/ONA/OVA name.
     - formSingleReleaseDate is the input corresponding to the film/ONA/OVA release date.
     - formSingleLastWatchedDate is the input corresponding to the film/ONA/OVA last watched date.
+    - formSingleRating is the input corresponding to the episode rating.
     - delSingleBtn is the button that deletes a film/ONA/OVA.
 
 */
-var animeContentSingleButtons = (formSingleName, formSingleReleaseDate, formSingleLastWatchedDate, delSingleBtn) => {
+var animeContentSingleButtons = (formSingleName, formSingleReleaseDate, formSingleLastWatchedDate, formSingleRating, delSingleBtn) => {
     // Listen for a click on the season name, season start date, season end date, or season average rating in order to prevent the listed item body from displaying.
     formSingleName.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formSingleReleaseDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
@@ -103,6 +120,13 @@ var animeContentSingleButtons = (formSingleName, formSingleReleaseDate, formSing
         initTooltips();
         // Reoganize the ids of the modal list items.
         animeListReorganize();
+        // Calculate and write the new anime global rating.
+        calculateAnimeRating();
+    });
+    // Listen for a change in the rating of a film/ONA/OVA.
+    formSingleRating.addEventListener("change", e => {
+        // Calculate and write the new anime global rating.
+        calculateAnimeRating();
     });
 };
 
@@ -137,6 +161,8 @@ var animeContentSeasonButtons = (formName, formStartDate, formEndDate, formAvera
         initTooltips();
         // Reoganize the ids of the modal list items.
         animeListReorganize();
+        // Calculate and write the new anime global rating.
+        calculateAnimeRating();
     });
     // Listen for a click event on the add button for a season on the anime associated modal to add an episode listing.
     addBtn.addEventListener("click", e => {
@@ -317,7 +343,7 @@ var animeModalButtons = () => {
         labelSingleLastWatchedDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_LastWatched");
         labelSingleLastWatchedDate.textContent = "Last Watched Date:";
         // Prepare the film/ONA/OVA rating.
-        divSingleRating.classList.add("input-field");
+        divSingleRating.classList.add("input-field", "selectShortVerticalScroll");
         divSingleRating.style.width = "17.5%";
         divSingleRating.style.marginLeft = "25px";
         defOptionSingleRating.setAttribute("value", "");
@@ -348,7 +374,7 @@ var animeModalButtons = () => {
         inputSingleReview.classList.add("validate", "materialize-textarea");
         inputSingleReview.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Review");
         labelSingleReview.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_Review");
-        labelSingleReview.textContent = "Review";
+        labelSingleReview.textContent = "Review:";
         // Attach all season components to the list item.
         itemSingleDivHeader.classList.add("collapsible-header");
         itemSingleDivBody.classList.add("collapsible-body");
@@ -373,7 +399,7 @@ var animeModalButtons = () => {
         itemSingleLI.append(itemSingleDivHeader, itemSingleDivBody);
         animeList.append(itemSingleLI);
         // Add the button listeners associated to a film/ONA/OVA.
-        animeContentSingleButtons(inputSingleName, inputSingleReleaseDate, inputSingleLastWatchedDate, iconSingleDelete);
+        animeContentSingleButtons(inputSingleName, inputSingleReleaseDate, inputSingleLastWatchedDate, selectSingleRating, iconSingleDelete);
         // Initialize the select tags.
         initSelect();
         // Initialize the tooltips.

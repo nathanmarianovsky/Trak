@@ -198,3 +198,30 @@ var animeListReorganize = () => {
         }
     }
 };
+
+
+
+var calculateAnimeRating = () => {
+    const relevantList = document.getElementById("animeList"),
+        globalRating = document.getElementById("animeRating");
+    let sum = 0, count = 0;
+    for(let k = 0; k < relevantList.children.length; k++) {
+        let itemType = relevantList.children[k].id.split("_")[2];
+        if(itemType == "Single") {
+            let singleValue = relevantList.children[k].children[0].children[4].children[0].children[3].value;
+            if(singleValue != "") {
+                sum += parseInt(singleValue);
+                count++;
+            }
+        }
+        else if(itemType == "Season") {
+            let seasonValue = relevantList.children[k].children[0].children[4].children[0].value;
+            if(seasonValue != "N/A") {
+                sum += parseFloat(seasonValue);
+                count++;
+            }
+        }
+    }
+    if(count == 0) { globalRating.setAttribute("value", "N/A"); }
+    else { globalRating.setAttribute("value", (sum / count).toFixed(2)); }
+};

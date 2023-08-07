@@ -399,3 +399,12 @@ footer {
 .selectShortVerticalScroll ul {
 	height: 125px !important;
 }
+
+.infoIcon {
+	font-size: 16px !important;
+	color: #9E9E9E;
+    position: relative;
+    top: 4px;
+    left: 4px;
+    cursor: pointer;
+}
