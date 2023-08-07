@@ -296,8 +296,14 @@ footer {
 	width: 85%;
 }
 
+#categoryInitial {
+	display: initial;
+}
+
 .categoryDiv {
 	display: none;
+	position: relative;
+    bottom: 20px;
 }
 
 /*.contactCardTitle {
@@ -350,7 +356,7 @@ footer {
 #genresTitle {
 	margin-top: 15px;
 	position: relative;
-	bottom: 10px;
+	bottom: 20px;
 }
 
 .btn-floating {
@@ -424,4 +430,9 @@ footer {
     top: 4px;
     left: 4px;
     cursor: pointer;
+}
+
+#categoryAnimeForm2 {
+	position: relative;
+	bottom: 20px;
 }

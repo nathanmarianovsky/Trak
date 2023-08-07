@@ -28,19 +28,23 @@ var recordChoicesButtons = () => {
     const directionsTitle = document.getElementById("directionsTitle"),
         directionsText = document.getElementById("directionsText"),
         categoryDivs = document.getElementsByClassName("categoryDiv"),
+        categoryInitial = document.getElementById("categoryInitial"),
         categoryAnimeDiv = document.getElementById("categoryAnimeDiv");
     // Listen for a click event on the categoryAnime button on the top bar to display the form corresponding to an anime record.
     categoryAnime.addEventListener("click", e => {
         e.preventDefault();
-        if(directionsTitle.style.display != "none") {
-            directionsTitle.style.display = "none";
-            directionsText.style.display = "none";
+        if(categoryInitial.style.display != "none") {
+        // if(directionsTitle.style.display != "none") {
+            // directionsTitle.style.display = "none";
+            // directionsText.style.display = "none";
+            categoryInitial.style.display = "none";
         }
         else if(!categoryAnime.parentNode.classList.contains("active")) {
             categoryDivs.style.display = "none";
         }
         categoryAnimeDiv.style.display = "initial";
         categoryAnime.parentNode.classList.add("active");
+        document.body.style.overflowY = "hidden";
     });
 };
 

@@ -27,17 +27,19 @@
         </nav>
     </div>
     <body>
-        <h2 id="directionsTitle">Directions:</h2>
-        <div class="text formInfo" id="directionsText">
-            Select the type of record you would like to add by clicking on the options available in the top bar.
+        <div id="categoryInitial" class="categoryDiv">
+            <h2 id="directionsTitle">Directions:</h2>
+            <div class="text formInfo" id="directionsText">
+                Select the type of record you would like to add by clicking on the options available in the top bar.
+            </div>
         </div>
-        <div class="categoryDiv" id="categoryAnimeDiv">
+        <div id="categoryAnimeDiv" class="categoryDiv">
             <h2>Directions:</h2>
             <div class="text formInfo">
                 The only field required to add a record is the name. All other fields are optional.
             </div>
             <div class="row addRecordDiv">
-                <form class="col s12" id="categoryAnimeForm1">
+                <form id="categoryAnimeForm1" class="col s12">
                     <div class="row">
                         <div class="input-field col s4">
                             <input id="animeName" type="text" class="validate center">
@@ -110,7 +112,7 @@
             </div>
             <h2 id="genresTitle">Genres/Tags:</h2>
             <div class="row addRecordDiv">
-                <form class="col s12" id="categoryAnimeForm2">
+                <form id="categoryAnimeForm2" class="col s12">
                     <div class="genreRow">
                         <label class="col s2">
                             <input type="checkbox" id="animeGenreAction" class="filled-in"/>
