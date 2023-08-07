@@ -180,10 +180,9 @@ footer {
 }
 
 #add {
-	background-color: #2A2A8E;
 	position: fixed;
-  	bottom: 60px;
-  	right: 25px;
+  	bottom: 23px;
+  	right: 23px;
 }
 
 #remove {
@@ -389,4 +388,14 @@ footer {
 
 .modalContentEpisodeDeleteIcon {
 	cursor: pointer;
+}
+
+#animeSave {
+	position: fixed;
+	right: 23px;
+	bottom: 92px;
+}
+
+.selectShortVerticalScroll ul {
+	height: 125px !important;
 }

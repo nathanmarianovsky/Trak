@@ -438,7 +438,7 @@ window.addEventListener("load", () => {
         instancesSelect = M.FormSelect.init(elemsSelect);
     // Initialize the floating action button on the page.
     const elemsFAB = document.querySelectorAll(".fixed-action-btn"),
-        instancesFAB = M.FloatingActionButton.init(elemsFAB, { hoverEnabled: false });
+        instancesFAB = M.FloatingActionButton.init(elemsFAB, { "hoverEnabled": false, "direction": "left" });
     // Initialize the menu tooltips.
     const elemsTooltips = document.querySelectorAll(".tooltipped"),
         instancesTooltips = M.Tooltip.init(elemsTooltips);

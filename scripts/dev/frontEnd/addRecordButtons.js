@@ -191,7 +191,7 @@ var animeContentSeasonButtons = (formName, formStartDate, formEndDate, formAvera
             seasonEpisodeRatingSelect.append(newOption);
         }
         seasonEpisodeRatingLabel.textContent = "Rating:";
-        seasonEpisodeRatingDiv.classList.add("input-field", "col", "s2");
+        seasonEpisodeRatingDiv.classList.add("input-field", "col", "s2", "selectShortVerticalScroll");
         // Prepare the season episode review.
         seasonEpisodeReviewInput.setAttribute("id", "li_" + addTargetNum + "_Episode_Review_" + (addTarget.children[1].children[0].children.length + 1));
         seasonEpisodeReviewInput.classList.add("validate", "materialize-textarea");

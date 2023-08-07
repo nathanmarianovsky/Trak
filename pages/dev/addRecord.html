@@ -58,7 +58,7 @@
                     </div>
                     <div class="row">
                         <div class="input-field col s2">
-                            <select>
+                            <select id="animeRating">
                                 <option value="" selected>N/A</option>
                                 <option value="0">0/10</option>
                                 <option value="1">1/10</option>
@@ -130,150 +130,20 @@
                             <span class="checkboxText">Action</span>
                         </label>
                         <label class="col s2">
-                            <input type="checkbox" id="animeGenreAdventure" class="filled-in"/>
-                            <span class="checkboxText">Adventure</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreComedy" class="filled-in"/>
-                            <span class="checkboxText">Comedy</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreCyberpunk" class="filled-in"/>
-                            <span class="checkboxText">Cyberpunk</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreDemon" class="filled-in"/>
-                            <span class="checkboxText">Demon</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreDrama" class="filled-in"/>
-                            <span class="checkboxText">Drama</span>
-                        </label>
-                    </div>
-                    <div class="genreRow">
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreEcchi" class="filled-in"/>
-                            <span class="checkboxText">Ecchi</span>
-                        </label>
-                        <label class="col s2">
                             <input type="checkbox" id="animeGenreFantasy" class="filled-in"/>
                             <span class="checkboxText">Fantasy</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreGame" class="filled-in"/>
-                            <span class="checkboxText">Game</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreHarem" class="filled-in"/>
-                            <span class="checkboxText">Harem</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreHentai" class="filled-in"/>
-                            <span class="checkboxText">Hentai</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreHistorical" class="filled-in"/>
-                            <span class="checkboxText">Historical</span>
-                        </label>
-                    </div>
-                    <div class="genreRow">
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreHorror" class="filled-in"/>
-                            <span class="checkboxText">Horror</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreIsekai" class="filled-in"/>
-                            <span class="checkboxText">Isekai</span>
                         </label>
                         <label class="col s2">
                             <input type="checkbox" id="animeGenreJosei" class="filled-in"/>
                             <span class="checkboxText">Josei</span>
                         </label>
                         <label class="col s2">
-                            <input type="checkbox" id="animeGenreKids" class="filled-in"/>
-                            <span class="checkboxText">Kids</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreMagic" class="filled-in"/>
-                            <span class="checkboxText">Magic</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreMartialArts" class="filled-in"/>
-                            <span class="checkboxText">Martial Arts</span>
-                        </label>
-                    </div>
-                    <div class="genreRow">
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreMecha" class="filled-in"/>
-                            <span class="checkboxText">Mecha</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreMilitary" class="filled-in"/>
-                            <span class="checkboxText">Military</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreMusic" class="filled-in"/>
-                            <span class="checkboxText">Music</span>
-                        </label>
-                        <label class="col s2">
                             <input type="checkbox" id="animeGenreMystery" class="filled-in"/>
                             <span class="checkboxText">Mystery</span>
                         </label>
                         <label class="col s2">
-                            <input type="checkbox" id="animeGenreParody" class="filled-in"/>
-                            <span class="checkboxText">Parody</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenrePolice" class="filled-in"/>
-                            <span class="checkboxText">Police</span>
-                        </label>
-                    </div>
-                    <div class="genreRow">
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenrePostApocalyptic" class="filled-in"/>
-                            <span class="checkboxText">Post-Apocalyptic</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenrePsychological" class="filled-in"/>
-                            <span class="checkboxText">Psychological</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreReverseHarem" class="filled-in"/>
-                            <span class="checkboxText">Reverse Harem</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreRomance" class="filled-in"/>
-                            <span class="checkboxText">Romance</span>
-                        </label>
-                        <label class="col s2">
                             <input type="checkbox" id="animeGenreSchool" class="filled-in"/>
                             <span class="checkboxText">School</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreSciFi" class="filled-in"/>
-                            <span class="checkboxText">Sci-Fi</span>
-                        </label>
-                    </div>
-                    <div class="genreRow">
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreSeinen" class="filled-in"/>
-                            <span class="checkboxText">Seinen</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreShoujo" class="filled-in"/>
-                            <span class="checkboxText">Shoujo</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreShounen" class="filled-in"/>
-                            <span class="checkboxText">Shounen</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreSliceOfLife" class="filled-in"/>
-                            <span class="checkboxText">Slice Of Life</span>
-                        </label>
-                        <label class="col s2">
-                            <input type="checkbox" id="animeGenreSpace" class="filled-in"/>
-                            <span class="checkboxText">Space</span>
                         </label>
                         <label class="col s2">
                             <input type="checkbox" id="animeGenreSports" class="filled-in"/>
@@ -282,24 +152,154 @@
                     </div>
                     <div class="genreRow">
                         <label class="col s2">
+                            <input type="checkbox" id="animeGenreAdventure" class="filled-in"/>
+                            <span class="checkboxText">Adventure</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreGame" class="filled-in"/>
+                            <span class="checkboxText">Game</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreKids" class="filled-in"/>
+                            <span class="checkboxText">Kids</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreParody" class="filled-in"/>
+                            <span class="checkboxText">Parody</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreSciFi" class="filled-in"/>
+                            <span class="checkboxText">Sci-Fi</span>
+                        </label>
+                        <label class="col s2">
                             <input type="checkbox" id="animeGenreSuperPower" class="filled-in"/>
                             <span class="checkboxText">Super Power</span>
+                        </label>
+                    </div>
+                    <div class="genreRow">
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreComedy" class="filled-in"/>
+                            <span class="checkboxText">Comedy</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreHarem" class="filled-in"/>
+                            <span class="checkboxText">Harem</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreMagic" class="filled-in"/>
+                            <span class="checkboxText">Magic</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenrePolice" class="filled-in"/>
+                            <span class="checkboxText">Police</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreSeinen" class="filled-in"/>
+                            <span class="checkboxText">Seinen</span>
                         </label>
                         <label class="col s2">
                             <input type="checkbox" id="animeGenreSupernatural" class="filled-in"/>
                             <span class="checkboxText">Supernatural</span>
                         </label>
+                    </div>
+                    <div class="genreRow">
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreCyberpunk" class="filled-in"/>
+                            <span class="checkboxText">Cyberpunk</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreHentai" class="filled-in"/>
+                            <span class="checkboxText">Hentai</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreMartialArts" class="filled-in"/>
+                            <span class="checkboxText">Martial Arts</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenrePostApocalyptic" class="filled-in"/>
+                            <span class="checkboxText">Post-Apocalyptic</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreShoujo" class="filled-in"/>
+                            <span class="checkboxText">Shoujo</span>
+                        </label>
                         <label class="col s2">
                             <input type="checkbox" id="animeGenreTragedy" class="filled-in"/>
                             <span class="checkboxText">Tragedy</span>
+                        </label>
+                    </div>
+                    <div class="genreRow">
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreDemon" class="filled-in"/>
+                            <span class="checkboxText">Demon</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreHistorical" class="filled-in"/>
+                            <span class="checkboxText">Historical</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreMecha" class="filled-in"/>
+                            <span class="checkboxText">Mecha</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenrePsychological" class="filled-in"/>
+                            <span class="checkboxText">Psychological</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreShounen" class="filled-in"/>
+                            <span class="checkboxText">Shounen</span>
                         </label>
                         <label class="col s2">
                             <input type="checkbox" id="animeGenreVampire" class="filled-in"/>
                             <span class="checkboxText">Vampire</span>
                         </label>
+                    </div>
+                    <div class="genreRow">
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreDrama" class="filled-in"/>
+                            <span class="checkboxText">Drama</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreHorror" class="filled-in"/>
+                            <span class="checkboxText">Horror</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreMilitary" class="filled-in"/>
+                            <span class="checkboxText">Military</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreReverseHarem" class="filled-in"/>
+                            <span class="checkboxText">Reverse Harem</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreSliceOfLife" class="filled-in"/>
+                            <span class="checkboxText">Slice Of Life</span>
+                        </label>
                         <label class="col s2">
                             <input type="checkbox" id="animeGenreYaoi" class="filled-in"/>
                             <span class="checkboxText">Yaoi</span>
+                        </label>
+                    </div>
+                    <div class="genreRow">
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreEcchi" class="filled-in"/>
+                            <span class="checkboxText">Ecchi</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreIsekai" class="filled-in"/>
+                            <span class="checkboxText">Isekai</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreMusic" class="filled-in"/>
+                            <span class="checkboxText">Music</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreRomance" class="filled-in"/>
+                            <span class="checkboxText">Romance</span>
+                        </label>
+                        <label class="col s2">
+                            <input type="checkbox" id="animeGenreSpace" class="filled-in"/>
+                            <span class="checkboxText">Space</span>
                         </label>
                         <label class="col s2">
                             <input type="checkbox" id="animeGenreYuri" class="filled-in"/>
@@ -308,13 +308,13 @@
                     </div>
                 </form>
             </div>
+            <a id="animeSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
             <div class="fixed-action-btn">
                 <a class="btn-floating btn-large">
                     <i class="large material-icons">mode_edit</i>
                 </a>
                 <ul>
-                    <li><a id="animeSeasons" href="#animeModal" class="btn-floating btn-large waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
-                    <li><a id="animeSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a></li>
+                    <li><a id="animeSeasons" href="#animeModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
                 </ul>
             </div>
             <div id="animeModal" class="modal modal-fixed-footer">
