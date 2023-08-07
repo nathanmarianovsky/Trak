@@ -81,6 +81,11 @@ footer {
 	margin-bottom: 15px;
 }
 
+#categoryAnimeDiv .formInfo {
+	position: relative;
+	bottom: 15px;
+}
+
 .file-path {
 	font-size: 12px !important;
 	color: #3E3E3E !important;
@@ -333,12 +338,19 @@ footer {
 	margin-bottom: 0 !important;
 }
 
+#categoryAnimeDiv .row {
+	position: relative;
+	bottom: 10px;
+}
+
 .genreRow {
 	margin-bottom: 10px !important;
 }
 
 #genresTitle {
 	margin-top: 15px;
+	position: relative;
+	bottom: 10px;
 }
 
 .btn-floating {
@@ -349,14 +361,19 @@ footer {
 	border-radius: 30px !important;
 }
 
-.animeAddButtons {
+.modalButtons {
 	background-color: #2A2A8E !important;
 	margin-left: 3px !important;
 	border-radius: 30px !important;
 	color: white !important;
 }
 
-.modal {
+.infoModal {
+	top: 30% !important;
+    width: 55% !important;
+}
+
+.contentModal {
 	max-height: 75% !important;
 	height: 75% !important;
 	width: 75% !important;
@@ -402,7 +419,7 @@ footer {
 
 .infoIcon {
 	font-size: 16px !important;
-	color: #9E9E9E;
+	color: #2A2A8E!important;
     position: relative;
     top: 4px;
     left: 4px;
