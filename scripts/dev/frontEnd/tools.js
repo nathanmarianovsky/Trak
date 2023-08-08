@@ -75,10 +75,31 @@ var initSelectObservers = () => {
     });
     // Define the list of all relevant select tags on the modal.
     let lst = document.querySelectorAll(".modal .dropdown-content");
-    // For each relevant select tag tell the observe to watch for changes.
+    // For each relevant select tag tell the observer to watch for changes.
     for(let i = 0; i < lst.length; i++) {
         observer.observe(lst[i], { "attributes": true, "attributeFilter": ["style"] });
     }
+};
+
+
+
+/*
+
+Initialize the observer for style mutations on the anime review.
+
+*/
+var initAnimeReviewObserver = () => {
+    // Define the select tags observer.
+    let observer = new MutationObserver(mutations => {
+        // Define the item target on the page.
+        let trgt = mutations[0].target;
+        // If the height of the textarea is extended then display the vertical scroll bar.
+        trgt.style.height == "45px" ? document.body.style.overflowY = "hidden" : document.body.style.overflowY = "visible";
+    });
+    // Define the anime review input.
+    let animeReview = document.getElementById("animeReview");
+    // Tell the observer to watch for changes.
+    observer.observe(animeReview, { "attributes": true, "attributeFilter": ["style"] });
 };
 
 

@@ -448,4 +448,6 @@ window.addEventListener("load", () => {
     // Initialize the collapsible divs.
     const elemsCollapsible = document.querySelectorAll(".collapsible"),
         instancesCollapsible = M.Collapsible.init(elemsCollapsible);
+    // Initialize the observer for the anime review.
+    initAnimeReviewObserver();
 });
