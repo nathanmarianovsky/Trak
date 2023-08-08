@@ -44,7 +44,6 @@ var recordChoicesButtons = () => {
         }
         categoryAnimeDiv.style.display = "initial";
         categoryAnime.parentNode.classList.add("active");
-        document.body.style.overflowY = "hidden";
     });
 };
 
