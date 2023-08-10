@@ -336,8 +336,8 @@ footer {
     text-align: center;
 }
 
-#addRecordFilesDiv {
-	background-color: #2A2A8E;
+.addRecordFilesDiv {
+	background-color: #2A2A8E !important;
 }
 
 .row {

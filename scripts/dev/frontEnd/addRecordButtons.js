@@ -73,11 +73,12 @@ var animeSeasonContentButtons = (ratingSelect, delButton) => {
     });
     // Listen for a click on the delete button of an anime season episode.
     delButton.addEventListener("click", e => {
-        let selectIdArr = e.target.id.split("_"),
+        let selectIdArr = e.target.parentNode.parentNode.parentNode.children[0].children[0].id.split("_"),
             seasonNum = selectIdArr[1],
             delTarget = e.target.parentNode.parentNode.parentNode;
         // Remove the tooltips.
         clearTooltips();
+        // Remove the deleted episode.
         delTarget.remove();
         // Initialize the tooltips.
         initTooltips();
@@ -85,10 +86,18 @@ var animeSeasonContentButtons = (ratingSelect, delButton) => {
         animeListReorganize();
         // Calculate the new average of the anime season rating based on the ratings of the episodes.
         let episodesArr = document.querySelectorAll('[id^="li_' + seasonNum + '_Episode_Rating_"]'),
-            episodesArrFiltered = Array.from(episodesArr).filter(elem => elem.value != ""),
-            avg = episodesArrFiltered.reduce((total, current) => total + parseInt(current.value), 0) / episodesArrFiltered.length;
-        // Write the new rating average to the page.
-        document.getElementById("li_" + seasonNum + "_Season_AverageRating").value = avg.toFixed(2);
+            episodesArrFiltered = Array.from(episodesArr).filter(elem => elem.value != "");
+        // If the list of ratings available has at least one entry then define the average properly.
+        if(episodesArrFiltered.length > 0) {
+            let avg = episodesArrFiltered.reduce((total, current) => total + parseInt(current.value), 0) / episodesArrFiltered.length;
+            // Write the new rating average to the page.
+            document.getElementById("li_" + seasonNum + "_Season_AverageRating").value = avg.toFixed(2);
+        }
+        // If there are no ratings available then set the season ratings average to the default value.
+        else {
+            // Write the new rating average to the page.
+            document.getElementById("li_" + seasonNum + "_Season_AverageRating").value = "N/A";
+        }
         // Calculate and write the new anime global rating.
         calculateAnimeRating();
     });
@@ -564,10 +573,78 @@ var animeModalButtons = () => {
 
 
 
+var animeSave = () => {
+    const animeSaveBtn = document.getElementById("animeSave");
+    animeSaveBtn.addEventListener("click", e => {
+        e.preventDefault();
+        const animeList = document.getElementById("animeList"),
+            animeName = document.getElementById("animeName").value,
+            animeJapaneseName = document.getElementById("animeJapaneseName").value,
+            animeReview = document.getElementById("animeReview").value,
+            animeDirectors = document.getElementById("animeDirectors").value,
+            animeProducers = document.getElementById("animeProducers").value,
+            animeWriters = document.getElementById("animeWriters").value,
+            animeMusicians = document.getElementById("animeMusicians").value,
+            animeStudio = document.getElementById("animeStudio").value,
+            animeLicense = document.getElementById("animeLicense").value,
+            animeFiles = Array.from(document.getElementById("animeAddRecordFiles").files).map(elem => elem.path),
+            genresLst = ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
+                "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
+                "Hentai", "Historical", "Horror", "Isekai", "Josei", "Kids", "Medical", "Mystery", "Magic",
+                "MagicalSexShift", "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police",
+                "PostApocalyptic", "Psychological", "Racing", "Reincarnation", "ReverseHarem", "Romance", "Samurai",
+                "School", "SciFi", "Seinen", "Shoujo", "Shounen", "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame",
+                "SuperPower", "Supernatural", "Survival", "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy",
+                "Vampire", "VideoGame", "War", "Western", "Workplace", "Yaoi", "Yuri"];
+            genres = [],
+            content = [];
+        for(let p = 0; p < genresLst.length; p++) {
+            genres.push(document.getElementById("animeGenre" + genresLst[p]).checked);
+        }
+        for(let q = 1; q < animeList.children.length + 1; q++) {
+            let animeListChild = animeList.children[q - 1],
+                animeListChildCondition = animeListChild.id.split("_")[2],
+                curContent = [];
+            if(animeListChildCondition == "Single") {
+                let singleName = document.getElementById("li_" + q + "_Single_Name").value,
+                    singleType = document.getElementById("li_" + q + "_Single_Type").value,
+                    singleRelease = document.getElementById("li_" + q + "_Single_Release").value,
+                    singleLastWatched = document.getElementById("li_" + q + "_Single_LastWatched").value,
+                    singleRating = document.getElementById("li_" + q + "_Single_Rating").value,
+                    singleReview = document.getElementById("li_" + q + "_Single_Review").value;
+                curContent.push("Single", singleName, singleType, singleRelease, singleLastWatched, singleRating, singleReview);
+            }
+            else if(animeListChildCondition == "Season") {
+                let seasonName = document.getElementById("li_" + q + "_Season_Name").value,
+                    seasonStart = document.getElementById("li_" + q + "_Season_Start").value,
+                    seasonEnd = document.getElementById("li_" + q + "_Season_End").value,
+                    seasonStatus = document.getElementById("li_" + q + "_Season_Status").value,
+                    seasonEpisodes = [];
+                for(let r = 1; r < animeListChild.children[1].children[0].children.length + 1; r++) {
+                    let seasonEpisodeName = document.getElementById("li_" + q + "_Episode_Name_" + r).value,
+                        seasonEpisodeLastWatched = document.getElementById("li_" + q + "_Episode_LastWatched_" + r).value,
+                        seasonEpisodeRating = document.getElementById("li_" + q + "_Episode_Rating_" + r).value,
+                        seasonEpisodeReview = document.getElementById("li_" + q + "_Episode_Review_" + r).value;
+                    seasonEpisodes.push([seasonEpisodeName, seasonEpisodeLastWatched, seasonEpisodeRating, seasonEpisodeReview]);
+                }
+                curContent.push("Season", seasonName, seasonStart, seasonEnd, seasonStatus, seasonEpisodes);
+            }
+            content.push(curContent);
+        }
+        console.log(content);
+    });
+
+
+};
+
+
+
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
     // Add the listeners corresponding to the record choices.
     recordChoicesButtons();
+    // Add the listeners corresponding to the anime record save.
+    animeSave();
     // Add the listeners corresponding to the anime related content options.
     animeModalButtons();
 });
