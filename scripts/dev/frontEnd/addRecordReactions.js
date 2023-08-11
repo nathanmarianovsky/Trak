@@ -16,10 +16,12 @@ BASIC DETAILS: This file handles all reactions on the addContact.html page.
 
 Declare all of the necessary variables.
 
+    - ipcRenderer provides the means to operate the Electron app.
     - fs and path provide the means to work with local files.
     - localPath is the path to the local user data.
 
 */
+var { ipcRenderer } = require("electron");
 const fs = require("fs"),
     path = require("path"),
     localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");

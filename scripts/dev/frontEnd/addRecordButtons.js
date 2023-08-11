@@ -598,40 +598,47 @@ var animeSave = () => {
                 "Vampire", "VideoGame", "War", "Western", "Workplace", "Yaoi", "Yuri"];
             genres = [],
             content = [];
-        for(let p = 0; p < genresLst.length; p++) {
-            genres.push(document.getElementById("animeGenre" + genresLst[p]).checked);
-        }
-        for(let q = 1; q < animeList.children.length + 1; q++) {
-            let animeListChild = animeList.children[q - 1],
-                animeListChildCondition = animeListChild.id.split("_")[2],
-                curContent = [];
-            if(animeListChildCondition == "Single") {
-                let singleName = document.getElementById("li_" + q + "_Single_Name").value,
-                    singleType = document.getElementById("li_" + q + "_Single_Type").value,
-                    singleRelease = document.getElementById("li_" + q + "_Single_Release").value,
-                    singleLastWatched = document.getElementById("li_" + q + "_Single_LastWatched").value,
-                    singleRating = document.getElementById("li_" + q + "_Single_Rating").value,
-                    singleReview = document.getElementById("li_" + q + "_Single_Review").value;
-                curContent.push("Single", singleName, singleType, singleRelease, singleLastWatched, singleRating, singleReview);
+        if(animeName != "" || animeJapaneseName != "") {
+            for(let p = 0; p < genresLst.length; p++) {
+                genres.push(document.getElementById("animeGenre" + genresLst[p]).checked);
             }
-            else if(animeListChildCondition == "Season") {
-                let seasonName = document.getElementById("li_" + q + "_Season_Name").value,
-                    seasonStart = document.getElementById("li_" + q + "_Season_Start").value,
-                    seasonEnd = document.getElementById("li_" + q + "_Season_End").value,
-                    seasonStatus = document.getElementById("li_" + q + "_Season_Status").value,
-                    seasonEpisodes = [];
-                for(let r = 1; r < animeListChild.children[1].children[0].children.length + 1; r++) {
-                    let seasonEpisodeName = document.getElementById("li_" + q + "_Episode_Name_" + r).value,
-                        seasonEpisodeLastWatched = document.getElementById("li_" + q + "_Episode_LastWatched_" + r).value,
-                        seasonEpisodeRating = document.getElementById("li_" + q + "_Episode_Rating_" + r).value,
-                        seasonEpisodeReview = document.getElementById("li_" + q + "_Episode_Review_" + r).value;
-                    seasonEpisodes.push([seasonEpisodeName, seasonEpisodeLastWatched, seasonEpisodeRating, seasonEpisodeReview]);
+            for(let q = 1; q < animeList.children.length + 1; q++) {
+                let animeListChild = animeList.children[q - 1],
+                    animeListChildCondition = animeListChild.id.split("_")[2],
+                    curContent = [];
+                if(animeListChildCondition == "Single") {
+                    let singleName = document.getElementById("li_" + q + "_Single_Name").value,
+                        singleType = document.getElementById("li_" + q + "_Single_Type").value,
+                        singleRelease = document.getElementById("li_" + q + "_Single_Release").value,
+                        singleLastWatched = document.getElementById("li_" + q + "_Single_LastWatched").value,
+                        singleRating = document.getElementById("li_" + q + "_Single_Rating").value,
+                        singleReview = document.getElementById("li_" + q + "_Single_Review").value;
+                    curContent.push("Single", singleName, singleType, singleRelease, singleLastWatched, singleRating, singleReview);
                 }
-                curContent.push("Season", seasonName, seasonStart, seasonEnd, seasonStatus, seasonEpisodes);
+                else if(animeListChildCondition == "Season") {
+                    let seasonName = document.getElementById("li_" + q + "_Season_Name").value,
+                        seasonStart = document.getElementById("li_" + q + "_Season_Start").value,
+                        seasonEnd = document.getElementById("li_" + q + "_Season_End").value,
+                        seasonStatus = document.getElementById("li_" + q + "_Season_Status").value,
+                        seasonEpisodes = [];
+                    for(let r = 1; r < animeListChild.children[1].children[0].children.length + 1; r++) {
+                        let seasonEpisodeName = document.getElementById("li_" + q + "_Episode_Name_" + r).value,
+                            seasonEpisodeLastWatched = document.getElementById("li_" + q + "_Episode_LastWatched_" + r).value,
+                            seasonEpisodeRating = document.getElementById("li_" + q + "_Episode_Rating_" + r).value,
+                            seasonEpisodeReview = document.getElementById("li_" + q + "_Episode_Review_" + r).value;
+                        seasonEpisodes.push([seasonEpisodeName, seasonEpisodeLastWatched, seasonEpisodeRating, seasonEpisodeReview]);
+                    }
+                    curContent.push("Season", seasonName, seasonStart, seasonEnd, seasonStatus, seasonEpisodes);
+                }
+                content.push(curContent);
             }
-            content.push(curContent);
+            const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers,
+                animeWriters, animeMusicians, animeStudio, animeLicense, animeFiles, genres, content];
+            ipcRenderer.send("performSave", submissionMaterial);
         }
-        console.log(content);
+        else { M.toast({"html": "An anime record requires that either an English or Japanese name is provided.", "classes": "rounded"}); }
+
+
     });
 
 
