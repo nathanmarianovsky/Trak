@@ -280,16 +280,16 @@ footer {
 	border-right: none;
 }*/
 
-/*.contactsNameRowDiv {
+.recordsRowDiv {
 	line-height: 20px;
 	cursor: pointer;
 }
 
-.contactsButtonsRowDiv {
+.recordButtonsRowDiv {
 	height: 20px;
 	position: relative;
 	bottom: 58px;
-}*/
+}
 
 .addRecordDiv {
 	margin-left: 50px;
@@ -306,11 +306,11 @@ footer {
     bottom: 20px;
 }
 
-/*.contactCardTitle {
+.contactCardTitle {
 	width: 80%;
 }
 
-.contactsChecks {
+.recordsChecks {
 	opacity: 1 !important;
 	position: relative !important;
 	top: 2px;
@@ -329,7 +329,7 @@ footer {
 
 .removePhoneIcon {
 	line-height: inherit !important;
-}*/
+}
 
 #categorySelection li {
 	width: 20%;

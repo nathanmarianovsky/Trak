@@ -18,6 +18,114 @@ var exports = {};
 
 /*
 
+Handles the writing of files associated to a contact.
+
+	- info is the data associated to the record.
+	- event provides the means to interact with the front-end of the Electron app.
+	- win is an object representing the current window of the Electron app.
+	- writeData is an object representing the data that is to be written to the data.json file.
+	- mode is a string representing whether a record is being added or updated.
+	- savePath is the path to the local user data.
+	- fs and path provide the means to work with local files.
+
+*/
+exports.writeDataFile = (info, event, win, writeData, mode, savePath, fs, path) => {
+	let fldr = "";
+	const modeStr = (mode == "A" ? "add" : "update");
+	if(info[0] == "Anime") { fldr = info[0] + "-" + (info[1] != "" ? info[1] : info[2]); }	
+	fs.writeFile(path.join(savePath, "Trak", "data", fldr, "data.json"), JSON.stringify(writeData), "UTF8", err => {
+		// If there was an error in writing to the data file, then notify the user.
+		if(err) { event.sender.send(modeStr + "RecordFailure", fldr); }
+		else {
+			// Copy over the files asked to be added as assets in association to a particular contact.
+			let i = 0;
+			for(; i < info[10].length; i++) {
+				let dest = path.join(savePath, "Trak", "data", fldr, "assets", path.basename(info[10][i]));
+				fs.copyFile(info[10][i], dest, err => {
+					if(err) { event.sender.send("copyFailure", info[10][i]); }
+				});
+			}
+			// Once all of the files have been updated, notify the user everything has been taken care of and close the window.
+			if(i == info[10].length) {
+				win.webContents.send(modeStr + "RecordSuccess", fldr);
+				setTimeout(() => { win.destroy(); }, 2000);
+			}
+		}
+	});
+};
+
+
+
+/*
+
+Handles the writing of files associated to a contact.
+
+	- BrowserWindow provides the means to operate the Electron app.
+	- path and fs provide the means to work with local files.
+	- mainWindow is an object referencing the primary window of the Electron app.
+	- dataPath is the path to the local user data.
+	- data is the information associated to the record.
+
+*/
+exports.animeSave = (BrowserWindow, path, fs, mainWindow, dataPath, evnt, data) => {
+	// Check to see that the folder associated to the new record does not exist.
+	if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[1])) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[2]))) {
+		// Create a new directory for the assets associated to the new record.
+		fs.mkdirSync(path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]), "assets"), { "recursive": true });
+	}
+	const animeObj = {
+		"category": data[0],
+		"name": data[1],
+		"jname": data[2],
+		"review": data[3],
+		"directors": data[4],
+		"producers": data[5],
+		"writers": data[6],
+		"musicians": data[7],
+		"studio": data[8],
+		"license": data[9],
+		"genres": data[11],
+		"content": []
+	};
+	for(let m = 0; m < data[12].length; m++) {
+		if(data[12][m][0] == "Single") {
+			animeObj.content.push({
+				"scenario": data[12][m][0],
+				"name": data[12][m][1],
+				"type": data[12][m][2],
+				"release": data[12][m][3],
+				"watched": data[12][m][4],
+				"rating": data[12][m][5],
+				"review": data[12][m][6]
+			});
+		}
+		else if(data[12][m][0] == "Season") {
+			let animeSeasonObj = {
+				"scenario": data[12][m][0],
+				"name": data[12][m][1],
+				"start": data[12][m][2],
+				"end": data[12][m][3],
+				"status": data[12][m][4],
+				"episodes": []
+			};
+			for(let n = 0; n < data[12][m][5].length; n++) {
+				animeSeasonObj.episodes.push({
+					"name": data[12][m][5][n][0],
+					"watched": data[12][m][5][n][1],
+					"rating": data[12][m][5][n][2],
+					"review": data[12][m][5][n][3]
+				});
+			}
+			animeObj.content.push(animeSeasonObj);
+		}
+	}
+	exports.writeDataFile(data, evnt, BrowserWindow.getFocusedWindow(), animeObj, "A", dataPath, fs, path);
+};
+
+
+
+/*
+
 Driver function for adding all app listeners.
 
 	- app, BrowserWindow, and ipc provide the means to operate the Electron app.
@@ -62,62 +170,11 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
   	ipc.on("addLoad", event => {
   		let addWindow = tools.createWindow("addRecord", BrowserWindow, path, 1400, 1000);
   		addWindow.webContents.on("did-finish-load", () => {
-  			ipc.on("performSave", (event, data) => {
-  				console.log(data);
+  			ipc.on("performSave", (event, submission) => {
+  				console.log(submission);
 				// If the record is an anime then save the corresponding data.
-				if(data[0] == "Anime") {
-	  				// Check to see that the folder associated to the new record does not exist.
-					if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[1])) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[2]))) {
-						// Create a new directory for the assets associated to the new record.
-						fs.mkdirSync(path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]), "assets"), { "recursive": true });
-						const animeObj = {
-							"category": data[0],
-							"name": data[1],
-							"jname": data[2],
-							"review": data[3],
-							"directors": data[4],
-							"producers": data[5],
-							"writers": data[6],
-							"musicians": data[7],
-							"studio": data[8],
-							"license": data[9],
-							"genres": data[11],
-							"content": []
-						};
-						for(let m = 0; m < data[12].length; m++) {
-							if(data[12][m][0] == "Single") {
-								animeObj.content.push({
-									"scenario": data[12][m][0],
-									"name": data[12][m][1],
-									"type": data[12][m][2],
-									"release": data[12][m][3],
-									"watched": data[12][m][4],
-									"rating": data[12][m][5],
-									"review": data[12][m][6]
-								});
-							}
-							else if(data[12][m][0] == "Season") {
-								let animeSeasonObj = {
-									"scenario": data[12][m][0],
-									"name": data[12][m][1],
-									"start": data[12][m][2],
-									"end": data[12][m][3],
-									"status": data[12][m][4],
-									"episodes": []
-								};
-								for(let n = 0; n < data[12][m][5].length; n++) {
-									animeSeasonObj.episodes.push({
-										"name": data[12][m][5][n][0],
-										"watched": data[12][m][5][n][1],
-										"rating": data[12][m][5][n][2],
-										"review": data[12][m][5][n][3]
-									});
-								}
-								animeObj.content.push(animeSeasonObj);
-							}
-						}
-						exports.writeDataFile(data, event, BrowserWindow.getFocusedWindow(), animeObj, "A", dataPath, fs, path);
-					}
+				if(submission[0] == "Anime") {
+	  				exports.animeSave(BrowserWindow, path, fs, mainWindow, dataPath, event, submission);
 				}
 
 
@@ -204,43 +261,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 
 
 
-/*
 
-Handles the writing of files associated to a contact.
-
-	- info is the data associated to the record.
-	- event provides the means to interact with the front-end of the Electron app.
-	- win is an object representing the current window of the Electron app.
-	- writeData is an object representing the data that is to be written to the data.json file.
-	- mode is a string representing whether a record is being added or updated.
-	- savePath is the path to the local user data.
-	- fs and path provide the means to work with local files.
-
-*/
-exports.writeDataFile = (info, event, win, writeData, mode, savePath, fs, path) => {
-	let fldr = "";
-	const modeStr = (mode == "A" ? "add" : "update");
-	if(info[0] == "Anime") { fldr = info[0] + "-" + (info[1] != "" ? info[1] : info[2]); }	
-	fs.writeFile(path.join(savePath, "Trak", "data", fldr, "data.json"), JSON.stringify(writeData), "UTF8", err => {
-		// If there was an error in writing to the data file, then notify the user.
-		if(err) { event.sender.send(modeStr + "RecordFailure", fldr); }
-		else {
-			// Copy over the files asked to be added as assets in association to a particular contact.
-			let i = 0;
-			for(; i < info[10].length; i++) {
-				let dest = path.join(savePath, "Trak", "data", fldr, "assets", path.basename(info[10][i]));
-				fs.copyFile(info[10][i], dest, err => {
-					if(err) { event.sender.send("copyFailure", info[10][i]); }
-				});
-			}
-			// Once all of the files have been updated, notify the user everything has been taken care of and close the window.
-			if(i == info[10].length) {
-				win.webContents.send(modeStr + "RecordSuccess", fldr);
-				setTimeout(() => { win.destroy(); }, 2000);
-			}
-		}
-	});
-};
 
 
 
@@ -329,41 +350,6 @@ exports.writeDataFile = (info, event, win, writeData, mode, savePath, fs, path) 
 
 
 
-// /*
-
-// Handles the removal of a contact.
-
-// 	- data is a contact name.
-// 	- event provides the means to interact with the front-end of the Electron app.
-// 	- win is an object representing the current window of the Electron app.
-// 	- BrowserWindow provides the means to create new windows in the Electron app.
-// 	- ipc provides the means to handle a reaction on the back-end of the Electron app.
-// 	- userPath is the path to the local user data.
-// 	- tools provides a collection of local functions meant to help with writing files and generating pdf files.
-// 	- fs and path provide the means to work with local files.
-
-// */
-// exports.removeContact = (data, event, win, BrowserWindow, ipc, userPath, tools, fs, path) => {
-// 	// Create a new window to ask the user to confirm the deletion of a contact.
-// 	let removeContactWindow = tools.createWindow("confirmation", BrowserWindow, path, 525, 325);
-// 	// Once the new window has been loaded, supply the contact name to the front-end.
-// 	removeContactWindow.webContents.on("did-finish-load", () => {
-// 		removeContactWindow.webContents.send("contactConfirmationText", data);
-// 		// Once a confirmation has been provided by the user close the window and delete the contact folder. 
-// 		ipc.once("confirmationRemoveContact", (event, data) => {
-// 			removeContactWindow.destroy();
-// 			fs.rm(path.join(userPath, "BatHaTransportationApps", "data", "contacts", data), { "force": true, "recursive": true }, err => {
-// 				// If there was an error in deleting the contact folder notify the user.
-// 				if(err) { win.webContents.send("contactRemovalFailure", data); }
-// 				// If no error was thrown in the deletion of the contact folder refresh the primary window and notify the user.
-// 				else {
-// 					win.reload();
-// 					setTimeout(() => { win.webContents.send("contactRemovalSuccess", data); }, 500);
-// 				}
-// 			});
-// 		});
-// 	});
-// };
 
 
 

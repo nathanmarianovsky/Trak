@@ -27,24 +27,17 @@ const fs = require("fs"),
 
 
 
-// Display a notification for the successful removal of an item.
-ipcRenderer.once("removalSuccess", (event, response) => {
-    M.toast({"html": "The record associated to " + response + " has been removed.", "classes": "rounded"});
-});
+// Display a notification for the successful removal of multiple records.
+// ipcRenderer.once("removalSuccessMultiple", (event, response) => {
+//     M.toast({"html": "The checked records have been removed.", "classes": "rounded"});
+// });
 
 
 
-// Display a notification for the successful removal of multiple items.
-ipcRenderer.once("removalSuccessMultiple", (event, response) => {
-    M.toast({"html": "The checked records have been removed.", "classes": "rounded"});
-});
-
-
-
-// Display a notification if there was an error in the removal of a contact.
-ipcRenderer.once("removalFailure", (event, response) => {
-    M.toast({"html": "There was an error removing the record associated to " + response + ".", "classes": "rounded"});
-});
+// Display a notification if there was an error in the removal of a record.
+// ipcRenderer.once("removalFailure", (event, response) => {
+//     M.toast({"html": "There was an error removing the record associated to " + response + ".", "classes": "rounded"});
+// });
 
 
 
@@ -61,6 +54,66 @@ ipcRenderer.on("loadRows", event => {
     document.getElementById("preloader").style.setProperty("display", "none", "important");
     // Hide the vertical scroll bar.
     document.body.style.overflowY = "hidden";
+    
+    for(let n = 0; n < list.length; n++) {
+        let tr = document.createElement("tr"),
+            tdName = document.createElement("td"),
+            tdNameDiv = document.createElement("div"),
+            tdCategory = document.createElement("td"),
+            tdCategoryDiv = document.createElement("div"),
+            tdGenres = document.createElement("td"),
+            tdGenresDiv = document.createElement("div"),
+            tdFiles = document.createElement("td"),
+            tdFilesDiv = document.createElement("div"),
+            filesButton = document.createElement("button"),
+            filesIcon = document.createElement("i"),
+            checkLabel = document.createElement("label"),
+            checkInput = document.createElement("input"),
+            tdCheck = document.createElement("td"),
+            recordData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", list[n], "data.json")));
+        tdNameDiv.textContent = recordData.name != "" ? recordData.name : recordData.jname;
+        tdNameDiv.classList.add("recordsRowDiv");
+        tdName.append(tdNameDiv);
+        tdCategoryDiv.textContent = recordData.category;
+        tdCategoryDiv.classList.add("recordsRowDiv");
+        tdCategory.append(tdCategoryDiv);
+        tdGenresDiv.textContent = "";
+        tdGenresDiv.classList.add("recordsRowDiv");
+        tdGenres.append(tdGenresDiv);
+        filesButton.setAttribute("type", "submit");
+        filesButton.setAttribute("id", "remove_-_" + list[n]);
+        filesButton.classList.add("btn", "waves-effect", "waves-light", "func");
+        filesIcon.classList.add("material-icons", "center");
+        filesIcon.textContent = "folder_open";
+        filesButton.append(filesIcon);
+        tdFilesDiv.append(filesButton);
+        tdFilesDiv.classList.add("recordButtonsRowDiv");
+        tdFilesDiv.setAttribute("id", "filesDiv-" + list[n]);
+        checkInput.setAttribute("type", "checkbox");
+        checkInput.classList.add("filled-in", "recordsChecks");
+        checkInput.setAttribute("id", "check-" + list[n]);
+        checkLabel.append(checkInput);
+        tdCheck.append(checkLabel);
+        tdFiles.append(tdFilesDiv);
+        tr.append(tdCheck, tdName, tdCategory, tdGenres, tdFiles);
+        tableBody.append(tr);
+        let difference = document.getElementById("tableDiv").offsetWidth - document.getElementById("tableDiv").clientWidth;
+        document.getElementById("headersTable").style.width = "calc(95% - " + difference + "px)";
+     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // for(let n = 0; n < list.length; n++) {
     //     let tr = document.createElement("tr"),
     //     	tdName = document.createElement("td"),
