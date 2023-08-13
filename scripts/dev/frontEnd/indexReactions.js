@@ -1,6 +1,6 @@
 /*
 
-BASIC DETAILS: This file handles all reactions on the index page.
+BASIC DETAILS: This file handles all reactions on the index.html page.
 
 */
 
@@ -27,17 +27,31 @@ const fs = require("fs"),
 
 
 
+var toastParse = folder => {
+    let hldr = folder.split("-")[0];
+    return nameStr = hldr.toLowerCase() + " " + folder.substring(hldr.length + 1);
+};
+
+
+
 // Display a notification for the successful removal of multiple records.
-// ipcRenderer.once("removalSuccessMultiple", (event, response) => {
-//     M.toast({"html": "The checked records have been removed.", "classes": "rounded"});
-// });
+ipcRenderer.once("recordsRemovalSuccess", (event, response) => {
+    M.toast({"html": "The checked records have been removed.", "classes": "rounded"});
+});
 
 
 
 // Display a notification if there was an error in the removal of a record.
-// ipcRenderer.once("removalFailure", (event, response) => {
-//     M.toast({"html": "There was an error removing the record associated to " + response + ".", "classes": "rounded"});
-// });
+ipcRenderer.once("removalFailure", (event, response) => {
+    M.toast({"html": "There was an error removing the record associated to the " + toastParse(response) + ".", "classes": "rounded"});
+});
+
+
+
+// Display a notification for the successful opening of a record's assets directory.
+ipcRenderer.on("recordFilesSuccess", (event, response) => {
+    M.toast({"html": "The directory containg all files associated to the " + toastParse(response) + " has been opened.", "classes": "rounded"});
+});
 
 
 
@@ -72,7 +86,7 @@ ipcRenderer.on("loadRows", event => {
             tdCheck = document.createElement("td"),
             recordData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", list[n], "data.json")));
         tdNameDiv.textContent = recordData.name != "" ? recordData.name : recordData.jname;
-        tdNameDiv.classList.add("recordsRowDiv");
+        tdNameDiv.classList.add("recordsNameRowDiv");
         tdName.append(tdNameDiv);
         tdCategoryDiv.textContent = recordData.category;
         tdCategoryDiv.classList.add("recordsRowDiv");
@@ -85,133 +99,42 @@ ipcRenderer.on("loadRows", event => {
         filesButton.classList.add("btn", "waves-effect", "waves-light", "func");
         filesIcon.classList.add("material-icons", "center");
         filesIcon.textContent = "folder_open";
+        filesIcon.setAttribute("id", "removeIcon_-_" + list[n]);
         filesButton.append(filesIcon);
         tdFilesDiv.append(filesButton);
         tdFilesDiv.classList.add("recordButtonsRowDiv");
         tdFilesDiv.setAttribute("id", "filesDiv-" + list[n]);
         checkInput.setAttribute("type", "checkbox");
         checkInput.classList.add("filled-in", "recordsChecks");
-        checkInput.setAttribute("id", "check-" + list[n]);
+        checkInput.setAttribute("id", "check_-_" + list[n]);
         checkLabel.append(checkInput);
         tdCheck.append(checkLabel);
         tdFiles.append(tdFilesDiv);
+        tr.setAttribute("id", list[n]);
         tr.append(tdCheck, tdName, tdCategory, tdGenres, tdFiles);
         tableBody.append(tr);
         let difference = document.getElementById("tableDiv").offsetWidth - document.getElementById("tableDiv").clientWidth;
         document.getElementById("headersTable").style.width = "calc(95% - " + difference + "px)";
-     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // for(let n = 0; n < list.length; n++) {
-    //     let tr = document.createElement("tr"),
-    //     	tdName = document.createElement("td"),
-    //     	tdNameDiv = document.createElement("div"),
-    //     	tdUpdate = document.createElement("td"),
-    //     	tdUpdateDiv = document.createElement("div"),
-    //     	tdRemove = document.createElement("td"),
-    //     	tdRemoveDiv = document.createElement("div"),
-    //     	tdFiles = document.createElement("td"),
-    //     	tdFilesDiv = document.createElement("div"),
-    //     	updateButton = document.createElement("button"),
-    //     	removeButton = document.createElement("button"),
-    //     	filesButton = document.createElement("button"),
-    //     	updateIcon = document.createElement("i"),
-    //     	removeIcon = document.createElement("i"),
-    //     	filesIcon = document.createElement("i"),
-    //         checkLabel = document.createElement("label"),
-    //         checkInput = document.createElement("input"),
-    //         tdCheck = document.createElement("td"),
-    //     	name = list[n].split("_"),
-    //     	contactData = JSON.parse(fs.readFileSync(path.join(localPath, "BatHaTransportationApps", "data", "contacts", list[n], "data.json")));
-    //     tdNameDiv.textContent = name[0] + ", " + name[1];
-    //     tdNameDiv.classList.add("contactsNameRowDiv");
-    //     if(contactData.phones.length > 0) {
-	// 		let str = "";
-	// 		for(let k = 0; k < contactData.phones.length; k++) {
-	// 			str += "<div>" + contactData.phones[k].label + ": " + contactData.phones[k].number + "</div>";
-	// 		}
-	//         tdNameDiv.classList.add("tooltipped");
-	//         tdNameDiv.setAttribute("data-position", "top");
-	//         tdNameDiv.setAttribute("data-tooltip", str);
-	// 	}
-    //     tdName.append(tdNameDiv);
-    //     updateButton.setAttribute("type", "submit");
-    //     updateButton.setAttribute("id", "update-" + list[n]);
-    //     updateButton.classList.add("btn", "waves-effect", "waves-light", "func");
-    //     removeButton.setAttribute("type", "submit");
-    //     removeButton.setAttribute("id", "remove-" + list[n]);
-    //     removeButton.classList.add("btn", "waves-effect", "waves-light", "func");
-    //     filesButton.setAttribute("type", "submit");
-    //     filesButton.setAttribute("id", "remove-" + list[n]);
-    //     filesButton.classList.add("btn", "waves-effect", "waves-light", "func");
-    //     updateIcon.classList.add("material-icons", "center");
-    //     updateIcon.textContent = "update";
-    //     removeIcon.classList.add("material-icons", "center");
-    //     removeIcon.textContent = "remove";
-    //     filesIcon.classList.add("material-icons", "center");
-    //     filesIcon.textContent = "folder_open";
-    //     updateButton.append(updateIcon);
-    //     removeButton.append(removeIcon);
-    //     filesButton.append(filesIcon);
-    //     tdUpdateDiv.append(updateButton);
-    //     tdRemoveDiv.append(removeButton);
-    //     tdFilesDiv.append(filesButton);
-    //     tdUpdateDiv.classList.add("contactsButtonsRowDiv");
-    //     tdUpdateDiv.setAttribute("id", "updateDiv-" + list[n]);
-    //     tdRemoveDiv.classList.add("contactsButtonsRowDiv");
-    //     tdRemoveDiv.setAttribute("id", "removeDiv-" + list[n]);
-    //     tdFilesDiv.classList.add("contactsButtonsRowDiv");
-    //     tdFilesDiv.setAttribute("id", "filesDiv-" + list[n]);
-    //     checkInput.setAttribute("type", "checkbox");
-    //     checkInput.classList.add("filled-in", "contactsChecks");
-    //     checkInput.setAttribute("id", "check-" + list[n]);
-    //     checkLabel.append(checkInput);
-    //     tdCheck.append(checkLabel);
-    //     tdUpdate.append(tdUpdateDiv);
-    //     tdRemove.append(tdRemoveDiv);
-    //     tdFiles.append(tdFilesDiv);
-    //     tr.append(tdCheck, tdName, tdUpdate, tdRemove, tdFiles);
-    //     contactsTableBody.append(tr);
-    //     let difference = document.getElementById("contactsTableDiv").offsetWidth - document.getElementById("contactsTableDiv").clientWidth;
-    //     document.getElementById("contactsHeadersTable").style.width = "calc(95% - " + difference + "px)";
-    //     checkInput.addEventListener("change", () => {
-    //         let btn = document.getElementById("contactsRemove");
-    //         if(Array.from(document.querySelectorAll(".contactsChecks")).filter(elem => elem.checked).length > 0) {
-    //             btn.style.display = "inherit";
-    //         }
-    //         else if(Array.from(document.querySelectorAll(".contactsChecks")).filter(elem => elem.checked).length == 0) {
-    //             btn.style.display = "none";
-    //         }
-    //     });
-    //     tdNameDiv.addEventListener("click", e => {
-    //     	e.preventDefault();
-    //     	ipcRenderer.send("contactCard", e.target.textContent.replace(", ", "_"));
-    //     });
-    //     updateButton.addEventListener("click", e => {
-    //     	e.preventDefault();
-    //     	ipcRenderer.send("contactUpdate", e.target.parentNode.id.split("-")[1]);
-    //     });
-    //     removeButton.addEventListener("click", e => {
-    //     	e.preventDefault();
-    //     	ipcRenderer.send("contactRemove", e.target.parentNode.id.split("-")[1]);
-    //     });
-    //     filesButton.addEventListener("click", e => {
-    //     	e.preventDefault();
-    //     	ipcRenderer.send("contactFiles", e.target.parentNode.id.split("-")[1]);
-    //     });
-    // }
+        checkInput.addEventListener("change", () => {
+            let btn = document.getElementById("remove"),
+                checkAllBtn = document.getElementById("checkAll"),
+                checkArr = Array.from(document.querySelectorAll(".recordsChecks")),
+                checkTotal = checkArr.length,
+                checkedNum = checkArr.filter(elem => elem.checked).length;
+            checkedNum > 0 ? btn.style.display = "inherit" : btn.style.display = "none";
+            checkTotal - 1 == checkedNum && !checkAllBtn.checked ? checkAllBtn.checked = true : checkAllBtn.checked = false;
+        });
+        tdNameDiv.addEventListener("click", e => {
+            e.preventDefault();
+            ipcRenderer.send("updateRecord", e.target.parentNode.parentNode.id);
+        });
+        filesButton.addEventListener("click", e => {
+            e.preventDefault();
+            let holder = e.target.id.split("_-_");
+            holder.shift();
+            ipcRenderer.send("recordFiles", holder.join(""));
+        });
+    }
     // Initialize the menu tooltips.
     const elems = document.querySelectorAll(".tooltipped");
         instances = M.Tooltip.init(elems);

@@ -20,29 +20,29 @@ var exports = {};
 
 Handles the writing of files associated to a contact.
 
-	- info is the data associated to the record.
-	- event provides the means to interact with the front-end of the Electron app.
 	- win is an object representing the current window of the Electron app.
 	- writeData is an object representing the data that is to be written to the data.json file.
 	- mode is a string representing whether a record is being added or updated.
 	- savePath is the path to the local user data.
 	- fs and path provide the means to work with local files.
+	- event provides the means to interact with the front-end of the Electron app.
+	- info is the data associated to the record.
 
 */
-exports.writeDataFile = (info, event, win, writeData, mode, savePath, fs, path) => {
+exports.writeDataFile = (win, writeData, mode, savePath, fs, path, evt, info) => {
 	let fldr = "";
 	const modeStr = (mode == "A" ? "add" : "update");
 	if(info[0] == "Anime") { fldr = info[0] + "-" + (info[1] != "" ? info[1] : info[2]); }	
 	fs.writeFile(path.join(savePath, "Trak", "data", fldr, "data.json"), JSON.stringify(writeData), "UTF8", err => {
 		// If there was an error in writing to the data file, then notify the user.
-		if(err) { event.sender.send(modeStr + "RecordFailure", fldr); }
+		if(err) { evt.sender.send(modeStr + "RecordFailure", fldr); }
 		else {
 			// Copy over the files asked to be added as assets in association to a particular contact.
 			let i = 0;
 			for(; i < info[10].length; i++) {
 				let dest = path.join(savePath, "Trak", "data", fldr, "assets", path.basename(info[10][i]));
 				fs.copyFile(info[10][i], dest, err => {
-					if(err) { event.sender.send("copyFailure", info[10][i]); }
+					if(err) { evt.sender.send("copyFailure", info[10][i]); }
 				});
 			}
 			// Once all of the files have been updated, notify the user everything has been taken care of and close the window.
@@ -119,7 +119,48 @@ exports.animeSave = (BrowserWindow, path, fs, mainWindow, dataPath, evnt, data) 
 			animeObj.content.push(animeSeasonObj);
 		}
 	}
-	exports.writeDataFile(data, evnt, BrowserWindow.getFocusedWindow(), animeObj, "A", dataPath, fs, path);
+	exports.writeDataFile(BrowserWindow.getFocusedWindow(), animeObj, "A", dataPath, fs, path, evnt, data);
+};
+
+
+
+/*
+
+Handles the removal of records.
+
+	- primaryWin is an object representing the current window of the Electron app.
+	- BrowserWindow provides the means to create new windows in the Electron app.
+	- ipc provides the means to handle a reaction on the back-end of the Electron app.
+	- userPath is the path to the local user data.
+	- toolsCollection provides a collection of local functions meant to help with various aspects of the app.
+	- fs and path provide the means to work with local files.
+	- data is a collection of record names.
+
+*/
+exports.removeRecords = (primaryWin, BrowserWindow, ipc, userPath, toolsCollection, fs, path, data) => {
+	// Create a new window to ask the user to confirm the deletion of a contact.
+	let removeRecordsWindow = toolsCollection.createWindow("confirmation", BrowserWindow, path, 525, 325);
+	console.log(data);
+	// Once the new window has been loaded, supply the message to the front-end.
+	removeRecordsWindow.webContents.on("did-finish-load", () => {
+		removeRecordsWindow.webContents.send("recordsConfirmationText", data);
+		// Once a confirmation has been provided by the user close the window and delete the associated record folders. 
+		ipc.once("confirmationRemoveRecords", (event, data) => {
+			removeRecordsWindow.destroy();
+			let j = 0;
+			for(; j < data.length; j++) {
+				fs.rm(path.join(userPath, "Trak", "data", data[j]), { "force": true, "recursive": true }, err => {
+					// If there was an error in deleting the record folder notify the user.
+					if(err) { primaryWin.webContents.send("recordRemovalFailure", data[j]); }
+				});
+			}
+			// Refresh the primary window and notify the user that all checked contacts have been removed.
+			if(j == data.length) {
+				primaryWin.reload();
+				setTimeout(() => { primaryWin.webContents.send("recordsRemovalSuccess"); }, 500);
+			}
+		});
+	});
 };
 
 
@@ -171,44 +212,10 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
   		let addWindow = tools.createWindow("addRecord", BrowserWindow, path, 1400, 1000);
   		addWindow.webContents.on("did-finish-load", () => {
   			ipc.on("performSave", (event, submission) => {
-  				console.log(submission);
 				// If the record is an anime then save the corresponding data.
 				if(submission[0] == "Anime") {
 	  				exports.animeSave(BrowserWindow, path, fs, mainWindow, dataPath, event, submission);
 				}
-
-
-
-				// const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers,
-            //     animeWriters, animeMusicians, animeStudio, animeLicense, animeFiles, genres, content];
-            // [seasonEpisodeName, seasonEpisodeLastWatched, seasonEpisodeRating, seasonEpisodeReview]
-
-
-
-  				// // Check to see that the folder associated to the new record does not exist. 
-				// if(!fs.existsSync(path.join(dataPath, "Trek", "data", info[2] + "_" + info[0]))) {
-				// 	// Create a new directory for the assets associated to the new contact.
-				// 	fs.mkdirSync(path.join(dataPath, "Trek", "data", "contacts", info[2] + "_" + info[0], "assets"), { "recursive": true });
-				// 	// Write to the data file.
-				// 	let phoneArr = [];
-				// 	for(let j = 0; j < info[7].length; j++) {
-				// 		phoneArr.push({"label": info[6][j], "number": info[7][j]});
-				// 	}
-				// 	const contactData = {
-				// 		"firstName": info[0],
-				// 		"middleName": info[1],
-				// 		"lastName": info[2],
-				// 		"birthday": info[3],
-				// 		"notes": info[4],
-				// 		"phones": phoneArr
-				// 	};
-				// 	exports.writeDataFile(info, event, currentWindow, contactData, "A", dataPath, fs, path);
-				// }
-				// // If the folder exists, then notify the user of this.
-				// else {
-				// 	currentWindow.webContents.send("contactExists", info[0] + " " + info[2]);
-				// }
-  				// mainWindow.reload();
   			});
   		});
   	});
@@ -220,11 +227,6 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
   	// 		contactCardWindow.webContents.send("contactCardInfo", name);
   	// 	});
   	// });
-
-  	// // Handles the load of a contact card's trip dates.
-	// ipc.on("contactTripDates", (event, info) => {
-	//     require("./contactTrips").fileCheckIterate(dataPath, info, BrowserWindow.getFocusedWindow(), fs, path);
-	// });
 
   	// // Handles the update of a contact.
   	// ipc.on("contactUpdate", (event, name) => {
@@ -238,21 +240,21 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
   	// 	});
   	// });
 
-  	// // Handles the deletion of a contact.
-  	// ipc.on("contactRemove", (event, name) => {
-  	// 	require("./modifyContact").removeContact(name, event, mainWindow, BrowserWindow, ipc, dataPath, tools, fs, path);
-  	// });
+  	// Handles the deletion of multiple contacts.
+  	ipc.on("removeRecords", (event, list) => {
+  		// require("./modifyContact").removeContacts(list, event, mainWindow, BrowserWindow, ipc, dataPath, tools, fs, path);
+  		exports.removeRecords(BrowserWindow.getFocusedWindow(), BrowserWindow, ipc, dataPath, tools, fs, path, list);
 
-  	// // Handles the deletion of multiple contacts.
-  	// ipc.on("contactsRemove", (event, list) => {
-  	// 	require("./modifyContact").removeContacts(list, event, mainWindow, BrowserWindow, ipc, dataPath, tools, fs, path);
-  	// });
 
-  	// // Handles the opening of a contact's assets folder.
-	// ipc.on("contactFiles", (event, name) => {
-	// 	exec(tools.startCommandLineFolder() + " " + path.join(dataPath, "BatHaTransportationApps", "data", "contacts", name, "assets"));
-	// 	event.sender.send("contactFilesSuccess", name.split("_")[1] + " " + name.split("_")[0]);
-	// });
+
+
+  	});
+
+  	// Handles the opening of a record's assets folder.
+	ipc.on("recordFiles", (event, folder) => {
+		exec(tools.startCommandLineFolder() + " " + path.join(dataPath, "Trak", "data", folder, "assets"));
+		event.sender.send("recordFilesSuccess", folder);
+	});
 };
 
 

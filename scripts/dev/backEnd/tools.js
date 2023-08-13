@@ -72,4 +72,20 @@ exports.createWindow = (extension, BrowserWindow, path, width = 1000, height = 8
 
 
 
+/*
+
+Provides the necessary command to execute the opening of a folder.
+
+*/
+exports.startCommandLineFolder = () => {
+   switch(process.platform) { 
+      case "darwin" : return "open";
+      case "win32" : return "explorer";
+      case "win64" : return "explorer";
+      default : return "xdg-open";
+   }
+};
+
+
+
 module.exports = exports;

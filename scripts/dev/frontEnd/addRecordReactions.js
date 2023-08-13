@@ -42,10 +42,10 @@ ipcRenderer.on("addContactFailure", (event, response) => {
 
 
 
-// Display a notification if there was an issue in writing to the data file of a record.
-ipcRenderer.on("updateContactFailure", (event, response) => {
-    M.toast({"html": "There was an issue in updating the data file associated to the contact " + response.replace("-", " ") + ".", "classes": "rounded"});
-});
+// // Display a notification if there was an issue in writing to the data file of a record.
+// ipcRenderer.on("updateContactFailure", (event, response) => {
+//     M.toast({"html": "There was an issue in updating the data file associated to the contact " + response.replace("-", " ") + ".", "classes": "rounded"});
+// });
 
 
 

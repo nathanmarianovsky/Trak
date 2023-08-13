@@ -193,8 +193,8 @@ footer {
 #remove {
 	background-color: #2A2A8E;
 	position: fixed;
-  	bottom: 365px;
-  	right: 25px;
+  	bottom: 23px;
+  	left: 23px;
   	display: none;
 }
 
@@ -280,9 +280,15 @@ footer {
 	border-right: none;
 }*/
 
+.recordsNameRowDiv {
+	line-height: 20px;
+	color:blue;
+ 	text-decoration:underline;
+	cursor: pointer;
+}
+
 .recordsRowDiv {
 	line-height: 20px;
-	cursor: pointer;
 }
 
 .recordButtonsRowDiv {
@@ -314,6 +320,7 @@ footer {
 	opacity: 1 !important;
 	position: relative !important;
 	top: 2px;
+	accent-color: #2A2A8E;
 }
 
 .removePhoneButton {
@@ -439,4 +446,10 @@ footer {
 
 #addRecordBody {
 	overflow-y: hidden;
+}
+
+#confirmationText {
+	margin-top: 30px;
+	margin-left: 30px !important;
+	width: 80% !important;
 }

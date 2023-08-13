@@ -36,8 +36,8 @@ window.addEventListener("load", () => {
     // Listen for a click event on the remove button in order to open a confirmation window asking for the deletion of all checked contacts.
     remove.addEventListener("click", e => {
         e.preventDefault();
-        const list = Array.from(document.querySelectorAll(".checks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("-")[1]);
-        ipcRenderer.send("remove", document.getElementById("checkAll").checked ? list.slice(1) : list);
+        const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
+        ipcRenderer.send("removeRecords", document.getElementById("checkAll").checked ? list.slice(1) : list);
     });
     // Listen for a input change event on the search bar in order to filter the contacts table.
     searchBar.addEventListener("input", e => {
