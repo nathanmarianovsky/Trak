@@ -2,6 +2,9 @@
 
 BASIC DETAILS: After the app loads up with index.js this file is meant to handle all calls made to the back-end.
 
+   - writeDataFile: Handles the writing of files associated to a record.
+   - animeSave: Handles the saving of anime record by creating the associated folders and data file.
+   - removeRecords: Handles the removal of records by deleting the associated folders and data file.
    - addListeners: Driver function for adding all app listeners.
 
 */
@@ -18,7 +21,7 @@ var exports = {};
 
 /*
 
-Handles the writing of files associated to a contact.
+Handles the writing of files associated to a record.
 
 	- win is an object representing the current window of the Electron app.
 	- writeData is an object representing the data that is to be written to the data.json file.
@@ -58,7 +61,7 @@ exports.writeDataFile = (win, writeData, mode, savePath, fs, path, evt, info) =>
 
 /*
 
-Handles the writing of files associated to a contact.
+Handles the saving of anime record by creating the associated folders and data file.
 
 	- BrowserWindow provides the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
@@ -126,7 +129,7 @@ exports.animeSave = (BrowserWindow, path, fs, mainWindow, dataPath, evnt, data) 
 
 /*
 
-Handles the removal of records.
+Handles the removal of records by deleting the associated folders and data file.
 
 	- primaryWin is an object representing the current window of the Electron app.
 	- BrowserWindow provides the means to create new windows in the Electron app.
@@ -140,7 +143,6 @@ Handles the removal of records.
 exports.removeRecords = (primaryWin, BrowserWindow, ipc, userPath, toolsCollection, fs, path, data) => {
 	// Create a new window to ask the user to confirm the deletion of a contact.
 	let removeRecordsWindow = toolsCollection.createWindow("confirmation", BrowserWindow, path, 525, 325);
-	console.log(data);
 	// Once the new window has been loaded, supply the message to the front-end.
 	removeRecordsWindow.webContents.on("did-finish-load", () => {
 		removeRecordsWindow.webContents.send("recordsConfirmationText", data);
@@ -220,14 +222,6 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
   		});
   	});
 
-  	// // Handles the load of a contact card.
-  	// ipc.on("contactCard", (event, name) => {
-  	// 	let contactCardWindow = tools.createWindow("contacts/contactCard", BrowserWindow, path, 800, 600);
-  	// 	contactCardWindow.webContents.once("did-finish-load", () => {
-  	// 		contactCardWindow.webContents.send("contactCardInfo", name);
-  	// 	});
-  	// });
-
   	// // Handles the update of a contact.
   	// ipc.on("contactUpdate", (event, name) => {
   	// 	let contactUpdateWindow = tools.createWindow("contacts/addContact", BrowserWindow, path, 1200, 900);
@@ -266,43 +260,6 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 
 
 
-
-// /*
-
-// Handles the creation of a contact.
-
-// 	- info is a contact name.
-// 	- event provides the means to interact with the front-end of the Electron app.
-// 	- currentWindow is an object representing the current window of the Electron app.
-// 	- userPath is the path to the local user data.
-// 	- fs and path provide the means to work with local files.
-
-// */
-// exports.addContact = (info, event, currentWindow, userPath, fs, path) => {
-// 	// Check to see that the folder associated to the new contact does not exist. 
-// 	if(!fs.existsSync(path.join(userPath, "BatHaTransportationApps", "data", "contacts", info[2] + "_" + info[0]))) {
-// 		// Create a new directory for the assets associated to the new contact.
-// 		fs.mkdirSync(path.join(userPath, "BatHaTransportationApps", "data", "contacts", info[2] + "_" + info[0], "assets"), { "recursive": true });
-// 		// Write to the data file.
-// 		let phoneArr = [];
-// 		for(let j = 0; j < info[7].length; j++) {
-// 			phoneArr.push({"label": info[6][j], "number": info[7][j]});
-// 		}
-// 		const contactData = {
-// 			"firstName": info[0],
-// 			"middleName": info[1],
-// 			"lastName": info[2],
-// 			"birthday": info[3],
-// 			"notes": info[4],
-// 			"phones": phoneArr
-// 		};
-// 		exports.writeDataFile(info, event, currentWindow, contactData, "A", userPath, fs, path);
-// 	}
-// 	// If the folder exists, then notify the user of this.
-// 	else {
-// 		currentWindow.webContents.send("contactExists", info[0] + " " + info[2]);
-// 	}
-// };
 
 
 
@@ -355,44 +312,6 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 
 
 
-// /*
-
-// Handles the removal of multiple contacts.
-
-// 	- data is a collection of contact names.
-// 	- event provides the means to interact with the front-end of the Electron app.
-// 	- win is an object representing the current window of the Electron app.
-// 	- BrowserWindow provides the means to create new windows in the Electron app.
-// 	- ipc provides the means to handle a reaction on the back-end of the Electron app.
-// 	- userPath is the path to the local user data.
-// 	- tools provides a collection of local functions meant to help with writing files and generating pdf files.
-// 	- fs and path provide the means to work with local files.
-
-// */
-// exports.removeContacts = (data, event, win, BrowserWindow, ipc, userPath, tools, fs, path) => {
-// 	// Create a new window to ask the user to confirm the deletion of a contact.
-// 	let removeContactsWindow = tools.createWindow("confirmation", BrowserWindow, path, 525, 325);
-// 	// Once the new window has been loaded, supply the message to the front-end.
-// 	removeContactsWindow.webContents.on("did-finish-load", () => {
-// 		removeContactsWindow.webContents.send("contactsConfirmationText", data);
-// 		// Once a confirmation has been provided by the user close the window and delete the associated contact folders. 
-// 		ipc.once("confirmationRemoveContacts", (event, data) => {
-// 			removeContactsWindow.destroy();
-// 			let j = 0;
-// 			for(; j < data.length; j++) {
-// 				fs.rm(path.join(userPath, "BatHaTransportationApps", "data", "contacts", data[j]), { "force": true, "recursive": true }, err => {
-// 					// If there was an error in deleting the contact folder notify the user.
-// 					if(err) { win.webContents.send("contactRemovalFailure", data[j]); }
-// 				});
-// 			}
-// 			// Refresh the primary window and notify the user that all checked contacts have been removed.
-// 			if(j == data.length) {
-// 				win.reload();
-// 				setTimeout(() => { win.webContents.send("contactsRemovalSuccess"); }, 500);
-// 			}
-// 		});
-// 	});
-// };
 
 
 

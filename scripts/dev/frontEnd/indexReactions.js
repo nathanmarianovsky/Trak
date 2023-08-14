@@ -2,6 +2,8 @@
 
 BASIC DETAILS: This file handles all reactions on the index.html page.
 
+    - toastParse: Handles the parsing of a record folder name to display to the user.
+
 */
 
 
@@ -19,7 +21,6 @@ Declare all of the necessary variables.
     - localPath is the path to the local user data.
 
 */
-
 var { ipcRenderer } = require("electron");
 const fs = require("fs"),
     path = require("path"),
@@ -27,6 +28,13 @@ const fs = require("fs"),
 
 
 
+/*
+
+Handles the parsing of a record folder name to display to the user.
+
+    - folder is the string representing the name of the folder associated to a record.
+
+*/
 var toastParse = folder => {
     let hldr = folder.split("-")[0];
     return nameStr = hldr.toLowerCase() + " " + folder.substring(hldr.length + 1);
@@ -61,15 +69,15 @@ ipcRenderer.on("loadRows", event => {
     const pathDir = path.join(localPath, "Trak", "data");
     let list = [];
     fs.existsSync(pathDir) ? list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()) : list = [];
-    // fs.existsSync(pathDir) ? list = JSON.parse(fs.readFileSync(pathDir)) : list = [];
     // Attach a row to the html table body for each contact.
     const tableBody = document.getElementById("tableBody");
     tableBody.textContent = "";
     document.getElementById("preloader").style.setProperty("display", "none", "important");
     // Hide the vertical scroll bar.
     document.body.style.overflowY = "hidden";
-    
+    // Iterate through each saved record and add a row for each one containing the name, category, and genres of the record.
     for(let n = 0; n < list.length; n++) {
+        // Define the items needed to construct the row.
         let tr = document.createElement("tr"),
             tdName = document.createElement("td"),
             tdNameDiv = document.createElement("div"),
@@ -85,15 +93,19 @@ ipcRenderer.on("loadRows", event => {
             checkInput = document.createElement("input"),
             tdCheck = document.createElement("td"),
             recordData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", list[n], "data.json")));
+        // Modify the name portion.
         tdNameDiv.textContent = recordData.name != "" ? recordData.name : recordData.jname;
         tdNameDiv.classList.add("recordsNameRowDiv");
         tdName.append(tdNameDiv);
+        // Modify the category portion.
         tdCategoryDiv.textContent = recordData.category;
         tdCategoryDiv.classList.add("recordsRowDiv");
         tdCategory.append(tdCategoryDiv);
+        // Modify the genres portion.
         tdGenresDiv.textContent = "";
         tdGenresDiv.classList.add("recordsRowDiv");
         tdGenres.append(tdGenresDiv);
+        // Modify the files button to be used for opening the assets folder of a record.
         filesButton.setAttribute("type", "submit");
         filesButton.setAttribute("id", "remove_-_" + list[n]);
         filesButton.classList.add("btn", "waves-effect", "waves-light", "func");
@@ -104,17 +116,21 @@ ipcRenderer.on("loadRows", event => {
         tdFilesDiv.append(filesButton);
         tdFilesDiv.classList.add("recordButtonsRowDiv");
         tdFilesDiv.setAttribute("id", "filesDiv-" + list[n]);
+        // Modify the checks associated to each row.
         checkInput.setAttribute("type", "checkbox");
         checkInput.classList.add("filled-in", "recordsChecks");
         checkInput.setAttribute("id", "check_-_" + list[n]);
         checkLabel.append(checkInput);
         tdCheck.append(checkLabel);
         tdFiles.append(tdFilesDiv);
+        // Append all portion of the row.
         tr.setAttribute("id", list[n]);
         tr.append(tdCheck, tdName, tdCategory, tdGenres, tdFiles);
         tableBody.append(tr);
+        // Reset the width of the headers table. 
         let difference = document.getElementById("tableDiv").offsetWidth - document.getElementById("tableDiv").clientWidth;
         document.getElementById("headersTable").style.width = "calc(95% - " + difference + "px)";
+        // Listen for a change in the input associated to each row checkbox.
         checkInput.addEventListener("change", () => {
             let btn = document.getElementById("remove"),
                 checkAllBtn = document.getElementById("checkAll"),
@@ -124,10 +140,12 @@ ipcRenderer.on("loadRows", event => {
             checkedNum > 0 ? btn.style.display = "inherit" : btn.style.display = "none";
             checkTotal - 1 == checkedNum && !checkAllBtn.checked ? checkAllBtn.checked = true : checkAllBtn.checked = false;
         });
+        // Listen for a click on the name of a record in order to open the update page.
         tdNameDiv.addEventListener("click", e => {
             e.preventDefault();
             ipcRenderer.send("updateRecord", e.target.parentNode.parentNode.id);
         });
+        // Listen for a click on the files button in order to open the associated assets folder of a record.
         filesButton.addEventListener("click", e => {
             e.preventDefault();
             let holder = e.target.id.split("_-_");

@@ -1,8 +1,6 @@
 /*
 
-BASIC DETAILS: This file handles all reactions on the addContact.html page.
-
-   - driverPageFix: Modify the addContact page to be utilized for the addition of a contact.
+BASIC DETAILS: This file handles all reactions on the addRecord.html page.
 
 */
 

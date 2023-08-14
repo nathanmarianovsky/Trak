@@ -8,6 +8,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - initSelectObservers: Initialize the observers for style mutations on related content select tags.
     - initContentDrag: Initialize the listeners associated to related content dragging.
     - animeListReorganize: Reorganize the list items in the associated anime modal.
+    - calculateAnimeRating: Calculates the average rating for an anime based on the available ratings for all films, ONAs, OVAs, and seasons.
 
 */
 
@@ -222,6 +223,11 @@ var animeListReorganize = () => {
 
 
 
+/*
+
+Calculates the average rating for an anime based on the available ratings for all films, ONAs, OVAs, and seasons.
+
+*/
 var calculateAnimeRating = () => {
     const relevantList = document.getElementById("animeList"),
         globalRating = document.getElementById("animeRating");

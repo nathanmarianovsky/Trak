@@ -23,18 +23,17 @@ var { ipcRenderer } = require("electron");
 
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
-    // Define the submit button and a variable to hold the license plate number.
+    // Define the submit button and a variable to hold the data associated to the removal of records.
     const submitButton = document.getElementById("confirmSubmit");
-    let id = 0,
-        nameArr = [];
+    let submissionData = 0;
     // Once the app has finished loading the confirmation window update the primary text.
     ipcRenderer.on("recordsConfirmationText", (event, data) => {
         document.getElementById("confirmationText").textContent = "Please verify that you indeed wish to remove all data associated to the checked records.";
-        id = data;
+        submissionData = data;
     });
-    // Listen for a click event on the confirmation button in order to remove a vehicle. 
+    // Listen for a click event on the confirmation button in order to remove any number of records. 
     submitButton.addEventListener("click", e => {
         e.preventDefault();
-        ipcRenderer.send("confirmationRemoveRecords", id);
+        ipcRenderer.send("confirmationRemoveRecords", submissionData);
     });
 });
