@@ -102,7 +102,17 @@ ipcRenderer.on("loadRows", event => {
         tdCategoryDiv.classList.add("recordsRowDiv");
         tdCategory.append(tdCategoryDiv);
         // Modify the genres portion.
-        tdGenresDiv.textContent = "";
+        let count = 0,
+            rowGenreStr = "";
+        for(let y = 0; y < recordData.genres[0].length; y++) {
+            if(recordData.genres[1][y] == true) {
+                if(rowGenreStr.length > 0) { rowGenreStr += ", "; }
+                count == 2 ? rowGenreStr += "..." : rowGenreStr += recordData.genres[0][y];
+                count++;
+            }
+            if(count == 3) { break; }
+        }
+        tdGenresDiv.textContent = rowGenreStr;
         tdGenresDiv.classList.add("recordsRowDiv");
         tdGenres.append(tdGenresDiv);
         // Modify the files button to be used for opening the assets folder of a record.

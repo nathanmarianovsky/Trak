@@ -649,7 +649,7 @@ var animeSave = () => {
             }
             // Send the request to the back-end portion of the app.
             const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers,
-                animeWriters, animeMusicians, animeStudio, animeLicense, animeFiles, genres, content];
+                animeWriters, animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres], content];
             ipcRenderer.send("performSave", submissionMaterial);
         }
         // If no name has been provided then notify the user.

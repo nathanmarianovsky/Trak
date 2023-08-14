@@ -23,7 +23,8 @@ var exports = {};
 
 Handles the writing of files associated to a record.
 
-	- win is an object representing the current window of the Electron app.
+	- globalWin is an object representing the app's primary window.
+	- curWin is an object representing the current window of the Electron app.
 	- writeData is an object representing the data that is to be written to the data.json file.
 	- mode is a string representing whether a record is being added or updated.
 	- savePath is the path to the local user data.
@@ -32,7 +33,7 @@ Handles the writing of files associated to a record.
 	- info is the data associated to the record.
 
 */
-exports.writeDataFile = (win, writeData, mode, savePath, fs, path, evt, info) => {
+exports.writeDataFile = (globalWin, curWin, writeData, mode, savePath, fs, path, evt, info) => {
 	let fldr = "";
 	const modeStr = (mode == "A" ? "add" : "update");
 	if(info[0] == "Anime") { fldr = info[0] + "-" + (info[1] != "" ? info[1] : info[2]); }	
@@ -50,8 +51,9 @@ exports.writeDataFile = (win, writeData, mode, savePath, fs, path, evt, info) =>
 			}
 			// Once all of the files have been updated, notify the user everything has been taken care of and close the window.
 			if(i == info[10].length) {
-				win.webContents.send(modeStr + "RecordSuccess", fldr);
-				setTimeout(() => { win.destroy(); }, 2000);
+				globalWin.reload();
+				curWin.webContents.send(modeStr + "RecordSuccess", fldr);
+				setTimeout(() => { curWin.destroy(); }, 2000);
 			}
 		}
 	});
@@ -63,6 +65,7 @@ exports.writeDataFile = (win, writeData, mode, savePath, fs, path, evt, info) =>
 
 Handles the saving of anime record by creating the associated folders and data file.
 
+	- primaryWin is an object representing the app's primary window.
 	- BrowserWindow provides the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
 	- mainWindow is an object referencing the primary window of the Electron app.
@@ -70,7 +73,7 @@ Handles the saving of anime record by creating the associated folders and data f
 	- data is the information associated to the record.
 
 */
-exports.animeSave = (BrowserWindow, path, fs, mainWindow, dataPath, evnt, data) => {
+exports.animeSave = (primaryWin, BrowserWindow, path, fs, mainWindow, dataPath, evnt, data) => {
 	// Check to see that the folder associated to the new record does not exist.
 	if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[1])) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[2]))) {
 		// Create a new directory for the assets associated to the new record.
@@ -122,7 +125,7 @@ exports.animeSave = (BrowserWindow, path, fs, mainWindow, dataPath, evnt, data) 
 			animeObj.content.push(animeSeasonObj);
 		}
 	}
-	exports.writeDataFile(BrowserWindow.getFocusedWindow(), animeObj, "A", dataPath, fs, path, evnt, data);
+	exports.writeDataFile(primaryWin, BrowserWindow.getFocusedWindow(), animeObj, "A", dataPath, fs, path, evnt, data);
 };
 
 
@@ -183,8 +186,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
-   		let win = tools.createWindow("index", BrowserWindow, path);
-   		win.webContents.on("did-finish-load", () => {
+	   		let win = tools.createWindow("index", BrowserWindow, path);
+	   		win.webContents.on("did-finish-load", () => {
 	  			win.webContents.send("loadRows");
 	  		});
     	}
@@ -211,12 +214,13 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 
   	// Handles the load of the addRecord.html page.
   	ipc.on("addLoad", event => {
-  		let addWindow = tools.createWindow("addRecord", BrowserWindow, path, 1400, 1000);
+  		let win = BrowserWindow.getFocusedWindow(),
+  			addWindow = tools.createWindow("addRecord", BrowserWindow, path, 1400, 1000);
   		addWindow.webContents.on("did-finish-load", () => {
   			ipc.on("performSave", (event, submission) => {
 				// If the record is an anime then save the corresponding data.
 				if(submission[0] == "Anime") {
-	  				exports.animeSave(BrowserWindow, path, fs, mainWindow, dataPath, event, submission);
+	  				exports.animeSave(win, BrowserWindow, path, fs, mainWindow, dataPath, event, submission);
 				}
   			});
   		});
