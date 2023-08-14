@@ -217,7 +217,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
   		let win = BrowserWindow.getFocusedWindow(),
   			addWindow = tools.createWindow("addRecord", BrowserWindow, path, 1400, 1000);
   		addWindow.webContents.on("did-finish-load", () => {
-  			ipc.on("performSave", (event, submission) => {
+  			ipc.once("performSave", (event, submission) => {
 				// If the record is an anime then save the corresponding data.
 				if(submission[0] == "Anime") {
 	  				exports.animeSave(win, BrowserWindow, path, fs, mainWindow, dataPath, event, submission);
@@ -226,17 +226,17 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
   		});
   	});
 
-  	// // Handles the update of a contact.
-  	// ipc.on("contactUpdate", (event, name) => {
-  	// 	let contactUpdateWindow = tools.createWindow("contacts/addContact", BrowserWindow, path, 1200, 900);
-  	// 	contactUpdateWindow.webContents.on("did-finish-load", () => {
-  	// 		contactUpdateWindow.webContents.send("contactUpdateInfo", name);
-  	// 		ipc.once("updateContactSubmission", (event, data) => {
-  	// 			require("./modifyContact").updateContact(data, event, contactUpdateWindow, dataPath, fs, path);
-  	// 			mainWindow.reload();
-  	// 		});
-  	// 	});
-  	// });
+  	// Handles the update of a contact.
+  	ipc.on("updateRecord", (event, fldrName) => {
+  		let recordUpdateWindow = tools.createWindow("addRecord", BrowserWindow, path, 1400, 1000);
+  		recordUpdateWindow.webContents.on("did-finish-load", () => {
+  			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
+  			// ipc.once("updateContactSubmission", (event, data) => {
+  			// 	require("./modifyContact").updateContact(data, event, recordUpdateWindow, dataPath, fs, path);
+  			// 	mainWindow.reload();
+  			// });
+  		});
+  	});
 
   	// Handles the deletion of multiple contacts.
   	ipc.on("removeRecords", (event, list) => {

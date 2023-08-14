@@ -2,8 +2,6 @@
 
 BASIC DETAILS: This file handles all reactions on the index.html page.
 
-    - toastParse: Handles the parsing of a record folder name to display to the user.
-
 */
 
 
@@ -25,20 +23,6 @@ var { ipcRenderer } = require("electron");
 const fs = require("fs"),
     path = require("path"),
     localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
-
-
-
-/*
-
-Handles the parsing of a record folder name to display to the user.
-
-    - folder is the string representing the name of the folder associated to a record.
-
-*/
-var toastParse = folder => {
-    let hldr = folder.split("-")[0];
-    return nameStr = hldr.toLowerCase() + " " + folder.substring(hldr.length + 1);
-};
 
 
 
@@ -107,7 +91,25 @@ ipcRenderer.on("loadRows", event => {
         for(let y = 0; y < recordData.genres[0].length; y++) {
             if(recordData.genres[1][y] == true) {
                 if(rowGenreStr.length > 0) { rowGenreStr += ", "; }
-                count == 2 ? rowGenreStr += "..." : rowGenreStr += recordData.genres[0][y];
+                if(count == 2) { rowGenreStr += "..."; }
+                else {
+                    if(recordData.genres[0][y] == "ComingOfAge") {
+                        rowGenreStr += "Coming-of-Age";
+                    }
+                    else if(recordData.genres[0][y] == "PostApocalyptic") {
+                        rowGenreStr += "Post-Apocalyptic";
+                    }
+                    else if(recordData.genres[0][y] == "SciFi") {
+                        rowGenreStr += "Sci-Fi";
+                    }
+                    else if(recordData.genres[0][y] == "SliceOfLife") {
+                        rowGenreStr += "Slice of Life";
+                    }
+                    else {
+                        rowGenreStr += recordData.genres[0][y].split(/(?=[A-Z])/).join(" ");
+                    }
+                }
+                // count == 2 ? rowGenreStr += "..." : rowGenreStr += recordData.genres[0][y].split(/(?=[A-Z])/).join(" ");
                 count++;
             }
             if(count == 3) { break; }

@@ -9,6 +9,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - initContentDrag: Initialize the listeners associated to related content dragging.
     - animeListReorganize: Reorganize the list items in the associated anime modal.
     - calculateAnimeRating: Calculates the average rating for an anime based on the available ratings for all films, ONAs, OVAs, and seasons.
+    - toastParse: Handles the parsing of a record folder name to display to the user.
 
 */
 
@@ -251,4 +252,18 @@ var calculateAnimeRating = () => {
     }
     if(count == 0) { globalRating.setAttribute("value", "N/A"); }
     else { globalRating.setAttribute("value", (sum / count).toFixed(2)); }
+};
+
+
+
+/*
+
+Handles the parsing of a record folder name to display to the user.
+
+    - folder is the string representing the name of the folder associated to a record.
+
+*/
+var toastParse = folder => {
+    let hldr = folder.split("-")[0];
+    return nameStr = hldr.toLowerCase() + " " + folder.substring(hldr.length + 1);
 };
