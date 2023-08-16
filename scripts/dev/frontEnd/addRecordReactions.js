@@ -34,16 +34,16 @@ const fs = require("fs"),
 
 
 // Display a notification if there was an issue in writing to the data file of a record.
-ipcRenderer.on("addContactFailure", (event, response) => {
+ipcRenderer.on("addRecordFailure", (event, response) => {
     M.toast({"html": "There was an issue in writing the data file associated to the " + response.replace("-", " ") + ".", "classes": "rounded"});
 });
 
 
 
-// // Display a notification if there was an issue in writing to the data file of a record.
-// ipcRenderer.on("updateContactFailure", (event, response) => {
-//     M.toast({"html": "There was an issue in updating the data file associated to the contact " + response.replace("-", " ") + ".", "classes": "rounded"});
-// });
+// Display a notification if there was an issue in writing to the data file of a record.
+ipcRenderer.on("updateRecordFailure", (event, response) => {
+    M.toast({"html": "There was an issue in writing the data file associated to the " + response.replace("-", " ") + ".", "classes": "rounded"});
+});
 
 
 
@@ -56,22 +56,22 @@ ipcRenderer.on("copyFailure", (event, response) => {
 
 // Display a notification for the successful addition of a record.
 ipcRenderer.on("addRecordSuccess", (event, response) => {
-    M.toast({"html": "The record associated to the " + response.replace("-", " ") + " has officially been created and saved. This window will now close!", "classes": "rounded"});
+    M.toast({"html": "The record associated to the " + response.replace("-", " ") + " has been created and saved. This window will now close!", "classes": "rounded"});
 });
 
 
 
-// // Display a notification for the successful update of a contact.
-// ipcRenderer.on("updateContactSuccess", (event, response) => {
-//     M.toast({"html": "The contact associated to the name " + response + " has officially been updated. This window will now close!", "classes": "rounded"});
-// });
+// Display a notification for the successful update of a record.
+ipcRenderer.on("updateRecordSuccess", (event, response) => {
+    M.toast({"html": "The record associated to the " + response.replace("-", " ") + " has been updated. This window will now close!", "classes": "rounded"});
+});
 
 
 
-// // Display a notification if there was an error in renaming a contact's directory.
-// ipcRenderer.on("contactFolderRenameFailure", (event, response) => {
-//     M.toast({"html": "There was an error in renaming the contact folder " + response[0] + " to " + response[1] + ".", "classes": "rounded"});
-// });
+// Display a notification if there was an error in renaming a record's directory.
+ipcRenderer.on("recordFolderRenameFailure", (event, response) => {
+    M.toast({"html": "There was an error in renaming the record folder " + response[0] + " to " + response[1] + ".", "classes": "rounded"});
+});
 
 
 
@@ -86,7 +86,6 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
         // If the file loaded without issues populate the page with a contact's information.
         else {
             const recordData = JSON.parse(file);
-            console.log(recordData);
             if(recordData.category == "Anime") {
                 document.getElementById("categoryAnime").click();
                 document.getElementById("animeName").value = recordData.name;
@@ -135,229 +134,21 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                         initSelect();
                     }
                 }
-                console.log(rtngList);
                 const animeRtng = rtngList.length > 0 ? (rtngList.reduce((accum, cur) => accum + cur, 0) / rtngList.length).toFixed(2) : "N/A";
                 document.getElementById("animeRating").value = animeRtng;
             }
-
-
-
-            // "directors": data[4],
-            // "producers": data[5],
-            // "writers": data[6],
-            // "musicians": data[7],
-            // "studio": data[8],
-            // "license": data[9],
-            // "genres": data[11],
-            // "content": []
-
-
-
-//             document.getElementById("firstName").value = contactData.firstName;
-//             document.getElementById("firstName").parentNode.children[1].classList.add("active");
-//             if(contactData.middleName != "") {
-//                 document.getElementById("middleName").value = contactData.middleName;
-//                 document.getElementById("middleName").parentNode.children[1].classList.add("active");
-//             }
-//             document.getElementById("lastName").value = contactData.lastName;
-//             document.getElementById("lastName").parentNode.children[1].classList.add("active");
-//             if(contactData.birthday != "") {
-//                 document.getElementById("birthday").value = contactData.birthday;
-//             }
-//             if(contactData.notes != "") {
-//                 document.getElementById("notes").value = contactData.notes;
-//                 document.getElementById("notes").parentNode.children[1].classList.add("active");
-//             }
-//             for(let l = 0; l < contactData.phones.length; l++) {
-//                 let outerDiv = document.createElement("div"),
-//                     innerDiv1 = document.createElement("div"),
-//                     innerDiv2 = document.createElement("div"),
-//                     innerDiv3 = document.createElement("div"),
-//                     input1 = document.createElement("input"),
-//                     input2 = document.createElement("input"),
-//                     btnDiv = document.createElement("div"),
-//                     btn = document.createElement("button"),
-//                     label1 = document.createElement("label"),
-//                     label2 = document.createElement("label"),
-//                     delIcon = document.createElement("icon");
-//                 outerDiv.classList.add("row");
-//                 outerDiv.setAttribute("id", "outerDiv-" + l);
-//                 innerDiv1.classList.add("input-field", "col", "s6");
-//                 innerDiv2.classList.add("input-field", "col", "s5");
-//                 innerDiv3.classList.add("input-field", "col", "s1");
-//                 input1.setAttribute("id", "phoneLabel_" + l);
-//                 input1.setAttribute("type", "text");
-//                 input1.setAttribute("data-length", "25");
-//                 input1.classList.add("validate", "center", "characterCounter");
-//                 input1.value = contactData.phones[l].label;
-//                 input2.setAttribute("id", "phoneNumber_" + l);
-//                 input2.setAttribute("type", "text");
-//                 input2.setAttribute("data-length", "14");
-//                 input2.classList.add("validate", "center", "characterCounter");
-//                 input2.value = contactData.phones[l].number;
-//                 btnDiv.classList.add("removePhoneButtonDiv");
-//                 btn.setAttribute("type", "submit");
-//                 btn.setAttribute("id", "remove-" + l);
-//                 btn.classList.add("btn", "waves-effect", "waves-light", "removePhoneButton");
-//                 label1.setAttribute("for", "phoneLabel_" + l);
-//                 label1.textContent = "Phone # Label:";
-//                 label1.classList.add("active");
-//                 label2.setAttribute("for", "phoneNumber_" + l);
-//                 label2.textContent = "Phone #:";
-//                 label2.classList.add("active");
-//                 delIcon.classList.add("material-icons", "center", "removePhoneIcon");
-//                 delIcon.setAttribute("id", "removePhoneIcon-" + l);
-//                 delIcon.textContent = "remove";
-//                 innerDiv1.append(input1, label1);
-//                 innerDiv2.append(input2, label2);
-//                 btn.append(delIcon);
-//                 btnDiv.append(btn);
-//                 innerDiv3.append(btnDiv);
-//                 outerDiv.append(innerDiv3, innerDiv1, innerDiv2);
-//                 document.getElementById("contactsForm").append(outerDiv);
-//                 btn.addEventListener("click", e => {
-//                     e.preventDefault();
-//                     let num = parseInt(e.target.id.split("-")[1]);
-//                     document.getElementById("outerDiv-" + num).remove();
-//                     num++;
-//                     while(document.getElementById("outerDiv-" + num) != null) {
-//                         let newNum = num - 1;
-//                         document.getElementById("outerDiv-" + num).setAttribute("id", "outerDiv-" + newNum);
-//                         document.getElementById("remove-" + num).setAttribute("id", "remove-" + newNum);
-//                         document.getElementById("removePhoneIcon-" + num).setAttribute("id", "removePhoneIcon-" + newNum);
-//                         document.getElementById("phoneNumber_" + num).nextElementSibling.setAttribute("for", "phoneNumber_" + newNum);
-//                         document.getElementById("phoneNumber_" + num).setAttribute("id", "phoneNumber_" + newNum);
-//                         document.getElementById("phoneLabel_" + num).nextElementSibling.setAttribute("for", "phoneLabel_" + newNum);
-//                         document.getElementById("phoneLabel_" + num).setAttribute("id", "phoneLabel_" + newNum);
-//                         num++;
-//                     }
-//                 });
-//                 input2.addEventListener("keydown", event => {
-//                     phoneNumberFormatter(input2);
-//                 });
-//             }
-//             const oldInfo = document.createElement("div");
-//             oldInfo.setAttribute("id", "infoDiv");
-//             oldInfo.setAttribute("title", contactData.lastName + "_" + contactData.firstName);
-//             oldInfo.style.display = "none";
-//             document.body.append(oldInfo);
-//             document.getElementById("pageTitle").textContent = "Update Contact";
-//             document.title = "Update Contact";
+            const oldInfo = document.createElement("div");
+            oldInfo.setAttribute("id", "infoDiv");
+            oldInfo.setAttribute("title", recordData.name != "" ? recordData.name : recordData.jname);
+            oldInfo.style.display = "none";
+            document.body.append(oldInfo);
         }
+        // Initialize the observer for the anime review.
+        initAnimeReviewObserver();
+        // Initialize the observer for the select tags.
+        initSelectObservers();
     });
 });
-
-
-
-// // Handle the load of contact information on the update page.
-// ipcRenderer.on("contactUpdateInfo", (event, name) => {
-//     // Attempt to read a contact's data file.
-//     fs.readFile(path.join(localPath, "BatHaTransportationApps", "data", "contacts", name, "data.json"), (err, file) => {
-//         // Display a notification if there was an error in reading the data file.
-//         if(err) {
-//             const nameArr = name.split("_");
-//             M.toast({"html": "There was an error opening the data file associated to the contact with name " + nameArr[1] + " " + nameArr[0] + ".", "classes": "rounded"});
-//         }
-//         // If the file loaded without issues populate the page with a contact's information.
-//         else {
-//             const contactData = JSON.parse(file);
-//             document.getElementById("firstName").value = contactData.firstName;
-//             document.getElementById("firstName").parentNode.children[1].classList.add("active");
-//             if(contactData.middleName != "") {
-//                 document.getElementById("middleName").value = contactData.middleName;
-//                 document.getElementById("middleName").parentNode.children[1].classList.add("active");
-//             }
-//             document.getElementById("lastName").value = contactData.lastName;
-//             document.getElementById("lastName").parentNode.children[1].classList.add("active");
-//             if(contactData.birthday != "") {
-//                 document.getElementById("birthday").value = contactData.birthday;
-//             }
-//             if(contactData.notes != "") {
-//                 document.getElementById("notes").value = contactData.notes;
-//                 document.getElementById("notes").parentNode.children[1].classList.add("active");
-//             }
-//             for(let l = 0; l < contactData.phones.length; l++) {
-//                 let outerDiv = document.createElement("div"),
-//                     innerDiv1 = document.createElement("div"),
-//                     innerDiv2 = document.createElement("div"),
-//                     innerDiv3 = document.createElement("div"),
-//                     input1 = document.createElement("input"),
-//                     input2 = document.createElement("input"),
-//                     btnDiv = document.createElement("div"),
-//                     btn = document.createElement("button"),
-//                     label1 = document.createElement("label"),
-//                     label2 = document.createElement("label"),
-//                     delIcon = document.createElement("icon");
-//                 outerDiv.classList.add("row");
-//                 outerDiv.setAttribute("id", "outerDiv-" + l);
-//                 innerDiv1.classList.add("input-field", "col", "s6");
-//                 innerDiv2.classList.add("input-field", "col", "s5");
-//                 innerDiv3.classList.add("input-field", "col", "s1");
-//                 input1.setAttribute("id", "phoneLabel_" + l);
-//                 input1.setAttribute("type", "text");
-//                 input1.setAttribute("data-length", "25");
-//                 input1.classList.add("validate", "center", "characterCounter");
-//                 input1.value = contactData.phones[l].label;
-//                 input2.setAttribute("id", "phoneNumber_" + l);
-//                 input2.setAttribute("type", "text");
-//                 input2.setAttribute("data-length", "14");
-//                 input2.classList.add("validate", "center", "characterCounter");
-//                 input2.value = contactData.phones[l].number;
-//                 btnDiv.classList.add("removePhoneButtonDiv");
-//                 btn.setAttribute("type", "submit");
-//                 btn.setAttribute("id", "remove-" + l);
-//                 btn.classList.add("btn", "waves-effect", "waves-light", "removePhoneButton");
-//                 label1.setAttribute("for", "phoneLabel_" + l);
-//                 label1.textContent = "Phone # Label:";
-//                 label1.classList.add("active");
-//                 label2.setAttribute("for", "phoneNumber_" + l);
-//                 label2.textContent = "Phone #:";
-//                 label2.classList.add("active");
-//                 delIcon.classList.add("material-icons", "center", "removePhoneIcon");
-//                 delIcon.setAttribute("id", "removePhoneIcon-" + l);
-//                 delIcon.textContent = "remove";
-//                 innerDiv1.append(input1, label1);
-//                 innerDiv2.append(input2, label2);
-//                 btn.append(delIcon);
-//                 btnDiv.append(btn);
-//                 innerDiv3.append(btnDiv);
-//                 outerDiv.append(innerDiv3, innerDiv1, innerDiv2);
-//                 document.getElementById("contactsForm").append(outerDiv);
-//                 btn.addEventListener("click", e => {
-//                     e.preventDefault();
-//                     let num = parseInt(e.target.id.split("-")[1]);
-//                     document.getElementById("outerDiv-" + num).remove();
-//                     num++;
-//                     while(document.getElementById("outerDiv-" + num) != null) {
-//                         let newNum = num - 1;
-//                         document.getElementById("outerDiv-" + num).setAttribute("id", "outerDiv-" + newNum);
-//                         document.getElementById("remove-" + num).setAttribute("id", "remove-" + newNum);
-//                         document.getElementById("removePhoneIcon-" + num).setAttribute("id", "removePhoneIcon-" + newNum);
-//                         document.getElementById("phoneNumber_" + num).nextElementSibling.setAttribute("for", "phoneNumber_" + newNum);
-//                         document.getElementById("phoneNumber_" + num).setAttribute("id", "phoneNumber_" + newNum);
-//                         document.getElementById("phoneLabel_" + num).nextElementSibling.setAttribute("for", "phoneLabel_" + newNum);
-//                         document.getElementById("phoneLabel_" + num).setAttribute("id", "phoneLabel_" + newNum);
-//                         num++;
-//                     }
-//                 });
-//                 input2.addEventListener("keydown", event => {
-//                     phoneNumberFormatter(input2);
-//                 });
-//             }
-//             const oldInfo = document.createElement("div");
-//             oldInfo.setAttribute("id", "infoDiv");
-//             oldInfo.setAttribute("title", contactData.lastName + "_" + contactData.firstName);
-//             oldInfo.style.display = "none";
-//             document.body.append(oldInfo);
-//             document.getElementById("pageTitle").textContent = "Update Contact";
-//             document.title = "Update Contact";
-//         }
-//     });
-// });
-
-
-
-
 
 
 
@@ -378,6 +169,14 @@ window.addEventListener("load", () => {
     // Initialize the collapsible divs.
     const elemsCollapsible = document.querySelectorAll(".collapsible"),
         instancesCollapsible = M.Collapsible.init(elemsCollapsible);
-    // Initialize the observer for the anime review.
-    initAnimeReviewObserver();
+    // Add the listeners corresponding to the record choices.
+    recordChoicesButtons();
+    // // Initialize the observer for the anime review.
+    // initAnimeReviewObserver();
+    // // Initialize the observer for the select tags.
+    // initSelectObservers();
+    // Add the listeners corresponding to the anime record save.
+    animeSave();
+    // Add the listeners corresponding to the anime related content options.
+    animeModalButtons();
 });

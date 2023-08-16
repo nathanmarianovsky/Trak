@@ -70,6 +70,7 @@ var initSelectObservers = () => {
         let target = mutations[0].target.parentNode.parentNode.parentNode.parentNode;
         // If this select tag is a desired target then hide the body of episodes associated to an anime season.
         if(target.classList.contains("dropzone")) {
+            console.log("hello");
             setTimeout(() => target.children[1].style.display = "none", 1);
         }
     });

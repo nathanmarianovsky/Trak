@@ -1,6 +1,6 @@
 /*
 
-BASIC DETAILS: This file provides front-end functions designed to be used by multiple aspects of the app.
+BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page.
 
     - calculateAnimeRating: Calculates the average rating for an anime based on the available ratings for all films, ONAs, OVAs, and seasons.
     - animeListReorganize: Reorganize the list items in the associated anime modal.
@@ -25,6 +25,7 @@ Calculates the average rating for an anime based on the available ratings for al
 
 */
 var calculateAnimeRating = () => {
+    console.log("hello");
     const relevantList = document.getElementById("animeList"),
         globalRating = document.getElementById("animeRating");
     let sum = 0, count = 0;
@@ -45,8 +46,7 @@ var calculateAnimeRating = () => {
             }
         }
     }
-    if(count == 0) { globalRating.setAttribute("value", "N/A"); }
-    else { globalRating.setAttribute("value", (sum / count).toFixed(2)); }
+    count == 0 ? globalRating.value = "N/A" : globalRating.value = (sum / count).toFixed(2);
 };
 
 

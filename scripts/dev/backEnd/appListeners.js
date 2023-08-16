@@ -3,6 +3,7 @@
 BASIC DETAILS: After the app loads up with index.js this file is meant to handle all calls made to the back-end.
 
    - writeDataFile: Handles the writing of files associated to a record.
+   - animeObjCreation: Creates an object associated to an anime record in order to save/update.
    - animeSave: Handles the saving of anime record by creating the associated folders and data file.
    - removeRecords: Handles the removal of records by deleting the associated folders and data file.
    - addListeners: Driver function for adding all app listeners.
@@ -63,9 +64,67 @@ exports.writeDataFile = (globalWin, curWin, writeData, mode, savePath, fs, path,
 
 /*
 
+Creates an object associated to an anime record in order to save/update.
+
+	- providedData is the data provided by the front-end user submission for anime record save/update.
+
+*/
+var animeObjCreation = providedData => {
+	const animeObj = {
+		"category": providedData[0],
+		"name": providedData[1],
+		"jname": providedData[2],
+		"review": providedData[3],
+		"directors": providedData[4],
+		"producers": providedData[5],
+		"writers": providedData[6],
+		"musicians": providedData[7],
+		"studio": providedData[8],
+		"license": providedData[9],
+		"genres": providedData[11],
+		"content": []
+	};
+	for(let m = 0; m < providedData[12].length; m++) {
+		if(providedData[12][m][0] == "Single") {
+			animeObj.content.push({
+				"scenario": providedData[12][m][0],
+				"name": providedData[12][m][1],
+				"type": providedData[12][m][2],
+				"release": providedData[12][m][3],
+				"watched": providedData[12][m][4],
+				"rating": providedData[12][m][5],
+				"review": providedData[12][m][6]
+			});
+		}
+		else if(providedData[12][m][0] == "Season") {
+			let animeSeasonObj = {
+				"scenario": providedData[12][m][0],
+				"name": providedData[12][m][1],
+				"start": providedData[12][m][2],
+				"end": providedData[12][m][3],
+				"status": providedData[12][m][4],
+				"episodes": []
+			};
+			for(let n = 0; n < providedData[12][m][5].length; n++) {
+				animeSeasonObj.episodes.push({
+					"name": providedData[12][m][5][n][0],
+					"watched": providedData[12][m][5][n][1],
+					"rating": providedData[12][m][5][n][2],
+					"review": providedData[12][m][5][n][3]
+				});
+			}
+			animeObj.content.push(animeSeasonObj);
+		}
+	}
+	return animeObj;
+};
+
+
+
+/*
+
 Handles the saving of anime record by creating the associated folders and data file.
 
-	- primaryWin is an object representing the app's primary window.
 	- BrowserWindow provides the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
 	- mainWindow is an object referencing the primary window of the Electron app.
@@ -73,60 +132,53 @@ Handles the saving of anime record by creating the associated folders and data f
 	- data is the information associated to the record.
 
 */
-exports.animeSave = (primaryWin, BrowserWindow, path, fs, mainWindow, dataPath, evnt, data) => {
+exports.animeSave = (BrowserWindow, path, fs, mainWindow, dataPath, evnt, data) => {
 	// Check to see that the folder associated to the new record does not exist.
 	if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[1])) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[2]))) {
 		// Create a new directory for the assets associated to the new record.
 		fs.mkdirSync(path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]), "assets"), { "recursive": true });
 	}
-	const animeObj = {
-		"category": data[0],
-		"name": data[1],
-		"jname": data[2],
-		"review": data[3],
-		"directors": data[4],
-		"producers": data[5],
-		"writers": data[6],
-		"musicians": data[7],
-		"studio": data[8],
-		"license": data[9],
-		"genres": data[11],
-		"content": []
-	};
-	for(let m = 0; m < data[12].length; m++) {
-		if(data[12][m][0] == "Single") {
-			animeObj.content.push({
-				"scenario": data[12][m][0],
-				"name": data[12][m][1],
-				"type": data[12][m][2],
-				"release": data[12][m][3],
-				"watched": data[12][m][4],
-				"rating": data[12][m][5],
-				"review": data[12][m][6]
-			});
-		}
-		else if(data[12][m][0] == "Season") {
-			let animeSeasonObj = {
-				"scenario": data[12][m][0],
-				"name": data[12][m][1],
-				"start": data[12][m][2],
-				"end": data[12][m][3],
-				"status": data[12][m][4],
-				"episodes": []
-			};
-			for(let n = 0; n < data[12][m][5].length; n++) {
-				animeSeasonObj.episodes.push({
-					"name": data[12][m][5][n][0],
-					"watched": data[12][m][5][n][1],
-					"rating": data[12][m][5][n][2],
-					"review": data[12][m][5][n][3]
-				});
-			}
-			animeObj.content.push(animeSeasonObj);
-		}
-	}
-	exports.writeDataFile(primaryWin, BrowserWindow.getFocusedWindow(), animeObj, "A", dataPath, fs, path, evnt, data);
+	exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(data), "A", dataPath, fs, path, evnt, data);
 };
+
+
+
+/*
+
+Handles the update of an anime record.
+
+	- BrowserWindow provides the means to operate the Electron app.
+	- path and fs provide the means to work with local files.
+	- mainWindow is an object referencing the primary window of the Electron app.
+	- dataPath is the path to the local user data.
+	- data is the information associated to the record.
+
+*/
+exports.animeUpdate = (BrowserWindow, path, fs, mainWindow, dataPath, evnt, data) => {
+	// If the name has been updated then change the associated record folder name.
+	if((data[1] != "" && data[1] != data[13]) || (data[1] == "" && data[2] != "" && data[2] != data[13]) ) {
+		fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + data[13]), path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2])), err => {
+			// If there was an error in renaming the record folder notify the user.
+			if(err) {
+				evnt.sender.send("recordFolderRenameFailure", [data[13], data[1] != "" ? data[1] : data[2]]);
+			}
+			// If no error occured in renaming the record folder write the data file, and copy over the file assets.
+			else {
+				exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(data), "U", dataPath, fs, path, evnt, data);
+			}
+		});
+	}
+	else {
+		// Write the data file, and copy over the file assets.
+		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(data), "U", dataPath, fs, path, evnt, data);
+	}
+};
+
+
+
+// (globalWin, curWin, writeData, mode, savePath, fs, path, evt, info)
+
+
 
 
 
@@ -212,40 +264,33 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 		fs.mkdirSync(path.join(dataPath, "Trak", "data"), { "recursive": true });
 	}
 
-  	// Handles the load of the addRecord.html page.
+  	// Handles the load of the addRecord.html page for the creation of a record.
   	ipc.on("addLoad", event => {
-  		let win = BrowserWindow.getFocusedWindow(),
-  			addWindow = tools.createWindow("addRecord", BrowserWindow, path, 1400, 1000);
+  		let addWindow = tools.createWindow("addRecord", BrowserWindow, path, 1400, 1000);
   		addWindow.webContents.on("did-finish-load", () => {
   			ipc.once("performSave", (event, submission) => {
 				// If the record is an anime then save the corresponding data.
 				if(submission[0] == "Anime") {
-	  				exports.animeSave(win, BrowserWindow, path, fs, mainWindow, dataPath, event, submission);
+	  				exports.animeSave(BrowserWindow, path, fs, mainWindow, dataPath, event, submission);
 				}
   			});
   		});
   	});
 
-  	// Handles the update of a contact.
+  	// Handles the load of the addRecord.html page for the update of a record.
   	ipc.on("updateRecord", (event, fldrName) => {
   		let recordUpdateWindow = tools.createWindow("addRecord", BrowserWindow, path, 1400, 1000);
   		recordUpdateWindow.webContents.on("did-finish-load", () => {
   			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
-  			// ipc.once("updateContactSubmission", (event, data) => {
-  			// 	require("./modifyContact").updateContact(data, event, recordUpdateWindow, dataPath, fs, path);
-  			// 	mainWindow.reload();
-  			// });
+  			ipc.once("performSave", (event, submission) => {
+  				exports.animeUpdate(BrowserWindow, path, fs, mainWindow, dataPath, event, submission);
+  			});
   		});
   	});
 
   	// Handles the deletion of multiple contacts.
   	ipc.on("removeRecords", (event, list) => {
-  		// require("./modifyContact").removeContacts(list, event, mainWindow, BrowserWindow, ipc, dataPath, tools, fs, path);
   		exports.removeRecords(BrowserWindow.getFocusedWindow(), BrowserWindow, ipc, dataPath, tools, fs, path, list);
-
-
-
-
   	});
 
   	// Handles the opening of a record's assets folder.
@@ -254,74 +299,6 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 		event.sender.send("recordFilesSuccess", folder);
 	});
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-// /*
-
-// Handles the update of a contact.
-
-// 	- info is a contact name.
-// 	- event provides the means to interact with the front-end of the Electron app.
-// 	- currentWindow is an object representing the current window of the Electron app.
-// 	- userPath is the path to the local user data.
-// 	- fs and path provide the means to work with local files.
-
-// */
-// exports.updateContact = (info, event, currentWindow, userPath, fs, path) => {
-// 	// Define an object containing the updated contact data.
-// 	let phoneArr = [];
-// 	for(let j = 0; j < info[7].length; j++) {
-// 		phoneArr.push({"label": info[6][j], "number": info[7][j]});
-// 	}
-// 	const contactData = {
-// 		"firstName": info[0],
-// 		"middleName": info[1],
-// 		"lastName": info[2],
-// 		"birthday": info[3],
-// 		"notes": info[4],
-// 		"phones": phoneArr
-// 	};
-// 	// If the name has been updated then change the associated contact folder name.
-// 	if(info[2] + "_" + info[0] != info[8]) {
-// 		fs.rename(path.join(userPath, "BatHaTransportationApps", "data", "contacts", info[8]), path.join(userPath, "BatHaTransportationApps", "data", "contacts", info[2] + "_" + info[0]), err => {
-// 			// If there was an error in renaming the contact folder notify the user.
-// 			if(err) {
-// 				event.sender.send("contactFolderRenameFailure", [info[8], info[2] + "_" + info[0]]);
-// 			}
-// 			// If no error occured in renaming the contact folder write the data file, and copy over the file assets.
-// 			else {
-// 				exports.writeDataFile(info, event, currentWindow, contactData, "U", userPath, fs, path);
-// 			}
-// 		});
-// 	}
-// 	else {
-// 		// Write the data file, and copy over the file assets.
-// 		exports.writeDataFile(info, event, currentWindow, contactData, "U", userPath, fs, path);
-// 	}
-// };
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -3,9 +3,6 @@
 BASIC DETAILS: This file handles all buttons on the addRecord.html page.
 
     - recordChoicesButtons: Listen for click events on the record choices.
-    - animeSeasonContentButtons: Listen for change and click events on the related content anime episode table items.
-    - animeContentSingleButtons: Listen for click events on the related content anime season table items.
-    - animeContentSeasonButtons: Listen for click events on the related content anime season table items.
     - animeModalButtons: Listen for click events on the related content anime modal buttons.
     - animeSave: Processes the information required to save an anime record.
 
@@ -145,9 +142,11 @@ var animeSave = () => {
                 // Push the table item information into the array holding all related content details.
                 content.push(curContent);
             }
+            const pageElement = document.getElementById("infoDiv"),
+                oldTitle = typeof(pageElement) != "undefined" && pageElement != null ? pageElement.title : "";
             // Send the request to the back-end portion of the app.
             const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers,
-                animeWriters, animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres], content];
+                animeWriters, animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres], content, oldTitle];
             ipcRenderer.send("performSave", submissionMaterial);
         }
         // If no name has been provided then notify the user.
@@ -159,10 +158,10 @@ var animeSave = () => {
 
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
-    // Add the listeners corresponding to the record choices.
-    recordChoicesButtons();
-    // Add the listeners corresponding to the anime record save.
-    animeSave();
-    // Add the listeners corresponding to the anime related content options.
-    animeModalButtons();
+    // // Add the listeners corresponding to the record choices.
+    // recordChoicesButtons();
+    // // Add the listeners corresponding to the anime record save.
+    // animeSave();
+    // // Add the listeners corresponding to the anime related content options.
+    // animeModalButtons();
 });
