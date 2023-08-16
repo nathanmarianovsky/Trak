@@ -110,7 +110,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                         document.getElementById("li_" + u + "_Single_LastWatched").value = recordData.content[u-1].watched;
                         document.getElementById("li_" + u + "_Single_Rating").value = recordData.content[u-1].rating;
                         document.getElementById("li_" + u + "_Single_Review").value = recordData.content[u-1].review;
-                        rtngList.push(parseInt(recordData.content[u-1].rating));
+                        if(recordData.content[u-1].rating != "") { rtngList.push(parseInt(recordData.content[u-1].rating)); }
                     }
                     else if(recordData.content[u-1].scenario == "Season") {
                         seasonAddition();

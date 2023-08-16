@@ -67,6 +67,8 @@ ipcRenderer.on("loadRows", event => {
             tdNameDiv = document.createElement("div"),
             tdCategory = document.createElement("td"),
             tdCategoryDiv = document.createElement("div"),
+            tdRating = document.createElement("td"),
+            tdRatingDiv = document.createElement("div"),
             tdGenres = document.createElement("td"),
             tdGenresDiv = document.createElement("div"),
             tdFiles = document.createElement("td"),
@@ -85,6 +87,33 @@ ipcRenderer.on("loadRows", event => {
         tdCategoryDiv.textContent = recordData.category;
         tdCategoryDiv.classList.add("recordsRowDiv");
         tdCategory.append(tdCategoryDiv);
+        // Modify the rating portion.
+        let displayRating = "",
+            displayRatingArr = [];
+        for(let a = 0; a < recordData.content.length; a++) {
+            if(recordData.content[a].scenario == "Single") {
+                if(recordData.content[a].rating != "") {
+                    displayRatingArr.push(parseInt(recordData.content[a].rating));
+                }
+            }
+            else if(recordData.content[a].scenario == "Season") {
+                let ratingHolder = 0,
+                    ratingHolderArr = [];
+                for(let b = 0; b < recordData.content[a].episodes.length; b++) {
+                    if(recordData.content[a].episodes[b].rating != "") {
+                        ratingHolderArr.push(parseInt(recordData.content[a].episodes[b].rating));
+                    }
+                }
+                if(ratingHolderArr.length > 0) {
+                    ratingHolder = (ratingHolderArr.reduce((accum, cur) => accum + cur, 0) / ratingHolderArr.length).toFixed(2);
+                    displayRatingArr.push(ratingHolder);
+                }
+            }
+        }
+        if(displayRatingArr.length > 0) { displayRating = (displayRatingArr.reduce((accum, cur) => accum + cur, 0) / displayRatingArr.length).toFixed(2); }
+        tdRatingDiv.textContent = displayRating;
+        tdRatingDiv.classList.add("recordsRowDiv");
+        tdRating.append(tdRatingDiv);
         // Modify the genres portion.
         let count = 0,
             rowGenreStr = "";
@@ -137,7 +166,7 @@ ipcRenderer.on("loadRows", event => {
         tdFiles.append(tdFilesDiv);
         // Append all portion of the row.
         tr.setAttribute("id", list[n]);
-        tr.append(tdCheck, tdName, tdCategory, tdGenres, tdFiles);
+        tr.append(tdCheck, tdName, tdCategory, tdRating, tdGenres, tdFiles);
         tableBody.append(tr);
         // Reset the width of the headers table. 
         let difference = document.getElementById("tableDiv").offsetWidth - document.getElementById("tableDiv").clientWidth;
