@@ -53,6 +53,13 @@ ipcRenderer.on("loadRows", event => {
     const pathDir = path.join(localPath, "Trak", "data");
     let list = [];
     fs.existsSync(pathDir) ? list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()) : list = [];
+    if(list.length > 0) {
+        list = list.sort((lhs, rhs) => {
+            let lhsVal = lhs.substring(lhs.indexOf("-")),
+                rhsVal = rhs.substring(lhs.indexOf("-"));
+            return lhsVal.localeCompare(rhsVal);
+        });
+    }
     // Attach a row to the html table body for each contact.
     const tableBody = document.getElementById("tableBody");
     tableBody.textContent = "";

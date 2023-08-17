@@ -27,7 +27,10 @@ window.addEventListener("load", () => {
     const add = document.getElementById("add"),
         remove = document.getElementById("remove"),
         searchBar = document.getElementById("searchBar"),
-        checkAll = document.getElementById("checkAll");
+        checkAll = document.getElementById("checkAll"),
+        nameSort = document.getElementById("nameSort"),
+        categorySort = document.getElementById("categorySort"),
+        ratingSort = document.getElementById("ratingSort");
     // Listen for a click event on the add button in order to open a window whose inputs will generate a new record.
     add.addEventListener("click", e => {
         e.preventDefault();
@@ -68,6 +71,89 @@ window.addEventListener("load", () => {
                 bodyList[i].children[0].children[0].children[0].checked = false;
             }
             btn.style.display = "none";
+        }
+    });
+    // Listen for a click event on the name sorter to reorder the records.
+    nameSort.addEventListener("click", e => {
+        e.preventDefault();
+        const assortmentTable = document.getElementById("tableBody");
+        let assortment = Array.from(assortmentTable.children);
+        if(assortment.length > 0) {
+            if(e.target.textContent == "expand_less") {
+                assortment.sort((lhs, rhs) => {
+                    let lhsVal = lhs.id.substring(lhs.id.indexOf("-")),
+                        rhsVal = rhs.id.substring(rhs.id.indexOf("-"));
+                    return rhsVal.localeCompare(lhsVal);
+                });
+                e.target.textContent = "expand_more";
+            }
+            else if(e.target.textContent == "expand_more") {
+                assortment.sort((lhs, rhs) => {
+                    let lhsVal = lhs.id.substring(lhs.id.indexOf("-")),
+                        rhsVal = rhs.id.substring(rhs.id.indexOf("-"));
+                    return lhsVal.localeCompare(rhsVal);
+                });
+                e.target.textContent = "expand_less";
+            }
+            assortmentTable.innerHTML = "";
+            for(let z = 0; z < assortment.length; z++) {
+                assortmentTable.append(assortment[z]);
+            }
+        }
+    });
+    categorySort.addEventListener("click", e => {
+        e.preventDefault();
+        const assortmentTable = document.getElementById("tableBody");
+        let assortment = Array.from(assortmentTable.children);
+        if(assortment.length > 0) {
+            if(e.target.textContent == "expand_less") {
+                assortment.sort((lhs, rhs) => {
+                    let lhsVal = lhs.children[2].children[0].textContent,
+                        rhsVal = rhs.children[2].children[0].textContent;
+                    return rhsVal.localeCompare(lhsVal);
+                });
+                e.target.textContent = "expand_more";
+            }
+            else if(e.target.textContent == "expand_more") {
+                assortment.sort((lhs, rhs) => {
+                    let lhsVal = lhs.children[2].children[0].textContent,
+                        rhsVal = rhs.children[2].children[0].textContent;
+                    return lhsVal.localeCompare(rhsVal);
+                });
+                e.target.textContent = "expand_less";
+            }
+            assortmentTable.innerHTML = "";
+            for(let z = 0; z < assortment.length; z++) {
+                assortmentTable.append(assortment[z]);
+            }
+        }
+    });
+    ratingSort.addEventListener("click", e => {
+        e.preventDefault();
+        const assortmentTable = document.getElementById("tableBody");
+        let assortment = Array.from(assortmentTable.children);
+        if(assortment.length > 0) {
+            if(e.target.textContent == "expand_less") {
+                assortment.sort((lhs, rhs) => {
+                    let lhsVal = lhs.children[3].children[0].textContent != "" ? parseFloat(lhs.children[3].children[0].textContent) : -1,
+                        rhsVal = rhs.children[3].children[0].textContent != "" ? parseFloat(rhs.children[3].children[0].textContent) : -1;
+                    console.log(lhsVal, rhsVal);
+                    return lhsVal - rhsVal;
+                });
+                e.target.textContent = "expand_more";
+            }
+            else if(e.target.textContent == "expand_more") {
+                assortment.sort((lhs, rhs) => {
+                    let lhsVal = lhs.children[3].children[0].textContent != "" ? parseFloat(lhs.children[3].children[0].textContent) : -1,
+                        rhsVal = rhs.children[3].children[0].textContent != "" ? parseFloat(rhs.children[3].children[0].textContent) : -1;
+                    return rhsVal - lhsVal;
+                });
+                e.target.textContent = "expand_less";
+            }
+            assortmentTable.innerHTML = "";
+            for(let z = 0; z < assortment.length; z++) {
+                assortmentTable.append(assortment[z]);
+            }
         }
     });
 });
