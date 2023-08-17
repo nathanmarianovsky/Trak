@@ -137,8 +137,11 @@ exports.animeSave = (BrowserWindow, path, fs, mainWindow, dataPath, evnt, data) 
 	if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[1])) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[2]))) {
 		// Create a new directory for the assets associated to the new record.
 		fs.mkdirSync(path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]), "assets"), { "recursive": true });
+		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(data), "A", dataPath, fs, path, evnt, data);
 	}
-	exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(data), "A", dataPath, fs, path, evnt, data);
+	else {
+		evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
+	}
 };
 
 

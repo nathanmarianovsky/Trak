@@ -145,7 +145,6 @@ ipcRenderer.on("loadRows", event => {
                         rowGenreStr += recordData.genres[0][y].split(/(?=[A-Z])/).join(" ");
                     }
                 }
-                // count == 2 ? rowGenreStr += "..." : rowGenreStr += recordData.genres[0][y].split(/(?=[A-Z])/).join(" ");
                 count++;
             }
             if(count == 3) { break; }
@@ -171,8 +170,18 @@ ipcRenderer.on("loadRows", event => {
         checkLabel.append(checkInput);
         tdCheck.append(checkLabel);
         tdFiles.append(tdFilesDiv);
-        // Append all portion of the row.
+        // Append all portions of the row.
         tr.setAttribute("id", list[n]);
+        tr.setAttribute("category", recordData.category);
+        tr.setAttribute("directors", recordData.directors);
+        tr.setAttribute("genres", recordData.genres[0].map(elem => elem != "CGDCT" ? elem.match(/[A-Z][a-z]+/g).join(" ") : ["C", "G", "D", "C", "T"]).join(","));
+        tr.setAttribute("jname", recordData.jname);
+        tr.setAttribute("license", recordData.license);
+        tr.setAttribute("musicians", recordData.musicians);
+        tr.setAttribute("name", recordData.name);
+        tr.setAttribute("producers", recordData.producers);
+        tr.setAttribute("studio", recordData.studio);
+        tr.setAttribute("writers", recordData.writers);
         tr.append(tdCheck, tdName, tdCategory, tdRating, tdGenres, tdFiles);
         tableBody.append(tr);
         // Reset the width of the headers table. 

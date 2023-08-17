@@ -26,10 +26,10 @@ const fs = require("fs"),
 
 
 
-// // Display a notification whenever a contact already exists with a provided name.
-// ipcRenderer.on("contactExists", (event, response) => {
-//     M.toast({"html": "A contact with the name " + response + " already exists! You can remove or update this contact on a separate page.", "classes": "rounded"});
-// });
+// Display a notification whenever a record already exists with a provided name.
+ipcRenderer.on("recordExists", (event, response) => {
+    M.toast({"html": "A record for the " + response.replace("-", " ") + " already exists! You can remove or update this record on a separate page.", "classes": "rounded"});
+});
 
 
 

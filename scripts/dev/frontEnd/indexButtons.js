@@ -101,6 +101,7 @@ window.addEventListener("load", () => {
             }
         }
     });
+    // Listen for a click event on the category sorter to reorder the records.
     categorySort.addEventListener("click", e => {
         e.preventDefault();
         const assortmentTable = document.getElementById("tableBody");
@@ -128,6 +129,7 @@ window.addEventListener("load", () => {
             }
         }
     });
+    // Listen for a click event on the rating sorter to reorder the records.
     ratingSort.addEventListener("click", e => {
         e.preventDefault();
         const assortmentTable = document.getElementById("tableBody");
