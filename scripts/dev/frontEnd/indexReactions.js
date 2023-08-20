@@ -129,7 +129,10 @@ ipcRenderer.on("loadRows", event => {
                 if(rowGenreStr.length > 0) { rowGenreStr += ", "; }
                 if(count == 2) { rowGenreStr += "..."; }
                 else {
-                    if(recordData.genres[0][y] == "ComingOfAge") {
+                    if(recordData.genres[0][y] == "CGDCT") {
+                        rowGenreStr += "CGDCT";
+                    }
+                    else if(recordData.genres[0][y] == "ComingOfAge") {
                         rowGenreStr += "Coming-of-Age";
                     }
                     else if(recordData.genres[0][y] == "PostApocalyptic") {
@@ -211,6 +214,83 @@ ipcRenderer.on("loadRows", event => {
         });
     }
     // Initialize the menu tooltips.
-    const elems = document.querySelectorAll(".tooltipped");
-        instances = M.Tooltip.init(elems);
+    initTooltips();
+
+
+    const filterForm = document.getElementById("filterForm");
+    let genresLst = ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
+            "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
+            "Hentai", "Historical", "Horror", "Isekai", "Josei", "Kids", "Medical", "Mystery", "Magic",
+            "MagicalSexShift", "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police",
+            "PostApocalyptic", "Psychological", "Racing", "Reincarnation", "ReverseHarem", "Romance", "Samurai",
+            "School", "SciFi", "Seinen", "Shoujo", "Shounen", "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame",
+            "SuperPower", "Supernatural", "Survival", "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy",
+            "Vampire", "VideoGame", "War", "Western", "Workplace", "Yaoi", "Yuri"];
+    // let genresLst = ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
+    //         "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore"];
+    const columns = 5,
+        rows = Math.ceil(genresLst.length / columns);
+    console.log(rows);
+    for(let r = 0; r < rows; r++) {
+        let rowDiv = document.createElement("div");
+        rowDiv.classList.add("genreRow");
+        for(let s = 0; s < columns; s++) {
+            // if(genresLst[(s * rows) + r] != undefined) {
+                let filterGenreStr = "";
+                    if(genresLst[(s * rows) + r] == "CGDCT") {
+                        filterGenreStr = "CGDCT";
+                    }
+                    else if(genresLst[(s * rows) + r] == "ComingOfAge") {
+                        filterGenreStr = "Coming-of-Age";
+                    }
+                    else if(genresLst[(s * rows) + r] == "PostApocalyptic") {
+                        filterGenreStr = "Post-Apocalyptic";
+                    }
+                    else if(genresLst[(s * rows) + r] == "SciFi") {
+                        filterGenreStr = "Sci-Fi";
+                    }
+                    else if(genresLst[(s * rows) + r] == "SliceOfLife") {
+                        filterGenreStr = "Slice of Life";
+                    }
+                    else if(genresLst[(s * rows) + r] != undefined) {
+                        filterGenreStr = genresLst[(s * rows) + r].split(/(?=[A-Z])/).join(" ");
+                    }
+                    else {
+                        filterGenreStr = "";
+                    }
+                let genreCheckLabel = document.createElement("label"),
+                    genereCheckInput = document.createElement("input"),
+                    genereCheckSpan = document.createElement("span");
+                genreCheckLabel.classList.add("col", "s2");
+                genereCheckInput.setAttribute("type", "checkbox");
+                filterGenreStr != "" ? genereCheckInput.setAttribute("id", "filterGenre" + genresLst[(s * rows) + r]) : genreCheckLabel.style.visibility = "hidden";
+                genereCheckInput.classList.add("filled-in");
+                genereCheckSpan.textContent = filterGenreStr;
+                genereCheckSpan.classList.add("checkboxText");
+                genreCheckLabel.append(genereCheckInput, genereCheckSpan);
+                rowDiv.append(genreCheckLabel);
+            // }
+        }
+        filterForm.append(rowDiv);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Initialize the modals.
+    initModal();
 });

@@ -460,3 +460,17 @@ footer {
 	left: 8px;
 	cursor: pointer;
 }
+
+#filterModal {
+	width: 97%;
+	height: 85%;
+	max-height: 85%;
+}
+
+#filterModal .s2 {
+	width: 20%;
+}
+
+#filterModalGenreHeading {
+	margin-top: 25px;
+}

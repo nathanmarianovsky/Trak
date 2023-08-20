@@ -5,6 +5,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - clearTooltips: Remove all tooltips on the page.
     - initTooltips: Initialize all tooltips on the page.
     - initSelect: Initialize all select tags on the page.
+    - initModal: Initialize all modals on the page.
     - initSelectObservers: Initialize the observers for style mutations on related content select tags.
     - initContentDrag: Initialize the listeners associated to related content dragging.
     - toastParse: Handles the parsing of a record folder name to display to the user.
@@ -60,6 +61,19 @@ var initSelect = () => {
 
 /*
 
+Initialize all modals on the page.
+
+*/
+var initModal = () => {
+    // Define the current instances of modals fonud on the page.
+    const elemsModal = document.querySelectorAll(".modal"),
+        instancesModal = M.Modal.init(elemsModal);
+};
+
+
+
+/*
+
 Initialize the observers for style mutations on related content select tags.
 
 */
@@ -70,7 +84,6 @@ var initSelectObservers = () => {
         let target = mutations[0].target.parentNode.parentNode.parentNode.parentNode;
         // If this select tag is a desired target then hide the body of episodes associated to an anime season.
         if(target.classList.contains("dropzone")) {
-            console.log("hello");
             setTimeout(() => target.children[1].style.display = "none", 1);
         }
     });

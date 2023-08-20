@@ -155,26 +155,19 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
     // Initialize the select tags on the page.
-    const elemsSelect = document.querySelectorAll("select"),
-        instancesSelect = M.FormSelect.init(elemsSelect);
+    initSelect();
     // Initialize the floating action button on the page.
     const elemsFAB = document.querySelectorAll(".fixed-action-btn"),
         instancesFAB = M.FloatingActionButton.init(elemsFAB, { "hoverEnabled": false, "direction": "left" });
     // Initialize the menu tooltips.
-    const elemsTooltips = document.querySelectorAll(".tooltipped"),
-        instancesTooltips = M.Tooltip.init(elemsTooltips);
+    initTooltips()
     // Initialize the modals.
-    const elemsModal = document.querySelectorAll(".modal"),
-        instancesModal = M.Modal.init(elemsModal);
+    initModal();
     // Initialize the collapsible divs.
     const elemsCollapsible = document.querySelectorAll(".collapsible"),
         instancesCollapsible = M.Collapsible.init(elemsCollapsible);
     // Add the listeners corresponding to the record choices.
     recordChoicesButtons();
-    // // Initialize the observer for the anime review.
-    // initAnimeReviewObserver();
-    // // Initialize the observer for the select tags.
-    // initSelectObservers();
     // Add the listeners corresponding to the anime record save.
     animeSave();
     // Add the listeners corresponding to the anime related content options.

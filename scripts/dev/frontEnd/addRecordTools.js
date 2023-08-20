@@ -25,7 +25,6 @@ Calculates the average rating for an anime based on the available ratings for al
 
 */
 var calculateAnimeRating = () => {
-    console.log("hello");
     const relevantList = document.getElementById("animeList"),
         globalRating = document.getElementById("animeRating");
     let sum = 0, count = 0;

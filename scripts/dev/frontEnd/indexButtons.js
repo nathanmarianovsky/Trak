@@ -109,16 +109,16 @@ window.addEventListener("load", () => {
         if(assortment.length > 0) {
             if(e.target.textContent == "expand_less") {
                 assortment.sort((lhs, rhs) => {
-                    let lhsVal = lhs.children[2].children[0].textContent,
-                        rhsVal = rhs.children[2].children[0].textContent;
+                    let lhsVal = lhs.getAttribute("category"),
+                        rhsVal = rhs.getAttribute("category");
                     return rhsVal.localeCompare(lhsVal);
                 });
                 e.target.textContent = "expand_more";
             }
             else if(e.target.textContent == "expand_more") {
                 assortment.sort((lhs, rhs) => {
-                    let lhsVal = lhs.children[2].children[0].textContent,
-                        rhsVal = rhs.children[2].children[0].textContent;
+                    let lhsVal = lhs.getAttribute("category"),
+                        rhsVal = rhs.getAttribute("category");
                     return lhsVal.localeCompare(rhsVal);
                 });
                 e.target.textContent = "expand_less";
@@ -139,7 +139,6 @@ window.addEventListener("load", () => {
                 assortment.sort((lhs, rhs) => {
                     let lhsVal = lhs.children[3].children[0].textContent != "" ? parseFloat(lhs.children[3].children[0].textContent) : -1,
                         rhsVal = rhs.children[3].children[0].textContent != "" ? parseFloat(rhs.children[3].children[0].textContent) : -1;
-                    console.log(lhsVal, rhsVal);
                     return lhsVal - rhsVal;
                 });
                 e.target.textContent = "expand_more";

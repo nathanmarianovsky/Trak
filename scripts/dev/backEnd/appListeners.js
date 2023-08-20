@@ -200,7 +200,7 @@ Handles the removal of records by deleting the associated folders and data file.
 */
 exports.removeRecords = (primaryWin, BrowserWindow, ipc, userPath, toolsCollection, fs, path, data) => {
 	// Create a new window to ask the user to confirm the deletion of a contact.
-	let removeRecordsWindow = toolsCollection.createWindow("confirmation", BrowserWindow, path, 525, 325);
+	let removeRecordsWindow = toolsCollection.createWindow("confirmation", BrowserWindow, path, 525, 300);
 	// Once the new window has been loaded, supply the message to the front-end.
 	removeRecordsWindow.webContents.on("did-finish-load", () => {
 		removeRecordsWindow.webContents.send("recordsConfirmationText", data);
