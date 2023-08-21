@@ -123,34 +123,37 @@ ipcRenderer.on("loadRows", event => {
         tdRating.append(tdRatingDiv);
         // Modify the genres portion.
         let count = 0,
-            rowGenreStr = "";
+            rowGenreStr = "",
+            rowGenreInfo = "";
         for(let y = 0; y < recordData.genres[0].length; y++) {
             if(recordData.genres[1][y] == true) {
-                if(rowGenreStr.length > 0) { rowGenreStr += ", "; }
-                if(count == 2) { rowGenreStr += "..."; }
-                else {
-                    if(recordData.genres[0][y] == "CGDCT") {
-                        rowGenreStr += "CGDCT";
-                    }
-                    else if(recordData.genres[0][y] == "ComingOfAge") {
-                        rowGenreStr += "Coming-of-Age";
-                    }
-                    else if(recordData.genres[0][y] == "PostApocalyptic") {
-                        rowGenreStr += "Post-Apocalyptic";
-                    }
-                    else if(recordData.genres[0][y] == "SciFi") {
-                        rowGenreStr += "Sci-Fi";
-                    }
-                    else if(recordData.genres[0][y] == "SliceOfLife") {
-                        rowGenreStr += "Slice of Life";
-                    }
+                rowGenreInfo.length == 0 ? rowGenreInfo = recordData.genres[0][y] : rowGenreInfo += "," + recordData.genres[0][y];
+                if(count <= 2) {
+                    if(rowGenreStr.length > 0) { rowGenreStr += ", "; }
+                    if(count == 2) { rowGenreStr += "..."; }
                     else {
-                        rowGenreStr += recordData.genres[0][y].split(/(?=[A-Z])/).join(" ");
+                        if(recordData.genres[0][y] == "CGDCT") {
+                            rowGenreStr += "CGDCT";
+                        }
+                        else if(recordData.genres[0][y] == "ComingOfAge") {
+                            rowGenreStr += "Coming-of-Age";
+                        }
+                        else if(recordData.genres[0][y] == "PostApocalyptic") {
+                            rowGenreStr += "Post-Apocalyptic";
+                        }
+                        else if(recordData.genres[0][y] == "SciFi") {
+                            rowGenreStr += "Sci-Fi";
+                        }
+                        else if(recordData.genres[0][y] == "SliceOfLife") {
+                            rowGenreStr += "Slice of Life";
+                        }
+                        else {
+                            rowGenreStr += recordData.genres[0][y].split(/(?=[A-Z])/).join(" ");
+                        }
                     }
+                    count++;
                 }
-                count++;
             }
-            if(count == 3) { break; }
         }
         tdGenresDiv.textContent = rowGenreStr;
         tdGenresDiv.classList.add("recordsRowDiv");
@@ -177,7 +180,7 @@ ipcRenderer.on("loadRows", event => {
         tr.setAttribute("id", list[n]);
         tr.setAttribute("category", recordData.category);
         tr.setAttribute("directors", recordData.directors);
-        tr.setAttribute("genres", recordData.genres[0].map(elem => elem != "CGDCT" ? elem.match(/[A-Z][a-z]+/g).join(" ") : ["C", "G", "D", "C", "T"]).join(","));
+        tr.setAttribute("genres", rowGenreInfo);
         tr.setAttribute("jname", recordData.jname);
         tr.setAttribute("license", recordData.license);
         tr.setAttribute("musicians", recordData.musicians);
@@ -217,20 +220,10 @@ ipcRenderer.on("loadRows", event => {
     initTooltips();
 
 
-    const filterForm = document.getElementById("filterForm");
-    let genresLst = ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
-            "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
-            "Hentai", "Historical", "Horror", "Isekai", "Josei", "Kids", "Medical", "Mystery", "Magic",
-            "MagicalSexShift", "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police",
-            "PostApocalyptic", "Psychological", "Racing", "Reincarnation", "ReverseHarem", "Romance", "Samurai",
-            "School", "SciFi", "Seinen", "Shoujo", "Shounen", "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame",
-            "SuperPower", "Supernatural", "Survival", "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy",
-            "Vampire", "VideoGame", "War", "Western", "Workplace", "Yaoi", "Yuri"];
-    // let genresLst = ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
-    //         "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore"];
-    const columns = 5,
+    const filterForm = document.getElementById("filterForm"),
+        genresLst = filterGenreList(),
+        columns = 5,
         rows = Math.ceil(genresLst.length / columns);
-    console.log(rows);
     for(let r = 0; r < rows; r++) {
         let rowDiv = document.createElement("div");
         rowDiv.classList.add("genreRow");
@@ -273,24 +266,6 @@ ipcRenderer.on("loadRows", event => {
         }
         filterForm.append(rowDiv);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // Initialize the modals.
     initModal();
 });

@@ -168,3 +168,21 @@ var toastParse = folder => {
     let hldr = folder.split("-")[0];
     return nameStr = hldr.toLowerCase() + " " + folder.substring(hldr.length + 1);
 };
+
+
+
+/*
+
+Provides the list of all genres/tags that can be selected from the index.page filter.
+
+*/
+var filterGenreList = () => {
+    return ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
+            "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
+            "Hentai", "Historical", "Horror", "Isekai", "Josei", "Kids", "Medical", "Mystery", "Magic",
+            "MagicalSexShift", "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police",
+            "PostApocalyptic", "Psychological", "Racing", "Reincarnation", "ReverseHarem", "Romance", "Samurai",
+            "School", "SciFi", "Seinen", "Shoujo", "Shounen", "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame",
+            "SuperPower", "Supernatural", "Survival", "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy",
+            "Vampire", "VideoGame", "War", "Western", "Workplace", "Yaoi", "Yuri"];
+};

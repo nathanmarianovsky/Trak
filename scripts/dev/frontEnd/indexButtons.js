@@ -30,7 +30,8 @@ window.addEventListener("load", () => {
         checkAll = document.getElementById("checkAll"),
         nameSort = document.getElementById("nameSort"),
         categorySort = document.getElementById("categorySort"),
-        ratingSort = document.getElementById("ratingSort");
+        ratingSort = document.getElementById("ratingSort"),
+        filterApply = document.getElementById("filterApply");
     // Listen for a click event on the add button in order to open a window whose inputs will generate a new record.
     add.addEventListener("click", e => {
         e.preventDefault();
@@ -155,6 +156,46 @@ window.addEventListener("load", () => {
             for(let z = 0; z < assortment.length; z++) {
                 assortmentTable.append(assortment[z]);
             }
+        }
+    });
+    // Listen for a click event on the filter button in order to filter the list of records.
+    filterApply.addEventListener("click", e => {
+        const categoryList = ["Anime", "Book", "Film", "Manga", "Show"],
+            genresList = filterGenreList(),
+            catCheck = [],
+            genreCheck = [],
+            pageTable = Array.from(document.getElementById("tableBody").children);
+        for(let i = 0; i < categoryList.length; i++) {
+            if(document.getElementById("filterCategory" + categoryList[i]).checked == true) { catCheck.push(categoryList[i]); }
+        }
+        for(let j = 0; j < genresList.length; j++) {
+            if(document.getElementById("filterGenre" + genresList[j]).checked == true) { genreCheck.push(genresList[j]); }
+        }
+        for(let x = 0; x < pageTable.length; x++) {
+            if(catCheck.length > 0 && genreCheck.length > 0) {
+                let genreOverall = true,
+                    genreSplit = pageTable[x].getAttribute("genres").split(",");
+                for(let y = 0; y < genreCheck.length; y++) {
+                    if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
+                }
+                genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+            }
+            else if(catCheck.length > 0 && genreCheck.length == 0) {
+                catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+            }
+            else if(catCheck.length == 0 && genreCheck.length > 0) {
+                let genreOverall = true,
+                    genreSplit = pageTable[x].getAttribute("genres").split(",");
+                for(let y = 0; y < genreCheck.length; y++) {
+                    if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
+                }
+                genreOverall == true ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+            }
+            else { pageTable[x].style.display = "table-row"; }
+            searchBar.parentNode.children[0].classList.remove("active");
+            searchBar.value = "";
+            searchBar.classList.remove("valid");
+            searchBar.parentNode.children[2].classList.remove("active");
         }
     });
 });
