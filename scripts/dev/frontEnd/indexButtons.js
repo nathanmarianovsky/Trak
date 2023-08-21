@@ -57,8 +57,10 @@ window.addEventListener("load", () => {
     });
     // Listen for a click event on the check all checkbox in order to check or uncheck all record checkboxes.
     checkAll.addEventListener("click", e => {
+        // Define the collection of all record rows and the remove button.
         const bodyList = document.getElementById("tableBody").children,
             btn = document.getElementById("remove");
+        // If the checkAll is checked then check all records.
         if(checkAll.checked) {
             for(let i = 0; i < bodyList.length; i++) {
                 bodyList[i].children[0].children[0].children[0].checked = true;
@@ -67,6 +69,7 @@ window.addEventListener("load", () => {
                 btn.style.display = "inherit";
             }
         }
+        // Otherwise, if the checkAll is unchecked then uncheck all records.
         else {
             for(let i = 0; i < bodyList.length; i++) {
                 bodyList[i].children[0].children[0].children[0].checked = false;
@@ -77,9 +80,12 @@ window.addEventListener("load", () => {
     // Listen for a click event on the name sorter to reorder the records.
     nameSort.addEventListener("click", e => {
         e.preventDefault();
+        // Define the collection of all record rows and associated table body.
         const assortmentTable = document.getElementById("tableBody");
         let assortment = Array.from(assortmentTable.children);
-        if(assortment.length > 0) {
+        // Sort the records only if at least two records exist.
+        if(assortment.length > 1) {
+            // Sort in alphabetical order from top to bottom based on the record name.
             if(e.target.textContent == "expand_less") {
                 assortment.sort((lhs, rhs) => {
                     let lhsVal = lhs.id.substring(lhs.id.indexOf("-")),
@@ -88,6 +94,7 @@ window.addEventListener("load", () => {
                 });
                 e.target.textContent = "expand_more";
             }
+            // Sort in alphabetical order from bottom to top based on the record name.
             else if(e.target.textContent == "expand_more") {
                 assortment.sort((lhs, rhs) => {
                     let lhsVal = lhs.id.substring(lhs.id.indexOf("-")),
@@ -96,6 +103,7 @@ window.addEventListener("load", () => {
                 });
                 e.target.textContent = "expand_less";
             }
+            // Clear the table and refill it with the ordered records.
             assortmentTable.innerHTML = "";
             for(let z = 0; z < assortment.length; z++) {
                 assortmentTable.append(assortment[z]);
@@ -105,9 +113,12 @@ window.addEventListener("load", () => {
     // Listen for a click event on the category sorter to reorder the records.
     categorySort.addEventListener("click", e => {
         e.preventDefault();
+        // Define the collection of all record rows and associated table body.
         const assortmentTable = document.getElementById("tableBody");
         let assortment = Array.from(assortmentTable.children);
-        if(assortment.length > 0) {
+        // Sort the records only if at least two records exist.
+        if(assortment.length > 1) {
+            // Sort in alphabetical order from top to bottom based on the record category.
             if(e.target.textContent == "expand_less") {
                 assortment.sort((lhs, rhs) => {
                     let lhsVal = lhs.getAttribute("category"),
@@ -116,6 +127,7 @@ window.addEventListener("load", () => {
                 });
                 e.target.textContent = "expand_more";
             }
+            // Sort in alphabetical order from bottom to top based on the record category.
             else if(e.target.textContent == "expand_more") {
                 assortment.sort((lhs, rhs) => {
                     let lhsVal = lhs.getAttribute("category"),
@@ -124,6 +136,7 @@ window.addEventListener("load", () => {
                 });
                 e.target.textContent = "expand_less";
             }
+            // Clear the table and refill it with the ordered records.
             assortmentTable.innerHTML = "";
             for(let z = 0; z < assortment.length; z++) {
                 assortmentTable.append(assortment[z]);
@@ -133,9 +146,12 @@ window.addEventListener("load", () => {
     // Listen for a click event on the rating sorter to reorder the records.
     ratingSort.addEventListener("click", e => {
         e.preventDefault();
+        // Define the collection of all record rows and associated table body.
         const assortmentTable = document.getElementById("tableBody");
         let assortment = Array.from(assortmentTable.children);
+        // Sort the records only if at least two records exist.
         if(assortment.length > 0) {
+            // Sort in alphabetical order from top to bottom based on the record rating.
             if(e.target.textContent == "expand_less") {
                 assortment.sort((lhs, rhs) => {
                     let lhsVal = lhs.children[3].children[0].textContent != "" ? parseFloat(lhs.children[3].children[0].textContent) : -1,
@@ -144,6 +160,7 @@ window.addEventListener("load", () => {
                 });
                 e.target.textContent = "expand_more";
             }
+            // Sort in alphabetical order from bottom to top based on the record rating.
             else if(e.target.textContent == "expand_more") {
                 assortment.sort((lhs, rhs) => {
                     let lhsVal = lhs.children[3].children[0].textContent != "" ? parseFloat(lhs.children[3].children[0].textContent) : -1,
@@ -152,6 +169,7 @@ window.addEventListener("load", () => {
                 });
                 e.target.textContent = "expand_less";
             }
+            // Clear the table and refill it with the ordered records.
             assortmentTable.innerHTML = "";
             for(let z = 0; z < assortment.length; z++) {
                 assortmentTable.append(assortment[z]);
@@ -160,18 +178,23 @@ window.addEventListener("load", () => {
     });
     // Listen for a click event on the filter button in order to filter the list of records.
     filterApply.addEventListener("click", e => {
+        // Define the category and genre arrays along with the record rows.
         const categoryList = ["Anime", "Book", "Film", "Manga", "Show"],
             genresList = filterGenreList(),
             catCheck = [],
             genreCheck = [],
             pageTable = Array.from(document.getElementById("tableBody").children);
+        // Define the filtered categories collection.
         for(let i = 0; i < categoryList.length; i++) {
             if(document.getElementById("filterCategory" + categoryList[i]).checked == true) { catCheck.push(categoryList[i]); }
         }
+        // Define the filtered genres collection.
         for(let j = 0; j < genresList.length; j++) {
             if(document.getElementById("filterGenre" + genresList[j]).checked == true) { genreCheck.push(genresList[j]); }
         }
+        // Iterate through the records rows to determine if they pass the filter.
         for(let x = 0; x < pageTable.length; x++) {
+            // Filter based on both categories and genres.
             if(catCheck.length > 0 && genreCheck.length > 0) {
                 let genreOverall = true,
                     genreSplit = pageTable[x].getAttribute("genres").split(",");
@@ -180,9 +203,11 @@ window.addEventListener("load", () => {
                 }
                 genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
             }
+            // Filter based only on categories.
             else if(catCheck.length > 0 && genreCheck.length == 0) {
                 catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
             }
+            // Filter based only genres.
             else if(catCheck.length == 0 && genreCheck.length > 0) {
                 let genreOverall = true,
                     genreSplit = pageTable[x].getAttribute("genres").split(",");
@@ -191,7 +216,9 @@ window.addEventListener("load", () => {
                 }
                 genreOverall == true ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
             }
+            // If the empty filter is applied then show all record rows.
             else { pageTable[x].style.display = "table-row"; }
+            // Upon the submission of a filter clear the search bar.
             searchBar.parentNode.children[0].classList.remove("active");
             searchBar.value = "";
             searchBar.classList.remove("valid");

@@ -218,52 +218,55 @@ ipcRenderer.on("loadRows", event => {
     }
     // Initialize the menu tooltips.
     initTooltips();
-
-
+    // Define the filter form, list of genres, and number of columns and rows.
     const filterForm = document.getElementById("filterForm"),
         genresLst = filterGenreList(),
         columns = 5,
         rows = Math.ceil(genresLst.length / columns);
+    // Iterate through all rows needed.
     for(let r = 0; r < rows; r++) {
+        // Construct a div to contain the row.
         let rowDiv = document.createElement("div");
         rowDiv.classList.add("genreRow");
+        // Iterate through all columnds needed.
         for(let s = 0; s < columns; s++) {
-            // if(genresLst[(s * rows) + r] != undefined) {
-                let filterGenreStr = "";
-                    if(genresLst[(s * rows) + r] == "CGDCT") {
-                        filterGenreStr = "CGDCT";
-                    }
-                    else if(genresLst[(s * rows) + r] == "ComingOfAge") {
-                        filterGenreStr = "Coming-of-Age";
-                    }
-                    else if(genresLst[(s * rows) + r] == "PostApocalyptic") {
-                        filterGenreStr = "Post-Apocalyptic";
-                    }
-                    else if(genresLst[(s * rows) + r] == "SciFi") {
-                        filterGenreStr = "Sci-Fi";
-                    }
-                    else if(genresLst[(s * rows) + r] == "SliceOfLife") {
-                        filterGenreStr = "Slice of Life";
-                    }
-                    else if(genresLst[(s * rows) + r] != undefined) {
-                        filterGenreStr = genresLst[(s * rows) + r].split(/(?=[A-Z])/).join(" ");
-                    }
-                    else {
-                        filterGenreStr = "";
-                    }
-                let genreCheckLabel = document.createElement("label"),
-                    genereCheckInput = document.createElement("input"),
-                    genereCheckSpan = document.createElement("span");
-                genreCheckLabel.classList.add("col", "s2");
-                genereCheckInput.setAttribute("type", "checkbox");
-                filterGenreStr != "" ? genereCheckInput.setAttribute("id", "filterGenre" + genresLst[(s * rows) + r]) : genreCheckLabel.style.visibility = "hidden";
-                genereCheckInput.classList.add("filled-in");
-                genereCheckSpan.textContent = filterGenreStr;
-                genereCheckSpan.classList.add("checkboxText");
-                genreCheckLabel.append(genereCheckInput, genereCheckSpan);
-                rowDiv.append(genreCheckLabel);
-            // }
+            // Define the text associated to the genre.
+            let filterGenreStr = "";
+            if(genresLst[(s * rows) + r] == "CGDCT") {
+                filterGenreStr = "CGDCT";
+            }
+            else if(genresLst[(s * rows) + r] == "ComingOfAge") {
+                filterGenreStr = "Coming-of-Age";
+            }
+            else if(genresLst[(s * rows) + r] == "PostApocalyptic") {
+                filterGenreStr = "Post-Apocalyptic";
+            }
+            else if(genresLst[(s * rows) + r] == "SciFi") {
+                filterGenreStr = "Sci-Fi";
+            }
+            else if(genresLst[(s * rows) + r] == "SliceOfLife") {
+                filterGenreStr = "Slice of Life";
+            }
+            else if(genresLst[(s * rows) + r] != undefined) {
+                filterGenreStr = genresLst[(s * rows) + r].split(/(?=[A-Z])/).join(" ");
+            }
+            else { filterGenreStr = ""; }
+            // Define the checkbox, label, and span associated to the genre.
+            let genreCheckLabel = document.createElement("label"),
+                genereCheckInput = document.createElement("input"),
+                genereCheckSpan = document.createElement("span");
+            // Modify the page elements.
+            genreCheckLabel.classList.add("col", "s2");
+            genereCheckInput.setAttribute("type", "checkbox");
+            filterGenreStr != "" ? genereCheckInput.setAttribute("id", "filterGenre" + genresLst[(s * rows) + r]) : genreCheckLabel.style.visibility = "hidden";
+            genereCheckInput.classList.add("filled-in");
+            genereCheckSpan.textContent = filterGenreStr;
+            genereCheckSpan.classList.add("checkboxText");
+            // Append the checkbox and text to the row.
+            genreCheckLabel.append(genereCheckInput, genereCheckSpan);
+            rowDiv.append(genreCheckLabel);
         }
+        // Append the row to the filter form.
         filterForm.append(rowDiv);
     }
     // Initialize the modals.

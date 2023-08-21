@@ -92,14 +92,7 @@ var animeSave = () => {
             animeStudio = document.getElementById("animeStudio").value,
             animeLicense = document.getElementById("animeLicense").value,
             animeFiles = Array.from(document.getElementById("animeAddRecordFiles").files).map(elem => elem.path),
-            genresLst = ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
-                "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
-                "Hentai", "Historical", "Horror", "Isekai", "Josei", "Kids", "Medical", "Mystery", "Magic",
-                "MagicalSexShift", "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police",
-                "PostApocalyptic", "Psychological", "Racing", "Reincarnation", "ReverseHarem", "Romance", "Samurai",
-                "School", "SciFi", "Seinen", "Shoujo", "Shounen", "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame",
-                "SuperPower", "Supernatural", "Survival", "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy",
-                "Vampire", "VideoGame", "War", "Western", "Workplace", "Yaoi", "Yuri"];
+            genresLst = animeGenreList(),
             genres = [],
             content = [];
         // Check to see that at least one name was provided.
@@ -153,15 +146,3 @@ var animeSave = () => {
         else { M.toast({"html": "An anime record requires that either an English or Japanese name is provided.", "classes": "rounded"}); }
     });
 };
-
-
-
-// Wait for the window to finish loading.
-window.addEventListener("load", () => {
-    // // Add the listeners corresponding to the record choices.
-    // recordChoicesButtons();
-    // // Add the listeners corresponding to the anime record save.
-    // animeSave();
-    // // Add the listeners corresponding to the anime related content options.
-    // animeModalButtons();
-});

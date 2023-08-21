@@ -2,6 +2,7 @@
 
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page.
 
+    - animeGenreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
     - calculateAnimeRating: Calculates the average rating for an anime based on the available ratings for all films, ONAs, OVAs, and seasons.
     - animeListReorganize: Reorganize the list items in the associated anime modal.
     - animeSeasonContentButtons: Listen for change and click events on the related content anime episode table items.
@@ -16,6 +17,24 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*
+
+Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
+
+*/
+var animeGenreList = () => {
+    return ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
+            "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
+            "Hentai", "Historical", "Horror", "Isekai", "Josei", "Kids", "Medical", "Mystery", "Magic",
+            "MagicalSexShift", "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police",
+            "PostApocalyptic", "Psychological", "Racing", "Reincarnation", "ReverseHarem", "Romance", "Samurai",
+            "School", "SciFi", "Seinen", "Shoujo", "Shounen", "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame",
+            "SuperPower", "Supernatural", "Survival", "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy",
+            "Vampire", "VideoGame", "War", "Western", "Workplace", "Yaoi", "Yuri"];
+};
 
 
 
