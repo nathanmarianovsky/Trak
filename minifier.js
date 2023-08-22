@@ -3,9 +3,10 @@
 Declare all of the necessary variables.
 
 	- htmlMinify provides the tool used to compress html files.
-	- fs and path provide the means to work with local files.
 	- minify provides the tool used to compress css and js files.
 	- yui and uglifyJS provide the compression algorithms for css and js files, respectively.
+	- cliProgress provides the means to display a load bar on the command line interface.
+	- fs and path provide the means to work with local files.
 	- cheerio provides a jQuery-like library to work with html files in the back-end.
 
 */
@@ -20,80 +21,33 @@ const htmlMinify = require("html-minifier").minify,
 
 
 
-/*
-
-Determine whether one array is a subset of another.
-
-	- parentArray is the array which acts as the total container.
-	- subsetArray is the array which is checked to be a subset of the parentArray.
-
-*/
-var checkSubset = (parentArray, subsetArray) => {
- 	let set = new Set(parentArray);
-	return subsetArray.every(x => set.has(x));
-};
-
-
-
-// // Append the app menu to the appropriate html files.
-// console.log("Adding Menu to Appropriate HTML Files.");
-// const htmlMenuList = [],
-const htmlMenuList = [],
-	htmlMenuListFolders = [];
-// 	htmlMenuListFolders = [],
-// 	htmlMenu = fs.readFileSync(path.join(__dirname, "pages", "dev", "menu.html"));
-// for(let t = 0; t < htmlMenuList.length; t++) {
-// 	let data = fs.readFileSync(path.join(__dirname, "pages", "dev", htmlMenuListFolders[t], htmlMenuList[t]), "UTF8"),
-// 		$ = cheerio.load(data);
-// 	$("#menu").html(htmlMenu);
-// 	if(!fs.existsSync(path.join(__dirname, "pages", "dev", "menuAttached", htmlMenuListFolders[t]))) {
-// 		fs.mkdirSync(path.join(__dirname, "pages", "dev", "menuAttached", htmlMenuListFolders[t]), { "recursive": true });
-// 	}
-// 	fs.writeFileSync(path.join(__dirname, "pages", "dev", "menuAttached", htmlMenuListFolders[t], "menuAttached" + htmlMenuList[t].charAt(0).toUpperCase() + htmlMenuList[t].slice(1)), $.html(), "UTF8");
-// }
+// Append the app settings to the appropriate html files.
+console.log("Adding Menu to Appropriate HTML Files.");
+const htmlMenuList = ["index.html", "addRecord.html"],
+	htmlSettings = fs.readFileSync(path.join(__dirname, "pages", "dev", "settings.html"));
+for(let t = 0; t < htmlMenuList.length; t++) {
+	let data = fs.readFileSync(path.join(__dirname, "pages", "dev", htmlMenuList[t]), "UTF8"),
+		$ = cheerio.load(data);
+	$("#settingsModal").html(htmlSettings);
+	if(!fs.existsSync(path.join(__dirname, "pages", "dev", "settingsAttached"))) {
+		fs.mkdirSync(path.join(__dirname, "pages", "dev", "settingsAttached"), { "recursive": true });
+	}
+	fs.writeFileSync(path.join(__dirname, "pages", "dev", "settingsAttached", "settingsAttached" + htmlMenuList[t].charAt(0).toUpperCase() + htmlMenuList[t].slice(1)), $.html(), "UTF8");
+}
 
 
 
 // Compress the html files.
-console.log("Starting Compression of HTML Files without the Menu:");
+console.log("Starting Compression of HTML Files with the Settings Modal:");
 if(!fs.existsSync(path.join(__dirname, "pages", "dist"))) {
 	fs.mkdirSync(path.join(__dirname, "pages", "dist"));
 }
-const htmlListFolders = [""];
-for(let l = 0; l < htmlListFolders.length; l++) {
-	let htmlList = fs.readdirSync(path.join(__dirname, "pages", "dev", htmlListFolders[l]));
-	if(!fs.existsSync(path.join(__dirname, "pages", "dist", htmlListFolders[l]))) {
-		fs.mkdirSync(path.join(__dirname, "pages", "dist", htmlListFolders[l]), { "recursive": true });
-	}
-	if(!checkSubset(htmlMenuList, htmlList)) {
-		let	htmlBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect);
-		for(let i = 0; i < htmlList.length; i++) {
-			if(htmlList[i].includes(".html") && !htmlMenuList.includes(htmlList[i])) {
-				let file = htmlList[i],
-					htmlBarRow = htmlBar.create(1, 0, {}, {"format": "[{bar}] {percentage}% | " + file}),
-					data = fs.readFileSync(path.join(__dirname, "pages", "dev", htmlListFolders[l], file), "UTF8");
-				fs.writeFileSync(path.join(__dirname, "pages", "dist", htmlListFolders[l], file), htmlMinify(data, {
-					"removeComments": true,
-					"removeCommentsFromCDATA": true,
-					"collapseInlineTagWhitespace": true,
-					"removeAttributeQuotes": true,
-					"useShortDoctype": true,
-					"minifyJS": true,
-					"minifyCSS": true
-				}));
-				htmlBarRow.update(1);
-			}
-		}
-		htmlBar.stop();
-	}
-}
-console.log("Starting Compression of HTML Files with the Menu:");
-const menuHtmlBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect);
+const settingsHtmlBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect);
 for(let r = 0; r < htmlMenuList.length; r++) {
 	let file = htmlMenuList[r],
-		menuHtmlBarRow = menuHtmlBar.create(1, 0, {}, {"format": "[{bar}] {percentage}% | " + file}),
-		data = fs.readFileSync(path.join(__dirname, "pages", "dev", "menuAttached", htmlMenuListFolders[r], "menuAttached" + file.charAt(0).toUpperCase() + file.slice(1)), "UTF8");
-	fs.writeFileSync(path.join(__dirname, "pages", "dist", htmlMenuListFolders[r], "menuAttached" + file.charAt(0).toUpperCase() + file.slice(1)), htmlMinify(data, {
+		settingsHtmlBarRow = settingsHtmlBar.create(1, 0, {}, {"format": "[{bar}] {percentage}% | " + file}),
+		data = fs.readFileSync(path.join(__dirname, "pages", "dev", "settingsAttached", "settingsAttached" + file.charAt(0).toUpperCase() + file.slice(1)), "UTF8");
+	fs.writeFileSync(path.join(__dirname, "pages", "dist", file), htmlMinify(data, {
 		"removeComments": true,
 		"removeCommentsFromCDATA": true,
 		"collapseInlineTagWhitespace": true,
@@ -102,9 +56,9 @@ for(let r = 0; r < htmlMenuList.length; r++) {
 		"minifyJS": true,
 		"minifyCSS": true
 	}));
-	menuHtmlBarRow.update(1);
+	settingsHtmlBarRow.update(1);
 }
-menuHtmlBar.stop();
+settingsHtmlBar.stop();
 
 
 
@@ -217,7 +171,7 @@ jsFrontBar.stop();
 
 
 // Remove the menu attached html files inside the dev folder.
-fs.rmSync(path.join(__dirname, "pages", "dev", "menuAttached"), {"recursive": true, "force": true});
+fs.rmSync(path.join(__dirname, "pages", "dev", "settingsAttached"), {"recursive": true, "force": true});
 
 
 

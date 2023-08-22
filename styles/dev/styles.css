@@ -239,46 +239,11 @@ footer {
   	bottom: 225px;
 }
 
-/*#tripDatesItem {
-	margin-right: 35px;
-}
-
-#contactCardNavList {
-	display: none;
-}*/
-
 #defModalBtn {
 	background-color: #2A2A8E !important;
 	color: white !important;
 	margin-left: 15px;
 }
-
-/*#smallModalBtn, #mediumModalBtn, #largeModalBtn, #allModalBtn {
-	background-color: #D9D9DB !important;
-	margin-left: 3px;
-}
-
-#datesPreloader {
-	display: block !important;
-	position: relative !important;
-  	margin: 0 auto 30px auto;
-  	top: 30px;
-  	bottom: initial;
-  	right: initial;
-}*/
-
-/*#tripDatesTable {
-	border-collapse: inherit;
-}
-
-#tripDatesTable tr td {
-	padding: 5px;
-	border-right: 1px solid black;
-}
-
-#tripDatesTable tr td:last-child {
-	border-right: none;
-}*/
 
 .recordsNameRowDiv {
 	line-height: 20px;
@@ -415,11 +380,6 @@ footer {
 	padding-top: 1% !important;
     padding-left: 4.2% !important;
 }
-
-/*.collapsible-body {
-	padding-bottom: 5px !important;
-	padding-top: 5px !important;
-}*/
 
 .modalContentEpisodeDeleteIcon {
 	cursor: pointer;

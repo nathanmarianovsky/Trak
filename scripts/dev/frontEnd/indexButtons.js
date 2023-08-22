@@ -10,17 +10,6 @@ BASIC DETAILS: This file handles all buttons on the index.html page.
 
 
 
-/*
-
-Declare all of the necessary variables.
-
-    - ipcRenderer provides the means to operate the Electron app.
-
-*/
-var { ipcRenderer } = require("electron");
-
-
-
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
     // Define the buttons for all actions.
