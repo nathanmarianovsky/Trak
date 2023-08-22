@@ -343,6 +343,11 @@ footer {
     text-align: center;
 }
 
+#settingsSelection li {
+	width: 33%;
+    text-align: center;
+}
+
 .addRecordFilesDiv {
 	background-color: #2A2A8E !important;
 }
@@ -448,12 +453,6 @@ footer {
 	overflow-y: hidden;
 }
 
-#confirmationText {
-	margin-top: 30px;
-	margin-left: 30px !important;
-	width: 80% !important;
-}
-
 .iconSorter {
 	position: relative;
 	top: 8px;
@@ -473,4 +472,15 @@ footer {
 
 #filterModalGenreHeading {
 	margin-top: 25px;
+}
+
+#settingsModal .modal-content {
+	padding-right: 0px;
+	padding-left: 0px;
+	padding-top: 0px;
+}
+
+#settingsNav {
+	border-top-right-radius: 30px;
+	border-top-left-radius: 30px;
 }

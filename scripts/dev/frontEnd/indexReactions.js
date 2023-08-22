@@ -269,6 +269,17 @@ ipcRenderer.on("loadRows", event => {
         // Append the row to the filter form.
         filterForm.append(rowDiv);
     }
-    // Initialize the modals.
-    initModal();
+
+
+
+    fs.readFile(path.join(__dirname, "settings.html"), "UTF8", (err, file) => {
+        document.getElementById("outerLayer").innerHTML += file;
+        // Initialize the modals.
+        initModal();
+    });
+
+
+
+
+
 });
