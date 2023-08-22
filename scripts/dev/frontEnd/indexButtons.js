@@ -25,7 +25,7 @@ var { ipcRenderer } = require("electron");
 window.addEventListener("load", () => {
     // Define the buttons for all actions.
     const add = document.getElementById("add"),
-        remove = document.getElementById("remove"),
+        remove = document.getElementById("removeConfirm"),
         searchBar = document.getElementById("searchBar"),
         checkAll = document.getElementById("checkAll"),
         nameSort = document.getElementById("nameSort"),
@@ -39,9 +39,10 @@ window.addEventListener("load", () => {
     });
     // Listen for a click event on the remove button in order to open a confirmation window asking for the deletion of all checked records.
     remove.addEventListener("click", e => {
-        e.preventDefault();
+        // e.preventDefault();
         const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
         ipcRenderer.send("removeRecords", document.getElementById("checkAll").checked ? list.slice(1) : list);
+
     });
     // Listen for an input change event on the search bar in order to filter the records table.
     searchBar.addEventListener("input", e => {

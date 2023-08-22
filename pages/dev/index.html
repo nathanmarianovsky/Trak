@@ -17,7 +17,10 @@
             <div class="nav-wrapper">
                 <span class="brand-logo center">Trak</span>
                 <ul class="left">
-                    <li><a class="waves-effect waves-light modal-trigger" href="#filterModal"><i class="material-icons">filter_list</i></a></li>
+                    <li><a class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Filter Records" href="#filterModal"><i class="material-icons">filter_list</i></a></li>
+                </ul>
+                <ul class="right">
+                    <li><a class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Settings" href="#settingsModal"><i class="material-icons">settings</i></a></li>
                 </ul>
             </div>
         </nav>
@@ -121,8 +124,17 @@
                     <a id="filterApply" class="modal-close waves-effect waves-green btn-flat modalButtons">Apply</a>
                 </div>
             </div>
+            <div id="removeModal" class="modal infoModal">
+                <div class="modal-content">
+                    <h4 class="center">Remove Records</h4>
+                    <p>Please verify that you indeed wish to remove all data associated to the checked records. This cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <a id="removeConfirm" class="modal-close waves-effect waves-green btn-flat modalButtons">Confirm</a>
+                </div>
+            </div>
             <a id="add" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Add Record"><i class="material-icons">add</i></a>
-            <a id="remove" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="right" data-tooltip="Remove Records"><i class="material-icons">remove</i></a>
+            <a id="remove" class="btn-floating btn-large waves-effect waves-light modal-trigger tooltipped" data-position="right" data-tooltip="Remove Records" href="#removeModal"><i class="material-icons">remove</i></a>
         </div>
         <footer>Copyright© 2023 by Nathan Marianovsky. All Rights Reserved.</footer>
     </body>

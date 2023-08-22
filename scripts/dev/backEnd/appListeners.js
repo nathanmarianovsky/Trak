@@ -200,13 +200,13 @@ Handles the removal of records by deleting the associated folders and data file.
 */
 exports.removeRecords = (primaryWin, BrowserWindow, ipc, userPath, toolsCollection, fs, path, data) => {
 	// Create a new window to ask the user to confirm the deletion of a contact.
-	let removeRecordsWindow = toolsCollection.createWindow("confirmation", BrowserWindow, path, 525, 300);
+	// let removeRecordsWindow = toolsCollection.createWindow("confirmation", BrowserWindow, path, 525, 300);
 	// Once the new window has been loaded, supply the message to the front-end.
-	removeRecordsWindow.webContents.on("did-finish-load", () => {
-		removeRecordsWindow.webContents.send("recordsConfirmationText", data);
+	// removeRecordsWindow.webContents.on("did-finish-load", () => {
+		// removeRecordsWindow.webContents.send("recordsConfirmationText", data);
 		// Once a confirmation has been provided by the user close the window and delete the associated record folders. 
-		ipc.once("confirmationRemoveRecords", (event, data) => {
-			removeRecordsWindow.destroy();
+		// ipc.once("confirmationRemoveRecords", (event, data) => {
+			// removeRecordsWindow.destroy();
 			let j = 0;
 			for(; j < data.length; j++) {
 				fs.rm(path.join(userPath, "Trak", "data", data[j]), { "force": true, "recursive": true }, err => {
@@ -219,8 +219,8 @@ exports.removeRecords = (primaryWin, BrowserWindow, ipc, userPath, toolsCollecti
 				primaryWin.reload();
 				setTimeout(() => { primaryWin.webContents.send("recordsRemovalSuccess"); }, 500);
 			}
-		});
-	});
+		// });
+	// });
 };
 
 
