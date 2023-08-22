@@ -31,7 +31,8 @@ window.addEventListener("load", () => {
         nameSort = document.getElementById("nameSort"),
         categorySort = document.getElementById("categorySort"),
         ratingSort = document.getElementById("ratingSort"),
-        filterApply = document.getElementById("filterApply");
+        filterApply = document.getElementById("filterApply"),
+        clearFilter = document.getElementById("clearFilter");
     // Listen for a click event on the add button in order to open a window whose inputs will generate a new record.
     add.addEventListener("click", e => {
         e.preventDefault();
@@ -39,7 +40,6 @@ window.addEventListener("load", () => {
     });
     // Listen for a click event on the remove button in order to open a confirmation window asking for the deletion of all checked records.
     remove.addEventListener("click", e => {
-        // e.preventDefault();
         const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
         ipcRenderer.send("removeRecords", document.getElementById("checkAll").checked ? list.slice(1) : list);
 
@@ -219,11 +219,28 @@ window.addEventListener("load", () => {
             }
             // If the empty filter is applied then show all record rows.
             else { pageTable[x].style.display = "table-row"; }
-            // Upon the submission of a filter clear the search bar.
-            searchBar.parentNode.children[0].classList.remove("active");
-            searchBar.value = "";
-            searchBar.classList.remove("valid");
-            searchBar.parentNode.children[2].classList.remove("active");
         }
+        // Upon the submission of a filter clear the search bar.
+        searchBar.parentNode.children[0].classList.remove("active");
+        searchBar.parentNode.children[2].classList.remove("active");
+        searchBar.classList.remove("valid");
+        searchBar.value = "";
+    });
+    // Listen for a click event on the clear filter button in order to remove all active filters.
+    clearFilter.addEventListener("click", e => {
+        // Define the category and genre arrays along with the record rows.
+        const pageTable = Array.from(document.getElementById("tableBody").children);
+        // Iterate through the records rows.
+        for(let x = 0; x < pageTable.length; x++) {
+            // Show all record rows.
+            pageTable[x].style.display = "table-row";
+        }
+        // Upon the submission of a filter clear the search bar.
+        searchBar.parentNode.children[0].classList.remove("active");
+        searchBar.parentNode.children[2].classList.remove("active");
+        searchBar.classList.remove("valid");
+        searchBar.value = "";
+        // Clear the filter modal checkboxes.
+        Array.from(document.getElementsByClassName("filterCheckbox")).forEach(elem => elem.checked = false);
     });
 });

@@ -190,37 +190,25 @@ exports.animeUpdate = (BrowserWindow, path, fs, mainWindow, dataPath, evnt, data
 Handles the removal of records by deleting the associated folders and data file.
 
 	- primaryWin is an object representing the current window of the Electron app.
-	- BrowserWindow provides the means to create new windows in the Electron app.
-	- ipc provides the means to handle a reaction on the back-end of the Electron app.
 	- userPath is the path to the local user data.
-	- toolsCollection provides a collection of local functions meant to help with various aspects of the app.
 	- fs and path provide the means to work with local files.
 	- data is a collection of record names.
 
 */
-exports.removeRecords = (primaryWin, BrowserWindow, ipc, userPath, toolsCollection, fs, path, data) => {
-	// Create a new window to ask the user to confirm the deletion of a contact.
-	// let removeRecordsWindow = toolsCollection.createWindow("confirmation", BrowserWindow, path, 525, 300);
-	// Once the new window has been loaded, supply the message to the front-end.
-	// removeRecordsWindow.webContents.on("did-finish-load", () => {
-		// removeRecordsWindow.webContents.send("recordsConfirmationText", data);
-		// Once a confirmation has been provided by the user close the window and delete the associated record folders. 
-		// ipc.once("confirmationRemoveRecords", (event, data) => {
-			// removeRecordsWindow.destroy();
-			let j = 0;
-			for(; j < data.length; j++) {
-				fs.rm(path.join(userPath, "Trak", "data", data[j]), { "force": true, "recursive": true }, err => {
-					// If there was an error in deleting the record folder notify the user.
-					if(err) { primaryWin.webContents.send("recordRemovalFailure", data[j]); }
-				});
-			}
-			// Refresh the primary window and notify the user that all checked contacts have been removed.
-			if(j == data.length) {
-				primaryWin.reload();
-				setTimeout(() => { primaryWin.webContents.send("recordsRemovalSuccess"); }, 500);
-			}
-		// });
-	// });
+exports.removeRecords = (primaryWin, userPath, fs, path, data) => {
+	// Once a confirmation has been provided by the user delete the associated record folders. 
+	let j = 0;
+	for(; j < data.length; j++) {
+		fs.rm(path.join(userPath, "Trak", "data", data[j]), { "force": true, "recursive": true }, err => {
+			// If there was an error in deleting the record folder notify the user.
+			if(err) { primaryWin.webContents.send("recordRemovalFailure", data[j]); }
+		});
+	}
+	// Refresh the primary window and notify the user that all checked contacts have been removed.
+	if(j == data.length) {
+		primaryWin.reload();
+		setTimeout(() => { primaryWin.webContents.send("recordsRemovalSuccess"); }, 500);
+	}
 };
 
 
@@ -293,7 +281,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 
   	// Handles the deletion of multiple contacts.
   	ipc.on("removeRecords", (event, list) => {
-  		exports.removeRecords(BrowserWindow.getFocusedWindow(), BrowserWindow, ipc, dataPath, tools, fs, path, list);
+  		exports.removeRecords(BrowserWindow.getFocusedWindow(), dataPath, fs, path, list);
   	});
 
   	// Handles the opening of a record's assets folder.

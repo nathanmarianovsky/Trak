@@ -259,7 +259,7 @@ ipcRenderer.on("loadRows", event => {
             genreCheckLabel.classList.add("col", "s2");
             genereCheckInput.setAttribute("type", "checkbox");
             filterGenreStr != "" ? genereCheckInput.setAttribute("id", "filterGenre" + genresLst[(s * rows) + r]) : genreCheckLabel.style.visibility = "hidden";
-            genereCheckInput.classList.add("filled-in");
+            genereCheckInput.classList.add("filled-in", "filterCheckbox");
             genereCheckSpan.textContent = filterGenreStr;
             genereCheckSpan.classList.add("checkboxText");
             // Append the checkbox and text to the row.
