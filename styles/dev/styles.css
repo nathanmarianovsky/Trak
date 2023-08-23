@@ -222,6 +222,8 @@ footer {
 #searchBarDiv1 input.valid[type="text"]:not(.browser-default),
 [type="text"]:not(.browser-default):focus:not([readonly]),
 input.valid[type="text"]:not(.browser-default),
+input[type="date"]:not(.browser-default):focus:not([readonly]),
+input.valid[type=date]:not(.browser-default),
 textarea.materialize-textarea:focus:not([readonly]),
 textarea.materialize-textarea.valid {
 	border-bottom-color: #2A2A8E !important;
@@ -230,6 +232,7 @@ textarea.materialize-textarea.valid {
 
 #searchBarDiv1 .input-field .prefix.active,
 input[type="text"]:not(.browser-default):focus:not([readonly])+label,
+input[type="date"]:not(.browser-default):focus:not([readonly])+label,
 textarea.materialize-textarea:focus:not([readonly])+label {
 	color: #2A2A8E !important;
 }
