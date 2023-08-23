@@ -3,15 +3,60 @@
         <nav id="settingsNav" class="z-depth-2">
             <div class="nav-wrapper">
                 <ul id="settingsSelection">
-                    <li><a id="settingsWindows">Windows</a></li>
-                    <li><a id="settingsData">Data</a></li>
+                    <li><a id="settingsOptions">Options</a></li>
+                    <!-- <li><a id="settingsData">Data</a></li> -->
                     <li><a id="settingsAbout">About</a></li>
                 </ul>
             </div>
         </nav>
     </div>
-
+    <div id="settingsOptionsContainer" class="settingsOptions">
+        <h5 class="center settingsHeaders">Colors</h5>
+        <div id="settingsColorDiv">
+            <div id="primaryColorDiv" class="settingsColorContainers">
+                App Primary Color:
+                <input id="primaryColor" type="color" class="settingsColorInput">
+            </div>
+            <div id="secondaryColorDiv" class="settingsColorContainers">
+                App Secondary Color:
+                <input id="secondaryColor" type="color" class="settingsColorInput">
+            </div>
+        </div>
+        <h5 class="center settingsHeaders">Data</h5>
+        <div class="row settingsWindowDiv">
+            <form class="col s12">
+                <div class="row">
+                    <div id="appPathDiv" class="input-field col s10">
+                        Directory:
+                        <input id="appPath" type="text" class="settingsDataInput">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <h5 class="center settingsHeaders">Sizes</h5>
+        <div class="row settingsWindowDiv">
+            <form class="col s12">
+                <div class="row">
+                    <div id="primaryWindowWidthDiv" class="input-field col s4 settingsWindowInputDiv">
+                        Primary Window:
+                        <input id="primaryWindowWidth" type="text" class="center settingsWindowInput">
+                        px by
+                        <input id="primaryWindowHeight" type="text" class="center settingsWindowInput">
+                        px
+                    </div>
+                    <div id="secondaryWindowWidthDiv" class="input-field col s4 settingsWindowInputDiv">
+                        Secondary Window:
+                        <input id="secondaryWindowWidth" type="text" class="center settingsWindowInput">
+                        px by
+                        <input id="secondaryWindowHeight" type="text" class="center settingsWindowInput">
+                        px
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 <div class="modal-footer">
-    <a class="modal-close waves-effect waves-green btn-flat modalButtons">Exit</a>
+    <a id="settingsExit" class="modal-close waves-effect waves-green btn-flat modalButtons">Exit</a>
+    <a id="settingsApply" class="modal-close waves-effect waves-green btn-flat modalButtons">Apply</a>
 </div>

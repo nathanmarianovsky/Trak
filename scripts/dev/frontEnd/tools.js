@@ -9,6 +9,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - initSelectObservers: Initialize the observers for style mutations on related content select tags.
     - initContentDrag: Initialize the listeners associated to related content dragging.
     - toastParse: Handles the parsing of a record folder name to display to the user.
+    - filterGenreList: Provides the list of all genres/tags that can be selected from the index.page filter.
 
 */
 

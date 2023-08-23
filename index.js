@@ -59,6 +59,22 @@ app.whenReady().then(() => {
 		"showSelectAll": true
 	});
 
+	// Create the configuration file if it does not exist.
+	if(!fs.existsSync(path.join(localPath, "Trak", "config", "configuration.json"))) {
+		fs.mkdirSync(path.join(localPath, "Trak", "config"), { "recursive": true });
+		const writeData = { "original": {
+				"path": localPath,
+				"primaryColor": "#2A2A8E",
+				"secondaryColor": "#D9D9DB",
+				"primaryWindowWidth": 1000,
+				"primaryWindowHeight": 800,
+				"secondaryWindowWidth": 1400,
+				"secondaryWindowHeight": 1000
+			}
+		};
+		fs.writeFileSync(path.join(localPath, "Trak", "config", "configuration.json"), JSON.stringify(writeData), "UTF8")
+	}
+
 	// Create the primary window.
   	let primaryWindow = tools.createWindow("index", BrowserWindow, path);
 	primaryWindow.webContents.on("did-finish-load", () => {

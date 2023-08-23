@@ -219,16 +219,18 @@ footer {
 }
 
 #searchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
-#searchBarDiv1 input.valid[type="text"]:not(.browser-default) {
-	border-bottom-color: #2A2A8E;
-	box-shadow: 0 1px 0 0 #2A2A8E;
+#searchBarDiv1 input.valid[type="text"]:not(.browser-default),
+[type="text"]:not(.browser-default):focus:not([readonly]),
+input.valid[type="text"]:not(.browser-default),
+textarea.materialize-textarea:focus:not([readonly]),
+textarea.materialize-textarea.valid {
+	border-bottom-color: #2A2A8E !important;
+	box-shadow: 0 1px 0 0 #2A2A8E !important;
 }
 
-#searchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly])+label {
-	color: #2A2A8E !important;
-}
-
-#searchBarDiv1 .input-field .prefix.active {
+#searchBarDiv1 .input-field .prefix.active,
+input[type="text"]:not(.browser-default):focus:not([readonly])+label,
+textarea.materialize-textarea:focus:not([readonly])+label {
 	color: #2A2A8E !important;
 }
 
@@ -309,7 +311,7 @@ footer {
 }
 
 #settingsSelection li {
-	width: 33%;
+	width: 50%;
     text-align: center;
 }
 
@@ -443,4 +445,52 @@ footer {
 #settingsNav {
 	border-top-right-radius: 30px;
 	border-top-left-radius: 30px;
+}
+
+#settingsColorDiv {
+	margin-left: 30px;
+	margin-top: 20px;
+	margin-bottom: 30px;
+}
+
+.settingsColorContainers {
+	width: 49%;
+    display: inline-block;
+}
+
+.settingsColorInput {
+	position: relative;
+    top: 4px;
+    left: 6px;
+}
+
+.settingsWindowDiv {
+    margin-left: 20px !important;
+}
+
+.settingsWindowInputDiv {
+	width: 49% !important;
+	margin-bottom: 0px !important;
+}
+
+.settingsWindowInput {
+	width: 15% !important;
+}
+
+#settingsSecondaryWindowDiv {
+	margin-top: 0px !important;
+}
+
+.settingsHeaders {
+	margin-bottom: 0px;
+	position: relative;
+	top: 5px;
+}
+
+.settingsOptions {
+	display: none;
+}
+
+.settingsDataInput {
+	width: 80% !important;
 }
