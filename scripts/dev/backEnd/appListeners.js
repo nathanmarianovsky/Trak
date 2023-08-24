@@ -222,10 +222,11 @@ Driver function for adding all app listeners.
 	- tools provides a collection of local functions meant to help with writing files and generating pdf files.
 	- exec provides the means to open files and folders.
 	- mainWindow is an object referencing the primary window of the Electron app.
-	- dataPath is the path to the local user data.
+	- dataPath is the current path to the local user data.
+	- originalPath is the original path to the local user data.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWindow, dataPath) => {
+exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWindow, dataPath, originalPath) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -288,6 +289,124 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 	ipc.on("recordFiles", (event, folder) => {
 		exec(tools.startCommandLineFolder() + " " + path.join(dataPath, "Trak", "data", folder, "assets"));
 		event.sender.send("recordFilesSuccess", folder);
+	});
+
+	// Handles the saving of all options in the user settings.
+	ipc.on("settingsSave", (event, dataArr) => {
+		const writeData = {
+			"path": dataArr[0],
+			"primaryColor": dataArr[1],
+			"secondaryColor": dataArr[2],
+			"primaryWindowWidth": dataArr[3],
+			"primaryWindowHeight": dataArr[4],
+			"secondaryWindowWidth": dataArr[5],
+			"secondaryWindowHeight": dataArr[6]
+		};
+		fs.readFile(path.join(originalPath, "Trak", "config", "configuration.json"), (err, file) => {
+			// Display a notification if there was an error in reading the data file.
+	        if(err) { event.sender.send("configurationFileOpeningFailure"); }
+	        else {
+	        	const configurationData = JSON.parse(file);
+	        	ipc.on("dataOriginalDelete", (eve, confirm) => {
+		  			if(confirm == true) {
+		  				fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, er => {
+		  					if(er) { eve.sender.send("dataDeleteFailure"); }
+		  					else {
+		  						configurationData.current = writeData;
+								fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+									if(err) { eve.sender.send("configurationFileWritingFailure"); }
+									else {
+										eve.sender.send("configurationFileWritingSuccess");
+										setTimeout(() => {
+											app.relaunch();
+											app.exit();
+										}, 3000);
+									}
+								});
+		  					}
+		  				});
+		  			}
+		  		});
+	        	if(configurationData.current == undefined) {
+	        		if(configurationData.original.path == writeData.path) {
+		        		configurationData.current = writeData;
+						fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+							if(err) { event.sender.send("configurationFileWritingFailure"); }
+							else {
+								event.sender.send("configurationFileWritingSuccess");
+								setTimeout(() => {
+									app.relaunch();
+									app.exit();
+								}, 3000);
+							}
+						});
+	        		}
+	        		else {
+	        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
+						  	if(err) { event.sender.send("dataCopyFailure"); }
+						  	else {
+						  		event.sender.send("dataOriginalDeleteAsk");
+						  		// ipc.on("dataOriginalDelete", (eve, confirm) => {
+						  		// 	if(confirm == true) {
+						  		// 		fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, er => {
+						  		// 			if(er) { eve.sender.send("dataDeleteFailure"); }
+						  		// 			else {
+						  		// 				configurationData.current = writeData;
+								// 				fs.writeFile(path.join(localPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+								// 					if(err) { event.sender.send("configurationFileWritingFailure"); }
+								// 					else { event.sender.send("configurationFileWritingSuccess"); }
+								// 				});
+						  		// 			}
+						  		// 		});
+						  		// 	}
+						  		// });
+						  	}
+						});
+	        		}
+	        	}
+	        	else {
+	        		if(configurationData.current.path == writeData.path) {
+	        			configurationData.current = writeData;
+						fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+							if(err) { event.sender.send("configurationFileWritingFailure"); }
+							else {
+								event.sender.send("configurationFileWritingSuccess")
+								setTimeout(() => {
+									app.relaunch();
+									app.exit();
+								}, 3000);
+							}
+						});
+	        		}
+	        		else {
+	        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
+						  	if(err) { event.sender.send("dataCopyFailure"); }
+						  	else {
+						  		event.sender.send("dataOriginalDeleteAsk");
+						  		// ipc.on("dataOriginalDelete", (eve, confirm) => {
+						  		// 	if(confirm == true) {
+						  		// 		fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, er => {
+						  		// 			if(er) { eve.sender.send("dataDeleteFailure"); }
+						  		// 			else {
+						  		// 				configurationData.current = writeData;
+								// 				fs.writeFile(path.join(localPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+								// 					if(err) { event.sender.send("configurationFileWritingFailure"); }
+								// 					else { event.sender.send("configurationFileWritingSuccess"); }
+								// 				});
+						  		// 			}
+						  		// 		});
+						  		// 	}
+						  		// });
+						  	}
+						});
+	        		}
+	        	}
+	        }
+		});
+
+
+
+
 	});
 };
 

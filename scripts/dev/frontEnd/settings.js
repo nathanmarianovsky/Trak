@@ -10,12 +10,72 @@ BASIC DETAILS: This file handles all settings activity.
 
 
 
+/*
+
+Declare all of the necessary variables.
+
+    - ipcRenderer provides the means to operate the Electron app.
+
+*/
+var { ipcRenderer } = require("electron");
+
+
+
+// Display a notification if there was an issue in reading the configuration.json file.
+ipcRenderer.once("configurationFileOpeningFailure", event => {
+    M.toast({"html": "There was an error opening the configuration file associated to the application settings.", "classes": "rounded"});
+});
+
+
+
+// Display a notification if there was an issue in writing the configuration.json file.
+ipcRenderer.once("configurationFileWritingFailure", event => {
+    M.toast({"html": "There was an error writing the configuration file associated to the application settings.", "classes": "rounded"});
+});
+
+
+
+// Display a notification for the successful update of the configuration.json file.
+ipcRenderer.once("configurationFileWritingSuccess", event => {
+    M.toast({"html": "The application settings have been updated. The application will now restart.", "classes": "rounded"});
+});
+
+
+
+// Display a notification if there was an issue in copying the data associated to all records.
+ipcRenderer.once("copyDataFailure", event => {
+    M.toast({"html": "There was an issue in copying the data associated to the records.", "classes": "rounded"});
+});
+
+
+
+// Display a notification if there was an issue in deleting the original data associated to all records.
+ipcRenderer.once("dataDeleteFailure", event => {
+    M.toast({"html": "There was an error in deleting the original data associated to the records.", "classes": "rounded"});
+});
+
+
+
+// Display the modal to be used in asking the user whether the original data folder should be deleted.
+ipcRenderer.once("dataOriginalDeleteAsk", event => {
+	const dataDeleteModalInstance = M.Modal.init(document.getElementById("dataDeleteModal"));
+	dataDeleteModalInstance.open();
+    document.getElementById("dataDeleteDeny").addEventListener("click", e => {
+    	ipcRenderer.send("dataOriginalDelete", false);
+    });
+    document.getElementById("dataDeleteAccept").addEventListener("click", e => {
+    	ipcRenderer.send("dataOriginalDelete", true);
+    });
+});
+
+
+
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
 	// Define the buttons for all settings choices.
     const settingsOptions = document.getElementById("settingsOptions"),
     	settingsAbout = document.getElementById("settingsAbout"),
-    	settingsExit = document.getElementById("settingsExit");
+    	settingsApply = document.getElementById("settingsApply");
     // Define the relevant portions of the page that are in the settings rotation.
     const settingsOptionsContainer = document.getElementById("settingsOptionsContainer");
     // Listen for a click event on the settingsWindows button on the top bar to display the windows settings.
@@ -25,7 +85,7 @@ window.addEventListener("load", () => {
         settingsOptions.parentNode.classList.add("active");
     });
     // Read the settings configuration file.
-    fs.readFile(path.join(localPath, "Trak", "config", "configuration.json"), (err, file) => {
+    fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), (err, file) => {
     	// Define the inputs on the settings modal.
     	const primaryColor = document.getElementById("primaryColor"),
     		secondaryColor = document.getElementById("secondaryColor"),
@@ -92,7 +152,7 @@ window.addEventListener("load", () => {
         }
     	settingsOptions.click();
     	// Reset the values in the settings modal upon an exit.
-    	M.Modal.init(document.getElementById("settingsModal"), { "onCloseStart": () => {
+    	const settingsModalInstance = M.Modal.init(document.getElementById("settingsModal"), { "onCloseStart": () => {
     			primaryColor.value = primaryColor.getAttribute("lastValue");
 	    		secondaryColor.value = secondaryColor.getAttribute("lastValue");
 	    		appPath.value = appPath.getAttribute("lastValue");
@@ -107,19 +167,33 @@ window.addEventListener("load", () => {
 	    		secondaryWindowHeight.classList.remove("validate", "valid");
     		}
     	});
-    	document.getElementById("appPath").addEventListener("change", e => {
+    	settingsApply.addEventListener("click", e => {
+    		const submitPath = appPath.value.substring(appPath.value.length - 10) == "\\Trak\\data" ? appPath.value : appPath.value + "\\Trak\\data";
+    		console.log(submitPath);
+    		ipcRenderer.send("settingsSave", [
+    			submitPath,
+				primaryColor.value,
+				secondaryColor.value,
+				primaryWindowWidth.value,
+				primaryWindowHeight.value,
+				secondaryWindowWidth.value,
+				secondaryWindowHeight.value
+    		]);
+    		settingsModalInstance.close();
+    	});
+    	appPath.addEventListener("change", e => {
     		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
     	});
-    	document.getElementById("primaryWindowWidth").addEventListener("change", e => {
+    	primaryWindowWidth.addEventListener("change", e => {
     		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
     	});
-    	document.getElementById("primaryWindowHeight").addEventListener("change", e => {
+    	primaryWindowHeight.addEventListener("change", e => {
     		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
     	});
-    	document.getElementById("secondaryWindowWidth").addEventListener("change", e => {
+    	secondaryWindowWidth.addEventListener("change", e => {
     		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
     	});
-    	document.getElementById("secondaryWindowHeight").addEventListener("change", e => {
+    	secondaryWindowHeight.addEventListener("change", e => {
     		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
     	});
     });

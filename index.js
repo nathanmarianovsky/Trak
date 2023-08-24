@@ -14,12 +14,21 @@ Declare all of the necessary variables.
 const { app, BrowserWindow, Menu, MenuItem, Tray } = require("electron"),
 	ipc = require("electron").ipcMain,
 	path = require("path"),
-	fs = require("fs"),
+	fs = require("fs-extra"),
 	contextMenu = require('electron-context-menu'),
 	tools = require("./scripts/dist/backEnd/tools"),
 	appListeners = require("./scripts/dist/backEnd/appListeners"),
 	exec = require("child_process").exec,
-	localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
+	basePath = localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
+if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
+	var localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
+}
+else {
+	let configObj = JSON.parse(fs.readFileSync(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8"));
+	var localPath = configObj.current != undefined
+		? configObj.current.path.substring(0, configObj.current.path.length - 10)
+		: configObj.original.path.substring(0, configObj.original.path.length - 10);
+}
 
 
 
@@ -60,10 +69,10 @@ app.whenReady().then(() => {
 	});
 
 	// Create the configuration file if it does not exist.
-	if(!fs.existsSync(path.join(localPath, "Trak", "config", "configuration.json"))) {
-		fs.mkdirSync(path.join(localPath, "Trak", "config"), { "recursive": true });
+	if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
+		fs.mkdirSync(path.join(basePath, "Trak", "config"), { "recursive": true });
 		const writeData = { "original": {
-				"path": localPath,
+				"path": path.join(basePath, "Trak", "data"),
 				"primaryColor": "#2A2A8E",
 				"secondaryColor": "#D9D9DB",
 				"primaryWindowWidth": 1000,
@@ -72,7 +81,7 @@ app.whenReady().then(() => {
 				"secondaryWindowHeight": 1000
 			}
 		};
-		fs.writeFileSync(path.join(localPath, "Trak", "config", "configuration.json"), JSON.stringify(writeData), "UTF8")
+		fs.writeFileSync(path.join(basePath, "Trak", "config", "configuration.json"), JSON.stringify(writeData), "UTF8");
 	}
 
 	// Create the primary window.
@@ -86,7 +95,7 @@ app.whenReady().then(() => {
 	tools.createTrayMenu("h", primaryWindow, tray, Menu);
 
 	// Add all of the back-end listeners.
-	appListeners.addListeners(app, BrowserWindow, path, fs, exec, ipc, tools, primaryWindow, localPath);
+	appListeners.addListeners(app, BrowserWindow, path, fs, exec, ipc, tools, primaryWindow, localPath, basePath);
 });
 
 

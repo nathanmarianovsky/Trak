@@ -22,7 +22,16 @@ Declare all of the necessary variables.
 var { ipcRenderer } = require("electron");
 const fs = require("fs"),
     path = require("path"),
-    localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
+    basePath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
+if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
+    var localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
+}
+else {
+    let configObj = JSON.parse(fs.readFileSync(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8"));
+    var localPath = configObj.current != undefined
+        ? configObj.current.path.substring(0, configObj.current.path.length - 10)
+        : configObj.original.path.substring(0, configObj.original.path.length - 10);
+}
 
 
 

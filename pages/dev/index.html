@@ -132,7 +132,18 @@
                     <p>Please verify that you indeed wish to remove all data associated to the checked records. This cannot be undone.</p>
                 </div>
                 <div class="modal-footer">
+                    <a class="modal-close waves-effect waves-green btn-flat modalButtons">Exit</a>
                     <a id="removeConfirm" class="modal-close waves-effect waves-green btn-flat modalButtons">Confirm</a>
+                </div>
+            </div>
+            <div id="dataDeleteModal" class="modal infoModal">
+                <div class="modal-content">
+                    <h4 class="center">Remove Original</h4>
+                    <p>Would you like to delete the original data folder now that its contents have been copied to the new directory?</p>
+                </div>
+                <div class="modal-footer">
+                    <a id="dataDeleteDeny" class="modal-close waves-effect waves-green btn-flat modalButtons">No</a>
+                    <a id="dataDeleteAccept" class="modal-close waves-effect waves-green btn-flat modalButtons">Yes</a>
                 </div>
             </div>
             <a id="add" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Add Record"><i class="material-icons">add</i></a>
