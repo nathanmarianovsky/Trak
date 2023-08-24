@@ -224,13 +224,14 @@ Driver function for adding all app listeners.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the current path to the local user data.
 	- originalPath is the original path to the local user data.
+	- primaryWindowWidth, primaryWindowHeight, secondaryWindowWidth, and secondaryWindowHeight are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWindow, dataPath, originalPath) => {
+exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, secondaryWindowWidth, secondaryWindowHeight) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
-	   		let win = tools.createWindow("index", BrowserWindow, path);
+	   		let win = tools.createWindow("index", BrowserWindow, path, primaryWindowWidth, primaryWindowHeight);
 	   		win.webContents.on("did-finish-load", () => {
 	  			win.webContents.send("loadRows");
 	  		});
@@ -258,7 +259,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 
   	// Handles the load of the addRecord.html page for the creation of a record.
   	ipc.on("addLoad", event => {
-  		let addWindow = tools.createWindow("addRecord", BrowserWindow, path, 1400, 1000);
+  		let addWindow = tools.createWindow("addRecord", BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight);
   		addWindow.webContents.on("did-finish-load", () => {
   			ipc.once("performSave", (event, submission) => {
 				// If the record is an anime then save the corresponding data.
@@ -271,7 +272,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 
   	// Handles the load of the addRecord.html page for the update of a record.
   	ipc.on("updateRecord", (event, fldrName) => {
-  		let recordUpdateWindow = tools.createWindow("addRecord", BrowserWindow, path, 1400, 1000);
+  		let recordUpdateWindow = tools.createWindow("addRecord", BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight);
   		recordUpdateWindow.webContents.on("did-finish-load", () => {
   			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
   			ipc.once("performSave", (event, submission) => {
@@ -344,23 +345,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 	        		else {
 	        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
 						  	if(err) { event.sender.send("dataCopyFailure"); }
-						  	else {
-						  		event.sender.send("dataOriginalDeleteAsk");
-						  		// ipc.on("dataOriginalDelete", (eve, confirm) => {
-						  		// 	if(confirm == true) {
-						  		// 		fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, er => {
-						  		// 			if(er) { eve.sender.send("dataDeleteFailure"); }
-						  		// 			else {
-						  		// 				configurationData.current = writeData;
-								// 				fs.writeFile(path.join(localPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-								// 					if(err) { event.sender.send("configurationFileWritingFailure"); }
-								// 					else { event.sender.send("configurationFileWritingSuccess"); }
-								// 				});
-						  		// 			}
-						  		// 		});
-						  		// 	}
-						  		// });
-						  	}
+						  	else { event.sender.send("dataOriginalDeleteAsk"); }
 						});
 	        		}
 	        	}
@@ -381,23 +366,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 	        		else {
 	        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
 						  	if(err) { event.sender.send("dataCopyFailure"); }
-						  	else {
-						  		event.sender.send("dataOriginalDeleteAsk");
-						  		// ipc.on("dataOriginalDelete", (eve, confirm) => {
-						  		// 	if(confirm == true) {
-						  		// 		fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, er => {
-						  		// 			if(er) { eve.sender.send("dataDeleteFailure"); }
-						  		// 			else {
-						  		// 				configurationData.current = writeData;
-								// 				fs.writeFile(path.join(localPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-								// 					if(err) { event.sender.send("configurationFileWritingFailure"); }
-								// 					else { event.sender.send("configurationFileWritingSuccess"); }
-								// 				});
-						  		// 			}
-						  		// 		});
-						  		// 	}
-						  		// });
-						  	}
+						  	else { event.sender.send("dataOriginalDeleteAsk"); }
 						});
 	        		}
 	        	}
