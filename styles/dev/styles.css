@@ -497,3 +497,14 @@ textarea.materialize-textarea:focus:not([readonly])+label {
 .settingsDataInput {
 	width: 80% !important;
 }
+
+#settingsAboutContainer p {
+	margin: 30px;
+	line-height: 35px;
+}
+
+.hyperlink {
+	color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}

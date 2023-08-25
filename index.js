@@ -11,7 +11,7 @@ Declare all of the necessary variables.
 	- localPath is the path to the local user data.
 
 */
-const { app, BrowserWindow, Menu, MenuItem, Tray } = require("electron"),
+const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
 	ipc = require("electron").ipcMain,
 	path = require("path"),
 	fs = require("fs-extra"),
@@ -101,9 +101,6 @@ app.whenReady().then(() => {
 			    	secWinWidth = parseInt(configObj.original.secondaryWindowWidth),
 			    	secWinHeight = parseInt(configObj.original.secondaryWindowHeight);
 		    }
-
-
-
 			fs.readFile(path.join(__dirname, "styles", "dist", "styles.css"), "UTF8", (err, stylesFile) => {
 				if(err) {  }
 				else {
@@ -124,7 +121,7 @@ app.whenReady().then(() => {
 							  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 								tools.createTrayMenu("h", primaryWindow, tray, Menu);
 								// Add all of the back-end listeners.
-								appListeners.addListeners(app, BrowserWindow, path, fs, exec, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, secWinWidth, secWinHeight);
+								appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, secWinWidth, secWinHeight);
 							}
 						});
 					}
@@ -138,7 +135,7 @@ app.whenReady().then(() => {
 					  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 						tools.createTrayMenu("h", primaryWindow, tray, Menu);
 						// Add all of the back-end listeners.
-						appListeners.addListeners(app, BrowserWindow, path, fs, exec, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, secWinWidth, secWinHeight);
+						appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, secWinWidth, secWinHeight);
 					}
 				}
 			});

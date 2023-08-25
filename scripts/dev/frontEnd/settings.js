@@ -82,14 +82,34 @@ window.addEventListener("load", () => {
 	// Define the buttons for all settings choices.
     const settingsOptions = document.getElementById("settingsOptions"),
     	settingsAbout = document.getElementById("settingsAbout"),
+        settingsColorReset = document.getElementById("settingsColorReset"),
+        settingsDataReset = document.getElementById("settingsDataReset"),
+        settingsSizesReset = document.getElementById("settingsSizesReset"),
+        aboutGithub = document.getElementById("aboutGithub"),
     	settingsApply = document.getElementById("settingsApply");
     // Define the relevant portions of the page that are in the settings rotation.
-    const settingsOptionsContainer = document.getElementById("settingsOptionsContainer");
-    // Listen for a click event on the settingsWindows button on the top bar to display the windows settings.
+    const settingsOptionsContainer = document.getElementById("settingsOptionsContainer"),
+        settingsAboutContainer = document.getElementById("settingsAboutContainer");
+    // Listen for a click event on the settingsOptions button on the top bar to display the settings options.
     settingsOptions.addEventListener("click", e => {
         e.preventDefault();
         settingsOptionsContainer.style.display = "initial";
         settingsOptions.parentNode.classList.add("active");
+        settingsAboutContainer.style.display = "none";
+        settingsAbout.parentNode.classList.remove("active");
+    });
+    // Listen for a click event on the settingsAbout button on the top bar to display the about section of the app.
+    settingsAbout.addEventListener("click", e => {
+        e.preventDefault();
+        settingsOptionsContainer.style.display = "none";
+        settingsOptions.parentNode.classList.remove("active");
+        settingsAboutContainer.style.display = "initial";
+        settingsAbout.parentNode.classList.add("active");
+    });
+    // Listen for a click event on the aboutGithub button in the about section in order to open the associated link in the default browser.
+    aboutGithub.addEventListener("click", e => {
+        e.preventDefault();
+        ipcRenderer.send("aboutGithub");
     });
     // Read the settings configuration file.
     fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), (err, file) => {
@@ -155,15 +175,15 @@ window.addEventListener("load", () => {
         		secondaryWindowHeight.value = configData.original.secondaryWindowHeight;
         		secondaryWindowHeight.setAttribute("lastValue", configData.original.secondaryWindowHeight);
         	}
-            document.getElementById("settingsColorReset").addEventListener("click", e => {
+            settingsColorReset.addEventListener("click", e => {
                 primaryColor.value = configData.original.primaryColor;
                 secondaryColor.value = configData.original.secondaryColor;
             });
-            document.getElementById("settingsDataReset").addEventListener("click", e => {
+            settingsDataReset.addEventListener("click", e => {
                 appPath.value = configData.original.path;
                 appPath.classList.remove("validate", "valid");
             });
-            document.getElementById("settingsSizesReset").addEventListener("click", e => {
+            settingsSizesReset.addEventListener("click", e => {
                 primaryWindowWidth.value = configData.original.primaryWindowWidth;
                 primaryWindowWidth.classList.remove("validate", "valid");
                 primaryWindowHeight.value = configData.original.primaryWindowHeight;

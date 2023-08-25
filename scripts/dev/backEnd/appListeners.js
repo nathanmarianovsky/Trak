@@ -220,14 +220,14 @@ Driver function for adding all app listeners.
 	- app, BrowserWindow, and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
 	- tools provides a collection of local functions meant to help with writing files and generating pdf files.
-	- exec provides the means to open files and folders.
+	- exec and shell provide the means to open files, folders, and links.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the current path to the local user data.
 	- originalPath is the original path to the local user data.
 	- primaryWindowWidth, primaryWindowHeight, secondaryWindowWidth, and secondaryWindowHeight are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, secondaryWindowWidth, secondaryWindowHeight) => {
+exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, secondaryWindowWidth, secondaryWindowHeight) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -250,6 +250,11 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
   		mainWindow.webContents.on("did-finish-load", () => {
   			mainWindow.webContents.send("loadRows");
   		});
+  	});
+
+  	// Handle the opening of the github link on the about section.
+  	ipc.on("aboutGithub", event => {
+  		shell.openExternal("https://github.com/nathanmarianovsky/Trak");
   	});
 
 	// If the data folder does not exist, then create it.
