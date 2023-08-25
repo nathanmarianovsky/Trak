@@ -213,17 +213,30 @@ window.addEventListener("load", () => {
     	});
     	settingsApply.addEventListener("click", e => {
     		const submitPath = appPath.value.substring(appPath.value.length - 10) == "\\Trak\\data" ? appPath.value : appPath.value + "\\Trak\\data";
-    		console.log(submitPath);
-    		ipcRenderer.send("settingsSave", [
-    			submitPath,
-				primaryColor.value,
-				secondaryColor.value,
-				primaryWindowWidth.value,
-				primaryWindowHeight.value,
-				secondaryWindowWidth.value,
-				secondaryWindowHeight.value
-    		]);
-    		settingsModalInstance.close();
+            if(parseInt(primaryWindowWidth.value) >= 1000 && parseInt(primaryWindowHeight.value) >= 800 && parseInt(secondaryWindowWidth.value) >= 1400 && parseInt(secondaryWindowHeight.value) >= 1000) {
+        		ipcRenderer.send("settingsSave", [
+        			submitPath,
+    				primaryColor.value,
+    				secondaryColor.value,
+    				primaryWindowWidth.value,
+    				primaryWindowHeight.value,
+    				secondaryWindowWidth.value,
+    				secondaryWindowHeight.value
+        		]);
+        		settingsModalInstance.close();
+            }
+            else if(parseInt(primaryWindowWidth.value) < 1000) {
+                M.toast({"html": "The primary window width has to be at least 1000.", "classes": "rounded"});
+            }
+            else if(parseInt(primaryWindowHeight.value) < 800) {
+                M.toast({"html": "The primary window width has to be at least 800.", "classes": "rounded"});
+            }
+            else if(parseInt(secondaryWindowWidth.value) < 1400) {
+                M.toast({"html": "The secondary window width has to be at least 1400.", "classes": "rounded"});
+            }
+            else if(parseInt(secondaryWindowHeight.value) < 1000) {
+                M.toast({"html": "The secondary window width has to be at least 1000.", "classes": "rounded"});
+            }
     	});
     	appPath.addEventListener("change", e => {
     		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
