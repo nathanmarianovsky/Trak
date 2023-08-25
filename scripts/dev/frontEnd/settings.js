@@ -42,6 +42,13 @@ ipcRenderer.once("configurationFileWritingSuccess", event => {
 
 
 
+// Display a notification for the successful update of the configuration.json file.
+ipcRenderer.once("configurationFileWritingSuccessSimple", event => {
+    M.toast({"html": "The application settings have been updated.", "classes": "rounded"});
+});
+
+
+
 // Display a notification if there was an issue in copying the data associated to all records.
 ipcRenderer.once("copyDataFailure", event => {
     M.toast({"html": "There was an issue in copying the data associated to the records.", "classes": "rounded"});

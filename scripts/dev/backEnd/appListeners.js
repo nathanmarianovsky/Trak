@@ -308,6 +308,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 	        if(err) { event.sender.send("configurationFileOpeningFailure"); }
 	        else {
 	        	const configurationData = JSON.parse(file);
+
 	        	ipc.on("dataOriginalDelete", (eve, resp) => {
 		  			if(resp[0] == true) {
 		  				fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, er => {
@@ -358,57 +359,85 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, ipc, tools, mainWind
 		  			}
 		  		});
 	        	if(configurationData.current == undefined) {
-	        		if(configurationData.original.path == writeData.path) {
-		        		writeData.previousPrimaryColor = configurationData.original.primaryColor;
+	        		if(configurationData.original.path == writeData.path && configurationData.original.primaryColor == writeData.primaryColor
+	        			&& configurationData.original.secondaryColor == writeData.secondaryColor && configurationData.original.primaryWindowWidth == writeData.primaryWindowWidth
+	        			&& configurationData.original.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.original.secondaryWindowWidth == writeData.secondaryWindowWidth
+	        			&& configurationData.original.secondaryWindowHeight == writeData.secondaryWindowHeight) {
+	        			writeData.previousPrimaryColor = configurationData.original.primaryColor;
 		        		writeData.previousSecondaryColor = configurationData.original.secondaryColor;
 		        		configurationData.current = writeData;
 						fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
 							if(err) { event.sender.send("configurationFileWritingFailure"); }
 							else {
-								event.sender.send("configurationFileWritingSuccess");
-								setTimeout(() => {
-									app.relaunch();
-									app.exit();
-								}, 3000);
+								event.sender.send("configurationFileWritingSuccessSimple");
 							}
 						});
 	        		}
 	        		else {
-	        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
-						  	if(err) { event.sender.send("dataCopyFailure"); }
-						  	else { event.sender.send("dataOriginalDeleteAsk", false); }
-						});
+		        		if(configurationData.original.path == writeData.path) {
+			        		writeData.previousPrimaryColor = configurationData.original.primaryColor;
+			        		writeData.previousSecondaryColor = configurationData.original.secondaryColor;
+			        		configurationData.current = writeData;
+							fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+								if(err) { event.sender.send("configurationFileWritingFailure"); }
+								else {
+									event.sender.send("configurationFileWritingSuccess");
+									setTimeout(() => {
+										app.relaunch();
+										app.exit();
+									}, 3000);
+								}
+							});
+		        		}
+		        		else {
+		        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
+							  	if(err) { event.sender.send("dataCopyFailure"); }
+							  	else { event.sender.send("dataOriginalDeleteAsk", false); }
+							});
+		        		}
 	        		}
 	        	}
 	        	else {
-	        		if(configurationData.current.path == writeData.path) {
+	        		if(configurationData.current.path == writeData.path && configurationData.current.primaryColor == writeData.primaryColor
+	        			&& configurationData.current.secondaryColor == writeData.secondaryColor && configurationData.current.primaryWindowWidth == writeData.primaryWindowWidth
+	        			&& configurationData.current.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.current.secondaryWindowWidth == writeData.secondaryWindowWidth
+	        			&& configurationData.current.secondaryWindowHeight == writeData.secondaryWindowHeight) {
 	        			writeData.previousPrimaryColor = configurationData.current.primaryColor;
-	        			writeData.previousSecondaryColor = configurationData.current.secondaryColor;
-	        			configurationData.current = writeData;
+		        		writeData.previousSecondaryColor = configurationData.current.secondaryColor;
+		        		configurationData.current = writeData;
 						fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
 							if(err) { event.sender.send("configurationFileWritingFailure"); }
 							else {
-								event.sender.send("configurationFileWritingSuccess")
-								setTimeout(() => {
-									app.relaunch();
-									app.exit();
-								}, 3000);
+								event.sender.send("configurationFileWritingSuccessSimple");
 							}
 						});
 	        		}
 	        		else {
-	        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
-						  	if(err) { event.sender.send("dataCopyFailure"); }
-						  	else { event.sender.send("dataOriginalDeleteAsk", true); }
-						});
+		        		if(configurationData.current.path == writeData.path) {
+		        			writeData.previousPrimaryColor = configurationData.current.primaryColor;
+		        			writeData.previousSecondaryColor = configurationData.current.secondaryColor;
+		        			configurationData.current = writeData;
+							fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+								if(err) { event.sender.send("configurationFileWritingFailure"); }
+								else {
+									event.sender.send("configurationFileWritingSuccess")
+									setTimeout(() => {
+										app.relaunch();
+										app.exit();
+									}, 3000);
+								}
+							});
+		        		}
+		        		else {
+		        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
+							  	if(err) { event.sender.send("dataCopyFailure"); }
+							  	else { event.sender.send("dataOriginalDeleteAsk", true); }
+							});
+		        		}
 	        		}
 	        	}
 	        }
 		});
-
-
-
-
 	});
 };
 

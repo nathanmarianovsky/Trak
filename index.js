@@ -108,7 +108,6 @@ app.whenReady().then(() => {
 				if(err) {  }
 				else {
 					if(configObj.current != undefined) {
-						console.log(stylesFile);
 						const reg1 = new RegExp(configObj.current.previousPrimaryColor.toLowerCase(), "g"),
 							reg2 = new RegExp(configObj.current.previousSecondaryColor.toLowerCase(), "g");
 						stylesFile = stylesFile.replace(reg1, configObj.current.primaryColor);
@@ -143,20 +142,8 @@ app.whenReady().then(() => {
 					}
 				}
 			});
-
-
-
 		}
 	});
-
-
-// [style*="#2A2A8E"] {
-//     color: #2A2A8E !important;
-// }
-
-
-
-
 });
 
 
