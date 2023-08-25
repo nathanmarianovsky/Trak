@@ -155,7 +155,24 @@ window.addEventListener("load", () => {
         		secondaryWindowHeight.value = configData.original.secondaryWindowHeight;
         		secondaryWindowHeight.setAttribute("lastValue", configData.original.secondaryWindowHeight);
         	}
-
+            document.getElementById("settingsColorReset").addEventListener("click", e => {
+                primaryColor.value = configData.original.primaryColor;
+                secondaryColor.value = configData.original.secondaryColor;
+            });
+            document.getElementById("settingsDataReset").addEventListener("click", e => {
+                appPath.value = configData.original.path;
+                appPath.classList.remove("validate", "valid");
+            });
+            document.getElementById("settingsSizesReset").addEventListener("click", e => {
+                primaryWindowWidth.value = configData.original.primaryWindowWidth;
+                primaryWindowWidth.classList.remove("validate", "valid");
+                primaryWindowHeight.value = configData.original.primaryWindowHeight;
+                primaryWindowHeight.classList.remove("validate", "valid");
+                secondaryWindowWidth.value = configData.original.secondaryWindowWidth;
+                secondaryWindowWidth.classList.remove("validate", "valid");
+                secondaryWindowHeight.value = configData.original.secondaryWindowHeight;
+                secondaryWindowHeight.classList.remove("validate", "valid");
+            });
         }
     	settingsOptions.click();
     	// Reset the values in the settings modal upon an exit.
