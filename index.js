@@ -89,7 +89,6 @@ app.whenReady().then(() => {
 		if(err) {  }
 		else {
 		    const configObj = JSON.parse(file);
-		    console.log(configObj);
 		    if(configObj.current != undefined) {
 		    	var primWinWidth = parseInt(configObj.current.primaryWindowWidth),
 			    	primWinHeight = parseInt(configObj.current.primaryWindowHeight),
@@ -102,18 +101,59 @@ app.whenReady().then(() => {
 			    	secWinWidth = parseInt(configObj.original.secondaryWindowWidth),
 			    	secWinHeight = parseInt(configObj.original.secondaryWindowHeight);
 		    }
-			// Create the primary window.
-		  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight);
-			primaryWindow.webContents.on("did-finish-load", () => {
-				primaryWindow.webContents.send("loadRows");
+
+
+
+			fs.readFile(path.join(__dirname, "styles", "dist", "styles.css"), "UTF8", (err, stylesFile) => {
+				if(err) {  }
+				else {
+					if(configObj.current != undefined) {
+						console.log(stylesFile);
+						const reg1 = new RegExp(configObj.current.previousPrimaryColor.toLowerCase(), "g"),
+							reg2 = new RegExp(configObj.current.previousSecondaryColor.toLowerCase(), "g");
+						stylesFile = stylesFile.replace(reg1, configObj.current.primaryColor);
+						stylesFile = stylesFile.replace(reg2, configObj.current.secondaryColor);
+						fs.writeFile(path.join(__dirname, "styles", "dist", "styles.css"), stylesFile, "UTF8", err => {
+							if(err) {  }
+							else {
+								// Create the primary window.
+							  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight);
+								primaryWindow.webContents.on("did-finish-load", () => {
+									primaryWindow.webContents.send("loadRows");
+								});
+							  	// Create the system tray icon and menu. 
+							  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
+								tools.createTrayMenu("h", primaryWindow, tray, Menu);
+								// Add all of the back-end listeners.
+								appListeners.addListeners(app, BrowserWindow, path, fs, exec, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, secWinWidth, secWinHeight);
+							}
+						});
+					}
+					else {
+						// Create the primary window.
+					  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight);
+						primaryWindow.webContents.on("did-finish-load", () => {
+							primaryWindow.webContents.send("loadRows");
+						});
+					  	// Create the system tray icon and menu. 
+					  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
+						tools.createTrayMenu("h", primaryWindow, tray, Menu);
+						// Add all of the back-end listeners.
+						appListeners.addListeners(app, BrowserWindow, path, fs, exec, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, secWinWidth, secWinHeight);
+					}
+				}
 			});
-		  	// Create the system tray icon and menu. 
-		  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
-			tools.createTrayMenu("h", primaryWindow, tray, Menu);
-			// Add all of the back-end listeners.
-			appListeners.addListeners(app, BrowserWindow, path, fs, exec, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, secWinWidth, secWinHeight);
+
+
+
 		}
 	});
+
+
+// [style*="#2A2A8E"] {
+//     color: #2A2A8E !important;
+// }
+
 
 
 

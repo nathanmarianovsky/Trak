@@ -57,14 +57,14 @@ ipcRenderer.once("dataDeleteFailure", event => {
 
 
 // Display the modal to be used in asking the user whether the original data folder should be deleted.
-ipcRenderer.once("dataOriginalDeleteAsk", event => {
+ipcRenderer.once("dataOriginalDeleteAsk", (event, response) => {
 	const dataDeleteModalInstance = M.Modal.init(document.getElementById("dataDeleteModal"));
 	dataDeleteModalInstance.open();
     document.getElementById("dataDeleteDeny").addEventListener("click", e => {
-    	ipcRenderer.send("dataOriginalDelete", false);
+    	ipcRenderer.send("dataOriginalDelete", [false, response]);
     });
     document.getElementById("dataDeleteAccept").addEventListener("click", e => {
-    	ipcRenderer.send("dataOriginalDelete", true);
+    	ipcRenderer.send("dataOriginalDelete", [true, response]);
     });
 });
 
