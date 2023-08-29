@@ -233,7 +233,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
     	if(BrowserWindow.getAllWindows().length === 0) {
 	   		let win = tools.createWindow("index", BrowserWindow, path, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
 	   		win.webContents.on("did-finish-load", () => {
-	  			win.webContents.send("loadRows");
+	  			win.webContents.send("loadRows", primaryWindowFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
 	  		});
     	}
   	});
@@ -248,7 +248,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
   	ipc.on("home", event => {
   		mainWindow.loadFile(path.join(__dirname, "../../../pages", "dist", "index.html"));
   		mainWindow.webContents.on("did-finish-load", () => {
-  			mainWindow.webContents.send("loadRows", primaryWindowHeight - 800);
+  			mainWindow.webContents.send("loadRows", primaryWindowFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
   		});
   	});
 
