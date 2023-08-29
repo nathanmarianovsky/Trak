@@ -53,7 +53,7 @@ Executes the creation of the primary window with all necessary parameters.
 	- width and height are the physical parameters for describing the created window size.
 
 */
-exports.createWindow = (extension, BrowserWindow, path, width = 1000, height = 800, resizable = true) => {
+exports.createWindow = (extension, BrowserWindow, path, width = 1000, height = 800, fullscreen = false, resizable = true) => {
   	let win = new BrowserWindow({
 		"width": width,
     	"height": height,
@@ -64,6 +64,7 @@ exports.createWindow = (extension, BrowserWindow, path, width = 1000, height = 8
     		"nodeIntegration": true,
     		"contextIsolation": false
     	},
+    	"fullscreen": fullscreen,
     	"icon": __dirname + "/assets/favicon.ico"
 	});
 	win.loadFile(path.join(__dirname, "../../../pages", "dist", extension + ".html"));

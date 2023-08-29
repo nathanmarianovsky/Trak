@@ -57,7 +57,7 @@ ipcRenderer.on("recordFilesSuccess", (event, response) => {
 
 
 // Load all of the contacts as rows in the table once the page has loaded.
-ipcRenderer.on("loadRows", event => {
+ipcRenderer.on("loadRows", (event, tableDiff) => {
     // Define the path for all items and get a list of all available records.
     const pathDir = path.join(localPath, "Trak", "data");
     let list = [];
@@ -70,7 +70,9 @@ ipcRenderer.on("loadRows", event => {
         });
     }
     // Attach a row to the html table body for each contact.
-    const tableBody = document.getElementById("tableBody");
+    const tableDiv = document.getElementById("tableDiv"),
+        tableBody = document.getElementById("tableBody");
+    tableDiv.style.height = (tableDiff + 467) + "px";
     tableBody.textContent = "";
     document.getElementById("preloader").style.setProperty("display", "none", "important");
     // Hide the vertical scroll bar.

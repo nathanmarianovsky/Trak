@@ -248,7 +248,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
   	ipc.on("home", event => {
   		mainWindow.loadFile(path.join(__dirname, "../../../pages", "dist", "index.html"));
   		mainWindow.webContents.on("did-finish-load", () => {
-  			mainWindow.webContents.send("loadRows");
+  			mainWindow.webContents.send("loadRows", primaryWindowHeight - 800);
   		});
   	});
 

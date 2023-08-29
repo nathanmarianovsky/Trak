@@ -106,16 +106,20 @@ app.whenReady().then(() => {
 				else {
 					if(configObj.current != undefined) {
 						const reg1 = new RegExp(configObj.current.previousPrimaryColor.toLowerCase(), "g"),
-							reg2 = new RegExp(configObj.current.previousSecondaryColor.toLowerCase(), "g");
+							reg2 = new RegExp(configObj.original.primaryColor.toLowerCase(), "g"),
+							reg3 = new RegExp(configObj.current.previousSecondaryColor.toLowerCase(), "g"),
+							reg4 = new RegExp(configObj.original.secondaryColor.toLowerCase(), "g");
 						stylesFile = stylesFile.replace(reg1, configObj.current.primaryColor);
-						stylesFile = stylesFile.replace(reg2, configObj.current.secondaryColor);
+						stylesFile = stylesFile.replace(reg2, configObj.current.primaryColor);
+						stylesFile = stylesFile.replace(reg3, configObj.current.secondaryColor);
+						stylesFile = stylesFile.replace(reg4, configObj.current.secondaryColor);
 						fs.writeFile(path.join(__dirname, "styles", "dist", "styles.css"), stylesFile, "UTF8", err => {
 							if(err) {  }
 							else {
 								// Create the primary window.
 							  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight);
 								primaryWindow.webContents.on("did-finish-load", () => {
-									primaryWindow.webContents.send("loadRows");
+									primaryWindow.webContents.send("loadRows", primWinHeight - 800);
 								});
 							  	// Create the system tray icon and menu. 
 							  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
@@ -129,7 +133,7 @@ app.whenReady().then(() => {
 						// Create the primary window.
 					  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight);
 						primaryWindow.webContents.on("did-finish-load", () => {
-							primaryWindow.webContents.send("loadRows");
+							primaryWindow.webContents.send("loadRows", primWinHeight - 800);
 						});
 					  	// Create the system tray icon and menu. 
 					  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));

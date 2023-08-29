@@ -9,6 +9,10 @@ html {
 	font-family: "Montserrat" !important;
 }
 
+body {
+	overflow-x: hidden;
+}
+
 nav {
 	background-color: #2A2A8E !important;
 }
@@ -439,6 +443,10 @@ textarea.materialize-textarea:focus:not([readonly])+label {
 	margin-top: 25px;
 }
 
+#settingsModal {
+	width: 75%;
+}
+
 #settingsModal .modal-content {
 	padding-right: 0px;
 	padding-left: 0px;
@@ -508,3 +516,15 @@ textarea.materialize-textarea:focus:not([readonly])+label {
     text-decoration: underline;
     cursor: pointer;
 }
+
+.fullScreenRow {
+	margin-top: 15px;
+}
+
+.settingsSecondCheckbox {
+	margin-left: -9px !important;
+}
+
+/*#indexBody {
+	overflow-y: hidden;
+}*/

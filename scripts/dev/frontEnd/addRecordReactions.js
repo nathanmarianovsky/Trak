@@ -265,8 +265,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
             oldInfo.style.display = "none";
             document.body.append(oldInfo);
         }
-        // Initialize the observer for the anime review.
-        initAnimeReviewObserver();
+        // // Initialize the observer for the anime review.
+        // initAnimeReviewObserver();
         // Initialize the observer for the select tags.
         initSelectObservers();
     });
@@ -357,4 +357,6 @@ window.addEventListener("load", () => {
     animeSave();
     // Add the listeners corresponding to the anime related content options.
     animeModalButtons();
+    // Initialize the observer for the anime review.
+    initAnimeReviewObserver();
 });
