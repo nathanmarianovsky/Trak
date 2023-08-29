@@ -77,8 +77,10 @@ app.whenReady().then(() => {
 				"secondaryColor": "#D9D9DB",
 				"primaryWindowWidth": 1000,
 				"primaryWindowHeight": 800,
+				"primaryWindowFullscreen": false,
 				"secondaryWindowWidth": 1400,
-				"secondaryWindowHeight": 1000
+				"secondaryWindowHeight": 1000,
+				"secondaryWindowFullscreen": false
 			}
 		};
 		fs.writeFileSync(path.join(basePath, "Trak", "config", "configuration.json"), JSON.stringify(writeData), "UTF8");
@@ -92,14 +94,18 @@ app.whenReady().then(() => {
 		    if(configObj.current != undefined) {
 		    	var primWinWidth = parseInt(configObj.current.primaryWindowWidth),
 			    	primWinHeight = parseInt(configObj.current.primaryWindowHeight),
+			    	primWinFullscreen = configObj.current.primaryWindowFullscreen,
 			    	secWinWidth = parseInt(configObj.current.secondaryWindowWidth),
-			    	secWinHeight = parseInt(configObj.current.secondaryWindowHeight);
+			    	secWinHeight = parseInt(configObj.current.secondaryWindowHeight),
+			    	secWinFullscreen = configObj.current.secondaryWindowFullscreen;
 		    }
 		    else {
 		    	var primWinWidth = parseInt(configObj.original.primaryWindowWidth),
 			    	primWinHeight = parseInt(configObj.original.primaryWindowHeight),
+			    	primWinFullscreen = configObj.original.primaryWindowFullscreen,
 			    	secWinWidth = parseInt(configObj.original.secondaryWindowWidth),
-			    	secWinHeight = parseInt(configObj.original.secondaryWindowHeight);
+			    	secWinHeight = parseInt(configObj.original.secondaryWindowHeight),
+			    	secWinFullscreen = configObj.original.secondaryWindowFullscreen;
 		    }
 			fs.readFile(path.join(__dirname, "styles", "dist", "styles.css"), "UTF8", (err, stylesFile) => {
 				if(err) {  }
@@ -117,7 +123,7 @@ app.whenReady().then(() => {
 							if(err) {  }
 							else {
 								// Create the primary window.
-							  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight);
+							  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);
 								primaryWindow.webContents.on("did-finish-load", () => {
 									primaryWindow.webContents.send("loadRows", primWinHeight - 800);
 								});
@@ -125,13 +131,13 @@ app.whenReady().then(() => {
 							  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 								tools.createTrayMenu("h", primaryWindow, tray, Menu);
 								// Add all of the back-end listeners.
-								appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, secWinWidth, secWinHeight);
+								appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 							}
 						});
 					}
 					else {
 						// Create the primary window.
-					  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight);
+					  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);
 						primaryWindow.webContents.on("did-finish-load", () => {
 							primaryWindow.webContents.send("loadRows", primWinHeight - 800);
 						});
@@ -139,7 +145,7 @@ app.whenReady().then(() => {
 					  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 						tools.createTrayMenu("h", primaryWindow, tray, Menu);
 						// Add all of the back-end listeners.
-						appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, secWinWidth, secWinHeight);
+						appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 					}
 				}
 			});

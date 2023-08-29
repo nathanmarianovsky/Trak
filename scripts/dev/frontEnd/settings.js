@@ -119,8 +119,10 @@ window.addEventListener("load", () => {
     		appPath = document.getElementById("appPath"),
     		primaryWindowWidth = document.getElementById("primaryWindowWidth"),
     		primaryWindowHeight = document.getElementById("primaryWindowHeight"),
+            primaryWindowFullscreen = document.getElementById("primaryWindowFullscreen"),
     		secondaryWindowWidth = document.getElementById("secondaryWindowWidth"),
-    		secondaryWindowHeight = document.getElementById("secondaryWindowHeight");
+    		secondaryWindowHeight = document.getElementById("secondaryWindowHeight"),
+            secondaryWindowFullscreen = document.getElementById("secondaryWindowFullscreen");
         // Display a notification if there was an error in reading the configuration file.
         if(err) {
             M.toast({"html": "There was an error opening the configuration file associated to the application settings.", "classes": "rounded"});
@@ -135,10 +137,14 @@ window.addEventListener("load", () => {
     		primaryWindowWidth.setAttribute("lastValue", "1000");
     		primaryWindowHeight.value = "800";
     		primaryWindowHeight.setAttribute("lastValue", "800");
+            primaryWindowFullscreen.checked = false;
+            primaryWindowFullscreen.setAttribute("lastValue", "false");
     		secondaryWindowWidth.value = "1400";
     		secondaryWindowWidth.setAttribute("lastValue", "1400");
     		secondaryWindowHeight.value = "1000";
     		secondaryWindowHeight.setAttribute("lastValue", "1000");
+            secondaryWindowFullscreen.checked = false;
+            secondaryWindowFullscreen.setAttribute("lastValue", "false");
         }
         // If the file loaded without issues populate the settings modal with the current application setup.
         else {
@@ -154,10 +160,14 @@ window.addEventListener("load", () => {
         		primaryWindowWidth.setAttribute("lastValue", configData.current.primaryWindowWidth);
         		primaryWindowHeight.value = configData.current.primaryWindowHeight;
         		primaryWindowHeight.setAttribute("lastValue", configData.current.primaryWindowHeight);
+                primaryWindowFullscreen.checked = configData.current.primaryWindowFullscreen;
+                primaryWindowFullscreen.setAttribute("lastValue", configData.current.primaryWindowFullscreen);
         		secondaryWindowWidth.value = configData.current.secondaryWindowWidth;
         		secondaryWindowWidth.setAttribute("lastValue", configData.current.secondaryWindowWidth);
         		secondaryWindowHeight.value = configData.current.secondaryWindowHeight;
         		secondaryWindowHeight.setAttribute("lastValue", configData.current.secondaryWindowHeight);
+                secondaryWindowFullscreen.checked = configData.current.secondaryWindowFullscreen;
+                secondaryWindowFullscreen.setAttribute("lastValue", configData.current.secondaryWindowFullscreen);
         	}
         	else {
         		primaryColor.value = configData.original.primaryColor;
@@ -170,10 +180,14 @@ window.addEventListener("load", () => {
         		primaryWindowWidth.setAttribute("lastValue", configData.original.primaryWindowWidth);
         		primaryWindowHeight.value = configData.original.primaryWindowHeight;
         		primaryWindowHeight.setAttribute("lastValue", configData.original.primaryWindowHeight);
+                primaryWindowFullscreen.checked = configData.original.primaryWindowFullscreen;
+                primaryWindowFullscreen.setAttribute("lastValue", configData.original.primaryWindowFullscreen);
         		secondaryWindowWidth.value = configData.original.secondaryWindowWidth;
         		secondaryWindowWidth.setAttribute("lastValue", configData.original.secondaryWindowWidth);
         		secondaryWindowHeight.value = configData.original.secondaryWindowHeight;
         		secondaryWindowHeight.setAttribute("lastValue", configData.original.secondaryWindowHeight);
+                secondaryWindowFullscreen.checked = configData.original.secondaryWindowFullscreen;
+                secondaryWindowFullscreen.setAttribute("lastValue", configData.original.secondaryWindowFullscreen);
         	}
             settingsColorReset.addEventListener("click", e => {
                 primaryColor.value = configData.original.primaryColor;
@@ -220,8 +234,10 @@ window.addEventListener("load", () => {
     				secondaryColor.value,
     				primaryWindowWidth.value,
     				primaryWindowHeight.value,
+                    primaryWindowFullscreen.checked,
     				secondaryWindowWidth.value,
-    				secondaryWindowHeight.value
+    				secondaryWindowHeight.value,
+                    secondaryWindowFullscreen.checked
         		]);
         		settingsModalInstance.close();
             }

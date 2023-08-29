@@ -36,6 +36,32 @@ var clearTooltips = () => {
 
 /*
 
+Initialize the floating action button on the page.
+
+*/
+var initFAB = () => {
+    // Define the instance of the fixed action button on the page.
+    const elemsFAB = document.querySelectorAll(".fixed-action-btn"),
+        instancesFAB = M.FloatingActionButton.init(elemsFAB, { "hoverEnabled": false, "direction": "left" });
+};
+
+
+
+/*
+
+Initialize the collapsible divs on the page.
+
+*/
+var initCollapsible = () => {
+    // Define the current instances of collapsible divs found on the page.
+    const elemsCollapsible = document.querySelectorAll(".collapsible"),
+        instancesCollapsible = M.Collapsible.init(elemsCollapsible);
+};
+
+
+
+/*
+
 Initialize all tooltips on the page.
 
 */
@@ -53,7 +79,7 @@ Initialize all select tags on the page.
 
 */
 var initSelect = () => {
-    // Define the current instances of select tags fonud on the page.
+    // Define the current instances of select tags found on the page.
     let elemsSelect = document.querySelectorAll("select"),
         instancesSelect = M.FormSelect.init(elemsSelect);
 };
@@ -66,7 +92,7 @@ Initialize all modals on the page.
 
 */
 var initModal = () => {
-    // Define the current instances of modals fonud on the page.
+    // Define the current instances of modals found on the page.
     const elemsModal = document.querySelectorAll(".modal"),
         instancesModal = M.Modal.init(elemsModal);
 };

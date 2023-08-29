@@ -64,10 +64,10 @@ exports.createWindow = (extension, BrowserWindow, path, width = 1000, height = 8
     		"nodeIntegration": true,
     		"contextIsolation": false
     	},
-    	"fullscreen": fullscreen,
     	"icon": __dirname + "/assets/favicon.ico"
 	});
 	win.loadFile(path.join(__dirname, "../../../pages", "dist", extension + ".html"));
+	if(fullscreen == true) { win.maximize(); }
   	return win;
 };
 

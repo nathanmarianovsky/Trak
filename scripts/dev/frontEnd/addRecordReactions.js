@@ -265,8 +265,6 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
             oldInfo.style.display = "none";
             document.body.append(oldInfo);
         }
-        // // Initialize the observer for the anime review.
-        // initAnimeReviewObserver();
         // Initialize the observer for the select tags.
         initSelectObservers();
     });
@@ -342,15 +340,13 @@ window.addEventListener("load", () => {
     // Initialize the select tags on the page.
     initSelect();
     // Initialize the floating action button on the page.
-    const elemsFAB = document.querySelectorAll(".fixed-action-btn"),
-        instancesFAB = M.FloatingActionButton.init(elemsFAB, { "hoverEnabled": false, "direction": "left" });
+    initFAB();
     // Initialize the menu tooltips.
     initTooltips()
     // Initialize the modals.
     initModal();
     // Initialize the collapsible divs.
-    const elemsCollapsible = document.querySelectorAll(".collapsible"),
-        instancesCollapsible = M.Collapsible.init(elemsCollapsible);
+    initCollapsible();
     // Add the listeners corresponding to the record choices.
     recordChoicesButtons();
     // Add the listeners corresponding to the anime record save.

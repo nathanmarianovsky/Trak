@@ -224,14 +224,14 @@ Driver function for adding all app listeners.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the current path to the local user data.
 	- originalPath is the original path to the local user data.
-	- primaryWindowWidth, primaryWindowHeight, secondaryWindowWidth, and secondaryWindowHeight are the window parameters.
+	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, secondaryWindowWidth, secondaryWindowHeight) => {
+exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
-	   		let win = tools.createWindow("index", BrowserWindow, path, primaryWindowWidth, primaryWindowHeight);
+	   		let win = tools.createWindow("index", BrowserWindow, path, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
 	   		win.webContents.on("did-finish-load", () => {
 	  			win.webContents.send("loadRows");
 	  		});
@@ -264,7 +264,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 
   	// Handles the load of the addRecord.html page for the creation of a record.
   	ipc.on("addLoad", event => {
-  		let addWindow = tools.createWindow("addRecord", BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight);
+  		let addWindow = tools.createWindow("addRecord", BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		addWindow.webContents.on("did-finish-load", () => {
   			ipc.once("performSave", (event, submission) => {
 				// If the record is an anime then save the corresponding data.
@@ -277,7 +277,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 
   	// Handles the load of the addRecord.html page for the update of a record.
   	ipc.on("updateRecord", (event, fldrName) => {
-  		let recordUpdateWindow = tools.createWindow("addRecord", BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight);
+  		let recordUpdateWindow = tools.createWindow("addRecord", BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		recordUpdateWindow.webContents.on("did-finish-load", () => {
   			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
   			ipc.once("performSave", (event, submission) => {
@@ -305,15 +305,16 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 			"secondaryColor": dataArr[2],
 			"primaryWindowWidth": dataArr[3],
 			"primaryWindowHeight": dataArr[4],
-			"secondaryWindowWidth": dataArr[5],
-			"secondaryWindowHeight": dataArr[6]
+			"primaryWindowFullscreen": dataArr[5],
+			"secondaryWindowWidth": dataArr[6],
+			"secondaryWindowHeight": dataArr[7],
+			"secondaryWindowFullscreen": dataArr[8]
 		};
 		fs.readFile(path.join(originalPath, "Trak", "config", "configuration.json"), (err, file) => {
 			// Display a notification if there was an error in reading the data file.
 	        if(err) { event.sender.send("configurationFileOpeningFailure"); }
 	        else {
 	        	const configurationData = JSON.parse(file);
-
 	        	ipc.on("dataOriginalDelete", (eve, resp) => {
 		  			if(resp[0] == true) {
 		  				fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, er => {
@@ -367,7 +368,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 	        		if(configurationData.original.path == writeData.path && configurationData.original.primaryColor == writeData.primaryColor
 	        			&& configurationData.original.secondaryColor == writeData.secondaryColor && configurationData.original.primaryWindowWidth == writeData.primaryWindowWidth
 	        			&& configurationData.original.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.original.secondaryWindowWidth == writeData.secondaryWindowWidth
-	        			&& configurationData.original.secondaryWindowHeight == writeData.secondaryWindowHeight) {
+	        			&& configurationData.original.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.original.primaryWindowFullscreen == writeData.primaryWindowFullscreen
+	        			&& configurationData.original.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen) {
 	        			writeData.previousPrimaryColor = configurationData.original.primaryColor;
 		        		writeData.previousSecondaryColor = configurationData.original.secondaryColor;
 		        		configurationData.current = writeData;
@@ -406,7 +408,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 	        		if(configurationData.current.path == writeData.path && configurationData.current.primaryColor == writeData.primaryColor
 	        			&& configurationData.current.secondaryColor == writeData.secondaryColor && configurationData.current.primaryWindowWidth == writeData.primaryWindowWidth
 	        			&& configurationData.current.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.current.secondaryWindowWidth == writeData.secondaryWindowWidth
-	        			&& configurationData.current.secondaryWindowHeight == writeData.secondaryWindowHeight) {
+	        			&& configurationData.current.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.current.primaryWindowFullscreen == writeData.primaryWindowFullscreen
+	        			&& configurationData.current.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen) {
 	        			writeData.previousPrimaryColor = configurationData.current.primaryColor;
 		        		writeData.previousSecondaryColor = configurationData.current.secondaryColor;
 		        		configurationData.current = writeData;
