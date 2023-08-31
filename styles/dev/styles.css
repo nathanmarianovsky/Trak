@@ -445,6 +445,8 @@ textarea.materialize-textarea:focus:not([readonly])+label {
 
 #settingsModal {
 	width: 75%;
+	max-height: 80%;
+	height: 80%;
 }
 
 #settingsModal .modal-content {
@@ -525,10 +527,6 @@ textarea.materialize-textarea:focus:not([readonly])+label {
 	margin-left: -9px !important;
 }
 
-/*#indexBody {
-	overflow-y: hidden;
-}*/
-
 .tap-target {
 	background-color: #2A2A8E !important;
 	color: white;
@@ -543,4 +541,8 @@ textarea.materialize-textarea:focus:not([readonly])+label {
 
 #introductionCheckSpan {
 	line-height: 19px;
+}
+
+#settingsModal h5 {
+	text-decoration: underline;
 }

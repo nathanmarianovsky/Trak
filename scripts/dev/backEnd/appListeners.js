@@ -333,141 +333,153 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 			"secondaryWindowHeight": dataArr[7],
 			"secondaryWindowFullscreen": dataArr[8]
 		};
-		fs.readFile(path.join(originalPath, "Trak", "config", "configuration.json"), (err, file) => {
-			// Display a notification if there was an error in reading the data file.
-	        if(err) { event.sender.send("configurationFileOpeningFailure"); }
-	        else {
-	        	const configurationData = JSON.parse(file);
-	        	ipc.on("dataOriginalDelete", (eve, resp) => {
-		  			if(resp[0] == true) {
-		  				fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, er => {
-		  					if(er) { eve.sender.send("dataDeleteFailure"); }
-		  					else {
-		  						if(resp[1] == true) {
-		  							writeData.previousPrimaryColor = configurationData.current.primaryColor;
-	        						writeData.previousSecondaryColor = configurationData.current.secondaryColor;
-		  						}
-		  						else {
-		  							writeData.previousPrimaryColor = configurationData.original.primaryColor;
-		        					writeData.previousSecondaryColor = configurationData.original.secondaryColor;
-		  						}
-		  						configurationData.current = writeData;
-								fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-									if(err) { eve.sender.send("configurationFileWritingFailure"); }
-									else {
-										eve.sender.send("configurationFileWritingSuccess");
-										setTimeout(() => {
-											app.relaunch();
-											app.exit();
-										}, 3000);
-									}
-								});
-		  					}
-		  				});
-		  			}
-		  			else {
-		  				if(resp[1] == true) {
-  							writeData.previousPrimaryColor = configurationData.current.primaryColor;
-    						writeData.previousSecondaryColor = configurationData.current.secondaryColor;
-  						}
-  						else {
-  							writeData.previousPrimaryColor = configurationData.original.primaryColor;
-        					writeData.previousSecondaryColor = configurationData.original.secondaryColor;
-  						}
-  						configurationData.current = writeData;
-						fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-							if(err) { eve.sender.send("configurationFileWritingFailure"); }
-							else {
-								eve.sender.send("configurationFileWritingSuccess");
-								setTimeout(() => {
-									app.relaunch();
-									app.exit();
-								}, 3000);
-							}
+		fs.readFile(path.join(originalPath, "Trak", "config", "tutorial.json"), "UTF8", (er, tutorialFile) => {
+			if(er) { event.sender.send("introductionFileReadFailure"); }
+			else {
+				const origIntro = JSON.parse(tutorialFile).introduction;
+				fs.writeFile(path.join(originalPath, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": dataArr[9] }), "UTF8", error => {
+					if(error) { event.sender.send("introductionFileSaveFailure"); }
+					else {
+						if(origIntro != dataArr[9]) { event.sender.send("introductionFileSaveSuccess"); }
+						fs.readFile(path.join(originalPath, "Trak", "config", "configuration.json"), (err, file) => {
+							// Display a notification if there was an error in reading the data file.
+					        if(err) { event.sender.send("configurationFileOpeningFailure"); }
+					        else {
+					        	const configurationData = JSON.parse(file);
+					        	ipc.on("dataOriginalDelete", (eve, resp) => {
+						  			if(resp[0] == true) {
+						  				fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, er => {
+						  					if(er) { eve.sender.send("dataDeleteFailure"); }
+						  					else {
+						  						if(resp[1] == true) {
+						  							writeData.previousPrimaryColor = configurationData.current.primaryColor;
+					        						writeData.previousSecondaryColor = configurationData.current.secondaryColor;
+						  						}
+						  						else {
+						  							writeData.previousPrimaryColor = configurationData.original.primaryColor;
+						        					writeData.previousSecondaryColor = configurationData.original.secondaryColor;
+						  						}
+						  						configurationData.current = writeData;
+												fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+													if(err) { eve.sender.send("configurationFileWritingFailure"); }
+													else {
+														eve.sender.send("configurationFileWritingSuccess");
+														setTimeout(() => {
+															app.relaunch();
+															app.exit();
+														}, 3000);
+													}
+												});
+						  					}
+						  				});
+						  			}
+						  			else {
+						  				if(resp[1] == true) {
+				  							writeData.previousPrimaryColor = configurationData.current.primaryColor;
+				    						writeData.previousSecondaryColor = configurationData.current.secondaryColor;
+				  						}
+				  						else {
+				  							writeData.previousPrimaryColor = configurationData.original.primaryColor;
+				        					writeData.previousSecondaryColor = configurationData.original.secondaryColor;
+				  						}
+				  						configurationData.current = writeData;
+										fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+											if(err) { eve.sender.send("configurationFileWritingFailure"); }
+											else {
+												eve.sender.send("configurationFileWritingSuccess");
+												setTimeout(() => {
+													app.relaunch();
+													app.exit();
+												}, 3000);
+											}
+										});
+						  			}
+						  		});
+					        	if(configurationData.current == undefined) {
+					        		if(configurationData.original.path == writeData.path && configurationData.original.primaryColor == writeData.primaryColor
+					        			&& configurationData.original.secondaryColor == writeData.secondaryColor && configurationData.original.primaryWindowWidth == writeData.primaryWindowWidth
+					        			&& configurationData.original.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.original.secondaryWindowWidth == writeData.secondaryWindowWidth
+					        			&& configurationData.original.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.original.primaryWindowFullscreen == writeData.primaryWindowFullscreen
+					        			&& configurationData.original.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && origIntro == dataArr[9]) {
+					        			writeData.previousPrimaryColor = configurationData.original.primaryColor;
+						        		writeData.previousSecondaryColor = configurationData.original.secondaryColor;
+						        		configurationData.current = writeData;
+										fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+											if(err) { event.sender.send("configurationFileWritingFailure"); }
+											else {
+												event.sender.send("configurationFileWritingSuccessSimple");
+											}
+										});
+					        		}
+					        		else {
+						        		if(configurationData.original.path == writeData.path) {
+							        		writeData.previousPrimaryColor = configurationData.original.primaryColor;
+							        		writeData.previousSecondaryColor = configurationData.original.secondaryColor;
+							        		configurationData.current = writeData;
+											fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+												if(err) { event.sender.send("configurationFileWritingFailure"); }
+												else {
+													event.sender.send("configurationFileWritingSuccess");
+													setTimeout(() => {
+														app.relaunch();
+														app.exit();
+													}, 3000);
+												}
+											});
+						        		}
+						        		else {
+						        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
+											  	if(err) { event.sender.send("dataCopyFailure"); }
+											  	else { event.sender.send("dataOriginalDeleteAsk", false); }
+											});
+						        		}
+					        		}
+					        	}
+					        	else {
+					        		if(configurationData.current.path == writeData.path && configurationData.current.primaryColor == writeData.primaryColor
+					        			&& configurationData.current.secondaryColor == writeData.secondaryColor && configurationData.current.primaryWindowWidth == writeData.primaryWindowWidth
+					        			&& configurationData.current.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.current.secondaryWindowWidth == writeData.secondaryWindowWidth
+					        			&& configurationData.current.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.current.primaryWindowFullscreen == writeData.primaryWindowFullscreen
+					        			&& configurationData.current.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && origIntro == dataArr[9]) {
+					        			writeData.previousPrimaryColor = configurationData.current.primaryColor;
+						        		writeData.previousSecondaryColor = configurationData.current.secondaryColor;
+						        		configurationData.current = writeData;
+										fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+											if(err) { event.sender.send("configurationFileWritingFailure"); }
+											else {
+												event.sender.send("configurationFileWritingSuccessSimple");
+											}
+										});
+					        		}
+					        		else {
+						        		if(configurationData.current.path == writeData.path) {
+						        			writeData.previousPrimaryColor = configurationData.current.primaryColor;
+						        			writeData.previousSecondaryColor = configurationData.current.secondaryColor;
+						        			configurationData.current = writeData;
+											fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+												if(err) { event.sender.send("configurationFileWritingFailure"); }
+												else {
+													event.sender.send("configurationFileWritingSuccess")
+													setTimeout(() => {
+														app.relaunch();
+														app.exit();
+													}, 3000);
+												}
+											});
+						        		}
+						        		else {
+						        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
+											  	if(err) { event.sender.send("dataCopyFailure"); }
+											  	else { event.sender.send("dataOriginalDeleteAsk", true); }
+											});
+						        		}
+					        		}
+					        	}
+					        }
 						});
-		  			}
-		  		});
-	        	if(configurationData.current == undefined) {
-	        		if(configurationData.original.path == writeData.path && configurationData.original.primaryColor == writeData.primaryColor
-	        			&& configurationData.original.secondaryColor == writeData.secondaryColor && configurationData.original.primaryWindowWidth == writeData.primaryWindowWidth
-	        			&& configurationData.original.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.original.secondaryWindowWidth == writeData.secondaryWindowWidth
-	        			&& configurationData.original.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.original.primaryWindowFullscreen == writeData.primaryWindowFullscreen
-	        			&& configurationData.original.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen) {
-	        			writeData.previousPrimaryColor = configurationData.original.primaryColor;
-		        		writeData.previousSecondaryColor = configurationData.original.secondaryColor;
-		        		configurationData.current = writeData;
-						fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-							if(err) { event.sender.send("configurationFileWritingFailure"); }
-							else {
-								event.sender.send("configurationFileWritingSuccessSimple");
-							}
-						});
-	        		}
-	        		else {
-		        		if(configurationData.original.path == writeData.path) {
-			        		writeData.previousPrimaryColor = configurationData.original.primaryColor;
-			        		writeData.previousSecondaryColor = configurationData.original.secondaryColor;
-			        		configurationData.current = writeData;
-							fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-								if(err) { event.sender.send("configurationFileWritingFailure"); }
-								else {
-									event.sender.send("configurationFileWritingSuccess");
-									setTimeout(() => {
-										app.relaunch();
-										app.exit();
-									}, 3000);
-								}
-							});
-		        		}
-		        		else {
-		        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
-							  	if(err) { event.sender.send("dataCopyFailure"); }
-							  	else { event.sender.send("dataOriginalDeleteAsk", false); }
-							});
-		        		}
-	        		}
-	        	}
-	        	else {
-	        		if(configurationData.current.path == writeData.path && configurationData.current.primaryColor == writeData.primaryColor
-	        			&& configurationData.current.secondaryColor == writeData.secondaryColor && configurationData.current.primaryWindowWidth == writeData.primaryWindowWidth
-	        			&& configurationData.current.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.current.secondaryWindowWidth == writeData.secondaryWindowWidth
-	        			&& configurationData.current.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.current.primaryWindowFullscreen == writeData.primaryWindowFullscreen
-	        			&& configurationData.current.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen) {
-	        			writeData.previousPrimaryColor = configurationData.current.primaryColor;
-		        		writeData.previousSecondaryColor = configurationData.current.secondaryColor;
-		        		configurationData.current = writeData;
-						fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-							if(err) { event.sender.send("configurationFileWritingFailure"); }
-							else {
-								event.sender.send("configurationFileWritingSuccessSimple");
-							}
-						});
-	        		}
-	        		else {
-		        		if(configurationData.current.path == writeData.path) {
-		        			writeData.previousPrimaryColor = configurationData.current.primaryColor;
-		        			writeData.previousSecondaryColor = configurationData.current.secondaryColor;
-		        			configurationData.current = writeData;
-							fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-								if(err) { event.sender.send("configurationFileWritingFailure"); }
-								else {
-									event.sender.send("configurationFileWritingSuccess")
-									setTimeout(() => {
-										app.relaunch();
-										app.exit();
-									}, 3000);
-								}
-							});
-		        		}
-		        		else {
-		        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
-							  	if(err) { event.sender.send("dataCopyFailure"); }
-							  	else { event.sender.send("dataOriginalDeleteAsk", true); }
-							});
-		        		}
-	        		}
-	        	}
-	        }
+					}
+				});
+			}
 		});
 	});
 };

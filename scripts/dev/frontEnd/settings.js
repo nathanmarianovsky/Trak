@@ -112,7 +112,7 @@ window.addEventListener("load", () => {
         ipcRenderer.send("aboutGithub");
     });
     // Read the settings configuration file.
-    fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), (err, file) => {
+    fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
     	// Define the inputs on the settings modal.
     	const primaryColor = document.getElementById("primaryColor"),
     		secondaryColor = document.getElementById("secondaryColor"),
@@ -209,65 +209,79 @@ window.addEventListener("load", () => {
             });
         	settingsOptions.click();
         }
-    	// Reset the values in the settings modal upon an exit.
-    	const settingsModalInstance = M.Modal.init(document.getElementById("settingsModal"), { "onCloseStart": () => {
-    			primaryColor.value = primaryColor.getAttribute("lastValue");
-	    		secondaryColor.value = secondaryColor.getAttribute("lastValue");
-	    		appPath.value = appPath.getAttribute("lastValue");
-	    		appPath.classList.remove("validate", "valid");
-	    		primaryWindowWidth.value = primaryWindowWidth.getAttribute("lastValue");
-	    		primaryWindowWidth.classList.remove("validate", "valid");
-	    		primaryWindowHeight.value = primaryWindowHeight.getAttribute("lastValue");
-	    		primaryWindowHeight.classList.remove("validate", "valid");
-	    		secondaryWindowWidth.value = secondaryWindowWidth.getAttribute("lastValue");
-	    		secondaryWindowWidth.classList.remove("validate", "valid");
-	    		secondaryWindowHeight.value = secondaryWindowHeight.getAttribute("lastValue");
-	    		secondaryWindowHeight.classList.remove("validate", "valid");
-    		}
-    	});
-    	settingsApply.addEventListener("click", e => {
-    		const submitPath = appPath.value.substring(appPath.value.length - 10) == "\\Trak\\data" ? appPath.value : appPath.value + "\\Trak\\data";
-            if(parseInt(primaryWindowWidth.value) >= 1000 && parseInt(primaryWindowHeight.value) >= 800 && parseInt(secondaryWindowWidth.value) >= 1400 && parseInt(secondaryWindowHeight.value) >= 1000) {
-        		ipcRenderer.send("settingsSave", [
-        			submitPath,
-    				primaryColor.value,
-    				secondaryColor.value,
-    				primaryWindowWidth.value,
-    				primaryWindowHeight.value,
-                    primaryWindowFullscreen.checked,
-    				secondaryWindowWidth.value,
-    				secondaryWindowHeight.value,
-                    secondaryWindowFullscreen.checked
-        		]);
-        		settingsModalInstance.close();
+        fs.readFile(path.join(basePath, "Trak", "config", "tutorial.json"), "UTF8", (err, tutorialInfo) => {
+            const tutorialLoad = document.getElementById("tutorialLoad");
+            if(err) {
+                M.toast({"html": "There was an error opening the configuration file associated to the tutorial settings.", "classes": "rounded"});
+                tutorialLoad.checked = false;
+                tutorialLoad.setAttribute("lastValue", "false");
             }
-            else if(parseInt(primaryWindowWidth.value) < 1000) {
-                M.toast({"html": "The primary window width has to be at least 1000.", "classes": "rounded"});
+            else {
+                const tutorialData = JSON.parse(tutorialInfo);
+                tutorialLoad.checked = tutorialData.introduction;
+                tutorialLoad.setAttribute("lastValue", tutorialData.introduction);
             }
-            else if(parseInt(primaryWindowHeight.value) < 800) {
-                M.toast({"html": "The primary window width has to be at least 800.", "classes": "rounded"});
-            }
-            else if(parseInt(secondaryWindowWidth.value) < 1400) {
-                M.toast({"html": "The secondary window width has to be at least 1400.", "classes": "rounded"});
-            }
-            else if(parseInt(secondaryWindowHeight.value) < 1000) {
-                M.toast({"html": "The secondary window width has to be at least 1000.", "classes": "rounded"});
-            }
-    	});
-    	appPath.addEventListener("change", e => {
-    		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-    	});
-    	primaryWindowWidth.addEventListener("change", e => {
-    		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-    	});
-    	primaryWindowHeight.addEventListener("change", e => {
-    		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-    	});
-    	secondaryWindowWidth.addEventListener("change", e => {
-    		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-    	});
-    	secondaryWindowHeight.addEventListener("change", e => {
-    		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-    	});
+        	// Reset the values in the settings modal upon an exit.
+        	const settingsModalInstance = M.Modal.init(document.getElementById("settingsModal"), { "onCloseStart": () => {
+        			primaryColor.value = primaryColor.getAttribute("lastValue");
+    	    		secondaryColor.value = secondaryColor.getAttribute("lastValue");
+    	    		appPath.value = appPath.getAttribute("lastValue");
+    	    		appPath.classList.remove("validate", "valid");
+    	    		primaryWindowWidth.value = primaryWindowWidth.getAttribute("lastValue");
+    	    		primaryWindowWidth.classList.remove("validate", "valid");
+    	    		primaryWindowHeight.value = primaryWindowHeight.getAttribute("lastValue");
+    	    		primaryWindowHeight.classList.remove("validate", "valid");
+    	    		secondaryWindowWidth.value = secondaryWindowWidth.getAttribute("lastValue");
+    	    		secondaryWindowWidth.classList.remove("validate", "valid");
+    	    		secondaryWindowHeight.value = secondaryWindowHeight.getAttribute("lastValue");
+    	    		secondaryWindowHeight.classList.remove("validate", "valid");
+        		}
+        	});
+        	settingsApply.addEventListener("click", e => {
+        		const submitPath = appPath.value.substring(appPath.value.length - 10) == "\\Trak\\data" ? appPath.value : appPath.value + "\\Trak\\data";
+                if(parseInt(primaryWindowWidth.value) >= 1000 && parseInt(primaryWindowHeight.value) >= 800 && parseInt(secondaryWindowWidth.value) >= 1400 && parseInt(secondaryWindowHeight.value) >= 1000) {
+            		ipcRenderer.send("settingsSave", [
+            			submitPath,
+        				primaryColor.value,
+        				secondaryColor.value,
+        				primaryWindowWidth.value,
+        				primaryWindowHeight.value,
+                        primaryWindowFullscreen.checked,
+        				secondaryWindowWidth.value,
+        				secondaryWindowHeight.value,
+                        secondaryWindowFullscreen.checked,
+                        tutorialLoad.checked
+            		]);
+            		settingsModalInstance.close();
+                }
+                else if(parseInt(primaryWindowWidth.value) < 1000) {
+                    M.toast({"html": "The primary window width has to be at least 1000.", "classes": "rounded"});
+                }
+                else if(parseInt(primaryWindowHeight.value) < 800) {
+                    M.toast({"html": "The primary window width has to be at least 800.", "classes": "rounded"});
+                }
+                else if(parseInt(secondaryWindowWidth.value) < 1400) {
+                    M.toast({"html": "The secondary window width has to be at least 1400.", "classes": "rounded"});
+                }
+                else if(parseInt(secondaryWindowHeight.value) < 1000) {
+                    M.toast({"html": "The secondary window width has to be at least 1000.", "classes": "rounded"});
+                }
+        	});
+        	appPath.addEventListener("change", e => {
+        		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+        	});
+        	primaryWindowWidth.addEventListener("change", e => {
+        		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+        	});
+        	primaryWindowHeight.addEventListener("change", e => {
+        		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+        	});
+        	secondaryWindowWidth.addEventListener("change", e => {
+        		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+        	});
+        	secondaryWindowHeight.addEventListener("change", e => {
+        		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+        	});
+        });
     });
 });

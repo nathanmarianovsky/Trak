@@ -86,6 +86,12 @@ app.whenReady().then(() => {
 		fs.writeFileSync(path.join(basePath, "Trak", "config", "configuration.json"), JSON.stringify(writeData), "UTF8");
 	}
 
+	// Create the configuration file if it does not exist.
+	if(!fs.existsSync(path.join(basePath, "Trak", "config", "tutorial.json"))) {
+		const writeTutorial = { "introduction": true };
+		fs.writeFileSync(path.join(basePath, "Trak", "config", "tutorial.json"), JSON.stringify(writeTutorial), "UTF8");
+	}
+
 	// Load the user's preferred window sizes if they exist.
 	fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
 		if(err) {  }

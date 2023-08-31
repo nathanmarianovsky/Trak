@@ -62,6 +62,12 @@ ipcRenderer.on("introductionFileSaveFailure", event => {
 
 
 
+ipcRenderer.on("introductionFileReadFailure", event => {
+    M.toast({"html": "There was an error in reading the tutorial configuration file.", "classes": "rounded"});
+});
+
+
+
 ipcRenderer.on("introductionFileSaveSuccess", event => {
     M.toast({"html": "The tutorial configuration file has been updated.", "classes": "rounded"});
 });
@@ -79,6 +85,9 @@ ipcRenderer.on("introduction", (event, response) => {
     }
     introductionModal.open();
     // const introductionExit = document.getElementById("introductionExit"),
+    document.getElementById("introductionCheck").addEventListener("change", e => {
+        document.getElementById("tutorialLoad").checked = !e.target.checked;
+    });
     const introductionContinue = document.getElementById("introductionContinue");
     introductionContinue.addEventListener("click", e => {
         // const instancesTapAdd = M.TapTarget.init(document.getElementById("introductionTargetAdd"));
