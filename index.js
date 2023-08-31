@@ -126,6 +126,7 @@ app.whenReady().then(() => {
 							  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);
 								primaryWindow.webContents.on("did-finish-load", () => {
 									primaryWindow.webContents.send("loadRows", primWinFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
+									tools.tutorialLoad(fs, path, primaryWindow, basePath);
 								});
 							  	// Create the system tray icon and menu. 
 							  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
@@ -140,6 +141,7 @@ app.whenReady().then(() => {
 					  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);
 						primaryWindow.webContents.on("did-finish-load", () => {
 							primaryWindow.webContents.send("loadRows", primWinFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
+							tools.tutorialLoad(fs, path, primaryWindow, basePath);
 						});
 					  	// Create the system tray icon and menu. 
 					  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));

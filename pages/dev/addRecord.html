@@ -108,8 +108,18 @@
                 <form id="categoryAnimeForm2" class="col s12"></form>
             </div>
             <a id="animeSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
+            <div id="introductionTargetAnimeSave" class="tap-target" data-target="animeSave">
+                <div class="tap-target-content">
+                    <p>Use this button to save the anime record.</p>
+                </div>
+            </div>
             <div class="fixed-action-btn">
-                <a class="btn-floating btn-large"><i class="large material-icons">add</i></a>
+                <a id="animeOptions" class="btn-floating btn-large waves-effect waves-light"><i class="large material-icons">add</i></a>
+                <div id="introductionTargetAnimeOptions" class="tap-target" data-target="animeOptions">
+                    <div class="tap-target-content">
+                        <p>Use the options to add associated content.</p>
+                    </div>
+                </div>
                 <ul>
                     <li><a id="animeSeasons" href="#animeModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
                 </ul>

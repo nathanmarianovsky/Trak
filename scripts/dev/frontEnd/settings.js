@@ -207,8 +207,8 @@ window.addEventListener("load", () => {
                 secondaryWindowHeight.value = configData.original.secondaryWindowHeight;
                 secondaryWindowHeight.classList.remove("validate", "valid");
             });
+        	settingsOptions.click();
         }
-    	settingsOptions.click();
     	// Reset the values in the settings modal upon an exit.
     	const settingsModalInstance = M.Modal.init(document.getElementById("settingsModal"), { "onCloseStart": () => {
     			primaryColor.value = primaryColor.getAttribute("lastValue");

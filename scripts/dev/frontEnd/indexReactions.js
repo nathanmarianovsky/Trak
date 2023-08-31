@@ -56,6 +56,72 @@ ipcRenderer.on("recordFilesSuccess", (event, response) => {
 
 
 
+ipcRenderer.on("introductionFileSaveFailure", event => {
+    M.toast({"html": "There was an error in saving the tutorial configuration file.", "classes": "rounded"});
+});
+
+
+
+ipcRenderer.on("introductionFileSaveSuccess", event => {
+    M.toast({"html": "The tutorial configuration file has been updated.", "classes": "rounded"});
+});
+
+
+
+ipcRenderer.on("introduction", (event, response) => {
+    const introductionModal = M.Modal.init(document.getElementById("introductionModal"), { "onCloseStart": () => {
+        const introductionCheck = document.getElementById("introductionCheck").checked;
+        introductionCheck == true ? ipcRenderer.send("introductionFileSave", false) : ipcRenderer.send("introductionFileSave", true);
+    }});
+    if(response == true) {
+        const par = document.getElementById("introductionContentParagraph");
+        par.textContent = par.textContent.replace("Welcome", "Welcome back");
+    }
+    introductionModal.open();
+    // const introductionExit = document.getElementById("introductionExit"),
+    const introductionContinue = document.getElementById("introductionContinue");
+    introductionContinue.addEventListener("click", e => {
+        // const instancesTapAdd = M.TapTarget.init(document.getElementById("introductionTargetAdd"));
+        const instancesTapAdd = M.TapTarget.init(document.getElementById("introductionTargetAdd"), { "onClose": () => {
+            setTimeout(() => {
+                const instancesTapFilter = M.TapTarget.init(document.getElementById("introductionTargetFilter"), { "onClose": () => {
+                    setTimeout(() => {
+                        const instancesTapSettings = M.TapTarget.init(document.getElementById("introductionTargetSettings"));
+                        document.getElementById("openSettings").parentNode.children[1].children[1].children[0].children[0].style.color = "#2A2A8E";
+                        let count = 0;
+                        if(!document.getElementById("filterModal").classList.contains("open")) {
+                            setTimeout(() => { instancesTapSettings.open(); }, 500);
+                            count++;
+                        }
+                        var observer = new MutationObserver(mutations => {
+                            if(count == 0) {
+                                if(!mutations[0].target.classList.contains("open")) {
+                                    setTimeout(() => { instancesTapSettings.open(); }, 500);
+                                    count++;
+                                }
+                            }
+                        });
+                        observer.observe(document.getElementById("filterModal"), {
+                            attributes: true,
+                            attributeFilter: ["class"]
+                        });
+                    }, 500);
+                }});
+                document.getElementById("setFilter").parentNode.children[1].children[1].children[0].children[0].style.color = "#2A2A8E";
+                setTimeout(() => { instancesTapFilter.open(); }, 500);
+            }, 500);
+        }});
+        setTimeout(() => {
+            instancesTapAdd.open();
+            document.getElementById("introductionTargetAdd").parentNode.children[1].children[0].addEventListener("click", e => {
+                ipcRenderer.send("addLoad", true);
+                // setTimeout(() => { ipcRenderer.send("addLoad", true); }, 500);
+            });
+        }, 500);
+    });
+});
+
+
 // Load all of the contacts as rows in the table once the page has loaded.
 ipcRenderer.on("loadRows", (event, tableDiff) => {
     // Define the path for all items and get a list of all available records.

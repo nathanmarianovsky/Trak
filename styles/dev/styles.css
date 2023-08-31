@@ -528,3 +528,19 @@ textarea.materialize-textarea:focus:not([readonly])+label {
 /*#indexBody {
 	overflow-y: hidden;
 }*/
+
+.tap-target {
+	background-color: #2A2A8E !important;
+	color: white;
+	mix-blend-mode: difference;
+}
+
+#introductionCheckLabel {
+	position: relative;
+	top: 11px;
+	left: 16px;
+}
+
+#introductionCheckSpan {
+	line-height: 19px;
+}

@@ -4,6 +4,8 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
 
    - createTrayMenu: Create the system tray icon and menu.
    - createWindow: Executes the creation of the primary window with all necessary parameters.
+   - tutorialLoad: Tells the front-end to load the application introduction.
+   - startCommandLineFolder: Provides the necessary command to execute the opening of a folder.
 
 */
 
@@ -69,6 +71,28 @@ exports.createWindow = (extension, BrowserWindow, path, width = 1000, height = 8
 	win.loadFile(path.join(__dirname, "../../../pages", "dist", extension + ".html"));
 	if(fullscreen == true) { win.maximize(); }
   	return win;
+};
+
+
+
+/*
+
+Tells the front-end to load the application introduction.
+
+	- win is the primary window of the app.
+	- sysPath is the system location for the application configuration.
+
+*/
+exports.tutorialLoad = (fs, path, win, sysPath) => {
+	if(!fs.existsSync(path.join(sysPath, "Trak", "config", "tutorial.json"))) {
+		win.webContents.send("introduction", false);
+	}
+	else {
+		const intro = JSON.parse(fs.readFileSync(path.join(sysPath, "Trak", "config", "tutorial.json"), "UTF8")).introduction;
+		if(intro == true) {
+			win.webContents.send("introduction", true);
+		}
+	}
 };
 
 

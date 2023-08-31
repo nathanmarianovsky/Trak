@@ -18,11 +18,25 @@
             <div class="nav-wrapper">
                 <span class="brand-logo center">Trak</span>
                 <ul class="left">
-                    <li><a class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Filter Records" href="#filterModal"><i class="material-icons">filter_list</i></a></li>
+                    <li>
+                        <a id="setFilter" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Filter Records" href="#filterModal"><i class="material-icons">filter_list</i></a>
+                        <div id="introductionTargetFilter" class="tap-target" data-target="setFilter">
+                            <div class="tap-target-content">
+                                <p>Use the filter to restrict the records shown.</p>
+                            </div>
+                        </div>
+                    </li>
                     <li><a id="clearFilter" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Clear Filter"><i class="material-icons">clear_all</i></a></li>
                 </ul>
                 <ul class="right">
-                    <li><a class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Settings" href="#settingsModal"><i class="material-icons">settings</i></a></li>
+                    <li>
+                        <a id="openSettings" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Settings" href="#settingsModal"><i class="material-icons">settings</i></a>
+                        <div id="introductionTargetSettings" class="tap-target" data-target="openSettings">
+                            <div class="tap-target-content">
+                                <p>Use the settings to change application defaults.</p>
+                            </div>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -150,5 +164,24 @@
             <a id="remove" class="btn-floating btn-large waves-effect waves-light modal-trigger tooltipped" data-position="right" data-tooltip="Remove Records" href="#removeModal"><i class="material-icons">remove</i></a>
         </div>
         <div id="settingsModal" class="modal modal-fixed-footer"></div>
+        <div id="introductionModal" class="modal infoModal">
+            <div class="modal-content">
+                <h4 class="center">Tutorial</h4>
+                <p id="introductionContentParagraph">Welcome to Trak! The one-stop for all content cataloging. By continuing below you will be provided a walk-through of the application's features.</p>
+            </div>
+            <div class="modal-footer">
+                <label id="introductionCheckLabel" class="left">
+                    <input type="checkbox" class="filled-in" id="introductionCheck"/>
+                    <span id="introductionCheckSpan">Hide on Launch</span>
+                </label>
+                <a id="introductionExit" class="modal-close waves-effect waves-green btn-flat modalButtons">Exit</a>
+                <a id="introductionContinue" class="modal-close waves-effect waves-green btn-flat modalButtons">Continue</a>
+            </div>
+        </div>
+        <div id="introductionTargetAdd" class="tap-target" data-target="add">
+            <div class="tap-target-content">
+                <p>Begin by clicking on the add button in order to open a separate window which handles record creation and update.</p>
+            </div>
+        </div>
     </body>
 </html>

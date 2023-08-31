@@ -25,7 +25,7 @@ window.addEventListener("load", () => {
     // Listen for a click event on the add button in order to open a window whose inputs will generate a new record.
     add.addEventListener("click", e => {
         e.preventDefault();
-        ipcRenderer.send("addLoad");
+        ipcRenderer.send("addLoad", false);
     });
     // Listen for a click event on the remove button in order to open a confirmation window asking for the deletion of all checked records.
     remove.addEventListener("click", e => {

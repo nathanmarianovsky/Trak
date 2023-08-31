@@ -234,6 +234,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 	   		let win = tools.createWindow("index", BrowserWindow, path, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
 	   		win.webContents.on("did-finish-load", () => {
 	  			win.webContents.send("loadRows", primaryWindowFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
+	  			tools.tutorialLoad(fs, path, primaryWindow, basePath);
 	  		});
     	}
   	});
@@ -252,6 +253,25 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
   		});
   	});
 
+    ipc.on("introductionFileSave", (event, launchIntro) => {
+    	if(!fs.existsSync(path.join(originalPath, "Trak", "config", "tutorial.json"))) {
+	    	fs.writeFile(path.join(originalPath, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": launchIntro }), "UTF8", err => {
+	    		if(err) { event.sender.send("introductionFileSaveFailure"); }
+	    		else {
+	    			// event.sender.send("introductionFileSaveSuccess");
+	    		}
+	    	});
+    	}
+    	else if(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "tutorial.json"), "UTF8")).introduction != launchIntro) {
+    		fs.writeFile(path.join(originalPath, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": launchIntro }), "UTF8", err => {
+	    		if(err) { event.sender.send("introductionFileSaveFailure"); }
+	    		else {
+	    			event.sender.send("introductionFileSaveSuccess");
+	    		}
+	    	});
+    	}
+    });
+
   	// Handle the opening of the github link on the about section.
   	ipc.on("aboutGithub", event => {
   		shell.openExternal("https://github.com/nathanmarianovsky/Trak");
@@ -263,9 +283,12 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 	}
 
   	// Handles the load of the addRecord.html page for the creation of a record.
-  	ipc.on("addLoad", event => {
+  	ipc.on("addLoad", (event, scenario) => {
   		let addWindow = tools.createWindow("addRecord", BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		addWindow.webContents.on("did-finish-load", () => {
+  			if(scenario == true) {
+  				addWindow.webContents.send("addIntroduction");
+  			}
   			ipc.once("performSave", (event, submission) => {
 				// If the record is an anime then save the corresponding data.
 				if(submission[0] == "Anime") {

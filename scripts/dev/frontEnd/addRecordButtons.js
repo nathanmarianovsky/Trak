@@ -28,6 +28,8 @@ var recordChoicesButtons = () => {
         categoryDivs = document.getElementsByClassName("categoryDiv"),
         categoryInitial = document.getElementById("categoryInitial"),
         categoryAnimeDiv = document.getElementById("categoryAnimeDiv");
+    let introHolder = false;
+    ipcRenderer.on("addIntroduction", event => { introHolder = true; });
     // Listen for a click event on the categoryAnime button on the top bar to display the form corresponding to an anime record.
     categoryAnime.addEventListener("click", e => {
         e.preventDefault();
@@ -39,6 +41,15 @@ var recordChoicesButtons = () => {
         }
         categoryAnimeDiv.style.display = "initial";
         categoryAnime.parentNode.classList.add("active");
+        if(introHolder == true) {
+            const instancesTapAnimeSave = M.TapTarget.init(document.getElementById("introductionTargetAnimeSave"), { "onClose": () => {
+                setTimeout(() => {
+                    const instancesTapAnimeOptions = M.TapTarget.init(document.getElementById("introductionTargetAnimeOptions"));
+                    setTimeout(() => { instancesTapAnimeOptions.open(); }, 500);
+                }, 500);
+            }});
+            setTimeout(() => { instancesTapAnimeSave.open(); }, 500);
+        }
     });
 };
 
