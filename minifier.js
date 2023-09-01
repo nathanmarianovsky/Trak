@@ -23,28 +23,47 @@ const htmlMinify = require("html-minifier").minify,
 
 // Append the app settings to the appropriate html files.
 console.log("Adding Menu to Appropriate HTML Files.");
-const htmlMenuList = ["index.html", "addRecord.html"],
+const htmlSettingsList = ["index.html"],
+	htmlList = ["addRecord.html"],
 	htmlSettings = fs.readFileSync(path.join(__dirname, "pages", "dev", "settings.html"));
-for(let t = 0; t < htmlMenuList.length; t++) {
-	let data = fs.readFileSync(path.join(__dirname, "pages", "dev", htmlMenuList[t]), "UTF8"),
+for(let t = 0; t < htmlSettingsList.length; t++) {
+	let data = fs.readFileSync(path.join(__dirname, "pages", "dev", htmlSettingsList[t]), "UTF8"),
 		$ = cheerio.load(data);
 	$("#settingsModal").html(htmlSettings);
 	if(!fs.existsSync(path.join(__dirname, "pages", "dev", "settingsAttached"))) {
 		fs.mkdirSync(path.join(__dirname, "pages", "dev", "settingsAttached"), { "recursive": true });
 	}
-	fs.writeFileSync(path.join(__dirname, "pages", "dev", "settingsAttached", "settingsAttached" + htmlMenuList[t].charAt(0).toUpperCase() + htmlMenuList[t].slice(1)), $.html(), "UTF8");
+	fs.writeFileSync(path.join(__dirname, "pages", "dev", "settingsAttached", "settingsAttached" + htmlSettingsList[t].charAt(0).toUpperCase() + htmlSettingsList[t].slice(1)), $.html(), "UTF8");
 }
 
 
 
 // Compress the html files.
-console.log("Starting Compression of HTML Files with the Settings Modal:");
+console.log("Starting Compression of HTML Files without the Settings Modal:");
 if(!fs.existsSync(path.join(__dirname, "pages", "dist"))) {
 	fs.mkdirSync(path.join(__dirname, "pages", "dist"));
 }
+const htmlBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect);
+for(let r = 0; r < htmlList.length; r++) {
+	let file = htmlList[r],
+		settingsHtmlBarRow = htmlBar.create(1, 0, {}, {"format": "[{bar}] {percentage}% | " + file}),
+		data = fs.readFileSync(path.join(__dirname, "pages", "dev", file), "UTF8");
+	fs.writeFileSync(path.join(__dirname, "pages", "dist", file), htmlMinify(data, {
+		"removeComments": true,
+		"removeCommentsFromCDATA": true,
+		"collapseInlineTagWhitespace": true,
+		"removeAttributeQuotes": true,
+		"useShortDoctype": true,
+		"minifyJS": true,
+		"minifyCSS": true
+	}));
+	settingsHtmlBarRow.update(1);
+}
+htmlBar.stop();
+console.log("Starting Compression of HTML Files with the Settings Modal:");
 const settingsHtmlBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect);
-for(let r = 0; r < htmlMenuList.length; r++) {
-	let file = htmlMenuList[r],
+for(let r = 0; r < htmlSettingsList.length; r++) {
+	let file = htmlSettingsList[r],
 		settingsHtmlBarRow = settingsHtmlBar.create(1, 0, {}, {"format": "[{bar}] {percentage}% | " + file}),
 		data = fs.readFileSync(path.join(__dirname, "pages", "dev", "settingsAttached", "settingsAttached" + file.charAt(0).toUpperCase() + file.slice(1)), "UTF8");
 	fs.writeFileSync(path.join(__dirname, "pages", "dist", file), htmlMinify(data, {
