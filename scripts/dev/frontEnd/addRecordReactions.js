@@ -2,6 +2,8 @@
 
 BASIC DETAILS: This file handles all reactions on the addRecord.html page.
 
+   - animeGenreListLoad: Appends all genre options as checkboxes when adding/updating an anime record.
+
 */
 
 
@@ -16,6 +18,7 @@ Declare all of the necessary variables.
 
     - ipcRenderer provides the means to operate the Electron app.
     - fs and path provide the means to work with local files.
+    - basePath is the path to the local settings data.
     - localPath is the path to the local user data.
 
 */
@@ -95,7 +98,9 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
         // If the file loaded without issues populate the page with a contact's information.
         else {
             const recordData = JSON.parse(file);
+            // If the record is of category type anime then proceed.
             if(recordData.category == "Anime") {
+                // Define the relevant anime record inputs.
                 const animeName = document.getElementById("animeName"),
                     animeJapaneseName = document.getElementById("animeJapaneseName"),
                     animeReview = document.getElementById("animeReview"),
@@ -105,7 +110,9 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     animeMusicians = document.getElementById("animeMusicians"),
                     animeStudio = document.getElementById("animeStudio"),
                     animeLicense = document.getElementById("animeLicense");
+                // Load the anime record portion of the addRecord page.
                 document.getElementById("categoryAnime").click();
+                // Populate the anime record page with the saved data.
                 animeName.value = recordData.name;
                 animeName.setAttribute("lastValue", recordData.name);
                 if(recordData.name != "") { animeName.parentNode.children[1].classList.add("active"); }
@@ -190,8 +197,11 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 for(let v = 0; v < recordData.genres[0].length; v++) {
                     document.getElementById("animeGenre" + recordData.genres[0][v]).checked = recordData.genres[1][v];
                 }
+                // Define the collection of ratings to be used in calculating the global average rating of an anime.
                 const rtngList = [];
+                // Iterate through the saved related content and add a page item for each.
                 for(let u = 1; u < recordData.content.length + 1; u++) {
+                    // If the iterated item is of type single then proceed accordingly.
                     if(recordData.content[u-1].scenario == "Single") {
                         singleAddition();
                         document.getElementById("li_" + u + "_Single_Name").value = recordData.content[u-1].name;
@@ -210,6 +220,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                         document.getElementById("li_" + u + "_Single_Review").value = recordData.content[u-1].review;
                         if(recordData.content[u-1].rating != "") { rtngList.push(parseInt(recordData.content[u-1].rating)); }
                     }
+                    // If the iterated item is of type season then proceed accordingly.
                     else if(recordData.content[u-1].scenario == "Season") {
                         seasonAddition();
                         document.getElementById("li_" + u + "_Season_Name").value = recordData.content[u-1].name;
@@ -225,6 +236,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                         document.getElementById("li_" + u + "_Season_End").value = recordData.content[u-1].end;
                         document.getElementById("li_" + u + "_Season_Status").value = recordData.content[u-1].status;
                         let seasonRatingList = [];
+                        // Iterate through the season episodes and add a listing for each within the season populated with the saved data.
                         for(let w = 1; w < recordData.content[u-1].episodes.length + 1; w++) {
                             episodeAddition(document.getElementById("li_" + u + "_Season"));
                             document.getElementById("li_" + u + "_Episode_Name_" + w).value = recordData.content[u-1].episodes[w-1].name;
@@ -249,6 +261,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                             });
                             if(recordData.content[u-1].episodes[w-1].rating != "") { seasonRatingList.push(parseInt(recordData.content[u-1].episodes[w-1].rating)); }
                         }
+                        // Push the corresponding item rating to the associated list.
                         let seasonRating = seasonRatingList.length > 0 ? (seasonRatingList.reduce((accum, cur) => accum + cur, 0) / seasonRatingList.length).toFixed(2) : "N/A";
                         document.getElementById("li_" + u + "_Season_AverageRating").value = seasonRating;
                         if(seasonRating != "N/A") { rtngList.push(parseFloat(seasonRating)); }
@@ -256,9 +269,11 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                         initSelect();
                     }
                 }
+                // Write the global average rating of the anime record on the page.
                 const animeRtng = rtngList.length > 0 ? (rtngList.reduce((accum, cur) => accum + cur, 0) / rtngList.length).toFixed(2) : "N/A";
                 document.getElementById("animeRating").value = animeRtng;
             }
+            // Create a div on the page which will house the name of the record as is currently saved in the associated file.
             const oldInfo = document.createElement("div");
             oldInfo.setAttribute("id", "infoDiv");
             oldInfo.setAttribute("title", recordData.name != "" ? recordData.name : recordData.jname);

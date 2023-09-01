@@ -16,6 +16,7 @@ Declare all of the necessary variables.
 
     - ipcRenderer provides the means to operate the Electron app.
     - fs and path provide the means to work with local files.
+    - basePath is the path to the local settings data.
     - localPath is the path to the local user data.
 
 */

@@ -23,20 +23,8 @@ h2 {
 	font-size: 25px !important;
 }
 
-.select-wrapper input.select-dropdown {
-	text-align: center;
-}
-
 button {
 	font-family: "Montserrat" !important;
-}
-
-footer {
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	height: 50px;
-	text-align: center;
 }
 
 [type="checkbox"].filled-in:checked+span:not(.lever):after {
@@ -44,14 +32,23 @@ footer {
 	background-color: #2A2A8E !important;
 }
 
-#outerLayer {
-	position: relative;
-	margin: 8px 0 auto 0;
-	width: 95%;
+#searchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
+#searchBarDiv1 input.valid[type="text"]:not(.browser-default),
+[type="text"]:not(.browser-default):focus:not([readonly]),
+input.valid[type="text"]:not(.browser-default),
+input[type="date"]:not(.browser-default):focus:not([readonly]),
+input.valid[type=date]:not(.browser-default),
+textarea.materialize-textarea:focus:not([readonly]),
+textarea.materialize-textarea.valid {
+	border-bottom-color: #2A2A8E !important;
+	box-shadow: 0 1px 0 0 #2A2A8E !important;
 }
 
-#firstButtonsDiv {
-	margin-bottom: -70px;
+#searchBarDiv1 .input-field .prefix.active,
+input[type="text"]:not(.browser-default):focus:not([readonly])+label,
+input[type="date"]:not(.browser-default):focus:not([readonly])+label,
+textarea.materialize-textarea:focus:not([readonly])+label {
+	color: #2A2A8E !important;
 }
 
 #toast-container {
@@ -61,44 +58,8 @@ footer {
   	left:7%;  
 }
 
-#secondSimpleText {
-	margin-top: 50px;
-}
-
-.text {
-	font-size: 18px !important;
-	margin-left: 50px !important;
-	width: 90% !important;
-}
-
-.func {
-	margin-top: 50px;
-	margin-bottom: 50px;
-	display: block;
-	font-size: 18px !important;
-	background-color: #2A2A8E !important;
-  	color: white !important;
-  	border-radius: 12px !important;
-}
-
-.formInfo {
-	margin-bottom: 15px;
-}
-
-#categoryAnimeDiv .formInfo {
-	position: relative;
-	bottom: 15px;
-}
-
-.file-path {
-	font-size: 12px !important;
-	color: #3E3E3E !important;
-}
-
-.innerDiv {
-	display: inline-block;
-	margin-left: 2%;
-	margin-right: 2%;
+.select-wrapper input.select-dropdown {
+	text-align: center;
 }
 
 .dropdown-content li>span, .select-wrapper span {
@@ -135,57 +96,55 @@ footer {
 	display: block;
 }
 
-.preloaderIndicator {
-	position: absolute !important;
-	bottom: 40px;
-	right: 40px;
+.infoModal {
+	top: 30% !important;
+    width: 55% !important;
 }
 
-.tableBold {
-	font-weight: bold;
+.btn-floating {
+	background-color: #2A2A8E !important;
 }
 
-.topSubmit {
-	height: 25px;
-	text-align: right;
+.modal {
+	border-radius: 30px !important;
 }
 
-.topSubmitReposition {
+.row {
+	margin-bottom: 0 !important;
+}
+
+.modalButtons {
+	background-color: #2A2A8E !important;
+	margin-left: 3px !important;
+	border-radius: 30px !important;
+	color: white !important;
+}
+
+.genreRow {
+	margin-bottom: 10px !important;
+}
+
+.selectShortVerticalScroll ul {
+	height: 125px !important;
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+/* Styling applicable for the index page. */
+
+
+
+#outerLayer {
 	position: relative;
-	bottom: 96px;
-	right: 8%;
-}
-
-.topPush {
-	margin-top: 35px;
-}
-
-.bottomPush {
-	margin-top: -20px;
-}
-
-.listChecks {
-	margin-left: 50px;
-  	margin-top: 15px;
-}
-
-#formFilesDiv {
-	background-color: #2A2A8E;
+	margin: 8px 0 auto 0;
+	width: 95%;
 }
 
 #table, #headersTable {
 	width: 95%;
 	margin-left: 50px;
-}
-
-#cardTable {
-	width: 95%;
-	margin: 25px auto 50px auto;
-	table-layout: fixed;
-}
-
-#notes {
-	word-wrap: break-word;
 }
 
 #add {
@@ -222,25 +181,6 @@ footer {
 	margin-bottom: 0;
 }
 
-#searchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
-#searchBarDiv1 input.valid[type="text"]:not(.browser-default),
-[type="text"]:not(.browser-default):focus:not([readonly]),
-input.valid[type="text"]:not(.browser-default),
-input[type="date"]:not(.browser-default):focus:not([readonly]),
-input.valid[type=date]:not(.browser-default),
-textarea.materialize-textarea:focus:not([readonly]),
-textarea.materialize-textarea.valid {
-	border-bottom-color: #2A2A8E !important;
-	box-shadow: 0 1px 0 0 #2A2A8E !important;
-}
-
-#searchBarDiv1 .input-field .prefix.active,
-input[type="text"]:not(.browser-default):focus:not([readonly])+label,
-input[type="date"]:not(.browser-default):focus:not([readonly])+label,
-textarea.materialize-textarea:focus:not([readonly])+label {
-	color: #2A2A8E !important;
-}
-
 #preloader {
 	display: block !important;
 	position: relative !important;
@@ -248,10 +188,15 @@ textarea.materialize-textarea:focus:not([readonly])+label {
   	bottom: 225px;
 }
 
-#defModalBtn {
-	background-color: #2A2A8E !important;
-	color: white !important;
-	margin-left: 15px;
+#settingsSelection li {
+	width: 50%;
+    text-align: center;
+}
+
+.preloaderIndicator {
+	position: absolute !important;
+	bottom: 40px;
+	right: 40px;
 }
 
 .recordsNameRowDiv {
@@ -271,25 +216,6 @@ textarea.materialize-textarea:focus:not([readonly])+label {
 	bottom: 58px;
 }
 
-.addRecordDiv {
-	margin-left: 50px;
-	width: 85%;
-}
-
-#categoryInitial {
-	display: initial;
-}
-
-.categoryDiv {
-	display: none;
-	position: relative;
-    bottom: 20px;
-}
-
-.contactCardTitle {
-	width: 80%;
-}
-
 .recordsChecks {
 	opacity: 1 !important;
 	position: relative !important;
@@ -297,47 +223,180 @@ textarea.materialize-textarea:focus:not([readonly])+label {
 	accent-color: #2A2A8E;
 }
 
-.removePhoneButton {
+.iconSorter {
+	position: relative;
+	top: 8px;
+	left: 8px;
+	cursor: pointer;
+}
+
+.func {
+	margin-top: 50px;
+	margin-bottom: 50px;
+	display: block;
 	font-size: 18px !important;
-  	background-color: #2A2A8E !important;
+	background-color: #2A2A8E !important;
   	color: white !important;
   	border-radius: 12px !important;
 }
 
-.removePhoneButtonDiv {
+
+
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+/* Styling applicable for the filter modal. */
+
+
+
+#filterModal {
+	width: 97%;
+	height: 85%;
+	max-height: 85%;
+}
+
+#filterModal .s2 {
+	width: 20%;
+}
+
+#filterModalGenreHeading {
+	margin-top: 25px;
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+/* Styling applicable for the settings modal. */
+
+
+
+footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 50px;
 	text-align: center;
 }
 
-.removePhoneIcon {
-	line-height: inherit !important;
+#settingsModal h5 {
+	text-decoration: underline;
 }
 
-#categorySelection li {
-	width: 20%;
-    text-align: center;
+#settingsModal {
+	width: 75%;
+	max-height: 80%;
+	height: 80%;
 }
 
-#settingsSelection li {
-	width: 50%;
-    text-align: center;
+#settingsModal .modal-content {
+	padding-right: 0px;
+	padding-left: 0px;
+	padding-top: 0px;
 }
 
-.addRecordFilesDiv {
-	background-color: #2A2A8E !important;
+#settingsNav {
+	border-top-right-radius: 30px;
+	border-top-left-radius: 30px;
 }
 
-.row {
-	margin-bottom: 0 !important;
+#settingsColorDiv {
+	margin-left: 30px;
+	margin-top: 20px;
+	margin-bottom: 30px;
 }
 
-#categoryAnimeDiv .row {
+#settingsSecondaryWindowDiv {
+	margin-top: 0px !important;
+}
+
+#settingsAboutContainer p {
+	margin: 30px;
+	line-height: 35px;
+}
+
+.fullScreenRow {
+	margin-top: 15px;
+}
+
+.settingsSecondCheckbox {
+	margin-left: -9px !important;
+}
+
+.settingsColorContainers {
+	width: 49%;
+    display: inline-block;
+}
+
+.settingsColorInput {
 	position: relative;
-	bottom: 10px;
+    top: 4px;
+    left: 6px;
 }
 
-.genreRow {
-	margin-bottom: 10px !important;
+.settingsWindowDiv {
+    margin-left: 20px !important;
 }
+
+.settingsWindowInputDiv {
+	width: 49% !important;
+	margin-bottom: 0px !important;
+}
+
+.settingsWindowInput {
+	width: 15% !important;
+}
+
+.settingsHeaders {
+	margin-bottom: 0px;
+	position: relative;
+	top: 5px;
+}
+
+.settingsOptions {
+	display: none;
+}
+
+.settingsDataInput {
+	width: 80% !important;
+}
+
+.hyperlink {
+	color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+/* Styling applicable for the application tutorial. */
+
+
+
+#introductionCheckLabel {
+	position: relative;
+	top: 11px;
+	left: 16px;
+}
+
+#introductionCheckSpan {
+	line-height: 19px;
+}
+
+.tap-target {
+	background-color: #2A2A8E !important;
+	color: white;
+	mix-blend-mode: difference;
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+/* Styling applicable for the addRecord page. */
+
+
 
 #genresTitle {
 	margin-top: 15px;
@@ -345,24 +404,53 @@ textarea.materialize-textarea:focus:not([readonly])+label {
 	bottom: 20px;
 }
 
-.btn-floating {
+#categoryAnimeDiv .formInfo {
+	position: relative;
+	bottom: 15px;
+}
+
+#categoryAnimeForm2 {
+	position: relative;
+	bottom: 20px;
+}
+
+#addRecordBody {
+	overflow-y: hidden;
+}
+
+#categorySelection li {
+	width: 20%;
+    text-align: center;
+}
+
+#animeSave {
+	position: fixed;
+	right: 23px;
+	bottom: 92px;
+}
+
+#categoryInitial {
+	display: initial;
+}
+
+#categoryAnimeDiv .row {
+	position: relative;
+	bottom: 10px;
+}
+
+.addRecordFilesDiv {
 	background-color: #2A2A8E !important;
 }
 
-.modal {
-	border-radius: 30px !important;
+.addRecordDiv {
+	margin-left: 50px;
+	width: 85%;
 }
 
-.modalButtons {
-	background-color: #2A2A8E !important;
-	margin-left: 3px !important;
-	border-radius: 30px !important;
-	color: white !important;
-}
-
-.infoModal {
-	top: 30% !important;
-    width: 55% !important;
+.categoryDiv {
+	display: none;
+	position: relative;
+    bottom: 20px;
 }
 
 .contentModal {
@@ -394,16 +482,6 @@ textarea.materialize-textarea:focus:not([readonly])+label {
 	cursor: pointer;
 }
 
-#animeSave {
-	position: fixed;
-	right: 23px;
-	bottom: 92px;
-}
-
-.selectShortVerticalScroll ul {
-	height: 125px !important;
-}
-
 .infoIcon {
 	font-size: 16px !important;
 	color: #2A2A8E!important;
@@ -413,136 +491,17 @@ textarea.materialize-textarea:focus:not([readonly])+label {
     cursor: pointer;
 }
 
-#categoryAnimeForm2 {
-	position: relative;
-	bottom: 20px;
+.file-path {
+	font-size: 12px !important;
+	color: #3E3E3E !important;
 }
 
-#addRecordBody {
-	overflow-y: hidden;
+.formInfo {
+	margin-bottom: 15px;
 }
 
-.iconSorter {
-	position: relative;
-	top: 8px;
-	left: 8px;
-	cursor: pointer;
-}
-
-#filterModal {
-	width: 97%;
-	height: 85%;
-	max-height: 85%;
-}
-
-#filterModal .s2 {
-	width: 20%;
-}
-
-#filterModalGenreHeading {
-	margin-top: 25px;
-}
-
-#settingsModal {
-	width: 75%;
-	max-height: 80%;
-	height: 80%;
-}
-
-#settingsModal .modal-content {
-	padding-right: 0px;
-	padding-left: 0px;
-	padding-top: 0px;
-}
-
-#settingsNav {
-	border-top-right-radius: 30px;
-	border-top-left-radius: 30px;
-}
-
-#settingsColorDiv {
-	margin-left: 30px;
-	margin-top: 20px;
-	margin-bottom: 30px;
-}
-
-.settingsColorContainers {
-	width: 49%;
-    display: inline-block;
-}
-
-.settingsColorInput {
-	position: relative;
-    top: 4px;
-    left: 6px;
-}
-
-.settingsWindowDiv {
-    margin-left: 20px !important;
-}
-
-.settingsWindowInputDiv {
-	width: 49% !important;
-	margin-bottom: 0px !important;
-}
-
-.settingsWindowInput {
-	width: 15% !important;
-}
-
-#settingsSecondaryWindowDiv {
-	margin-top: 0px !important;
-}
-
-.settingsHeaders {
-	margin-bottom: 0px;
-	position: relative;
-	top: 5px;
-}
-
-.settingsOptions {
-	display: none;
-}
-
-.settingsDataInput {
-	width: 80% !important;
-}
-
-#settingsAboutContainer p {
-	margin: 30px;
-	line-height: 35px;
-}
-
-.hyperlink {
-	color: blue;
-    text-decoration: underline;
-    cursor: pointer;
-}
-
-.fullScreenRow {
-	margin-top: 15px;
-}
-
-.settingsSecondCheckbox {
-	margin-left: -9px !important;
-}
-
-.tap-target {
-	background-color: #2A2A8E !important;
-	color: white;
-	mix-blend-mode: difference;
-}
-
-#introductionCheckLabel {
-	position: relative;
-	top: 11px;
-	left: 16px;
-}
-
-#introductionCheckSpan {
-	line-height: 19px;
-}
-
-#settingsModal h5 {
-	text-decoration: underline;
+.text {
+	font-size: 18px !important;
+	margin-left: 50px !important;
+	width: 90% !important;
 }
