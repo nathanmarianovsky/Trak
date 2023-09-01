@@ -2,12 +2,13 @@
 
 Declare all of the necessary variables.
 
-	- app, BrowserWindow, Menu, MenuItem, Tray, and ipc provide the means to operate the Electron app.
+	- app, BrowserWindow, Menu, MenuItem, Tray, ipc, and shell provide the means to operate the Electron app.
 	- fs and path provide the means to work with local files.
 	- contextMenu provides the means to handle the menu associated to a right-click in the app.
 	- tools provides a collection of local functions meant to help with writing files.
 	- appListeners provides all of the back-end listeners.
 	- exec provides the means to open files and folders.
+	- basePath is the path to the local settings data.
 	- localPath is the path to the local user data.
 
 */
@@ -86,7 +87,7 @@ app.whenReady().then(() => {
 		fs.writeFileSync(path.join(basePath, "Trak", "config", "configuration.json"), JSON.stringify(writeData), "UTF8");
 	}
 
-	// Create the configuration file if it does not exist.
+	// Create the tutorial file if it does not exist.
 	if(!fs.existsSync(path.join(basePath, "Trak", "config", "tutorial.json"))) {
 		const writeTutorial = { "introduction": true };
 		fs.writeFileSync(path.join(basePath, "Trak", "config", "tutorial.json"), JSON.stringify(writeTutorial), "UTF8");
@@ -94,8 +95,10 @@ app.whenReady().then(() => {
 
 	// Load the user's preferred window sizes if they exist.
 	fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
-		if(err) {  }
+		// If there was an issue reading the configuration.json file display a notification on the console.
+		if(err) { console.log("There was an issue reading the settings configuration file."); }
 		else {
+			// Define the proper window parameters based on whether a current configuration exists.
 		    const configObj = JSON.parse(file);
 		    if(configObj.current != undefined) {
 		    	var primWinWidth = parseInt(configObj.current.primaryWindowWidth),
@@ -114,9 +117,11 @@ app.whenReady().then(() => {
 			    	secWinFullscreen = configObj.original.secondaryWindowFullscreen;
 		    }
 			fs.readFile(path.join(__dirname, "styles", "dist", "styles.css"), "UTF8", (err, stylesFile) => {
-				if(err) {  }
+				// If there was an issue reading the styles.css file display a notification on the console.
+				if(err) { console.log("There was an issue reading the application styles file."); }
 				else {
 					if(configObj.current != undefined) {
+						// If a current configuration exists then apply the primary and secondary colors to the styles.css file.
 						const reg1 = new RegExp(configObj.current.previousPrimaryColor.toLowerCase(), "g"),
 							reg2 = new RegExp(configObj.original.primaryColor.toLowerCase(), "g"),
 							reg3 = new RegExp(configObj.current.previousSecondaryColor.toLowerCase(), "g"),
@@ -126,7 +131,8 @@ app.whenReady().then(() => {
 						stylesFile = stylesFile.replace(reg3, configObj.current.secondaryColor);
 						stylesFile = stylesFile.replace(reg4, configObj.current.secondaryColor);
 						fs.writeFile(path.join(__dirname, "styles", "dist", "styles.css"), stylesFile, "UTF8", err => {
-							if(err) {  }
+							// If there was an issue writing the styles.css file display a notification on the console.
+							if(err) { console.log("There was an issue writing the application styles file."); }
 							else {
 								// Create the primary window.
 							  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);

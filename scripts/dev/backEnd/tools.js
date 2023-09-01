@@ -4,7 +4,7 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
 
    - createTrayMenu: Create the system tray icon and menu.
    - createWindow: Executes the creation of the primary window with all necessary parameters.
-   - tutorialLoad: Tells the front-end to load the application introduction.
+   - tutorialLoad: Tells the front-end to load the application tutorial.
    - startCommandLineFolder: Provides the necessary command to execute the opening of a folder.
 
 */
@@ -52,7 +52,10 @@ exports.createTrayMenu = (mode, win, trayObj, Menu) => {
 Executes the creation of the primary window with all necessary parameters.
 
 	- extension refers to the html file name.
+	- BrowserWindow provides the means to create a new app window.
 	- width and height are the physical parameters for describing the created window size.
+	- fullscreen is a boolean representing whether the window should be maximized on launch.
+	- resizable is a boolean representing whether a window should be allowed to rescale.
 
 */
 exports.createWindow = (extension, BrowserWindow, path, width = 1000, height = 800, fullscreen = false, resizable = true) => {
@@ -77,8 +80,9 @@ exports.createWindow = (extension, BrowserWindow, path, width = 1000, height = 8
 
 /*
 
-Tells the front-end to load the application introduction.
+Tells the front-end to load the application tutorial.
 
+	- fs and path provide the means to work with local files.
 	- win is the primary window of the app.
 	- sysPath is the system location for the application configuration.
 

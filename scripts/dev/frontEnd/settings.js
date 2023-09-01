@@ -35,7 +35,7 @@ ipcRenderer.once("configurationFileWritingFailure", event => {
 
 
 
-// Display a notification for the successful update of the configuration.json file.
+// Display a notification for the successful update of the configuration.json file and the requirement of an application restart.
 ipcRenderer.once("configurationFileWritingSuccess", event => {
     M.toast({"html": "The application settings have been updated. The application will now restart.", "classes": "rounded"});
 });
@@ -65,11 +65,15 @@ ipcRenderer.once("dataDeleteFailure", event => {
 
 // Display the modal to be used in asking the user whether the original data folder should be deleted.
 ipcRenderer.once("dataOriginalDeleteAsk", (event, response) => {
+    // Define the deletion modal.
 	const dataDeleteModalInstance = M.Modal.init(document.getElementById("dataDeleteModal"));
+    // Open the deletion modal.
 	dataDeleteModalInstance.open();
+    // Listen for a click on the deny button in order to not delete the previous data records.
     document.getElementById("dataDeleteDeny").addEventListener("click", e => {
     	ipcRenderer.send("dataOriginalDelete", [false, response]);
     });
+    // Listen for a click on the accept button in order to delete the previous data records.
     document.getElementById("dataDeleteAccept").addEventListener("click", e => {
     	ipcRenderer.send("dataOriginalDelete", [true, response]);
     });
@@ -189,14 +193,17 @@ window.addEventListener("load", () => {
                 secondaryWindowFullscreen.checked = configData.original.secondaryWindowFullscreen;
                 secondaryWindowFullscreen.setAttribute("lastValue", configData.original.secondaryWindowFullscreen);
         	}
+            // Listen for a click on the color reset button to restore the color inputs to the original values.
             settingsColorReset.addEventListener("click", e => {
                 primaryColor.value = configData.original.primaryColor;
                 secondaryColor.value = configData.original.secondaryColor;
             });
+            // Listen for a click on the path reset button to restore the directory input to the original destination.
             settingsDataReset.addEventListener("click", e => {
                 appPath.value = configData.original.path;
                 appPath.classList.remove("validate", "valid");
             });
+            // Listen for a click on the sizes reset button to restore the sizes of the windows to their original values.
             settingsSizesReset.addEventListener("click", e => {
                 primaryWindowWidth.value = configData.original.primaryWindowWidth;
                 primaryWindowWidth.classList.remove("validate", "valid");
@@ -207,15 +214,20 @@ window.addEventListener("load", () => {
                 secondaryWindowHeight.value = configData.original.secondaryWindowHeight;
                 secondaryWindowHeight.classList.remove("validate", "valid");
             });
+            // By default load the options section of the settings modal.
         	settingsOptions.click();
         }
+        // Read the tutorial.json file.
         fs.readFile(path.join(basePath, "Trak", "config", "tutorial.json"), "UTF8", (err, tutorialInfo) => {
+            // Define the settings modal input for the tutorial option.
             const tutorialLoad = document.getElementById("tutorialLoad");
+            // If there was an issue in reading the tutorial.json file notify the user.
             if(err) {
                 M.toast({"html": "There was an error opening the configuration file associated to the tutorial settings.", "classes": "rounded"});
                 tutorialLoad.checked = false;
                 tutorialLoad.setAttribute("lastValue", "false");
             }
+            // If tutorial.json was read successfully, then populate the settings modal accordingly.
             else {
                 const tutorialData = JSON.parse(tutorialInfo);
                 tutorialLoad.checked = tutorialData.introduction;
@@ -231,16 +243,23 @@ window.addEventListener("load", () => {
     	    		primaryWindowWidth.classList.remove("validate", "valid");
     	    		primaryWindowHeight.value = primaryWindowHeight.getAttribute("lastValue");
     	    		primaryWindowHeight.classList.remove("validate", "valid");
+                    primaryWindowFullscreen.checked = primaryWindowFullscreen.getAttribute("lastValue") == "true";
     	    		secondaryWindowWidth.value = secondaryWindowWidth.getAttribute("lastValue");
     	    		secondaryWindowWidth.classList.remove("validate", "valid");
     	    		secondaryWindowHeight.value = secondaryWindowHeight.getAttribute("lastValue");
     	    		secondaryWindowHeight.classList.remove("validate", "valid");
+                    secondaryWindowFullscreen.checked = secondaryWindowFullscreen.getAttribute("lastValue") == "true";
+                    tutorialLoad.checked = tutorialLoad.getAttribute("lastValue") == "true";
         		}
         	});
+            // Listen for a click on the apply button in order to submit a back-end request to update the configuration files.
         	settingsApply.addEventListener("click", e => {
+                // Format the submitted directory.
         		const submitPath = appPath.value.substring(appPath.value.length - 10) == "\\Trak\\data" ? appPath.value : appPath.value + "\\Trak\\data";
+                // Check that the window sizes meet the minimal requirements.
                 if(parseInt(primaryWindowWidth.value) >= 1000 && parseInt(primaryWindowHeight.value) >= 800 && parseInt(secondaryWindowWidth.value) >= 1400 && parseInt(secondaryWindowHeight.value) >= 1000) {
-            		ipcRenderer.send("settingsSave", [
+            		// Submit a back-end request to update the configuration files.
+                    ipcRenderer.send("settingsSave", [
             			submitPath,
         				primaryColor.value,
         				secondaryColor.value,
@@ -252,33 +271,43 @@ window.addEventListener("load", () => {
                         secondaryWindowFullscreen.checked,
                         tutorialLoad.checked
             		]);
+                    // Close the settings modal.
             		settingsModalInstance.close();
                 }
+                // Display a notification if the primary window width is too small.
                 else if(parseInt(primaryWindowWidth.value) < 1000) {
                     M.toast({"html": "The primary window width has to be at least 1000.", "classes": "rounded"});
                 }
+                // Display a notification if the primary window height is too small.
                 else if(parseInt(primaryWindowHeight.value) < 800) {
                     M.toast({"html": "The primary window width has to be at least 800.", "classes": "rounded"});
                 }
+                // Display a notification if the secondary window width is too small.
                 else if(parseInt(secondaryWindowWidth.value) < 1400) {
                     M.toast({"html": "The secondary window width has to be at least 1400.", "classes": "rounded"});
                 }
+                // Display a notification if the secondary window height is too small.
                 else if(parseInt(secondaryWindowHeight.value) < 1000) {
                     M.toast({"html": "The secondary window width has to be at least 1000.", "classes": "rounded"});
                 }
         	});
+            // Listen for a change in the path input in order to highlight it accordingly.
         	appPath.addEventListener("change", e => {
         		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
         	});
+            // Listen for a change in the primary window width input in order to highlight it accordingly.
         	primaryWindowWidth.addEventListener("change", e => {
         		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
         	});
+            // Listen for a change in the primary window height input in order to highlight it accordingly.
         	primaryWindowHeight.addEventListener("change", e => {
         		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
         	});
+            // Listen for a change in the secondary window width input in order to highlight it accordingly.
         	secondaryWindowWidth.addEventListener("change", e => {
         		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
         	});
+            // Listen for a change in the secondary window height input in order to highlight it accordingly.
         	secondaryWindowHeight.addEventListener("change", e => {
         		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
         	});

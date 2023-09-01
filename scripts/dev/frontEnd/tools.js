@@ -3,10 +3,13 @@
 BASIC DETAILS: This file provides front-end functions designed to be used by multiple aspects of the app.
 
     - clearTooltips: Remove all tooltips on the page.
+    - initFAB: Initialize the floating action button on the page.
+    - initCollapsible: Initialize the collapsible divs on the page.
     - initTooltips: Initialize all tooltips on the page.
     - initSelect: Initialize all select tags on the page.
     - initModal: Initialize all modals on the page.
     - initSelectObservers: Initialize the observers for style mutations on related content select tags.
+    - initAnimeReviewObserver: Initialize the observer for style mutations on the anime review.
     - initContentDrag: Initialize the listeners associated to related content dragging.
     - toastParse: Handles the parsing of a record folder name to display to the user.
     - filterGenreList: Provides the list of all genres/tags that can be selected from the index.page filter.
