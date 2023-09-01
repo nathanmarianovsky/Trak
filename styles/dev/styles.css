@@ -193,6 +193,10 @@ textarea.materialize-textarea:focus:not([readonly])+label {
     text-align: center;
 }
 
+.spinner-layer {
+	border-color: #2A2A8E !important;
+}
+
 .preloaderIndicator {
 	position: absolute !important;
 	bottom: 40px;
