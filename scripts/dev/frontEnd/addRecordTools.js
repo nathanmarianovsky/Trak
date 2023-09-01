@@ -44,11 +44,15 @@ Calculates the average rating for an anime based on the available ratings for al
 
 */
 var calculateAnimeRating = () => {
+    // Define the related content list and global ratings input.
     const relevantList = document.getElementById("animeList"),
         globalRating = document.getElementById("animeRating");
+    // Initialize the overall sum and count of items utilized in the sum.
     let sum = 0, count = 0;
+    // Iterate through all related content items.
     for(let k = 0; k < relevantList.children.length; k++) {
         let itemType = relevantList.children[k].id.split("_")[2];
+        // Pick out the required input based on whether the item is of a type single or season.
         if(itemType == "Single") {
             let singleValue = relevantList.children[k].children[0].children[4].children[0].children[3].value;
             if(singleValue != "") {
@@ -64,6 +68,7 @@ var calculateAnimeRating = () => {
             }
         }
     }
+    // Update the page global rating input accordingly.
     count == 0 ? globalRating.value = "N/A" : globalRating.value = (sum / count).toFixed(2);
 };
 
@@ -75,13 +80,17 @@ Reorganize the list items in the associated anime modal.
 
 */
 var animeListReorganize = () => {
+    // Define the related content list.
     const animeModalList = document.getElementById("animeList");
+    // Iterate through all related content items.
     for(let i = 1; i < animeModalList.children.length + 1; i++) {
+        // Define the associated components to the related content item.
         let child = animeModalList.children[i - 1],
             currentNum = child.id.split("_")[1],
             childType = child.id.split("_")[2],
             childHeader = child.children[0],
             childBody = child.children[1];
+        // If the item is of type single then change the id and for attributes accordingly.
         if(childType == "Single" && parseInt(currentNum) != i) {
             let singleNameInput = childHeader.children[0].children[0],
                 singleNameLabel = childHeader.children[0].children[1],
@@ -105,6 +114,7 @@ var animeListReorganize = () => {
             singleReviewInput.setAttribute("id", "li_" + i + "_Single_Review");
             singleReviewLabel.setAttribute("for", "li_" + i + "_Single_Review");
         }
+        // If the item is of type season then change the id and for attributes accordingly.
         else if(childType == "Season") {
             let seasonNameInput = childHeader.children[0].children[0],
                 seasonNameLabel = childHeader.children[0].children[1],
@@ -125,6 +135,7 @@ var animeListReorganize = () => {
             seasonStatusSelect.setAttribute("id", "li_" + i + "_Season_Status");
             seasonAverageRatingInput.setAttribute("id", "li_" + i + "_Season_AverageRating");
             seasonAverageRatingLabel.setAttribute("for", "li_" + i + "_Season_AverageRating");
+            // Iterate through the season episodes and change the id and for attributes accordingly.
             for(let j = 1; j < childBody.children[0].children.length + 1; j++) {
                 let episodeChild = childBody.children[0].children[j - 1],
                     episodeChildNameInput = episodeChild.children[0].children[0],

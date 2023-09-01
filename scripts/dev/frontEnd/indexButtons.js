@@ -57,7 +57,6 @@ window.addEventListener("load", () => {
     remove.addEventListener("click", e => {
         const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
         ipcRenderer.send("removeRecords", document.getElementById("checkAll").checked ? list.slice(1) : list);
-
     });
     // Listen for an input change event on the search bar in order to filter the records table.
     searchBar.addEventListener("input", e => {

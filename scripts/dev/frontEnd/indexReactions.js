@@ -56,52 +56,65 @@ ipcRenderer.on("recordFilesSuccess", (event, response) => {
 
 
 
+// Display a notification if there was an error in the update of the tutorial configuration file.
 ipcRenderer.on("introductionFileSaveFailure", event => {
     M.toast({"html": "There was an error in saving the tutorial configuration file.", "classes": "rounded"});
 });
 
 
 
+// Display a notification if there was an error opening the tutorial configuration file.
 ipcRenderer.on("introductionFileReadFailure", event => {
     M.toast({"html": "There was an error in reading the tutorial configuration file.", "classes": "rounded"});
 });
 
 
 
+// Display a notification for the successful update of the tutorial configuration file.
 ipcRenderer.on("introductionFileSaveSuccess", event => {
     M.toast({"html": "The tutorial configuration file has been updated.", "classes": "rounded"});
 });
 
 
 
+// Display the application tutorial for a first-time user or anyone who has not chosen to hide it on launch.
 ipcRenderer.on("introduction", (event, response) => {
+    // Define the introduction modal used to initialize the tutorial if desired.
     const introductionModal = M.Modal.init(document.getElementById("introductionModal"), { "onCloseStart": () => {
         const introductionCheck = document.getElementById("introductionCheck").checked;
         introductionCheck == true ? ipcRenderer.send("introductionFileSave", false) : ipcRenderer.send("introductionFileSave", true);
     }});
+    // Change the text of the introduction modal if this is not the first time the application is being used.
     if(response == true) {
         const par = document.getElementById("introductionContentParagraph");
         par.textContent = par.textContent.replace("Welcome", "Welcome back");
     }
+    // Open the introduction modal.
     introductionModal.open();
-    // const introductionExit = document.getElementById("introductionExit"),
+    // Listen for an update on the checkbox in the introduction modal in order to change the associated option in the settings modal.
     document.getElementById("introductionCheck").addEventListener("change", e => {
         document.getElementById("tutorialLoad").checked = !e.target.checked;
     });
-    const introductionContinue = document.getElementById("introductionContinue");
-    introductionContinue.addEventListener("click", e => {
-        // const instancesTapAdd = M.TapTarget.init(document.getElementById("introductionTargetAdd"));
+    // Listen for a click on the "Continue" button in the introduction modal in order to start the application tutorial.
+    document.getElementById("introductionContinue").addEventListener("click", e => {
+        // Define the tutorial step for the adding of a record on the index page.
         const instancesTapAdd = M.TapTarget.init(document.getElementById("introductionTargetAdd"), { "onClose": () => {
             setTimeout(() => {
+                // Define the settings configuration data.
                 const configurationObj = JSON.parse(fs.readFileSync(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8"));
+                // Define the icon color to be utilized throughout the application tutorial.
                 let iconColor = "";
                 configurationObj.current != undefined ? iconColor = configurationObj.current.primaryColor : iconColor = configurationObj.original.primaryColor;
+                // Define the tutorial step for the filter button on the index page.
                 const instancesTapFilter = M.TapTarget.init(document.getElementById("introductionTargetFilter"), { "onClose": () => {
                     setTimeout(() => {
+                        // Define the tutorial step for the settings button on the index page.
                         const instancesTapSettings = M.TapTarget.init(document.getElementById("introductionTargetSettings"));
                         document.getElementById("openSettings").parentNode.children[1].children[1].children[0].children[0].style.color = iconColor;
+                        // Ensure that the tutorial step associated to the settings button opens only once no matter whether the filter modal is opened or not.
                         let count = 0;
                         if(!document.getElementById("filterModal").classList.contains("open")) {
+                            // After a small delay open the tutorial step for the index page settings.
                             setTimeout(() => { instancesTapSettings.open(); }, 500);
                             count++;
                         }
@@ -119,12 +132,15 @@ ipcRenderer.on("introduction", (event, response) => {
                         });
                     }, 500);
                 }});
+                // After a small delay open the tutorial step for the index page filter.
                 document.getElementById("setFilter").parentNode.children[1].children[1].children[0].children[0].style.color = iconColor;
                 setTimeout(() => { instancesTapFilter.open(); }, 500);
             }, 500);
         }});
+        // After a small delay open the tutorial step for the adding of a record.
         setTimeout(() => {
             instancesTapAdd.open();
+            // If the step is exited via the click of the focused button, then open the addRecord page with the tutorial continued.
             document.getElementById("introductionTargetAdd").parentNode.children[1].children[0].addEventListener("click", e => {
                 ipcRenderer.send("addLoad", true);
             });
@@ -359,6 +375,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
     }
     // Initialize the page modals.
     initModal();
+    // Initialize the filter modal separately to add the functionality of filter application upon exit.
     M.Modal.init(document.getElementById("filterModal"), { "onCloseStart": () => {
         // Define the category and genre arrays along with the record rows.
         const categoryList = ["Anime", "Book", "Film", "Manga", "Show"],
