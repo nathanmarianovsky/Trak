@@ -5,7 +5,9 @@ BASIC DETAILS: After the app loads up with index.js this file is meant to handle
    - writeDataFile: Handles the writing of files associated to a record.
    - animeObjCreation: Creates an object associated to an anime record in order to save/update.
    - animeSave: Handles the saving of anime record by creating the associated folders and data file.
+   - animeUpdate: Handles the update of an anime record.
    - removeRecords: Handles the removal of records by deleting the associated folders and data file.
+   - updateSettings: Handles the update of all settings files.
    - addListeners: Driver function for adding all app listeners.
 
 */
@@ -30,7 +32,7 @@ Handles the writing of files associated to a record.
 	- mode is a string representing whether a record is being added or updated.
 	- savePath is the path to the local user data.
 	- fs and path provide the means to work with local files.
-	- event provides the means to interact with the front-end of the Electron app.
+	- evt provides the means to interact with the front-end of the Electron app.
 	- info is the data associated to the record.
 
 */
@@ -129,6 +131,7 @@ Handles the saving of anime record by creating the associated folders and data f
 	- path and fs provide the means to work with local files.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the path to the local user data.
+	- evnt provides the means to interact with the front-end of the Electron app.
 	- data is the information associated to the record.
 
 */
@@ -154,6 +157,7 @@ Handles the update of an anime record.
 	- path and fs provide the means to work with local files.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the path to the local user data.
+	- evnt provides the means to interact with the front-end of the Electron app.
 	- data is the information associated to the record.
 
 */
@@ -176,12 +180,6 @@ exports.animeUpdate = (BrowserWindow, path, fs, mainWindow, dataPath, evnt, data
 		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(data), "U", dataPath, fs, path, evnt, data);
 	}
 };
-
-
-
-// (globalWin, curWin, writeData, mode, savePath, fs, path, evt, info)
-
-
 
 
 
@@ -209,6 +207,211 @@ exports.removeRecords = (primaryWin, userPath, fs, path, data) => {
 		primaryWin.reload();
 		setTimeout(() => { primaryWin.webContents.send("recordsRemovalSuccess"); }, 500);
 	}
+};
+
+
+
+/*
+
+Handles the update of all settings files.
+
+	- path and fs provide the means to work with local files.
+	- app and ipc provide the means to operate the Electron app.
+	- dataArr is the array submitted from the front-end to update the settings options.
+	- appDirectory is the path to the local user data.
+	- evnt provides the means to interact with the front-end of the Electron app.
+
+*/
+exports.updateSettings = (fs, path, ipc, app, dataArr, appDirectory, evnt) => {
+	// Define the new data to be saved for the settings configuration file.
+	const writeData = {
+		"path": dataArr[0],
+		"primaryColor": dataArr[1],
+		"secondaryColor": dataArr[2],
+		"primaryWindowWidth": dataArr[3],
+		"primaryWindowHeight": dataArr[4],
+		"primaryWindowFullscreen": dataArr[5],
+		"secondaryWindowWidth": dataArr[6],
+		"secondaryWindowHeight": dataArr[7],
+		"secondaryWindowFullscreen": dataArr[8]
+	};
+	// Read the settings tutorial.json file.
+	fs.readFile(path.join(appDirectory, "Trak", "config", "tutorial.json"), "UTF8", (er, tutorialFile) => {
+		// If there was an issue reading the tutorial.json file notify the user.
+		if(er) { evnt.sender.send("introductionFileReadFailure"); }
+		else {
+			// Define the tutorial boolean.
+			const origIntro = JSON.parse(tutorialFile).introduction;
+			// Write the tutorial.json file with the submitted data.
+			fs.writeFile(path.join(appDirectory, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": dataArr[9] }), "UTF8", error => {
+				// If there was an issue writing the tutorial.json file notify the user.
+				if(error) { evnt.sender.send("introductionFileSaveFailure"); }
+				else {
+					// If the tutorial data was changed notify the user that the file was successfully updated.
+					if(origIntro != dataArr[9]) { evnt.sender.send("introductionFileSaveSuccess"); }
+					// Read the settings configuration.json file.
+					fs.readFile(path.join(appDirectory, "Trak", "config", "configuration.json"), (err, file) => {
+						// If there was an issue in reading the configuration.json file notify the user.
+				        if(err) { evnt.sender.send("configurationFileOpeningFailure"); }
+				        else {
+				        	// Define the settings configuration data.
+				        	const configurationData = JSON.parse(file);
+				        	// Delete the user records located in the previous location if requested.
+				        	ipc.on("dataOriginalDelete", (eve, resp) => {
+				        		// Only delete the previous user records if the user wants to.
+					  			if(resp[0] == true) {
+					  				// Remove the directory and all content in it.
+					  				fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, er => {
+					  					// If there was an issue in removing the directory notify the user.
+					  					if(er) { eve.sender.send("dataDeleteFailure"); }
+					  					else {
+					  						// Properly define the previous primary and secondary colors.
+					  						if(resp[1] == true) {
+					  							writeData.previousPrimaryColor = configurationData.current.primaryColor;
+				        						writeData.previousSecondaryColor = configurationData.current.secondaryColor;
+					  						}
+					  						else {
+					  							writeData.previousPrimaryColor = configurationData.original.primaryColor;
+					        					writeData.previousSecondaryColor = configurationData.original.secondaryColor;
+					  						}
+					  						configurationData.current = writeData;
+					  						// Write the configuration.json file with the submitted data.
+											fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+												// If there was an issue in writing the configuration.json notify the user.
+												if(err) { eve.sender.send("configurationFileWritingFailure"); }
+												else {
+													// Notify the user that the configuration.json was successfully updated and restart the application.
+													eve.sender.send("configurationFileWritingSuccess");
+													setTimeout(() => {
+														app.relaunch();
+														app.exit();
+													}, 2000);
+												}
+											});
+					  					}
+					  				});
+					  			}
+					  			else {
+					  				// Properly define the previous primary and secondary colors.
+					  				if(resp[1] == true) {
+			  							writeData.previousPrimaryColor = configurationData.current.primaryColor;
+			    						writeData.previousSecondaryColor = configurationData.current.secondaryColor;
+			  						}
+			  						else {
+			  							writeData.previousPrimaryColor = configurationData.original.primaryColor;
+			        					writeData.previousSecondaryColor = configurationData.original.secondaryColor;
+			  						}
+			  						configurationData.current = writeData;
+			  						// Write the configuration.json file with the submitted data.
+									fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+										// If there was an issue in writing the configuration.json notify the user.
+										if(err) { eve.sender.send("configurationFileWritingFailure"); }
+										else {
+											// Notify the user that the configuration.json was successfully updated and restart the application.
+											eve.sender.send("configurationFileWritingSuccess");
+											setTimeout(() => {
+												app.relaunch();
+												app.exit();
+											}, 2000);
+										}
+									});
+					  			}
+					  		});
+					  		// If the current parameters do not exist then compare the provided options to the original parameters.
+				        	if(configurationData.current == undefined) {
+				        		// If the provided options are the same as the original parameters then write the configuration.json file, but do not restart the app.
+				        		if(configurationData.original.path == writeData.path && configurationData.original.primaryColor == writeData.primaryColor
+				        			&& configurationData.original.secondaryColor == writeData.secondaryColor && configurationData.original.primaryWindowWidth == writeData.primaryWindowWidth
+				        			&& configurationData.original.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.original.secondaryWindowWidth == writeData.secondaryWindowWidth
+				        			&& configurationData.original.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.original.primaryWindowFullscreen == writeData.primaryWindowFullscreen
+				        			&& configurationData.original.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && origIntro == dataArr[9]) {
+				        			writeData.previousPrimaryColor = configurationData.original.primaryColor;
+					        		writeData.previousSecondaryColor = configurationData.original.secondaryColor;
+					        		configurationData.current = writeData;
+									fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+										if(err) { evnt.sender.send("configurationFileWritingFailure"); }
+										else {
+											evnt.sender.send("configurationFileWritingSuccessSimple");
+										}
+									});
+				        		}
+				        		// If the provided options are not the same as the original parameters then write the configuration.json file and restart the app.
+				        		else {
+				        			// If the provided data path is the same then proceed by writing the configuration.json file and restarting the app.
+					        		if(configurationData.original.path == writeData.path) {
+						        		writeData.previousPrimaryColor = configurationData.original.primaryColor;
+						        		writeData.previousSecondaryColor = configurationData.original.secondaryColor;
+						        		configurationData.current = writeData;
+										fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+											if(err) { evnt.sender.send("configurationFileWritingFailure"); }
+											else {
+												evnt.sender.send("configurationFileWritingSuccess");
+												setTimeout(() => {
+													app.relaunch();
+													app.exit();
+												}, 2000);
+											}
+										});
+					        		}
+					        		// If the provided data path is different than the original path then proceed by copying the user records and asking if they would like to remove the original directory.
+					        		else {
+					        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
+										  	if(err) { event.sender.send("dataCopyFailure"); }
+										  	else { event.sender.send("dataOriginalDeleteAsk", false); }
+										});
+					        		}
+				        		}
+				        	}
+				        	// If the current parameters do exist then compare the provided options to them.
+				        	else {
+				        		// If the provided options are the same as the current parameters then write the configuration.json file, but do not restart the app.
+				        		if(configurationData.current.path == writeData.path && configurationData.current.primaryColor == writeData.primaryColor
+				        			&& configurationData.current.secondaryColor == writeData.secondaryColor && configurationData.current.primaryWindowWidth == writeData.primaryWindowWidth
+				        			&& configurationData.current.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.current.secondaryWindowWidth == writeData.secondaryWindowWidth
+				        			&& configurationData.current.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.current.primaryWindowFullscreen == writeData.primaryWindowFullscreen
+				        			&& configurationData.current.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && origIntro == dataArr[9]) {
+				        			writeData.previousPrimaryColor = configurationData.current.primaryColor;
+					        		writeData.previousSecondaryColor = configurationData.current.secondaryColor;
+					        		configurationData.current = writeData;
+									fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+										if(err) { evnt.sender.send("configurationFileWritingFailure"); }
+										else {
+											evnt.sender.send("configurationFileWritingSuccessSimple");
+										}
+									});
+				        		}
+				        		// If the provided options are not the same as the current parameters then write the configuration.json file and restart the app.
+				        		else {
+					        		if(configurationData.current.path == writeData.path) {
+					        			writeData.previousPrimaryColor = configurationData.current.primaryColor;
+					        			writeData.previousSecondaryColor = configurationData.current.secondaryColor;
+					        			configurationData.current = writeData;
+										fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+											if(err) { evnt.sender.send("configurationFileWritingFailure"); }
+											else {
+												evnt.sender.send("configurationFileWritingSuccess")
+												setTimeout(() => {
+													app.relaunch();
+													app.exit();
+												}, 2000);
+											}
+										});
+					        		}
+					        		// If the provided data path is different than the current path then proceed by copying the user records and asking if they would like to remove the current directory.
+					        		else {
+					        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
+										  	if(err) { evnt.sender.send("dataCopyFailure"); }
+										  	else { evnt.sender.send("dataOriginalDeleteAsk", true); }
+										});
+					        		}
+				        		}
+				        	}
+				        }
+					});
+				}
+			});
+		}
+	});
 };
 
 
@@ -321,166 +524,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 	});
 
 	// Handles the saving of all options in the user settings.
-	ipc.on("settingsSave", (event, dataArr) => {
-		const writeData = {
-			"path": dataArr[0],
-			"primaryColor": dataArr[1],
-			"secondaryColor": dataArr[2],
-			"primaryWindowWidth": dataArr[3],
-			"primaryWindowHeight": dataArr[4],
-			"primaryWindowFullscreen": dataArr[5],
-			"secondaryWindowWidth": dataArr[6],
-			"secondaryWindowHeight": dataArr[7],
-			"secondaryWindowFullscreen": dataArr[8]
-		};
-		fs.readFile(path.join(originalPath, "Trak", "config", "tutorial.json"), "UTF8", (er, tutorialFile) => {
-			if(er) { event.sender.send("introductionFileReadFailure"); }
-			else {
-				const origIntro = JSON.parse(tutorialFile).introduction;
-				fs.writeFile(path.join(originalPath, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": dataArr[9] }), "UTF8", error => {
-					if(error) { event.sender.send("introductionFileSaveFailure"); }
-					else {
-						if(origIntro != dataArr[9]) { event.sender.send("introductionFileSaveSuccess"); }
-						fs.readFile(path.join(originalPath, "Trak", "config", "configuration.json"), (err, file) => {
-							// Display a notification if there was an error in reading the data file.
-					        if(err) { event.sender.send("configurationFileOpeningFailure"); }
-					        else {
-					        	const configurationData = JSON.parse(file);
-					        	ipc.on("dataOriginalDelete", (eve, resp) => {
-						  			if(resp[0] == true) {
-						  				fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, er => {
-						  					if(er) { eve.sender.send("dataDeleteFailure"); }
-						  					else {
-						  						if(resp[1] == true) {
-						  							writeData.previousPrimaryColor = configurationData.current.primaryColor;
-					        						writeData.previousSecondaryColor = configurationData.current.secondaryColor;
-						  						}
-						  						else {
-						  							writeData.previousPrimaryColor = configurationData.original.primaryColor;
-						        					writeData.previousSecondaryColor = configurationData.original.secondaryColor;
-						  						}
-						  						configurationData.current = writeData;
-												fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-													if(err) { eve.sender.send("configurationFileWritingFailure"); }
-													else {
-														eve.sender.send("configurationFileWritingSuccess");
-														setTimeout(() => {
-															app.relaunch();
-															app.exit();
-														}, 3000);
-													}
-												});
-						  					}
-						  				});
-						  			}
-						  			else {
-						  				if(resp[1] == true) {
-				  							writeData.previousPrimaryColor = configurationData.current.primaryColor;
-				    						writeData.previousSecondaryColor = configurationData.current.secondaryColor;
-				  						}
-				  						else {
-				  							writeData.previousPrimaryColor = configurationData.original.primaryColor;
-				        					writeData.previousSecondaryColor = configurationData.original.secondaryColor;
-				  						}
-				  						configurationData.current = writeData;
-										fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-											if(err) { eve.sender.send("configurationFileWritingFailure"); }
-											else {
-												eve.sender.send("configurationFileWritingSuccess");
-												setTimeout(() => {
-													app.relaunch();
-													app.exit();
-												}, 3000);
-											}
-										});
-						  			}
-						  		});
-					        	if(configurationData.current == undefined) {
-					        		if(configurationData.original.path == writeData.path && configurationData.original.primaryColor == writeData.primaryColor
-					        			&& configurationData.original.secondaryColor == writeData.secondaryColor && configurationData.original.primaryWindowWidth == writeData.primaryWindowWidth
-					        			&& configurationData.original.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.original.secondaryWindowWidth == writeData.secondaryWindowWidth
-					        			&& configurationData.original.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.original.primaryWindowFullscreen == writeData.primaryWindowFullscreen
-					        			&& configurationData.original.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && origIntro == dataArr[9]) {
-					        			writeData.previousPrimaryColor = configurationData.original.primaryColor;
-						        		writeData.previousSecondaryColor = configurationData.original.secondaryColor;
-						        		configurationData.current = writeData;
-										fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-											if(err) { event.sender.send("configurationFileWritingFailure"); }
-											else {
-												event.sender.send("configurationFileWritingSuccessSimple");
-											}
-										});
-					        		}
-					        		else {
-						        		if(configurationData.original.path == writeData.path) {
-							        		writeData.previousPrimaryColor = configurationData.original.primaryColor;
-							        		writeData.previousSecondaryColor = configurationData.original.secondaryColor;
-							        		configurationData.current = writeData;
-											fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-												if(err) { event.sender.send("configurationFileWritingFailure"); }
-												else {
-													event.sender.send("configurationFileWritingSuccess");
-													setTimeout(() => {
-														app.relaunch();
-														app.exit();
-													}, 3000);
-												}
-											});
-						        		}
-						        		else {
-						        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
-											  	if(err) { event.sender.send("dataCopyFailure"); }
-											  	else { event.sender.send("dataOriginalDeleteAsk", false); }
-											});
-						        		}
-					        		}
-					        	}
-					        	else {
-					        		if(configurationData.current.path == writeData.path && configurationData.current.primaryColor == writeData.primaryColor
-					        			&& configurationData.current.secondaryColor == writeData.secondaryColor && configurationData.current.primaryWindowWidth == writeData.primaryWindowWidth
-					        			&& configurationData.current.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.current.secondaryWindowWidth == writeData.secondaryWindowWidth
-					        			&& configurationData.current.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.current.primaryWindowFullscreen == writeData.primaryWindowFullscreen
-					        			&& configurationData.current.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && origIntro == dataArr[9]) {
-					        			writeData.previousPrimaryColor = configurationData.current.primaryColor;
-						        		writeData.previousSecondaryColor = configurationData.current.secondaryColor;
-						        		configurationData.current = writeData;
-										fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-											if(err) { event.sender.send("configurationFileWritingFailure"); }
-											else {
-												event.sender.send("configurationFileWritingSuccessSimple");
-											}
-										});
-					        		}
-					        		else {
-						        		if(configurationData.current.path == writeData.path) {
-						        			writeData.previousPrimaryColor = configurationData.current.primaryColor;
-						        			writeData.previousSecondaryColor = configurationData.current.secondaryColor;
-						        			configurationData.current = writeData;
-											fs.writeFile(path.join(originalPath, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-												if(err) { event.sender.send("configurationFileWritingFailure"); }
-												else {
-													event.sender.send("configurationFileWritingSuccess")
-													setTimeout(() => {
-														app.relaunch();
-														app.exit();
-													}, 3000);
-												}
-											});
-						        		}
-						        		else {
-						        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
-											  	if(err) { event.sender.send("dataCopyFailure"); }
-											  	else { event.sender.send("dataOriginalDeleteAsk", true); }
-											});
-						        		}
-					        		}
-					        	}
-					        }
-						});
-					}
-				});
-			}
-		});
+	ipc.on("settingsSave", (event, submissionArr) => {
+		exports.updateSettings(fs, path, ipc, app, submissionArr, originalPath, event);
 	});
 };
 

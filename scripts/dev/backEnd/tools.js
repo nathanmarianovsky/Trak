@@ -30,7 +30,7 @@ Create the system tray icon and menu.
 */ 
 exports.createTrayMenu = (mode, win, trayObj, Menu) => {
 	const label = (mode == "h" ? "Hide" : "Show");
-	trayObj.setToolTip("Bat-Ha Transportation Apps");
+	trayObj.setToolTip("Trak");
 	trayObj.setContextMenu(Menu.buildFromTemplate([
 		{ "label": label, click: () => {
 			if(mode == "h") {
