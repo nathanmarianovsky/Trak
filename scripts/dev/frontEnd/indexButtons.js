@@ -2,11 +2,37 @@
 
 BASIC DETAILS: This file handles all buttons on the index.html page.
 
+   - cleanFilter: Remove all active filters.
+
 */
 
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*
+
+Remove all active filters.
+
+*/
+var cleanFilter = () => {
+    // Define the category and genre arrays along with the record rows.
+    const pageTable = Array.from(document.getElementById("tableBody").children);
+    // Iterate through the records rows.
+    for(let x = 0; x < pageTable.length; x++) {
+        // Show all record rows.
+        pageTable[x].style.display = "table-row";
+    }
+    // Upon the submission of a filter clear the search bar.
+    searchBar.parentNode.children[0].classList.remove("active");
+    searchBar.parentNode.children[2].classList.remove("active");
+    searchBar.classList.remove("valid");
+    searchBar.value = "";
+    // Clear the filter modal checkboxes.
+    Array.from(document.getElementsByClassName("filterCheckbox")).forEach(elem => elem.checked = false);
+};
 
 
 
@@ -20,8 +46,8 @@ window.addEventListener("load", () => {
         nameSort = document.getElementById("nameSort"),
         categorySort = document.getElementById("categorySort"),
         ratingSort = document.getElementById("ratingSort"),
-        filterApply = document.getElementById("filterApply"),
-        clearFilter = document.getElementById("clearFilter");
+        clearFilter = document.getElementById("clearFilter"),
+        filterModalClear = document.getElementById("filterModalClear");
     // Listen for a click event on the add button in order to open a window whose inputs will generate a new record.
     add.addEventListener("click", e => {
         e.preventDefault();
@@ -166,70 +192,8 @@ window.addEventListener("load", () => {
             }
         }
     });
-    // Listen for a click event on the filter button in order to filter the list of records.
-    filterApply.addEventListener("click", e => {
-        // Define the category and genre arrays along with the record rows.
-        const categoryList = ["Anime", "Book", "Film", "Manga", "Show"],
-            genresList = filterGenreList(),
-            catCheck = [],
-            genreCheck = [],
-            pageTable = Array.from(document.getElementById("tableBody").children);
-        // Define the filtered categories collection.
-        for(let i = 0; i < categoryList.length; i++) {
-            if(document.getElementById("filterCategory" + categoryList[i]).checked == true) { catCheck.push(categoryList[i]); }
-        }
-        // Define the filtered genres collection.
-        for(let j = 0; j < genresList.length; j++) {
-            if(document.getElementById("filterGenre" + genresList[j]).checked == true) { genreCheck.push(genresList[j]); }
-        }
-        // Iterate through the records rows to determine if they pass the filter.
-        for(let x = 0; x < pageTable.length; x++) {
-            // Filter based on both categories and genres.
-            if(catCheck.length > 0 && genreCheck.length > 0) {
-                let genreOverall = true,
-                    genreSplit = pageTable[x].getAttribute("genres").split(",");
-                for(let y = 0; y < genreCheck.length; y++) {
-                    if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
-                }
-                genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
-            }
-            // Filter based only on categories.
-            else if(catCheck.length > 0 && genreCheck.length == 0) {
-                catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
-            }
-            // Filter based only genres.
-            else if(catCheck.length == 0 && genreCheck.length > 0) {
-                let genreOverall = true,
-                    genreSplit = pageTable[x].getAttribute("genres").split(",");
-                for(let y = 0; y < genreCheck.length; y++) {
-                    if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
-                }
-                genreOverall == true ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
-            }
-            // If the empty filter is applied then show all record rows.
-            else { pageTable[x].style.display = "table-row"; }
-        }
-        // Upon the submission of a filter clear the search bar.
-        searchBar.parentNode.children[0].classList.remove("active");
-        searchBar.parentNode.children[2].classList.remove("active");
-        searchBar.classList.remove("valid");
-        searchBar.value = "";
-    });
     // Listen for a click event on the clear filter button in order to remove all active filters.
-    clearFilter.addEventListener("click", e => {
-        // Define the category and genre arrays along with the record rows.
-        const pageTable = Array.from(document.getElementById("tableBody").children);
-        // Iterate through the records rows.
-        for(let x = 0; x < pageTable.length; x++) {
-            // Show all record rows.
-            pageTable[x].style.display = "table-row";
-        }
-        // Upon the submission of a filter clear the search bar.
-        searchBar.parentNode.children[0].classList.remove("active");
-        searchBar.parentNode.children[2].classList.remove("active");
-        searchBar.classList.remove("valid");
-        searchBar.value = "";
-        // Clear the filter modal checkboxes.
-        Array.from(document.getElementsByClassName("filterCheckbox")).forEach(elem => elem.checked = false);
-    });
+    clearFilter.addEventListener("click", e => { cleanFilter(); });
+    // Listen for a click event on the clear filter button in order to remove all active filters.
+    filterModalClear.addEventListener("click", e => { cleanFilter(); });
 });

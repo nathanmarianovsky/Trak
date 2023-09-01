@@ -93,10 +93,13 @@ ipcRenderer.on("introduction", (event, response) => {
         // const instancesTapAdd = M.TapTarget.init(document.getElementById("introductionTargetAdd"));
         const instancesTapAdd = M.TapTarget.init(document.getElementById("introductionTargetAdd"), { "onClose": () => {
             setTimeout(() => {
+                const configurationObj = JSON.parse(fs.readFileSync(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8"));
+                let iconColor = "";
+                configurationObj.current != undefined ? iconColor = configurationObj.current.primaryColor : iconColor = configurationObj.original.primaryColor;
                 const instancesTapFilter = M.TapTarget.init(document.getElementById("introductionTargetFilter"), { "onClose": () => {
                     setTimeout(() => {
                         const instancesTapSettings = M.TapTarget.init(document.getElementById("introductionTargetSettings"));
-                        document.getElementById("openSettings").parentNode.children[1].children[1].children[0].children[0].style.color = "#2A2A8E";
+                        document.getElementById("openSettings").parentNode.children[1].children[1].children[0].children[0].style.color = iconColor;
                         let count = 0;
                         if(!document.getElementById("filterModal").classList.contains("open")) {
                             setTimeout(() => { instancesTapSettings.open(); }, 500);
@@ -116,7 +119,7 @@ ipcRenderer.on("introduction", (event, response) => {
                         });
                     }, 500);
                 }});
-                document.getElementById("setFilter").parentNode.children[1].children[1].children[0].children[0].style.color = "#2A2A8E";
+                document.getElementById("setFilter").parentNode.children[1].children[1].children[0].children[0].style.color = iconColor;
                 setTimeout(() => { instancesTapFilter.open(); }, 500);
             }, 500);
         }});
@@ -124,7 +127,6 @@ ipcRenderer.on("introduction", (event, response) => {
             instancesTapAdd.open();
             document.getElementById("introductionTargetAdd").parentNode.children[1].children[0].addEventListener("click", e => {
                 ipcRenderer.send("addLoad", true);
-                // setTimeout(() => { ipcRenderer.send("addLoad", true); }, 500);
             });
         }, 500);
     });
@@ -357,4 +359,52 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
     }
     // Initialize the page modals.
     initModal();
+    M.Modal.init(document.getElementById("filterModal"), { "onCloseStart": () => {
+        // Define the category and genre arrays along with the record rows.
+        const categoryList = ["Anime", "Book", "Film", "Manga", "Show"],
+            genresList = filterGenreList(),
+            catCheck = [],
+            genreCheck = [],
+            pageTable = Array.from(document.getElementById("tableBody").children);
+        // Define the filtered categories collection.
+        for(let i = 0; i < categoryList.length; i++) {
+            if(document.getElementById("filterCategory" + categoryList[i]).checked == true) { catCheck.push(categoryList[i]); }
+        }
+        // Define the filtered genres collection.
+        for(let j = 0; j < genresList.length; j++) {
+            if(document.getElementById("filterGenre" + genresList[j]).checked == true) { genreCheck.push(genresList[j]); }
+        }
+        // Iterate through the records rows to determine if they pass the filter.
+        for(let x = 0; x < pageTable.length; x++) {
+            // Filter based on both categories and genres.
+            if(catCheck.length > 0 && genreCheck.length > 0) {
+                let genreOverall = true,
+                    genreSplit = pageTable[x].getAttribute("genres").split(",");
+                for(let y = 0; y < genreCheck.length; y++) {
+                    if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
+                }
+                genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+            }
+            // Filter based only on categories.
+            else if(catCheck.length > 0 && genreCheck.length == 0) {
+                catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+            }
+            // Filter based only genres.
+            else if(catCheck.length == 0 && genreCheck.length > 0) {
+                let genreOverall = true,
+                    genreSplit = pageTable[x].getAttribute("genres").split(",");
+                for(let y = 0; y < genreCheck.length; y++) {
+                    if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
+                }
+                genreOverall == true ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+            }
+            // If the empty filter is applied then show all record rows.
+            else { pageTable[x].style.display = "table-row"; }
+        }
+        // Upon the submission of a filter clear the search bar.
+        searchBar.parentNode.children[0].classList.remove("active");
+        searchBar.parentNode.children[2].classList.remove("active");
+        searchBar.classList.remove("valid");
+        searchBar.value = "";
+    }});
 });
