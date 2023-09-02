@@ -21,14 +21,14 @@ Builds the msi installer for Windows.
 var windowsBuild = () => {
     // Provide all of the necessary details for the creation of the msi build file.
     const msiCreator = new MSICreator({
-        "appDirectory": path.join(__dirname, "BatHaTransportationApps-win32-x64"),
+        "appDirectory": path.join(__dirname, "Trak-win32-x64"),
         "outputDirectory": path.join(__dirname, "build", "Installer-Windows-amd64"),
-        "description": "A collection of apps designed for Bat-Ha Transportation.",
-        "exe": "BatHaTransportationApps",
-        "name": "BatHaTransportationApps",
+        "description": "A tracker designed to display and maintain details of content read and/or watched.",
+        "exe": "Trak",
+        "name": "Trak",
         "manufacturer": "Nathan Marianovsky",
-        "shortcutName": "BatHaTransportationApps",
-        "shortcutFolderName": "Bat-Ha Transportation Apps",
+        "shortcutName": "Trak",
+        "shortcutFolderName": "Trak",
         "upgradeCode": "31415926-5358-9793-2384-626433832795",
         "version": "1.0.0",
         "icon": path.join(__dirname, "assets", "favicon.ico"),
@@ -41,7 +41,7 @@ var windowsBuild = () => {
     // Generate the msi file and remove the folder created by electron-packager in the process.
     msiCreator.create().then(() => {
         msiCreator.compile().then(() => {
-            fs.rmSync(path.join(__dirname, "BatHaTransportationApps-win32-x64"), {"recursive": true, "force": true});
+            fs.rmSync(path.join(__dirname, "Trak-win32-x64"), {"recursive": true, "force": true});
         });
     });
 };
@@ -58,18 +58,18 @@ Builds the deb installer for Debian based Linux distributions.
 var debBuild = arch => {
     // Provide all of the necessary details for the creation of the deb build file.
     const options = {
-        "src": arch == "amd64" ? path.join(__dirname, "BatHaTransportationApps-linux-x64") : path.join(__dirname, "batHaTransportationApps-linux-arm64"),
+        "src": arch == "amd64" ? path.join(__dirname, "Trak-linux-x64") : path.join(__dirname, "trak-linux-arm64"),
         "dest": path.join(__dirname, "build", "Installer-Debian-" + (arch == "amd64" ? "amd64" : "arm64")),
         "icon": path.join(__dirname, "assets", "favicon.ico"),
-        "productName": "BatHaTransportationApps",
+        "productName": "Trak",
         "arch": arch
     }
     // Generate the deb file and remove the folder created by electron-packager in the process.
     debInstaller(options).then(() => {
-        arch == "amd64" ? fs.rmSync(path.join(__dirname, "BatHaTransportationApps-linux-x64"), {"recursive": true, "force": true}) : fs.rmSync(path.join(__dirname, "batHaTransportationApps-linux-arm64"), {"recursive": true, "force": true});
+        arch == "amd64" ? fs.rmSync(path.join(__dirname, "Trak-linux-x64"), {"recursive": true, "force": true}) : fs.rmSync(path.join(__dirname, "trak-linux-arm64"), {"recursive": true, "force": true});
         const buildPath = path.join(__dirname, "build", "Installer-Debian-" + (arch == "amd64" ? "amd64" : "arm64")),
             list = fs.readdirSync(buildPath);
-        fs.renameSync(path.join(buildPath, list[0]), path.join(buildPath, "batHaTransportationApps-" + (arch == "amd64" ? "amd64" : "arm64") + ".deb"));
+        fs.renameSync(path.join(buildPath, list[0]), path.join(buildPath, "trak-" + (arch == "amd64" ? "amd64" : "arm64") + ".deb"));
     });
 };
 
