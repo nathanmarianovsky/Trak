@@ -311,6 +311,8 @@ window.addEventListener("load", () => {
         	secondaryWindowHeight.addEventListener("change", e => {
         		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
         	});
+            // Write the app version based on the version in the package.json file.
+            document.getElementById("appVersion").textContent = "App Version: " + JSON.parse(fs.readFileSync(path.join(__dirname, "../../package.json"), "UTF8")).version;
         });
     });
 });

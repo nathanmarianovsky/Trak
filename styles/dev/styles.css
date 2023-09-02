@@ -318,6 +318,12 @@ footer {
 	line-height: 35px;
 }
 
+#appVersion {
+	margin: 30px;
+    position: absolute;
+    bottom: 35px;
+}
+
 .fullScreenRow {
 	margin-top: 15px;
 }
