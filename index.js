@@ -93,6 +93,22 @@ app.whenReady().then(() => {
 		fs.writeFileSync(path.join(basePath, "Trak", "config", "tutorial.json"), JSON.stringify(writeTutorial), "UTF8");
 	}
 
+	// Create the location file if it does not exist.
+	if(!fs.existsSync(path.join(basePath, "Trak", "config", "location.json"))) {
+		const writeLocation = { "appLocation": __dirname };
+		fs.writeFileSync(path.join(basePath, "Trak", "config", "location.json"), JSON.stringify(writeLocation), "UTF8");
+	}
+
+	// Create the localPages folder if it does not exist.
+	if(!fs.existsSync(path.join(basePath, "Trak", "localPages"))) {
+		fs.mkdirSync(path.join(basePath, "Trak", "localPages"));
+	}
+
+	// Create the localStyles folder if it does not exist.
+	if(!fs.existsSync(path.join(basePath, "Trak", "localStyles"))) {
+		fs.mkdirSync(path.join(basePath, "Trak", "localStyles"));
+	}
+
 	// Load the user's preferred window sizes if they exist.
 	fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
 		// If there was an issue reading the configuration.json file display a notification on the console.
@@ -116,53 +132,84 @@ app.whenReady().then(() => {
 			    	secWinHeight = parseInt(configObj.original.secondaryWindowHeight),
 			    	secWinFullscreen = configObj.original.secondaryWindowFullscreen;
 		    }
-			fs.readFile(path.join(__dirname, "styles", "dist", "styles.css"), "UTF8", (err, stylesFile) => {
-				// If there was an issue reading the styles.css file display a notification on the console.
-				if(err) { console.log("There was an issue reading the application styles file."); }
-				else {
-					if(configObj.current != undefined) {
-						// If a current configuration exists then apply the primary and secondary colors to the styles.css file.
-						const reg1 = new RegExp(configObj.current.previousPrimaryColor.toLowerCase(), "g"),
-							reg2 = new RegExp(configObj.original.primaryColor.toLowerCase(), "g"),
-							reg3 = new RegExp(configObj.current.previousSecondaryColor.toLowerCase(), "g"),
-							reg4 = new RegExp(configObj.original.secondaryColor.toLowerCase(), "g");
-						stylesFile = stylesFile.replace(reg1, configObj.current.primaryColor);
-						stylesFile = stylesFile.replace(reg2, configObj.current.primaryColor);
-						stylesFile = stylesFile.replace(reg3, configObj.current.secondaryColor);
-						stylesFile = stylesFile.replace(reg4, configObj.current.secondaryColor);
-						fs.writeFile(path.join(__dirname, "styles", "dist", "styles.css"), stylesFile, "UTF8", err => {
-							// If there was an issue writing the styles.css file display a notification on the console.
-							if(err) { console.log("There was an issue writing the application styles file."); }
-							else {
-								// Create the primary window.
-							  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);
-								primaryWindow.webContents.on("did-finish-load", () => {
-									primaryWindow.webContents.send("loadRows", primWinFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
-									tools.tutorialLoad(fs, path, primaryWindow, basePath);
-								});
-							  	// Create the system tray icon and menu. 
-							  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
-								tools.createTrayMenu("h", primaryWindow, tray, Menu);
-								// Add all of the back-end listeners.
-								appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
-							}
-						});
-					}
-					else {
-						// Create the primary window.
-					  	let primaryWindow = tools.createWindow("index", BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);
-						primaryWindow.webContents.on("did-finish-load", () => {
-							primaryWindow.webContents.send("loadRows", primWinFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
-							tools.tutorialLoad(fs, path, primaryWindow, basePath);
-						});
-					  	// Create the system tray icon and menu. 
-					  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
-						tools.createTrayMenu("h", primaryWindow, tray, Menu);
-						// Add all of the back-end listeners.
-						appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
-					}
-				}
-			});
+		    // Read the index.html file.
+		    fs.readFile(path.join(__dirname, "pages", "dist", "index.html"), "UTF8", (issue, indexPage) => {
+		    	// If there was an issue reading the index.html file display a notification on the console.
+		    	if(issue) { console.log("There was an issue reading the index.html file."); }
+		    	else {
+		    		// Update the href values of the css and js files referenced in the index.html file.
+		    		const regCSS = new RegExp("../../styles/dist/styles.css", "g"),
+						regJS = new RegExp("../../scripts/dist/frontEnd/", "g");
+					indexPage = indexPage.replace(regCSS, path.join(basePath, "Trak", "localStyles", "styles.css"));
+					indexPage = indexPage.replace(regJS, path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "scripts", "dist", "frontEnd", " ").trim());
+					fs.writeFile(path.join(basePath, "Trak", "localPages", "index.html"), indexPage, "UTF8", prob => {
+						// If there was an issue writing the index.html file display a notification on the console.
+						if(prob) { console.log("There was an issue writing the index.html file."); }
+						else {
+							// Read the addRecord.html file.
+							fs.readFile(path.join(__dirname, "pages", "dist", "addRecord.html"), "UTF8", (iss, addRecordPage) => {
+								// If there was an issue reading the addRecord.html file display a notification on the console.
+								if(iss) { console.log("There was an issue reading the addRecord.html file."); }
+								else {
+									// Update the href values of the css and js files referenced in the addRecord.html file.
+									addRecordPage = addRecordPage.replace(regCSS, path.join(basePath, "Trak", "localStyles", "styles.css"));
+									addRecordPage = addRecordPage.replace(regJS, path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "scripts", "dist", "frontEnd", " ").trim());
+									fs.writeFile(path.join(basePath, "Trak", "localPages", "addRecord.html"), addRecordPage, "UTF8", problem => {
+										// If there was an issue writing the addRecord.html file display a notification on the console.
+										if(problem) { console.log("There was an issue writing the addRecord.html file."); }
+										else {
+											// Read the styles.css file.
+											fs.readFile(path.join(__dirname, "styles", "dist", "styles.css"), "UTF8", (err, stylesFile) => {
+												// If there was an issue reading the styles.css file display a notification on the console.
+												if(err) { console.log("There was an issue reading the application styles file."); }
+												else {
+													if(configObj.current != undefined) {
+														// If a current configuration exists then apply the primary and secondary colors to the styles.css file.
+														const reg1 = new RegExp(configObj.original.primaryColor.toLowerCase(), "g"),
+															reg2 = new RegExp(configObj.original.secondaryColor.toLowerCase(), "g");
+														stylesFile = stylesFile.replace(reg1, configObj.current.primaryColor);
+														stylesFile = stylesFile.replace(reg2, configObj.current.secondaryColor);
+														fs.writeFile(path.join(basePath, "Trak", "localStyles", "styles.css"), stylesFile, "UTF8", err => {
+															// If there was an issue writing the styles.css file display a notification on the console.
+															if(err) { console.log("There was an issue writing the application styles file."); }
+															else {
+																// Create the primary window.
+															  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);
+																primaryWindow.webContents.on("did-finish-load", () => {
+																	primaryWindow.webContents.send("loadRows", primWinFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
+																	tools.tutorialLoad(fs, path, primaryWindow, basePath);
+																});
+															  	// Create the system tray icon and menu. 
+															  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
+																tools.createTrayMenu("h", primaryWindow, tray, Menu);
+																// Add all of the back-end listeners.
+																appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															}
+														});
+													}
+													else {
+														// Create the primary window.
+													  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);
+														primaryWindow.webContents.on("did-finish-load", () => {
+															primaryWindow.webContents.send("loadRows", primWinFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
+															tools.tutorialLoad(fs, path, primaryWindow, basePath);
+														});
+													  	// Create the system tray icon and menu. 
+													  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
+														tools.createTrayMenu("h", primaryWindow, tray, Menu);
+														// Add all of the back-end listeners.
+														appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+													}
+												}
+											});
+										}
+									});
+								}
+							});
+						}
+					});
+		    	}
+		    });
 		}
 	});
 });

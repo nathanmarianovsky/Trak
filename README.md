@@ -19,10 +19,11 @@ The following is a list of features that are in the plans for future releases:
 	* Currently the search bar searches only by name. It would be nice to have a search bar that can perform a search based on other details associated to a record.
 	* Implement a search bar that searches through online libraries for existing records. Most likely each category will have their own libraries to search through.
 * Design a notification system that can update the user on any record that has an upcoming release date.
+* Create logs to keep track of application activities.
 
 ## Application Files
 
-There are two locations for files created by the use of the application. Depending on the operating system both (by default) will be in one of the following:
+There are four locations for files created by the use of the application. Depending on the operating system both (by default) will be in one of the following:
 ```
 C:\Users\username\AppData\Roaming\Trak\
 /home/username/.local/share/Trak/
@@ -30,3 +31,5 @@ C:\Users\username\AppData\Roaming\Trak\
 where 'username' has to be replaced.
 * Under the "config" folder there will be two files titled configuration.json and tutorial.json. The former contains the settings parameters while the latter informs the application whether the tutorial is to be loaded on launch.
 * Under the "data" folder all user records are contained. In the application settings this directory can be changed if the user desires for the data to be saved elsewhere.
+* Under the "localPages" folder will be the application html files reproduced by the application on launch. In order to avoid having to ask for administrator privileges the application creates new html files locally after modifying them. The modifications occuring correspond to changing the href values of the css and js files.
+* Under the "localStyles" folder will be the application css file reproduced by the application on launch. In order to avoid having to ask for administrator privileges the application creates new css file locally after modifying it. The modifications occuring correspond to changing the primary and secondary color values.

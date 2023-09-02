@@ -312,7 +312,13 @@ window.addEventListener("load", () => {
         		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
         	});
             // Write the app version based on the version in the package.json file.
-            document.getElementById("appVersion").textContent = "App Version: " + JSON.parse(fs.readFileSync(path.join(__dirname, "../../package.json"), "UTF8")).version;
+            fs.readFile(path.join(basePath, "Trak", "config", "location.json"), "UTF8", (resp, fl) => {
+                if(resp) { M.toast({"html": "There was an issue reading the location.json file.", "classes": "rounded"}); }
+                else {
+                    document.getElementById("appVersion").textContent = "App Version: " + JSON.parse(fs.readFileSync(path.join(JSON.parse(fl).appLocation, "package.json"), "UTF8")).version;
+                }
+            });
+            // document.getElementById("appVersion").textContent = "App Version: " + JSON.parse(fs.readFileSync(path.join(__dirname, "../../package.json"), "UTF8")).version;
         });
     });
 });

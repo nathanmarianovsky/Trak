@@ -52,13 +52,14 @@ exports.createTrayMenu = (mode, win, trayObj, Menu) => {
 Executes the creation of the primary window with all necessary parameters.
 
 	- extension refers to the html file name.
+	- dir is the directory containing the display pages.
 	- BrowserWindow provides the means to create a new app window.
 	- width and height are the physical parameters for describing the created window size.
 	- fullscreen is a boolean representing whether the window should be maximized on launch.
 	- resizable is a boolean representing whether a window should be allowed to rescale.
 
 */
-exports.createWindow = (extension, BrowserWindow, path, width = 1000, height = 800, fullscreen = false, resizable = true) => {
+exports.createWindow = (extension, dir, BrowserWindow, path, width = 1000, height = 800, fullscreen = false, resizable = true) => {
   	let win = new BrowserWindow({
 		"width": width,
     	"height": height,
@@ -71,7 +72,7 @@ exports.createWindow = (extension, BrowserWindow, path, width = 1000, height = 8
     	},
     	"icon": __dirname + "/assets/favicon.ico"
 	});
-	win.loadFile(path.join(__dirname, "../../../pages", "dist", extension + ".html"));
+	win.loadFile(path.join(dir, "Trak", "localPages", extension + ".html"));
 	if(fullscreen == true) { win.maximize(); }
   	return win;
 };

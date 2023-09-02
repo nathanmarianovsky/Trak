@@ -30,7 +30,7 @@ var windowsBuild = () => {
         "shortcutName": "Trak",
         "shortcutFolderName": "Trak",
         "upgradeCode": "31415926-5358-9793-2384-626433832795",
-        "version": "1.0.0",
+        "version": JSON.parse(fs.readFileSync(path.join(__dirname, "package.json"), "UTF8")).version,
         "icon": path.join(__dirname, "assets", "favicon.ico"),
         "arch": "x64",
         "ui": {

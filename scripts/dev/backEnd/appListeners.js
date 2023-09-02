@@ -434,7 +434,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
-	   		let win = tools.createWindow("index", BrowserWindow, path, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
+	   		let win = tools.createWindow("index", originalPath, BrowserWindow, path, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
 	   		win.webContents.on("did-finish-load", () => {
 	  			win.webContents.send("loadRows", primaryWindowFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
 	  			tools.tutorialLoad(fs, path, primaryWindow, basePath);
@@ -487,7 +487,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 
   	// Handles the load of the addRecord.html page for the creation of a record.
   	ipc.on("addLoad", (event, scenario) => {
-  		let addWindow = tools.createWindow("addRecord", BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  		let addWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		addWindow.webContents.on("did-finish-load", () => {
   			if(scenario == true) {
   				addWindow.webContents.send("addIntroduction");
@@ -503,7 +503,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 
   	// Handles the load of the addRecord.html page for the update of a record.
   	ipc.on("updateRecord", (event, fldrName) => {
-  		let recordUpdateWindow = tools.createWindow("addRecord", BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  		let recordUpdateWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		recordUpdateWindow.webContents.on("did-finish-load", () => {
   			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
   			ipc.once("performSave", (event, submission) => {
