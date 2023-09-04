@@ -78,6 +78,27 @@ ipcRenderer.on("introductionFileSaveSuccess", event => {
 
 
 
+// Display a notification if there was an issue zipping up the library records.
+ipcRenderer.on("exportZippingFailure", event => {
+    M.toast({"html": "There was an error in zipping up the library records.", "classes": "rounded"});
+});
+
+
+
+// Display a notification if there was an issue creating the zip file for the database export.
+ipcRenderer.on("exportZipFileFailure", event => {
+    M.toast({"html": "There was an error in creating the zip file for the library records export.", "classes": "rounded"});
+});
+
+
+
+// Display a notification for the successful export of the library records.
+ipcRenderer.on("exportZipFileSuccess", (event, response) => {
+    M.toast({"html": "The library records have been exported to " + response + ".", "classes": "rounded"});
+});
+
+
+
 // Display the application tutorial for a first-time user or anyone who has not chosen to hide it on launch.
 ipcRenderer.on("introduction", (event, response) => {
     // Define the introduction modal used to initialize the tutorial if desired.

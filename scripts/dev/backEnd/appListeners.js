@@ -422,6 +422,7 @@ Driver function for adding all app listeners.
 
 	- app, BrowserWindow, and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
+	- zipper is a library object which can create zip files.
 	- tools provides a collection of local functions meant to help with writing files and generating pdf files.
 	- exec and shell provide the means to open files, folders, and links.
 	- mainWindow is an object referencing the primary window of the Electron app.
@@ -430,14 +431,14 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
 	   		let win = tools.createWindow("index", originalPath, BrowserWindow, path, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
 	   		win.webContents.on("did-finish-load", () => {
 	  			win.webContents.send("loadRows", primaryWindowFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
-	  			tools.tutorialLoad(fs, path, primaryWindow, basePath);
+	  			tools.tutorialLoad(fs, path, primaryWindow, originalPath);
 	  		});
     	}
   	});
@@ -528,7 +529,10 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 		exports.updateSettings(fs, path, ipc, app, submissionArr, originalPath, event);
 	});
 
-	// tools.exportData(fs, path, zipper, basePath, "D:\\Downloads\\Temp.zip");
+	ipc.on("databaseExport", (event, loc) => {
+		tools.exportData(fs, path, zipper, event, originalPath, loc);
+	});
+
 };
 
 

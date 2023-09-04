@@ -184,7 +184,7 @@ app.whenReady().then(() => {
 															  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 																tools.createTrayMenu("h", primaryWindow, tray, Menu);
 																// Add all of the back-end listeners.
-																appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+																appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 															}
 														});
 													}
@@ -199,7 +199,7 @@ app.whenReady().then(() => {
 													  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 														tools.createTrayMenu("h", primaryWindow, tray, Menu);
 														// Add all of the back-end listeners.
-														appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+														appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 													}
 												}
 											});

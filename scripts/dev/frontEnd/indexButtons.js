@@ -49,7 +49,9 @@ window.addEventListener("load", () => {
         clearFilter = document.getElementById("clearFilter"),
         filterModalClear = document.getElementById("filterModalClear"),
         databaseExport = document.getElementById("databaseExport"),
-        databaseImport = document.getElementById("databaseImport");
+        databaseImport = document.getElementById("databaseImport"),
+        databaseExportBtn = document.getElementById("databaseExportBtn"),
+        databaseImportBtn = document.getElementById("databaseImportBtn");
     // Listen for a click event on the add button in order to open a window whose inputs will generate a new record.
     add.addEventListener("click", e => {
         e.preventDefault();
@@ -214,6 +216,9 @@ window.addEventListener("load", () => {
        document.getElementById("databaseImportContainer").style.display = "initial";
        document.getElementById("databaseExportBtn").style.display = "none";
        document.getElementById("databaseImportBtn").style.display = "inline-block";
+    });
+    databaseExportBtn.addEventListener("click", e => {
+        ipcRenderer.send("databaseExport", document.getElementById("exportPath").value);
     });
     databaseExport.click();
 });

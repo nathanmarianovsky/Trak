@@ -2,6 +2,7 @@
 
 BASIC DETAILS: This file serves as the collection of tools utilized by the various back-end requests.
 
+   - exportData: Create a zip file containing the exported library records.
    - createTrayMenu: Create the system tray icon and menu.
    - createWindow: Executes the creation of the primary window with all necessary parameters.
    - tutorialLoad: Tells the front-end to load the application tutorial.
@@ -19,21 +20,30 @@ var exports = {};
 
 
 
-exports.exportData = (fs, path, zipper, dir, exportLocation) => {
-	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
-		if(err) {  }
-		else {
-			let zipDirectory = "";
-			console.log(JSON.parse(fileContent));
-			fileContent.current != undefined ? zipDirectory = JSON.parse(fileContent).current.path : zipDirectory = JSON.parse(fileContent).original.path;
-			zipper.zip(zipDirectory, (prob, zipped) => {
-				if(prob) {  }
-				else {
-					zipped.save(exportLocation, zipErr => {
-						if(zipErr) {  }
-						else {
+/*
 
-						}
+Create a zip file containing the exported library records.
+
+	- fs and path provide the means to work with local files.
+	- zipper is a library object which can create zip files.
+	- eve is the object which allows for interaction with the fron-end of the Electron application.
+	- dir is a string representing the base directory corresponding to the location of the configuration file.
+	- exportLocation is a string representing the location where the generated zip file will be placed.
+
+*/ 
+exports.exportData = (fs, path, zipper, eve, dir, exportLocation) => {
+	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
+		if(err) { eve.sender.send("configurationFileOpeningFailure");  }
+		else {
+			const fileData = JSON.parse(fileContent);
+			let zipDirectory = "";
+			fileData.current != undefined ? zipDirectory = fileData.current.path : zipDirectory = fileData.original.path;
+			zipper.zip(zipDirectory, (prob, zipped) => {
+				if(prob) { eve.sender.send("exportZippingFailure"); }
+				else {
+					zipped.save(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".zip"), zipErr => {
+						if(zipErr) { eve.sender.send("exportZipFileFailure"); }
+						else { eve.sender.send("exportZipFileSuccess", exportLocation); }
 					});
 				}
 			});
