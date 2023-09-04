@@ -17,9 +17,14 @@ The following is a list of features that are in the plans for future releases:
 	* A record association is meant to link two or more items across multiple categories. In example, an anime can typically be associated to light novels and manga. 
 * Update the index page search bar.
 	* Currently the search bar searches only by name. It would be nice to have a search bar that can perform a search based on other details associated to a record.
-	* Implement a search bar that searches through online libraries for existing records. Most likely each category will have their own libraries to search through.
+	* Implement a search bar that searches through online libraries for existing records and auto populates the record details. Most likely each category will have their own libraries to search through.
 * Design a notification system that can update the user on any record that has an upcoming release date.
+* Implement DragulaJS for content dragging to improve the user experience.
+* Design an interface to export/import records.
+* Create application splash screen.
+* Enable the application to auto-update.
 * Create logs to keep track of application activities.
+
 
 ## Application Files
 

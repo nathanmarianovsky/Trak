@@ -188,11 +188,6 @@ textarea.materialize-textarea:focus:not([readonly])+label {
   	bottom: 225px;
 }
 
-#settingsSelection li {
-	width: 50%;
-    text-align: center;
-}
-
 .spinner-layer {
 	border-color: #2A2A8E !important;
 }
@@ -270,6 +265,58 @@ textarea.materialize-textarea:focus:not([readonly])+label {
 
 /*---------------------------------------------------------------------------------------------------------------------*/
 
+/* Styling applicable for the database modal. */
+
+
+#databaseModal {
+	width: 75%;
+	height: 45%;
+}
+
+#databaseImportBtn {
+	display: none;
+}
+
+#databaseNav {
+	border-top-right-radius: 30px;
+	border-top-left-radius: 30px;
+}
+
+#databaseSelection li {
+	width: 50%;
+    text-align: center;
+}
+
+#databaseModal .modal-content {
+	padding-right: 0px;
+	padding-left: 0px;
+	padding-top: 0px;
+}
+
+#databaseExportContainer p, #databaseImportContainer p {
+	margin-left: 32px;
+	margin-top: 35px;
+}
+
+.databaseImportDiv {
+	margin-left: 11px !important;
+}
+
+.databaseWindowDiv {
+    margin-left: 20px !important;
+}
+
+.databaseDataInput {
+	width: 80% !important;
+}
+
+.databaseContainer {
+	display: none;
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------*/
+
 /* Styling applicable for the settings modal. */
 
 
@@ -316,6 +363,11 @@ footer {
 #settingsAboutContainer p {
 	margin: 30px;
 	line-height: 35px;
+}
+
+#settingsSelection li {
+	width: 50%;
+    text-align: center;
 }
 
 #appVersion {

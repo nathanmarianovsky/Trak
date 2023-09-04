@@ -527,6 +527,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, tools, m
 	ipc.on("settingsSave", (event, submissionArr) => {
 		exports.updateSettings(fs, path, ipc, app, submissionArr, originalPath, event);
 	});
+
+	// tools.exportData(fs, path, zipper, basePath, "D:\\Downloads\\Temp.zip");
 };
 
 

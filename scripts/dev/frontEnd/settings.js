@@ -318,7 +318,6 @@ window.addEventListener("load", () => {
                     document.getElementById("appVersion").textContent = "App Version: " + JSON.parse(fs.readFileSync(path.join(JSON.parse(fl).appLocation, "package.json"), "UTF8")).version;
                 }
             });
-            // document.getElementById("appVersion").textContent = "App Version: " + JSON.parse(fs.readFileSync(path.join(__dirname, "../../package.json"), "UTF8")).version;
         });
     });
 });

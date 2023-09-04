@@ -20,6 +20,7 @@ const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
 	tools = require("./scripts/dist/backEnd/tools"),
 	appListeners = require("./scripts/dist/backEnd/appListeners"),
 	exec = require("child_process").exec,
+	zipper = require("zip-local"),
 	basePath = localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
 if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
 	var localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");

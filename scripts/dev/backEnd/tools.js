@@ -19,6 +19,30 @@ var exports = {};
 
 
 
+exports.exportData = (fs, path, zipper, dir, exportLocation) => {
+	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
+		if(err) {  }
+		else {
+			let zipDirectory = "";
+			console.log(JSON.parse(fileContent));
+			fileContent.current != undefined ? zipDirectory = JSON.parse(fileContent).current.path : zipDirectory = JSON.parse(fileContent).original.path;
+			zipper.zip(zipDirectory, (prob, zipped) => {
+				if(prob) {  }
+				else {
+					zipped.save(exportLocation, zipErr => {
+						if(zipErr) {  }
+						else {
+
+						}
+					});
+				}
+			});
+		}
+	});
+};
+
+
+
 /*
 
 Create the system tray icon and menu.

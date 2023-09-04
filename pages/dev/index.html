@@ -30,6 +30,7 @@
                 </ul>
                 <ul class="right">
                     <li>
+                        <a id="openDatabase" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Export/Import" href="#databaseModal"><i class="material-icons">library_books</i></a>
                         <a id="openSettings" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Settings" href="#settingsModal"><i class="material-icons">settings</i></a>
                         <div id="introductionTargetSettings" class="tap-target" data-target="openSettings">
                             <div class="tap-target-content">
@@ -165,6 +166,57 @@
             <a id="remove" class="btn-floating btn-large waves-effect waves-light modal-trigger tooltipped" data-position="right" data-tooltip="Remove Records" href="#removeModal"><i class="material-icons">remove</i></a>
         </div>
         <div id="settingsModal" class="modal modal-fixed-footer"></div>
+        <div id="databaseModal" class="modal modal-fixed-footer">
+                <div class="modal-content">
+                    <div class="navbar">
+                        <nav id="databaseNav" class="z-depth-2">
+                            <div class="nav-wrapper">
+                                <ul id="databaseSelection">
+                                    <li><a id="databaseExport">Export</a></li>
+                                    <li><a id="databaseImport">Import</a></li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+                    <div id="databaseExportContainer" class="databaseContainer">
+                        <p>To export the library records simply provide the directory to which the zip file should be saved.</p>
+                        <div class="row databaseWindowDiv">
+                            <form class="col s12">
+                                <div class="row">
+                                    <div id="exportPath" class="input-field col s10">
+                                        Directory:
+                                        <input id="exportPath" type="text" class="databaseDataInput">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div id="databaseImportContainer" class="databaseContainer">
+                        <p>To import into the library records simply select the zip files which contain the data.</p>
+                        <div class="row databaseImportDiv">
+                            <form class="col s12">
+                                <div class="file-field input-field col s10">
+                                    <div class="btn addRecordFilesDiv">
+                                        <span>
+                                            File<i class="material-icons right">add</i>
+                                        </span>
+                                        <input id="importZipFile" type="file" multiple>
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input id="databaseFilesText" class="file-path validate" type="text">
+                                        <label for="databaseFilesText">Upload one or more files.</label>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="modal-close waves-effect waves-green btn-flat modalButtons">Exit</a>
+                    <a id="databaseExportBtn" class="modal-close waves-effect waves-green btn-flat modalButtons">Export</a>
+                    <a id="databaseImportBtn" class="modal-close waves-effect waves-green btn-flat modalButtons">Import</a>
+                </div>
+            </div>
         <div id="introductionModal" class="modal infoModal">
             <div class="modal-content">
                 <h4 class="center">Tutorial</h4>
