@@ -85,6 +85,13 @@ ipcRenderer.on("exportZippingFailure", event => {
 
 
 
+// Display a notification if there was an issue unzipping an import file.
+ipcRenderer.on("importUnzippingFailure", (event, response) => {
+    M.toast({"html": "There was an error in unzipping the import file " + response + ".", "classes": "rounded"});
+});
+
+
+
 // Display a notification if there was an issue creating the zip file for the database export.
 ipcRenderer.on("exportZipFileFailure", event => {
     M.toast({"html": "There was an error in creating the zip file for the library records export.", "classes": "rounded"});
@@ -92,9 +99,23 @@ ipcRenderer.on("exportZipFileFailure", event => {
 
 
 
+// Display a notification if there was an issue saving the contents of an import zip file.
+ipcRenderer.on("importZipFileFailure", (event, response) => {
+    M.toast({"html": "There was an error in saving the contents of the import file " + response + ".", "classes": "rounded"});
+});
+
+
+
 // Display a notification for the successful export of the library records.
 ipcRenderer.on("exportZipFileSuccess", (event, response) => {
     M.toast({"html": "The library records have been exported to " + response + ".", "classes": "rounded"});
+});
+
+
+
+// Display a notification for the successful import of library records.
+ipcRenderer.on("importZipFileSuccess", event => {
+    M.toast({"html": "The library records have been updated with the contents of the chosen import files.", "classes": "rounded"});
 });
 
 

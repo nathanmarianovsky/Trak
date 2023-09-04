@@ -220,5 +220,8 @@ window.addEventListener("load", () => {
     databaseExportBtn.addEventListener("click", e => {
         ipcRenderer.send("databaseExport", document.getElementById("exportPath").value);
     });
+    databaseImportBtn.addEventListener("click", e => {
+        ipcRenderer.send("databaseImport", Array.from(document.getElementById("importZipFile").files).map(elem => elem.path));
+    });
     databaseExport.click();
 });

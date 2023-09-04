@@ -36,9 +36,7 @@ exports.exportData = (fs, path, zipper, eve, dir, exportLocation) => {
 		if(err) { eve.sender.send("configurationFileOpeningFailure");  }
 		else {
 			const fileData = JSON.parse(fileContent);
-			let zipDirectory = "";
-			fileData.current != undefined ? zipDirectory = fileData.current.path : zipDirectory = fileData.original.path;
-			zipper.zip(zipDirectory, (prob, zipped) => {
+			zipper.zip(fileData.current != undefined ? fileData.current.path : fileData.original.path, (prob, zipped) => {
 				if(prob) { eve.sender.send("exportZippingFailure"); }
 				else {
 					zipped.save(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".zip"), zipErr => {
@@ -46,6 +44,39 @@ exports.exportData = (fs, path, zipper, eve, dir, exportLocation) => {
 						else { eve.sender.send("exportZipFileSuccess", exportLocation); }
 					});
 				}
+			});
+		}
+	});
+};
+
+
+
+/*
+
+Reads zip files and adds their content to the library records.
+
+	- fs and path provide the means to work with local files.
+	- zipper is a library object which can create zip files.
+	- eve is the object which allows for interaction with the fron-end of the Electron application.
+	- dir is a string representing the base directory corresponding to the location of the configuration file.
+	- zipList is an array of zip files to be imported.
+
+*/ 
+exports.importData = (fs, path, zipper, eve, dir, zipList) => {
+	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
+		if(err) { eve.sender.send("configurationFileOpeningFailure");  }
+		else {
+			const fileData = JSON.parse(fileContent).current != undefined ? JSON.parse(fileContent).current.path : JSON.parse(fileContent).original.path;
+			zipList.forEach(zipPath => {
+				zipper.unzip(zipPath, (er, unzipped) => {
+					if(er) { eve.sender.send("importUnzippingFailure", zipPath); }
+					else {
+						unzipped.save(fileData, issue => {
+							if(issue) { eve.sender.send("importZipFileFailure", zipPath); }
+							else { eve.sender.send("importZipFileSuccess"); }
+						});
+					}
+				});
 			});
 		}
 	});

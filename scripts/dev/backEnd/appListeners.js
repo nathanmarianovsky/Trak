@@ -533,6 +533,10 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, 
 		tools.exportData(fs, path, zipper, event, originalPath, loc);
 	});
 
+	ipc.on("databaseImport", (event, list) => {
+		tools.importData(fs, path, zipper, event, originalPath, list);
+	});
+
 };
 
 
