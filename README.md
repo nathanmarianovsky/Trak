@@ -24,6 +24,7 @@ The following is a list of features that are in the plans for future releases:
 * Create application splash screen.
 * Enable the application to auto-update.
 * Create logs to keep track of application activities.
+* Create a web service that would keep track of user content statistics. A user would have to opt in to share parts of their data.
 
 
 ## Application Files

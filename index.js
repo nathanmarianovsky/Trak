@@ -170,37 +170,24 @@ app.whenReady().then(() => {
 															reg2 = new RegExp(configObj.original.secondaryColor.toLowerCase(), "g");
 														stylesFile = stylesFile.replace(reg1, configObj.current.primaryColor);
 														stylesFile = stylesFile.replace(reg2, configObj.current.secondaryColor);
-														fs.writeFile(path.join(basePath, "Trak", "localStyles", "styles.css"), stylesFile, "UTF8", err => {
-															// If there was an issue writing the styles.css file display a notification on the console.
-															if(err) { console.log("There was an issue writing the application styles file."); }
-															else {
-																// Create the primary window.
-															  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);
-																primaryWindow.webContents.on("did-finish-load", () => {
-																	primaryWindow.webContents.send("loadRows", primWinFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
-																	tools.tutorialLoad(fs, path, primaryWindow, basePath);
-																});
-															  	// Create the system tray icon and menu. 
-															  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
-																tools.createTrayMenu("h", primaryWindow, tray, Menu);
-																// Add all of the back-end listeners.
-																appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
-															}
-														});
 													}
-													else {
-														// Create the primary window.
-													  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);
-														primaryWindow.webContents.on("did-finish-load", () => {
-															primaryWindow.webContents.send("loadRows", primWinFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
-															tools.tutorialLoad(fs, path, primaryWindow, basePath);
-														});
-													  	// Create the system tray icon and menu. 
-													  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
-														tools.createTrayMenu("h", primaryWindow, tray, Menu);
-														// Add all of the back-end listeners.
-														appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
-													}
+													fs.writeFile(path.join(basePath, "Trak", "localStyles", "styles.css"), stylesFile, "UTF8", err => {
+														// If there was an issue writing the styles.css file display a notification on the console.
+														if(err) { console.log("There was an issue writing the application styles file."); }
+														else {
+															// Create the primary window.
+														  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);
+															primaryWindow.webContents.on("did-finish-load", () => {
+																primaryWindow.webContents.send("loadRows", primWinFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
+																tools.tutorialLoad(fs, path, primaryWindow, basePath);
+															});
+														  	// Create the system tray icon and menu. 
+														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
+															tools.createTrayMenu("h", primaryWindow, tray, Menu);
+															// Add all of the back-end listeners.
+															appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+														}
+													});
 												}
 											});
 										}
