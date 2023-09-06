@@ -239,6 +239,10 @@ textarea.materialize-textarea:focus:not([readonly])+label {
   	border-radius: 12px !important;
 }
 
+.topNavTapContainer {
+	display: inline-block;
+}
+
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/
@@ -449,7 +453,7 @@ footer {
 .tap-target {
 	background-color: #2A2A8E !important;
 	color: white;
-	mix-blend-mode: difference;
+/*	mix-blend-mode: difference;*/
 }
 
 

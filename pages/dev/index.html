@@ -30,11 +30,20 @@
                 </ul>
                 <ul class="right">
                     <li>
-                        <a id="openDatabase" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Export/Import" href="#databaseModal"><i class="material-icons">library_books</i></a>
-                        <a id="openSettings" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Settings" href="#settingsModal"><i class="material-icons">settings</i></a>
-                        <div id="introductionTargetSettings" class="tap-target" data-target="openSettings">
-                            <div class="tap-target-content">
-                                <p>Use the settings to change application defaults.</p>
+                        <div class="topNavTapContainer">
+                            <a id="openDatabase" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Export/Import" href="#databaseModal"><i class="material-icons">library_books</i></a>
+                            <div id="introductionTargetDatabase" class="tap-target" data-target="openDatabase">
+                                <div class="tap-target-content">
+                                    <p>Export/Import records as desired via zip archives.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="topNavTapContainer">
+                            <a id="openSettings" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Settings" href="#settingsModal"><i class="material-icons">settings</i></a>
+                            <div id="introductionTargetSettings" class="tap-target" data-target="openSettings">
+                                <div class="tap-target-content">
+                                    <p>Use the settings to change application defaults.</p>
+                                </div>
                             </div>
                         </div>
                     </li>
@@ -163,6 +172,11 @@
                 </div>
             </div>
             <a id="add" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Add Record"><i class="material-icons">add</i></a>
+            <div id="introductionTargetAdd" class="tap-target" data-target="add">
+                <div class="tap-target-content">
+                    <p>Begin by clicking on the add button in order to open a separate window which handles record creation and update.</p>
+                </div>
+            </div>
             <a id="remove" class="btn-floating btn-large waves-effect waves-light modal-trigger tooltipped" data-position="right" data-tooltip="Remove Records" href="#removeModal"><i class="material-icons">remove</i></a>
         </div>
         <div id="settingsModal" class="modal modal-fixed-footer"></div>
@@ -229,11 +243,6 @@
                 </label>
                 <a id="introductionExit" class="modal-close waves-effect waves-green btn-flat modalButtons">Exit</a>
                 <a id="introductionContinue" class="modal-close waves-effect waves-green btn-flat modalButtons">Continue</a>
-            </div>
-        </div>
-        <div id="introductionTargetAdd" class="tap-target" data-target="add">
-            <div class="tap-target-content">
-                <p>Begin by clicking on the add button in order to open a separate window which handles record creation and update.</p>
             </div>
         </div>
     </body>

@@ -151,32 +151,63 @@ ipcRenderer.on("introduction", (event, response) => {
                 // Define the tutorial step for the filter button on the index page.
                 const instancesTapFilter = M.TapTarget.init(document.getElementById("introductionTargetFilter"), { "onClose": () => {
                     setTimeout(() => {
-                        // Define the tutorial step for the settings button on the index page.
-                        const instancesTapSettings = M.TapTarget.init(document.getElementById("introductionTargetSettings"));
-                        document.getElementById("openSettings").parentNode.children[1].children[1].children[0].children[0].style.color = iconColor;
-                        // Ensure that the tutorial step associated to the settings button opens only once no matter whether the filter modal is opened or not.
+                        // Define the tutorial step for the export/import button on the index page.
+                        const instancesTapDatabase = M.TapTarget.init(document.getElementById("introductionTargetDatabase"), { "onClose": () => {
+                            setTimeout(() => {
+                                const instancesTapSettings = M.TapTarget.init(document.getElementById("introductionTargetSettings"));
+                                // Define the tutorial step for the settings button on the index page.
+                                // document.getElementById("openSettings").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
+                                document.getElementById("openSettings").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
+                                // After a small delay open the tutorial step for the index page filter.
+                                // setTimeout(() => {
+                                let cnt = 0;
+                                if(!document.getElementById("databaseModal").classList.contains("open")) {
+                                    // After a small delay open the tutorial step for the index page settings.
+                                    setTimeout(() => { instancesTapSettings.open(); }, 500);
+                                    cnt++;
+                                }
+                                var settingsObserver = new MutationObserver(mutations => {
+                                    if(cnt == 0) {
+                                        if(!mutations[0].target.classList.contains("open")) {
+                                            setTimeout(() => { instancesTapSettings.open(); }, 500);
+                                            cnt++;
+                                        }
+                                    }
+                                });
+                                settingsObserver.observe(document.getElementById("databaseModal"), {
+                                    attributes: true,
+                                    attributeFilter: ["class"]
+                                });
+                                // instancesTapSettings.open();
+                                // }, 500);
+                            }, 500);
+                        }});
+                        // After a small delay open the tutorial step for the index page settings.
+                        document.getElementById("openDatabase").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
+                        // Ensure that the tutorial step associated to the export/import button opens only once no matter whether the filter modal is opened or not.
                         let count = 0;
                         if(!document.getElementById("filterModal").classList.contains("open")) {
-                            // After a small delay open the tutorial step for the index page settings.
-                            setTimeout(() => { instancesTapSettings.open(); }, 500);
+                            // After a small delay open the tutorial step for the index page export/import.
+                            setTimeout(() => { instancesTapDatabase.open(); }, 500);
                             count++;
                         }
-                        var observer = new MutationObserver(mutations => {
+                        var databaseObserver = new MutationObserver(mutations => {
                             if(count == 0) {
                                 if(!mutations[0].target.classList.contains("open")) {
-                                    setTimeout(() => { instancesTapSettings.open(); }, 500);
+                                    setTimeout(() => { instancesTapDatabase.open(); }, 500);
                                     count++;
                                 }
                             }
                         });
-                        observer.observe(document.getElementById("filterModal"), {
+                        databaseObserver.observe(document.getElementById("filterModal"), {
                             attributes: true,
                             attributeFilter: ["class"]
                         });
+                        // setTimeout(() => { instancesTapSettings.open(); }, 500);
                     }, 500);
                 }});
                 // After a small delay open the tutorial step for the index page filter.
-                document.getElementById("setFilter").parentNode.children[1].children[1].children[0].children[0].style.color = iconColor;
+                document.getElementById("setFilter").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
                 setTimeout(() => { instancesTapFilter.open(); }, 500);
             }, 500);
         }});
@@ -184,7 +215,7 @@ ipcRenderer.on("introduction", (event, response) => {
         setTimeout(() => {
             instancesTapAdd.open();
             // If the step is exited via the click of the focused button, then open the addRecord page with the tutorial continued.
-            document.getElementById("introductionTargetAdd").parentNode.children[1].children[0].addEventListener("click", e => {
+            document.getElementById("introductionTargetAdd").nextElementSibling.children[0].addEventListener("click", e => {
                 ipcRenderer.send("addLoad", true);
             });
         }, 500);
