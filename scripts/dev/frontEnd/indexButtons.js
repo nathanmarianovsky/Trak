@@ -51,7 +51,8 @@ window.addEventListener("load", () => {
         databaseExport = document.getElementById("databaseExport"),
         databaseImport = document.getElementById("databaseImport"),
         databaseExportBtn = document.getElementById("databaseExportBtn"),
-        databaseImportBtn = document.getElementById("databaseImportBtn");
+        databaseImportBtn = document.getElementById("databaseImportBtn"),
+        importOverideBtn = document.getElementById("importOverideBtn");
     // Listen for a click event on the add button in order to open a window whose inputs will generate a new record.
     add.addEventListener("click", e => {
         e.preventDefault();
@@ -221,7 +222,10 @@ window.addEventListener("load", () => {
         ipcRenderer.send("databaseExport", document.getElementById("exportPath").value);
     });
     databaseImportBtn.addEventListener("click", e => {
-        ipcRenderer.send("databaseImport", Array.from(document.getElementById("importZipFile").files).map(elem => elem.path));
+        ipcRenderer.send("databaseImport", document.getElementById("importZipFile").files[0].path);
+    });
+    importOverideBtn.addEventListener("click", e => {
+        ipcRenderer.send("importOveride", Array.from(document.querySelectorAll("#importModal .importModalCheckbox")).map(elem => { return { "record": elem.id, "overwrite": elem.checked }}));
     });
     databaseExport.click();
 });

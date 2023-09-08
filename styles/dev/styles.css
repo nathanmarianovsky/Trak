@@ -321,6 +321,28 @@ textarea.materialize-textarea:focus:not([readonly])+label {
 
 /*---------------------------------------------------------------------------------------------------------------------*/
 
+/* Styling applicable for the import modal. */
+
+#importModal {
+	top: 20% !important;
+    width: 55% !important;
+    height: 50%;
+    max-height: 50%;
+    overflow-y: hidden;
+}
+
+#importModal .modal-content {
+	overflow-y: hidden;
+}
+
+#importModalFormDiv {
+	overflow-y: auto;
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------*/
+
 /* Styling applicable for the settings modal. */
 
 

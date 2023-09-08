@@ -56,27 +56,45 @@ exports.exportData = (fs, path, zipper, eve, dir, exportLocation) => {
 Reads zip files and adds their content to the library records.
 
 	- fs and path provide the means to work with local files.
+	- ipc provides the means to operate the Electron app.
 	- zipper is a library object which can create zip files.
 	- eve is the object which allows for interaction with the fron-end of the Electron application.
 	- dir is a string representing the base directory corresponding to the location of the configuration file.
-	- zipList is an array of zip files to be imported.
+	- zipFile is the zip file to be imported.
 
 */ 
-exports.importData = (fs, path, zipper, eve, dir, zipList) => {
+exports.importData = (fs, path, ipc, zipper, eve, dir, zipFile) => {
+	if(!fs.existsSync(path.join(dir, "Trak", "importTemp"))) {
+		fs.mkdirSync(path.join(dir, "Trak", "importTemp"));
+	}
 	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
 		if(err) { eve.sender.send("configurationFileOpeningFailure");  }
 		else {
 			const fileData = JSON.parse(fileContent).current != undefined ? JSON.parse(fileContent).current.path : JSON.parse(fileContent).original.path;
-			zipList.forEach(zipPath => {
-				zipper.unzip(zipPath, (er, unzipped) => {
-					if(er) { eve.sender.send("importUnzippingFailure", zipPath); }
-					else {
-						unzipped.save(fileData, issue => {
-							if(issue) { eve.sender.send("importZipFileFailure", zipPath); }
-							else { eve.sender.send("importZipFileSuccess"); }
-						});
-					}
-				});
+			zipper.unzip(zipFile, (er, unzipped) => {
+				if(er) { eve.sender.send("importUnzippingFailure", zipFile); }
+				else {
+					unzipped.save(path.join(dir, "Trak", "importTemp"), issue => {
+						if(issue) { eve.sender.send("importZipFileFailure", zipFile); }
+						else {
+							let list = fs.readdirSync(path.join(dir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(dir, "Trak", "importTemp"), file)).isDirectory()),
+								listFilterDoExist = list.filter(elem => fs.existsSync(path.join(fileData, elem))),
+								listFilterDoNotExist = list.filter(elem => !fs.existsSync(path.join(fileData, elem)));
+								listFilterDoNotExist.forEach(elem => { fs.moveSync(path.join(dir, "Trak", "importTemp", elem), path.join(fileData, elem)); });
+								if(listFilterDoExist.length == 0) { eve.sender.send("importZipFileSuccess"); }
+								else {
+									eve.sender.send("importRecordExists", listFilterDoExist);
+									ipc.on("importOveride", (event, overwriteList) => {
+										console.log(overwriteList);
+									});
+								}
+
+
+
+							// eve.sender.send("importZipFileSuccess");
+						}
+					});
+				}
 			});
 		}
 	});

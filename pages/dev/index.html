@@ -147,8 +147,8 @@
                     <div class="row"><form id="filterForm" class="col s12"></form></div>
                 </div>
                 <div class="modal-footer">
-                    <a id="filterModalClear" class="waves-effect waves-green btn-flat modalButtons left">Clear</a>
-                    <a id="filterApply" class="modal-close waves-effect waves-green btn-flat modalButtons">Apply</a>
+                    <a id="filterModalClear" class="waves-effect waves-light btn-flat modalButtons left">Clear</a>
+                    <a id="filterApply" class="modal-close waves-effect waves-light btn-flat modalButtons">Apply</a>
                 </div>
             </div>
             <div id="removeModal" class="modal infoModal">
@@ -157,8 +157,8 @@
                     <p>Please verify that you indeed wish to remove all data associated to the checked records. This cannot be undone.</p>
                 </div>
                 <div class="modal-footer">
-                    <a class="modal-close waves-effect waves-green btn-flat modalButtons">Exit</a>
-                    <a id="removeConfirm" class="modal-close waves-effect waves-green btn-flat modalButtons">Confirm</a>
+                    <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                    <a id="removeConfirm" class="modal-close waves-effect waves-light btn-flat modalButtons">Confirm</a>
                 </div>
             </div>
             <div id="dataDeleteModal" class="modal infoModal">
@@ -167,8 +167,8 @@
                     <p>Would you like to delete the original data folder now that its contents have been copied to the new directory?</p>
                 </div>
                 <div class="modal-footer">
-                    <a id="dataDeleteDeny" class="modal-close waves-effect waves-green btn-flat modalButtons">No</a>
-                    <a id="dataDeleteAccept" class="modal-close waves-effect waves-green btn-flat modalButtons">Yes</a>
+                    <a id="dataDeleteDeny" class="modal-close waves-effect waves-light btn-flat modalButtons">No</a>
+                    <a id="dataDeleteAccept" class="modal-close waves-effect waves-light btn-flat modalButtons">Yes</a>
                 </div>
             </div>
             <a id="add" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Add Record"><i class="material-icons">add</i></a>
@@ -181,57 +181,57 @@
         </div>
         <div id="settingsModal" class="modal modal-fixed-footer"></div>
         <div id="databaseModal" class="modal modal-fixed-footer">
-                <div class="modal-content">
-                    <div class="navbar">
-                        <nav id="databaseNav" class="z-depth-2">
-                            <div class="nav-wrapper">
-                                <ul id="databaseSelection">
-                                    <li><a id="databaseExport">Export</a></li>
-                                    <li><a id="databaseImport">Import</a></li>
-                                </ul>
+            <div class="modal-content">
+                <div class="navbar">
+                    <nav id="databaseNav" class="z-depth-2">
+                        <div class="nav-wrapper">
+                            <ul id="databaseSelection">
+                                <li><a id="databaseExport">Export</a></li>
+                                <li><a id="databaseImport">Import</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+                <div id="databaseExportContainer" class="databaseContainer">
+                    <p>To export the library records simply provide the directory to which the zip file should be saved.</p>
+                    <div class="row databaseWindowDiv">
+                        <form class="col s12">
+                            <div class="row">
+                                <div class="input-field col s10">
+                                    Directory:
+                                    <input id="exportPath" type="text" class="databaseDataInput">
+                                </div>
                             </div>
-                        </nav>
-                    </div>
-                    <div id="databaseExportContainer" class="databaseContainer">
-                        <p>To export the library records simply provide the directory to which the zip file should be saved.</p>
-                        <div class="row databaseWindowDiv">
-                            <form class="col s12">
-                                <div class="row">
-                                    <div class="input-field col s10">
-                                        Directory:
-                                        <input id="exportPath" type="text" class="databaseDataInput">
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div id="databaseImportContainer" class="databaseContainer">
-                        <p>To import into the library records simply select the zip files which contain the data.</p>
-                        <div class="row databaseImportDiv">
-                            <form class="col s12">
-                                <div class="file-field input-field col s10">
-                                    <div class="btn addRecordFilesDiv">
-                                        <span>
-                                            File<i class="material-icons right">add</i>
-                                        </span>
-                                        <input id="importZipFile" type="file" multiple>
-                                    </div>
-                                    <div class="file-path-wrapper">
-                                        <input id="databaseFilesText" class="file-path validate" type="text">
-                                        <label for="databaseFilesText">Upload one or more files.</label>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <a class="modal-close waves-effect waves-green btn-flat modalButtons">Exit</a>
-                    <a id="databaseExportBtn" class="modal-close waves-effect waves-green btn-flat modalButtons">Export</a>
-                    <a id="databaseImportBtn" class="modal-close waves-effect waves-green btn-flat modalButtons">Import</a>
+                <div id="databaseImportContainer" class="databaseContainer">
+                    <p>To import into the library records simply select the zip files which contain the data.</p>
+                    <div class="row databaseImportDiv">
+                        <form class="col s12">
+                            <div class="file-field input-field col s10">
+                                <div class="btn addRecordFilesDiv">
+                                    <span>
+                                        File<i class="material-icons right">add</i>
+                                    </span>
+                                    <input id="importZipFile" type="file">
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input id="databaseFilesText" class="file-path validate" type="text">
+                                    <label for="databaseFilesText">Upload one or more files.</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        <div id="introductionModal" class="modal infoModal">
+            <div class="modal-footer">
+                <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                <a id="databaseExportBtn" class="modal-close waves-effect waves-light btn-flat modalButtons">Export</a>
+                <a id="databaseImportBtn" class="modal-close waves-effect waves-light btn-flat modalButtons">Import</a>
+            </div>
+        </div>
+        <div id="introductionModal" class="modal modal-fixed-footer infoModal">
             <div class="modal-content">
                 <h4 class="center">Tutorial</h4>
                 <p id="introductionContentParagraph">Welcome to Trak! The one-stop for all content cataloging. By continuing below you will be provided a walk-through of the application's features.</p>
@@ -241,8 +241,20 @@
                     <input type="checkbox" class="filled-in" id="introductionCheck"/>
                     <span id="introductionCheckSpan">Hide on Launch</span>
                 </label>
-                <a id="introductionExit" class="modal-close waves-effect waves-green btn-flat modalButtons">Exit</a>
-                <a id="introductionContinue" class="modal-close waves-effect waves-green btn-flat modalButtons">Continue</a>
+                <a id="introductionExit" class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                <a id="introductionContinue" class="modal-close waves-effect waves-light btn-flat modalButtons">Continue</a>
+            </div>
+        </div>
+        <div id="importModal" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h4 class="center">Record Exists</h4>
+                <p>There already exist library records associated to the list below. By importing these records the current ones in the library will be overwritten. To do so check the ones you wish to overwrite.</p>
+                <div id="importModalFormDiv" class="row">
+                    <form id="importModalForm" class="col s12"></form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="importOverideBtn" class="modal-close waves-effect waves-light btn-flat modalButtons">Continue</a>
             </div>
         </div>
     </body>

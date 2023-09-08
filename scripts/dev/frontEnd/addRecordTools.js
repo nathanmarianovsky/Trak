@@ -317,7 +317,7 @@ var episodeAddition = tgt => {
     seasonEpisodeReviewInput.setAttribute("id", "li_" + addTargetNum + "_Episode_Review_" + (tgt.children[1].children[0].children.length + 1));
     seasonEpisodeReviewInput.classList.add("validate", "materialize-textarea");
     seasonEpisodeReviewLabel.setAttribute("for", "li_" + addTargetNum + "_Episode_Review_" + (tgt.children[1].children[0].children.length + 1));
-    seasonEpisodeReviewLabel.textContent = "Review:";
+    seasonEpisodeReviewLabel.textContent = "Comments/Review:";
     seasonEpisodeReviewDiv.classList.add("input-field", "col", "s5");
     // Prepare the season episode button for deleting the episode.
     seasonEpisodeDeleteDiv.classList.add("input-field", "col", "s1", "modalContentEpisodeDelete");
@@ -505,7 +505,7 @@ var singleAddition = () => {
     inputSingleReview.classList.add("validate", "materialize-textarea");
     inputSingleReview.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Review");
     labelSingleReview.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_Review");
-    labelSingleReview.textContent = "Review:";
+    labelSingleReview.textContent = "Comments/Review:";
     // Attach all season components to the list item.
     itemSingleDivHeader.classList.add("collapsible-header");
     itemSingleDivBody.classList.add("collapsible-body");

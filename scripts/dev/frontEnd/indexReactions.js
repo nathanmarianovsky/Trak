@@ -120,6 +120,31 @@ ipcRenderer.on("importZipFileSuccess", event => {
 
 
 
+// Display the import modal in order to ask the user on whether an imported record should overwrite a record with the same name in the current library.
+ipcRenderer.on("importRecordExists", (event, response) => {
+    const importModalForm = document.getElementById("importModalForm");
+    response.forEach(elem => {
+        let div = document.createElement("div"),
+            label = document.createElement("label"),
+            input = document.createElement("input"),
+            span = document.createElement("span");
+        label.classList.add("col", "s12");
+        input.setAttribute("type", "checkbox");
+        input.setAttribute("id", elem);
+        input.classList.add("filled-in", "importModalCheckbox");
+        span.classList.add("checkboxText");
+        span.textContent = elem.split("-")[0] + ": " + elem.substring(elem.split("-")[0].length + 1);
+        label.append(input, span);
+        div.append(label);
+        importModalForm.append(div);
+    });
+    M.Modal.init(document.getElementById("importModal")).open();
+    document.getElementById("importModalFormDiv").style.height = (document.getElementById("importModal").offsetHeight - 220) + "px";
+
+});
+
+
+
 // Display the application tutorial for a first-time user or anyone who has not chosen to hide it on launch.
 ipcRenderer.on("introduction", (event, response) => {
     // Define the introduction modal used to initialize the tutorial if desired.
@@ -267,7 +292,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         tdCategoryDiv.classList.add("recordsRowDiv");
         tdCategory.append(tdCategoryDiv);
         // Modify the rating portion.
-        let displayRating = "",
+        let displayRating = "N/A",
             displayRatingArr = [];
         for(let a = 0; a < recordData.content.length; a++) {
             if(recordData.content[a].scenario == "Single") {
@@ -388,7 +413,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             ipcRenderer.send("recordFiles", holder.join(""));
         });
     }
-    // Initialize the menu tooltips.
+    // Initialize the tooltips.
     initTooltips();
     // Define the filter form, list of genres, and number of columns and rows.
     const filterForm = document.getElementById("filterForm"),
