@@ -58,7 +58,7 @@ Builds the deb installer for Debian based Linux distributions.
 var debBuild = arch => {
     // Provide all of the necessary details for the creation of the deb build file.
     const options = {
-        "src": arch == "amd64" ? path.join(__dirname, "Trak-linux-x64") : path.join(__dirname, "trak-linux-arm64"),
+        "src": arch == "amd64" ? path.join(__dirname, "Trak-linux-x64") : path.join(__dirname, "Trak-linux-arm64"),
         "dest": path.join(__dirname, "build", "Installer-Debian-" + (arch == "amd64" ? "amd64" : "arm64")),
         "icon": path.join(__dirname, "assets", "favicon.ico"),
         "productName": "Trak",
@@ -69,7 +69,7 @@ var debBuild = arch => {
         arch == "amd64" ? fs.rmSync(path.join(__dirname, "Trak-linux-x64"), {"recursive": true, "force": true}) : fs.rmSync(path.join(__dirname, "Trak-linux-arm64"), {"recursive": true, "force": true});
         const buildPath = path.join(__dirname, "build", "Installer-Debian-" + (arch == "amd64" ? "amd64" : "arm64")),
             list = fs.readdirSync(buildPath);
-        fs.renameSync(path.join(buildPath, list[0]), path.join(buildPath, "trak-" + (arch == "amd64" ? "amd64" : "arm64") + ".deb"));
+        fs.renameSync(path.join(buildPath, list[0]), path.join(buildPath, "Trak-" + (arch == "amd64" ? "amd64" : "arm64") + ".deb"));
     });
 };
 
