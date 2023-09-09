@@ -529,12 +529,12 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, 
 		exports.updateSettings(fs, path, ipc, app, submissionArr, originalPath, event);
 	});
 
-	ipc.on("databaseExport", (event, loc) => {
-		tools.exportData(fs, path, zipper, event, originalPath, loc);
+	ipc.on("databaseExport", (event, submission) => {
+		tools.exportData(fs, path, zipper, event, originalPath, submission[0], submission[1]);
 	});
 
 	ipc.on("databaseImport", (event, list) => {
-		tools.importData(fs, path, ipc, zipper, event, originalPath, list);
+		tools.importData(fs, path, ipc, zipper, mainWindow, event, originalPath, list);
 	});
 
 };

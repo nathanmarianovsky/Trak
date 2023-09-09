@@ -219,7 +219,15 @@ window.addEventListener("load", () => {
        document.getElementById("databaseImportBtn").style.display = "inline-block";
     });
     databaseExportBtn.addEventListener("click", e => {
-        ipcRenderer.send("databaseExport", document.getElementById("exportPath").value);
+        const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]),
+            submissionList = document.getElementById("checkAll").checked ? list.slice(1) : list;
+        if(submissionList.length > 0) {
+            ipcRenderer.send("databaseExport", [document.getElementById("exportPath").value, submissionList]);
+            document.getElementById("exportPath").value = "";
+        }
+        else {
+            M.toast({"html": "In order to export at least one record has to be checked.", "classes": "rounded"});
+        }
     });
     databaseImportBtn.addEventListener("click", e => {
         ipcRenderer.send("databaseImport", document.getElementById("importZipFile").files[0].path);
