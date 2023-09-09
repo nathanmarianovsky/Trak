@@ -302,6 +302,16 @@ textarea.materialize-textarea:focus:not([readonly])+label {
 	margin-top: 35px;
 }
 
+#databaseCheckLabel {
+	position: relative;
+	top: 11px;
+	left: 16px;
+}
+
+#databaseCheckSpan {
+	line-height: 19px;
+}
+
 .databaseImportDiv {
 	margin-left: 11px !important;
 }

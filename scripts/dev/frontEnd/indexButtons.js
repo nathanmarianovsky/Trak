@@ -202,6 +202,7 @@ window.addEventListener("load", () => {
     filterModalClear.addEventListener("click", e => { cleanFilter(); });
     databaseExport.addEventListener("click", e => {
        e.preventDefault();
+       document.getElementById("databaseCheckLabel").style.display = "initial";
        databaseExport.parentNode.classList.add("active");
        databaseImport.parentNode.classList.remove("active");
        document.getElementById("databaseExportContainer").style.display = "initial";
@@ -211,6 +212,7 @@ window.addEventListener("load", () => {
     });
     databaseImport.addEventListener("click", e => {
        e.preventDefault();
+       document.getElementById("databaseCheckLabel").style.display = "none";
        databaseExport.parentNode.classList.remove("active");
        databaseImport.parentNode.classList.add("active");
        document.getElementById("databaseExportContainer").style.display = "none";
@@ -222,7 +224,7 @@ window.addEventListener("load", () => {
         const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]),
             submissionList = document.getElementById("checkAll").checked ? list.slice(1) : list;
         if(submissionList.length > 0) {
-            ipcRenderer.send("databaseExport", [document.getElementById("exportPath").value, submissionList]);
+            ipcRenderer.send("databaseExport", [document.getElementById("exportPath").value, submissionList, document.getElementById("exportCheck").checked]);
             document.getElementById("exportPath").value = "";
         }
         else {

@@ -31,7 +31,7 @@ Create a zip file containing the exported library records.
 	- exportLocation is a string representing the location where the generated zip file will be placed.
 
 */ 
-exports.exportData = (fs, path, zipper, eve, dir, exportLocation, records) => {
+exports.exportData = (fs, path, zipper, eve, dir, exportLocation, records, compressionVal = false) => {
 	if(!fs.existsSync(path.join(dir, "Trak", "exportTemp"))) {
 		fs.mkdirSync(path.join(dir, "Trak", "exportTemp"));
 	}
@@ -50,9 +50,15 @@ exports.exportData = (fs, path, zipper, eve, dir, exportLocation, records) => {
 				zipper.zip(path.join(dir, "Trak", "exportTemp"), (prob, zipped) => {
 					if(prob) { eve.sender.send("exportZippingFailure"); }
 					else {
+						let zipStr = "Trak-Export-";
+						if(compressionVal == true) {
+							zipStr += "Compressed-";
+							zipped.compress();
+						}
+						zipStr += (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".zip";
 						let deletePromise = new Promise((resolve, reject) => {
-							if(fs.existsSync(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".zip"))) {
-								fs.unlink(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".zip"), delErr => {
+							if(fs.existsSync(path.join(exportLocation, zipStr))) {
+								fs.unlink(path.join(exportLocation, zipStr), delErr => {
 									if(delErr) { eve.sender.send("exportZipFileDeleteFailure"); }
 									else { resolve(); }
 								});
@@ -60,12 +66,11 @@ exports.exportData = (fs, path, zipper, eve, dir, exportLocation, records) => {
 							else { resolve(); }
 						});
 						deletePromise.then(() => {
-							zipped.save(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".zip"), zipErr => {
+							zipped.save(path.join(exportLocation, zipStr), zipErr => {
 								if(zipErr) { eve.sender.send("exportZipFileFailure"); }
 								else {
 									fs.emptyDirSync(path.join(dir, "Trak", "exportTemp"));
 									eve.sender.send("exportZipFileSuccess", exportLocation);
-									res();
 								}
 							});
 						});
