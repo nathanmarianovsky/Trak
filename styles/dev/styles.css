@@ -472,6 +472,10 @@ footer {
 
 
 
+#introductionModal {
+	height: 35%;
+}
+
 #introductionCheckLabel {
 	position: relative;
 	top: 11px;
