@@ -200,29 +200,41 @@ window.addEventListener("load", () => {
     clearFilter.addEventListener("click", e => { cleanFilter(); });
     // Listen for a click event on the clear filter button in order to remove all active filters.
     filterModalClear.addEventListener("click", e => { cleanFilter(); });
+    
+    // Listen for a click event on the database export tab in order to update the database modal view.
     databaseExport.addEventListener("click", e => {
        e.preventDefault();
+       // Show the checkbox for the compression option.
        document.getElementById("databaseCheckLabel").style.display = "initial";
+       // Highlight the export tab and unhighlight the import tab.
        databaseExport.parentNode.classList.add("active");
        databaseImport.parentNode.classList.remove("active");
+       // Show the database modal export content and associated buttons.
        document.getElementById("databaseExportContainer").style.display = "initial";
        document.getElementById("databaseImportContainer").style.display = "none";
        document.getElementById("databaseExportBtn").style.display = "inline-block";
        document.getElementById("databaseImportBtn").style.display = "none";
     });
+    // Listen for a click event on the database import tab in order to update the database modal view.
     databaseImport.addEventListener("click", e => {
        e.preventDefault();
+       // Hide the checkbox for the compression option.
        document.getElementById("databaseCheckLabel").style.display = "none";
+       // Highlight the import tab and unhighlight the export tab.
        databaseExport.parentNode.classList.remove("active");
        databaseImport.parentNode.classList.add("active");
+       // Show the database modal import content and associated buttons.
        document.getElementById("databaseExportContainer").style.display = "none";
        document.getElementById("databaseImportContainer").style.display = "initial";
        document.getElementById("databaseExportBtn").style.display = "none";
        document.getElementById("databaseImportBtn").style.display = "inline-block";
     });
+    // Listen for a click event on the database export button in order to process an export of the chosen library records.
     databaseExportBtn.addEventListener("click", e => {
+        // Define the list of records which the user desires to export.
         const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]),
             submissionList = document.getElementById("checkAll").checked ? list.slice(1) : list;
+        // Check that at least one record has been chosen by the user.
         if(submissionList.length > 0) {
             ipcRenderer.send("databaseExport", [document.getElementById("exportPath").value, submissionList, document.getElementById("exportCheck").checked]);
             document.getElementById("exportPath").value = "";
@@ -231,8 +243,11 @@ window.addEventListener("load", () => {
             M.toast({"html": "In order to export at least one record has to be checked.", "classes": "rounded"});
         }
     });
+    // Listen for a click event on the database import button in order to process an import of the chosen zip files.
     databaseImportBtn.addEventListener("click", e => {
+        // Define the list of zip of files which the user desires to import.
         const pathArr = Array.from(document.getElementById("importZipFile").files);
+        // Make sure that at least one zip file has been chosen by the user.
         if(pathArr.length > 0) {
             ipcRenderer.send("databaseImport", pathArr.map(elem => elem.path));
         }
@@ -240,8 +255,10 @@ window.addEventListener("load", () => {
             M.toast({"html": "In order to import at least one zip file must be chosen.", "classes": "rounded"});
         }
     });
+    // Listen for a click event on the import overide button in order to proceed with overwriting the requested library records in the import process.
     importOverideBtn.addEventListener("click", e => {
         ipcRenderer.send("importOveride", Array.from(document.querySelectorAll("#importModal .importModalCheckbox")).map(elem => { return { "record": elem.id, "overwrite": elem.checked }}));
     });
+    // Ensure that the export option is the default view in the database modal.
     databaseExport.click();
 });

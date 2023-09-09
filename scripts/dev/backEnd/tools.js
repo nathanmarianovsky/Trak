@@ -3,6 +3,8 @@
 BASIC DETAILS: This file serves as the collection of tools utilized by the various back-end requests.
 
    - exportData: Create a zip file containing the exported library records.
+   - importData: Reads a zip file and adds its content to the library records.
+   - importDriver: Iterates through the list of zip files to be imported by waiting for each one to finish prior to proceeding to the next one.
    - createTrayMenu: Create the system tray icon and menu.
    - createWindow: Executes the creation of the primary window with all necessary parameters.
    - tutorialLoad: Tells the front-end to load the application tutorial.
@@ -32,30 +34,40 @@ Create a zip file containing the exported library records.
 
 */ 
 exports.exportData = (fs, path, zipper, eve, dir, exportLocation, records, compressionVal = false) => {
+	// If the exportTemp folder does not exist, then create it.
 	if(!fs.existsSync(path.join(dir, "Trak", "exportTemp"))) {
 		fs.mkdirSync(path.join(dir, "Trak", "exportTemp"));
 	}
+	// Read the settings configuration file.
 	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
+		// If there was an issue reading the settings configuration file notify the user.
 		if(err) { eve.sender.send("configurationFileOpeningFailure");  }
 		else {
+			// Define the configuration file data and associated library records path.
 			const fileData = JSON.parse(fileContent),
 				dataPath = fileData.current != undefined ? fileData.current.path : fileData.original.path;
+			// Copy over all library records which will be included in the export.
 			let listPromise = new Promise((resolve, reject) => {
 			    records.forEach((elem, index, arr) => {
 					fs.copySync(path.join(dataPath, elem), path.join(dir, "Trak", "exportTemp", elem), { "overwrite": true });
 					if(index == arr.length - 1) { resolve(); }
 				});
 			});
+			// Once all necessary records have copied over, zip the records and compress if necessary.
 			listPromise.then(() => {
 				zipper.zip(path.join(dir, "Trak", "exportTemp"), (prob, zipped) => {
+					// If there was an issue creating the zip file notify the user.
 					if(prob) { eve.sender.send("exportZippingFailure"); }
 					else {
+						// Define the zip file name.
 						let zipStr = "Trak-Export-";
+						// Compress the zip file if requested.
 						if(compressionVal == true) {
 							zipStr += "Compressed-";
 							zipped.compress();
 						}
 						zipStr += (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".zip";
+						// Delete a previous export if it exists for the current day.
 						let deletePromise = new Promise((resolve, reject) => {
 							if(fs.existsSync(path.join(exportLocation, zipStr))) {
 								fs.unlink(path.join(exportLocation, zipStr), delErr => {
@@ -65,6 +77,7 @@ exports.exportData = (fs, path, zipper, eve, dir, exportLocation, records, compr
 							}
 							else { resolve(); }
 						});
+						// Save the zip file, empty the exportTemp folder, and notify the user that the export process has finished.
 						deletePromise.then(() => {
 							zipped.save(path.join(exportLocation, zipStr), zipErr => {
 								if(zipErr) { eve.sender.send("exportZipFileFailure"); }
@@ -85,7 +98,7 @@ exports.exportData = (fs, path, zipper, eve, dir, exportLocation, records, compr
 
 /*
 
-Reads zip files and adds their content to the library records.
+Reads a zip file and adds its content to the library records.
 
 	- fs and path provide the means to work with local files.
 	- ipc provides the means to operate the Electron app.
@@ -98,29 +111,45 @@ Reads zip files and adds their content to the library records.
 */ 
 exports.importData = async (fs, path, ipc, zipper, win, eve, dir, zipFile) => {
 	return new Promise((res, rej) => {
+		// If the exportTemp folder does not exist, then create it.
 		if(!fs.existsSync(path.join(dir, "Trak", "importTemp"))) {
 			fs.mkdirSync(path.join(dir, "Trak", "importTemp"));
 		}
+		// Read the settings configuration file.
 		fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
+			// If there was an issue reading the settings configuration file notify the user.
 			if(err) { eve.sender.send("configurationFileOpeningFailure");  }
 			else {
+				// Define the configuration file data and associated library records path.
 				const fileData = JSON.parse(fileContent).current != undefined ? JSON.parse(fileContent).current.path : JSON.parse(fileContent).original.path;
+				// Unzip the zip file.
 				zipper.unzip(zipFile, (er, unzipped) => {
+					// If there was an issue unzipping the zip file notify the user.
 					if(er) { eve.sender.send("importUnzippingFailure", zipFile); }
 					else {
+						// Save the contents of the zip file to the importTemp folder.
 						unzipped.save(path.join(dir, "Trak", "importTemp"), issue => {
+							// If there was an issue saving the contents of the zip file notify the user.
 							if(issue) { eve.sender.send("importZipFileFailure", zipFile); }
 							else {
+								// Compare the list of records in the zip file and compare them to the current library records to see which reference the same record.
 								let list = fs.readdirSync(path.join(dir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(dir, "Trak", "importTemp"), file)).isDirectory()),
 									listFilterDoExist = list.filter(elem => fs.existsSync(path.join(fileData, elem))),
 									listFilterDoNotExist = list.filter(elem => !fs.existsSync(path.join(fileData, elem)));
-								listFilterDoNotExist.forEach(elem => { fs.moveSync(path.join(dir, "Trak", "importTemp", elem), path.join(fileData, elem)); });
+								// If there are records being imported which do not exist in the current library records simply copy them over.
+								if(listFilterDoNotExist.length > 0) {
+									listFilterDoNotExist.forEach(elem => { fs.moveSync(path.join(dir, "Trak", "importTemp", elem), path.join(fileData, elem)); });
+								}
+								// If there are no records being imported which do exist in the current library records then empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
 								if(listFilterDoExist.length == 0) {
+									fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
 									win.reload();
 									setTimeout(() => { res(); win.webContents.send("importZipFileSuccess", zipFile); }, 1000);
 								}
 								else {
+									// If there are records being imported which do exist in the current library records notify the user.
 									eve.sender.send("importRecordExists", listFilterDoExist);
+									// Once the user chooses which records to overwrite proceed by copying them from the importTemp folder.
 									ipc.once("importOveride", (event, overwriteList) => {
 										let savePromise = new Promise((resolve, reject) => {
 										    overwriteList.forEach((elem, index, arr) => {
@@ -130,6 +159,7 @@ exports.importData = async (fs, path, ipc, zipper, win, eve, dir, zipFile) => {
 												if(index == arr.length - 1) { resolve(); }
 											});
 										});
+										// Once the desired records have been overwritten empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
 										savePromise.then(() => {
 											fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
 											win.reload();
@@ -148,6 +178,19 @@ exports.importData = async (fs, path, ipc, zipper, win, eve, dir, zipFile) => {
 
 
 
+/*
+
+Iterates through the list of zip files to be imported by waiting for each one to finish prior to proceeding to the next one.
+
+	- fs and path provide the means to work with local files.
+	- ipc provides the means to operate the Electron app.
+	- zipper is a library object which can create zip files.
+	- mainWin is an object referencing the primary window of the Electron app.
+	- ogPath is a string representing the base directory corresponding to the location of the configuration file.
+	- evnt is the object which allows for interaction with the fron-end of the Electron application.
+	- lst is the list of zip files to be imported.
+
+*/ 
 exports.importDriver = async (fs, path, ipc, zipper, mainWin, ogPath, evnt, lst) => {
   	for(let i = 0; i < lst.length; i++) {
     	await exports.importData(fs, path, ipc, zipper, mainWin, evnt, ogPath, lst[i]);

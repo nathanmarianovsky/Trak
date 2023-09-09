@@ -529,14 +529,15 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, 
 		exports.updateSettings(fs, path, ipc, app, submissionArr, originalPath, event);
 	});
 
+	// Handles the export of the chosen library records into a single zip file, possibly compressed.
 	ipc.on("databaseExport", (event, submission) => {
 		tools.exportData(fs, path, zipper, event, originalPath, submission[0], submission[1], submission[2]);
 	});
 
+	// Handles the import of chosen zip files containing records into the library. Duplicate records are checked for.
 	ipc.on("databaseImport", (event, list) => {
 		tools.importDriver(fs, path, ipc, zipper, mainWindow, originalPath, event, list);
 	});
-
 };
 
 

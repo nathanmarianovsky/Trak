@@ -131,8 +131,11 @@ ipcRenderer.on("importZipFileSuccess", (event, response) => {
 
 // Display the import modal in order to ask the user on whether an imported record should overwrite a record with the same name in the current library.
 ipcRenderer.on("importRecordExists", (event, response) => {
+    // Define the form to which record checkboxes will be appended for user approval.
     const importModalForm = document.getElementById("importModalForm");
+    // Clear the previous list of record checkboxes.
     importModalForm.innerHTML = "";
+    // Iterate through each duplicate record and add a checkbox for it.
     response.forEach(elem => {
         let div = document.createElement("div"),
             label = document.createElement("label"),
@@ -148,7 +151,9 @@ ipcRenderer.on("importRecordExists", (event, response) => {
         div.append(label);
         importModalForm.append(div);
     });
+    // Open the import modal to ask the user which library records should be overwritten.
     M.Modal.init(document.getElementById("importModal")).open();
+    // Adjust the height of the div containing the checkboxes.
     document.getElementById("importModalFormDiv").style.height = (document.getElementById("importModal").offsetHeight - 220) + "px";
 
 });
