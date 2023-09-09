@@ -66,7 +66,7 @@ var debBuild = arch => {
     }
     // Generate the deb file and remove the folder created by electron-packager in the process.
     debInstaller(options).then(() => {
-        arch == "amd64" ? fs.rmSync(path.join(__dirname, "Trak-linux-x64"), {"recursive": true, "force": true}) : fs.rmSync(path.join(__dirname, "trak-linux-arm64"), {"recursive": true, "force": true});
+        arch == "amd64" ? fs.rmSync(path.join(__dirname, "Trak-linux-x64"), {"recursive": true, "force": true}) : fs.rmSync(path.join(__dirname, "Trak-linux-arm64"), {"recursive": true, "force": true});
         const buildPath = path.join(__dirname, "build", "Installer-Debian-" + (arch == "amd64" ? "amd64" : "arm64")),
             list = fs.readdirSync(buildPath);
         fs.renameSync(path.join(buildPath, list[0]), path.join(buildPath, "trak-" + (arch == "amd64" ? "amd64" : "arm64") + ".deb"));
