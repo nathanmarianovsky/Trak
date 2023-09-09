@@ -99,6 +99,13 @@ ipcRenderer.on("exportZipFileFailure", event => {
 
 
 
+// Display a notification if there was an issue creating the zip file for the database export.
+ipcRenderer.on("exportZipFileDeleteFailure", event => {
+    M.toast({"html": "There was an error in deleting the zip file associated to a previous export today.", "classes": "rounded"});
+});
+
+
+
 // Display a notification if there was an issue saving the contents of an import zip file.
 ipcRenderer.on("importZipFileFailure", (event, response) => {
     M.toast({"html": "There was an error in saving the contents of the import file " + response + ".", "classes": "rounded"});
@@ -108,14 +115,16 @@ ipcRenderer.on("importZipFileFailure", (event, response) => {
 
 // Display a notification for the successful export of the library records.
 ipcRenderer.on("exportZipFileSuccess", (event, response) => {
+    Array.from(document.querySelectorAll(".recordsChecks")).forEach(elem => elem.checked = false);
+    document.getElementById("remove").style.display = "none";
     M.toast({"html": "The library records have been exported to " + response + ".", "classes": "rounded"});
 });
 
 
 
 // Display a notification for the successful import of library records.
-ipcRenderer.on("importZipFileSuccess", event => {
-    M.toast({"html": "The library records have been updated with the contents of the chosen import files.", "classes": "rounded"});
+ipcRenderer.on("importZipFileSuccess", (event, response) => {
+    M.toast({"html": "The library records have been updated with the contents of the file " + response + ".", "classes": "rounded"});
 });
 
 
@@ -123,6 +132,7 @@ ipcRenderer.on("importZipFileSuccess", event => {
 // Display the import modal in order to ask the user on whether an imported record should overwrite a record with the same name in the current library.
 ipcRenderer.on("importRecordExists", (event, response) => {
     const importModalForm = document.getElementById("importModalForm");
+    importModalForm.innerHTML = "";
     response.forEach(elem => {
         let div = document.createElement("div"),
             label = document.createElement("label"),

@@ -230,7 +230,13 @@ window.addEventListener("load", () => {
         }
     });
     databaseImportBtn.addEventListener("click", e => {
-        ipcRenderer.send("databaseImport", document.getElementById("importZipFile").files[0].path);
+        const pathArr = Array.from(document.getElementById("importZipFile").files);
+        if(pathArr.length > 0) {
+            ipcRenderer.send("databaseImport", pathArr.map(elem => elem.path));
+        }
+        else {
+            M.toast({"html": "In order to import at least one zip file must be chosen.", "classes": "rounded"});
+        }
     });
     importOverideBtn.addEventListener("click", e => {
         ipcRenderer.send("importOveride", Array.from(document.querySelectorAll("#importModal .importModalCheckbox")).map(elem => { return { "record": elem.id, "overwrite": elem.checked }}));

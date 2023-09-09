@@ -65,6 +65,7 @@ exports.exportData = (fs, path, zipper, eve, dir, exportLocation, records) => {
 								else {
 									fs.emptyDirSync(path.join(dir, "Trak", "exportTemp"));
 									eve.sender.send("exportZipFileSuccess", exportLocation);
+									res();
 								}
 							});
 						});
@@ -90,52 +91,62 @@ Reads zip files and adds their content to the library records.
 	- zipFile is the zip file to be imported.
 
 */ 
-exports.importData = (fs, path, ipc, zipper, win, eve, dir, zipFile) => {
-	if(!fs.existsSync(path.join(dir, "Trak", "importTemp"))) {
-		fs.mkdirSync(path.join(dir, "Trak", "importTemp"));
-	}
-	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
-		if(err) { eve.sender.send("configurationFileOpeningFailure");  }
-		else {
-			const fileData = JSON.parse(fileContent).current != undefined ? JSON.parse(fileContent).current.path : JSON.parse(fileContent).original.path;
-			zipper.unzip(zipFile, (er, unzipped) => {
-				if(er) { eve.sender.send("importUnzippingFailure", zipFile); }
-				else {
-					unzipped.save(path.join(dir, "Trak", "importTemp"), issue => {
-						if(issue) { eve.sender.send("importZipFileFailure", zipFile); }
-						else {
-							let list = fs.readdirSync(path.join(dir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(dir, "Trak", "importTemp"), file)).isDirectory()),
-								listFilterDoExist = list.filter(elem => fs.existsSync(path.join(fileData, elem))),
-								listFilterDoNotExist = list.filter(elem => !fs.existsSync(path.join(fileData, elem)));
-							listFilterDoNotExist.forEach(elem => { fs.moveSync(path.join(dir, "Trak", "importTemp", elem), path.join(fileData, elem)); });
-							if(listFilterDoExist.length == 0) {
-								win.reload();
-								setTimeout(() => { win.webContents.send("importZipFileSuccess"); }, 1000);
-							}
+exports.importData = async (fs, path, ipc, zipper, win, eve, dir, zipFile) => {
+	return new Promise((res, rej) => {
+		if(!fs.existsSync(path.join(dir, "Trak", "importTemp"))) {
+			fs.mkdirSync(path.join(dir, "Trak", "importTemp"));
+		}
+		fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
+			if(err) { eve.sender.send("configurationFileOpeningFailure");  }
+			else {
+				const fileData = JSON.parse(fileContent).current != undefined ? JSON.parse(fileContent).current.path : JSON.parse(fileContent).original.path;
+				zipper.unzip(zipFile, (er, unzipped) => {
+					if(er) { eve.sender.send("importUnzippingFailure", zipFile); }
+					else {
+						unzipped.save(path.join(dir, "Trak", "importTemp"), issue => {
+							if(issue) { eve.sender.send("importZipFileFailure", zipFile); }
 							else {
-								eve.sender.send("importRecordExists", listFilterDoExist);
-								ipc.once("importOveride", (event, overwriteList) => {
-									let savePromise = new Promise((resolve, reject) => {
-									    overwriteList.forEach((elem, index, arr) => {
-											if(elem.overwrite == true) {
-												fs.moveSync(path.join(dir, "Trak", "importTemp", elem.record), path.join(fileData, elem.record));
-											}
-											if(index == arr.length - 1) { resolve(); }
+								let list = fs.readdirSync(path.join(dir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(dir, "Trak", "importTemp"), file)).isDirectory()),
+									listFilterDoExist = list.filter(elem => fs.existsSync(path.join(fileData, elem))),
+									listFilterDoNotExist = list.filter(elem => !fs.existsSync(path.join(fileData, elem)));
+								listFilterDoNotExist.forEach(elem => { fs.moveSync(path.join(dir, "Trak", "importTemp", elem), path.join(fileData, elem)); });
+								if(listFilterDoExist.length == 0) {
+									win.reload();
+									setTimeout(() => { res(); win.webContents.send("importZipFileSuccess", zipFile); }, 1000);
+								}
+								else {
+									eve.sender.send("importRecordExists", listFilterDoExist);
+									ipc.once("importOveride", (event, overwriteList) => {
+										let savePromise = new Promise((resolve, reject) => {
+										    overwriteList.forEach((elem, index, arr) => {
+												if(elem.overwrite == true) {
+													fs.moveSync(path.join(dir, "Trak", "importTemp", elem.record), path.join(fileData, elem.record));
+												}
+												if(index == arr.length - 1) { resolve(); }
+											});
+										});
+										savePromise.then(() => {
+											fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
+											win.reload();
+											setTimeout(() => { res(); win.webContents.send("importZipFileSuccess", zipFile); }, 1000);
 										});
 									});
-									savePromise.then(() => {
-										fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
-										win.reload();
-										setTimeout(() => { win.webContents.send("importZipFileSuccess"); }, 1000);
-									});
-								});
+								}
 							}
-						}
-					});
-				}
-			});
-		}
+						});
+					}
+				});
+			}
+		});
 	});
+};
+
+
+
+exports.importDriver = async (fs, path, ipc, zipper, mainWin, ogPath, evnt, lst) => {
+  	for(let i = 0; i < lst.length; i++) {
+    	await exports.importData(fs, path, ipc, zipper, mainWin, evnt, ogPath, lst[i]);
+  	}
 };
 
 
