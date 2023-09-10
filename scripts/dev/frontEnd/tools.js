@@ -10,7 +10,6 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - initModal: Initialize all modals on the page.
     - initSelectObservers: Initialize the observers for style mutations on related content select tags.
     - initAnimeReviewObserver: Initialize the observer for style mutations on the anime review.
-    - initContentDrag: Initialize the listeners associated to related content dragging.
     - toastParse: Handles the parsing of a record folder name to display to the user.
     - filterGenreList: Provides the list of all genres/tags that can be selected from the index.page filter.
 
@@ -144,45 +143,6 @@ var initAnimeReviewObserver = () => {
     let animeReview = document.getElementById("animeReview");
     // Tell the observer to watch for changes.
     observer.observe(animeReview, { "attributes": true, "attributeFilter": ["style"] });
-};
-
-
-
-/*
-
-Initialize the listeners associated to related content dragging.
-
-*/
-var initContentDrag = () => {
-    // Define the variables associated to the drag action.
-    let dragged = "", id = 0, index = 0, indexDrop = 0, list = [];
-    // Listen for the start of a drag event on the related content.
-    document.addEventListener("dragstart", ({target}) => {
-        // If the target does not correspond to the necessary li container, then switch it accordingly.
-        if(target.nodeName != "LI") { target = target.closest(".dropzone"); }
-        dragged = target;
-        id = target.id.split("_")[1];
-        list = target.parentNode.children;
-        for(let i = 0; i < list.length; i += 1) {
-            if(list[i] === dragged){ index = i; }
-        }
-    });
-    // Prevent the default action duruing a drag over.
-    document.addEventListener("dragover", (event) => { event.preventDefault(); });
-    // Listen for the end of a drag event on the related content.
-    document.addEventListener("drop", ({target}) => {
-        // If the target does not correspond to the necessary li container, then switch it accordingly.
-        if(target.nodeName != "LI") { target = target.closest(".dropzone"); }
-        if(target.className == "dropzone" && target.id.split("_")[1] !== id) {
-            dragged.remove(dragged);
-            for(let i = 0; i < list.length; i += 1) {
-                if(list[i] === target) { indexDrop = i; }
-            }
-            index > indexDrop ? target.before(dragged) : target.after(dragged);
-        }
-        // Reoganize the ids of the modal list items.
-        animeListReorganize();
-    });
 };
 
 

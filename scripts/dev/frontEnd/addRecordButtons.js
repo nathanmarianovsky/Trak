@@ -41,6 +41,8 @@ var recordChoicesButtons = () => {
         }
         categoryAnimeDiv.style.display = "initial";
         categoryAnime.parentNode.classList.add("active");
+        // Initialize the dragging of the related content.
+        dragula({"containers": [document.querySelector('#animeList')]});
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         if(introHolder == true) {
             const instancesTapAnimeSave = M.TapTarget.init(document.getElementById("introductionTargetAnimeSave"), { "onClose": () => {

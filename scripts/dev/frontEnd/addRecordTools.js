@@ -537,8 +537,6 @@ var singleAddition = () => {
     initTooltips();
     // Initialize the observers for all relevant select tags.
     initSelectObservers();
-    // Initialize the dragging of the related content.
-    initContentDrag();
 };
 
 
@@ -692,6 +690,4 @@ var seasonAddition = () => {
     initTooltips();
     // Initialize the observers for all relevant select tags.
     initSelectObservers();
-    // Initialize the dragging of the related content.
-    initContentDrag();
 };
