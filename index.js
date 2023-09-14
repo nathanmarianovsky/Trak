@@ -8,6 +8,8 @@ Declare all of the necessary variables.
 	- tools provides a collection of local functions meant to help with writing files.
 	- appListeners provides all of the back-end listeners.
 	- exec provides the means to open files and folders.
+	- zipper is a library object which can create zip files.
+	- MAL and anime provide the means to attain anime records from myanimelist.
 	- basePath is the path to the local settings data.
 	- localPath is the path to the local user data.
 
@@ -21,6 +23,8 @@ const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
 	appListeners = require("./scripts/dist/backEnd/appListeners"),
 	exec = require("child_process").exec,
 	zipper = require("zip-local"),
+	MAL = require("myanimelist-api-wrapper"),
+	anime = MAL().anime;
 	basePath = localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
 if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
 	var localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
@@ -185,7 +189,7 @@ app.whenReady().then(() => {
 														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 															tools.createTrayMenu("h", primaryWindow, tray, Menu);
 															// Add all of the back-end listeners.
-															appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, anime, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 														}
 													});
 												}

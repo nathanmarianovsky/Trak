@@ -424,6 +424,7 @@ Driver function for adding all app listeners.
 	- path and fs provide the means to work with local files.
 	- zipper is a library object which can create zip files.
 	- tools provides a collection of local functions meant to help with writing files and generating pdf files.
+	- anime provides the means to attain anime records from myanimelist.
 	- exec and shell provide the means to open files, folders, and links.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the current path to the local user data.
@@ -431,7 +432,7 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, anime, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -537,6 +538,16 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, 
 	// Handles the import of chosen zip files containing records into the library. Duplicate records are checked for.
 	ipc.on("databaseImport", (event, list) => {
 		tools.importDriver(fs, path, ipc, zipper, mainWindow, originalPath, event, list);
+	});
+
+	// Handles the search of a string through all possible anime listings on myanimelist.
+	ipc.on("animeSearch", (event, search) => {
+		console.log(search);
+		anime({ "client_id": "1df17d90d7e7eeec634557919e095f59", "q": search[1], "limit": 25 }).anime_list()().then((data) => {
+			event.sender.send("animeSearchResults", [search[0], search[1], Array.from(data.data).map(elem => {
+				return [elem.node.title, elem.node.alternative_titles.ja, elem.node.main_picture.large, elem.node.start_date, elem.node.end_date, elem.node.media_type, elem.node.num_episodes, elem.node.genres.map(item => item.name), elem.node.studios.map(item => item.name)];
+			})]);
+		});
 	});
 };
 

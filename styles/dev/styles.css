@@ -47,7 +47,8 @@ textarea.materialize-textarea.valid {
 #searchBarDiv1 .input-field .prefix.active,
 input[type="text"]:not(.browser-default):focus:not([readonly])+label,
 input[type="date"]:not(.browser-default):focus:not([readonly])+label,
-textarea.materialize-textarea:focus:not([readonly])+label {
+textarea.materialize-textarea:focus:not([readonly])+label,
+input[type="text"]:not(.browser-default):focus.valid ~ label {
 	color: #2A2A8E !important;
 }
 
@@ -606,4 +607,12 @@ footer {
 	font-size: 18px !important;
 	margin-left: 50px !important;
 	width: 90% !important;
+}
+
+.autocomplete-content {
+	max-height: 465%;
+}
+
+.addRecordDiv .active {
+	color: #2A2A8E;
 }

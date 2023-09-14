@@ -44,6 +44,73 @@ var recordChoicesButtons = () => {
         // Initialize the dragging of the related content.
         let drake = dragula({"containers": [document.querySelector('#animeList')]});
         drake.on("dragend", () => { animeListReorganize(); });
+
+        const animeName = document.getElementById("animeName"),
+            animeNameAutocomplete = M.Autocomplete.init(animeName, { "sortFunction": (a, b) => a.localeCompare(b) });
+            animeNameUL = animeName.nextElementSibling;
+        let previousName = "",
+            maxCharCount = 0;
+        // animeNameAutocomplete.close();
+        // animeNameUL.style.display = "none";
+        // animeNameUL.style.setProperty("display", "none", "important");
+        // animeNameUL.style.setProperty("height", "0px", "important");
+        animeName.addEventListener("input", e => {
+            if(e.target.value.length > 2) {
+                ipcRenderer.send("animeSearch", [previousName, e.target.value]);
+            }
+            else {
+                animeNameAutocomplete.updateData({});
+                // animeNameUL.style.setProperty("height", "0px", "important");
+                // animeNameUL.style.display = "none";
+                // animeNameAutocomplete.close();
+            }
+            previousName = e.target.value;
+        });
+        ipcRenderer.on("animeSearchResults", (event, response) => {
+            console.log(response);
+            if(response[2].length > 0) {
+                let autoObj = {};
+                response[2] = response[2].sort((a, b) => a[0].localeCompare(b[0]));
+                maxCharCount = Math.floor(((3/19) * (animeName.getBoundingClientRect().width - 467)) + 35);
+                for(let t = 0; t < response[2].length; t++) {
+                    response[2][t][0].length > maxCharCount
+                        ? autoObj[response[2][t][0].substring(0, maxCharCount).concat("...")] = response[2][t][2]
+                        : autoObj[response[2][t][0]] = response[2][t][2];
+                }
+                animeNameAutocomplete.updateData(autoObj);
+                if(response[0].length == 2 && response[1].length == 3) {
+                    animeNameUL.style.display = "none";
+                    animeName.click();
+                    setTimeout(() => { animeName.click(); animeNameUL.style.display = "block"; }, 100);
+                }
+                setTimeout(() => {
+                    for(let u = 0; u < animeNameUL.children.length; u++) {
+                        let curChild = animeNameUL.children[u];
+                        curChild.setAttribute("name", response[2][u][0]);
+                        curChild.setAttribute("jname", response[2][u][1]);
+                        curChild.setAttribute("image", response[2][u][2]);
+                        curChild.setAttribute("startDate", response[2][u][3]);
+                        curChild.setAttribute("endDate", response[2][u][4]);
+                        curChild.setAttribute("animeType", response[2][u][5]);
+                        curChild.setAttribute("animeEpisodes", response[2][u][6]);
+                        curChild.setAttribute("genres", response[2][u][7].join(","));
+                        curChild.setAttribute("studios", response[2][u][8].join(","));
+                    }
+                }, 200);
+            }
+        });
+        window.addEventListener("resize", e => {
+            maxCharCount = Math.floor(((3/19) * (animeName.getBoundingClientRect().width - 467)) + 35);
+            animeNameUL.children.forEach(child => {
+                child.children[1].textContent.length > maxCharCount
+                    ? child.children[1].textContent = child.getAttribute("name").substring(0, maxCharCount).concat("...")
+                    : child.children[1].textContent = child.getAttribute("name");
+            });
+        });
+        
+
+
+
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         if(introHolder == true) {
             const instancesTapAnimeSave = M.TapTarget.init(document.getElementById("introductionTargetAnimeSave"), { "onClose": () => {
