@@ -50,21 +50,18 @@ var recordChoicesButtons = () => {
             animeNameUL = animeName.nextElementSibling;
         let previousName = "",
             maxCharCount = 0;
-        // animeNameAutocomplete.close();
-        // animeNameUL.style.display = "none";
-        // animeNameUL.style.setProperty("display", "none", "important");
-        // animeNameUL.style.setProperty("height", "0px", "important");
         animeName.addEventListener("input", e => {
             if(e.target.value.length > 2) {
                 ipcRenderer.send("animeSearch", [previousName, e.target.value]);
             }
-            else {
-                animeNameAutocomplete.updateData({});
-                // animeNameUL.style.setProperty("height", "0px", "important");
-                // animeNameUL.style.display = "none";
-                // animeNameAutocomplete.close();
-            }
+            else { animeNameAutocomplete.updateData({}); }
             previousName = e.target.value;
+        });
+        animeName.addEventListener("click", e => {
+            if(e.target.value.length > 2) {
+                ipcRenderer.send("animeSearch", [previousName, e.target.value]);
+            }
+            else { animeNameAutocomplete.updateData({}); }
         });
         ipcRenderer.on("animeSearchResults", (event, response) => {
             console.log(response);
@@ -73,9 +70,20 @@ var recordChoicesButtons = () => {
                 response[2] = response[2].sort((a, b) => a[0].localeCompare(b[0]));
                 maxCharCount = Math.floor(((3/19) * (animeName.getBoundingClientRect().width - 467)) + 35);
                 for(let t = 0; t < response[2].length; t++) {
-                    response[2][t][0].length > maxCharCount
-                        ? autoObj[response[2][t][0].substring(0, maxCharCount).concat("...")] = response[2][t][2]
-                        : autoObj[response[2][t][0]] = response[2][t][2];
+                    if(response[2][t][0].length > maxCharCount) {
+                        let z = 3;
+                        while(true) {
+                            if(!autoObj.hasOwnProperty(response[2][t][0].substring(0, maxCharCount).concat(new Array(z).fill(".").join("")))) {
+                                autoObj[response[2][t][0].substring(0, maxCharCount).concat(new Array(z).fill(".").join(""))] = response[2][t][2];
+                                break;
+                            }
+                            z++;
+                        }
+                        // autoObj[response[2][t][0].substring(0, maxCharCount).concat("...")] = response[2][t][2];
+                    }
+                    else {
+                        autoObj[response[2][t][0]] = response[2][t][2];
+                    }
                 }
                 animeNameAutocomplete.updateData(autoObj);
                 if(response[0].length == 2 && response[1].length == 3) {
@@ -86,27 +94,83 @@ var recordChoicesButtons = () => {
                 setTimeout(() => {
                     for(let u = 0; u < animeNameUL.children.length; u++) {
                         let curChild = animeNameUL.children[u];
-                        curChild.setAttribute("name", response[2][u][0]);
-                        curChild.setAttribute("jname", response[2][u][1]);
-                        curChild.setAttribute("image", response[2][u][2]);
-                        curChild.setAttribute("startDate", response[2][u][3]);
-                        curChild.setAttribute("endDate", response[2][u][4]);
-                        curChild.setAttribute("animeType", response[2][u][5]);
-                        curChild.setAttribute("animeEpisodes", response[2][u][6]);
-                        curChild.setAttribute("genres", response[2][u][7].join(","));
-                        curChild.setAttribute("studios", response[2][u][8].join(","));
+                        for(let v = 0; v < response[2].length; v++) {
+                            if(curChild.children[0].getAttribute("src") == response[2][v][2]) {
+                                curChild.setAttribute("name", response[2][v][0]);
+                                curChild.setAttribute("jname", response[2][v][1]);
+                                curChild.setAttribute("image", response[2][v][2]);
+                                curChild.setAttribute("start", response[2][v][3]);
+                                curChild.setAttribute("end", response[2][v][4]);
+                                curChild.setAttribute("type", response[2][v][5]);
+                                curChild.setAttribute("episodes", response[2][v][6]);
+                                curChild.setAttribute("genres", response[2][v][7].join(","));
+                                curChild.setAttribute("studios", response[2][v][8].join(", "));
+                                curChild.addEventListener("click", eve => {
+                                    eve.preventDefault();
+                                    let curItem = eve.target.closest("li");
+                                    setTimeout(() => { animeName.value = curItem.getAttribute("name"); }, 100);
+                                    document.getElementById("animeJapaneseName").value = "";
+                                    document.getElementById("animeJapaneseName").classList.remove("valid");
+                                    document.getElementById("animeJapaneseName").nextElementSibling.classList.remove("active");
+                                    if(curItem.getAttribute("jname").length > 0) {
+                                        document.getElementById("animeJapaneseName").value = curItem.getAttribute("jname");
+                                        document.getElementById("animeJapaneseName").classList.add("valid");
+                                        document.getElementById("animeJapaneseName").nextElementSibling.classList.add("active");
+                                    }
+                                    document.getElementById("animeStudio").value = "";
+                                    document.getElementById("animeStudio").classList.remove("valid");
+                                    document.getElementById("animeStudio").nextElementSibling.classList.remove("active");
+                                    if(curItem.getAttribute("studios").length > 0) {
+                                        document.getElementById("animeStudio").value = curItem.getAttribute("studios");
+                                        document.getElementById("animeStudio").classList.add("valid");
+                                        document.getElementById("animeStudio").nextElementSibling.classList.add("active");
+                                    }
+                                    Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
+                                    let possibleGenres = curItem.getAttribute("genres").split(",");
+                                    possibleGenres.forEach(genreItem => {
+                                        let genreIter = genreItem;
+                                        if(genreIter == "Coming-Of-Age") {
+                                            genreIter = "ComingOfAge";
+                                        }
+                                        else if(genreIter == "Post-Apocalyptic") {
+                                            genreIter = "PostApocalyptic";
+                                        }
+                                        else if(genreIter == "Sci-Fi") {
+                                            genreIter = "SciFi";
+                                        }
+                                        else if(genreIter == "Slice of Life") {
+                                            genreIter = "SliceOfLife";
+                                        }
+                                        if(document.getElementById("animeGenre" + genreIter) != undefined) {
+                                            document.getElementById("animeGenre" + genreIter).checked = true;
+                                        }
+                                    });
+                                });
+                            }
+                        }
                     }
-                }, 200);
+                }, 500);
             }
+            else { animeNameAutocomplete.updateData({}); }
         });
-        window.addEventListener("resize", e => {
-            maxCharCount = Math.floor(((3/19) * (animeName.getBoundingClientRect().width - 467)) + 35);
-            animeNameUL.children.forEach(child => {
-                child.children[1].textContent.length > maxCharCount
-                    ? child.children[1].textContent = child.getAttribute("name").substring(0, maxCharCount).concat("...")
-                    : child.children[1].textContent = child.getAttribute("name");
-            });
-        });
+        // window.addEventListener("resize", e => {
+        //     maxCharCount = Math.floor(((3/19) * (animeName.getBoundingClientRect().width - 467)) + 35);
+        //     animeNameUL.children.forEach(child => {
+        //         if(child.getAttribute("name") > maxCharCount) {
+        //             let w = 3;
+        //             while(true) {
+        //                 if(!autoObj.hasOwnProperty(response[2][t][0].substring(0, maxCharCount).concat(new Array(w).fill(".").join("")))) {
+        //                     autoObj[response[2][t][0].substring(0, maxCharCount).concat(new Array(w).fill(".").join(""))] = response[2][t][2];
+        //                     break;
+        //                 }
+        //                 w++;
+        //             }
+        //         }
+        //         child.children[1].textContent.length > maxCharCount
+        //             ? child.children[1].textContent = child.getAttribute("name").substring(0, maxCharCount).concat("...")
+        //             : child.children[1].textContent = child.getAttribute("name");
+        //     });
+        // });
         
 
 

@@ -542,7 +542,6 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, 
 
 	// Handles the search of a string through all possible anime listings on myanimelist.
 	ipc.on("animeSearch", (event, search) => {
-		console.log(search);
 		anime({ "client_id": "1df17d90d7e7eeec634557919e095f59", "q": search[1], "limit": 25 }).anime_list()().then((data) => {
 			event.sender.send("animeSearchResults", [search[0], search[1], Array.from(data.data).map(elem => {
 				return [elem.node.title, elem.node.alternative_titles.ja, elem.node.main_picture.large, elem.node.start_date, elem.node.end_date, elem.node.media_type, elem.node.num_episodes, elem.node.genres.map(item => item.name), elem.node.studios.map(item => item.name)];
