@@ -54,27 +54,30 @@ var recordChoicesButtons = () => {
             if(e.target.value.length > 2) {
                 ipcRenderer.send("animeSearch", [previousName, e.target.value]);
             }
-            else { animeNameAutocomplete.updateData({}); }
+            // else { animeNameAutocomplete.updateData({}); }
+            else { animeNameUL.innerHTML = ""; }
             previousName = e.target.value;
         });
         animeName.addEventListener("click", e => {
             if(e.target.value.length > 2) {
                 ipcRenderer.send("animeSearch", [previousName, e.target.value]);
             }
-            else { animeNameAutocomplete.updateData({}); }
+            // else { animeNameAutocomplete.updateData({}); }
+            else { animeNameUL.innerHTML = ""; }
         });
         ipcRenderer.on("animeSearchResults", (event, response) => {
-            console.log(response);
+            // console.log(response);
             if(response[2].length > 0) {
                 let autoObj = {};
-                response[2] = response[2].sort((a, b) => a[0].localeCompare(b[0]));
+                // response[2] = response[2].sort((a, b) => a[0].localeCompare(b[0]));
                 maxCharCount = Math.floor(((3/19) * (animeName.getBoundingClientRect().width - 467)) + 35);
+                // console.log(response);
                 for(let t = 0; t < response[2].length; t++) {
                     if(response[2][t][0].length > maxCharCount) {
                         let z = 3;
                         while(true) {
                             if(!autoObj.hasOwnProperty(response[2][t][0].substring(0, maxCharCount).concat(new Array(z).fill(".").join("")))) {
-                                autoObj[response[2][t][0].substring(0, maxCharCount).concat(new Array(z).fill(".").join(""))] = response[2][t][2];
+                                autoObj[response[2][t][0].substring(0, maxCharCount).concat(new Array(z).fill(".").join(""))] = response[2][t][1];
                                 break;
                             }
                             z++;
@@ -82,9 +85,10 @@ var recordChoicesButtons = () => {
                         // autoObj[response[2][t][0].substring(0, maxCharCount).concat("...")] = response[2][t][2];
                     }
                     else {
-                        autoObj[response[2][t][0]] = response[2][t][2];
+                        autoObj[response[2][t][0]] = response[2][t][1];
                     }
                 }
+                // console.log(autoObj)
                 animeNameAutocomplete.updateData(autoObj);
                 if(response[0].length == 2 && response[1].length == 3) {
                     animeNameUL.style.display = "none";
@@ -95,63 +99,136 @@ var recordChoicesButtons = () => {
                     for(let u = 0; u < animeNameUL.children.length; u++) {
                         let curChild = animeNameUL.children[u];
                         for(let v = 0; v < response[2].length; v++) {
-                            if(curChild.children[0].getAttribute("src") == response[2][v][2]) {
-                                curChild.setAttribute("name", response[2][v][0]);
-                                curChild.setAttribute("jname", response[2][v][1]);
-                                curChild.setAttribute("image", response[2][v][2]);
-                                curChild.setAttribute("start", response[2][v][3]);
-                                curChild.setAttribute("end", response[2][v][4]);
-                                curChild.setAttribute("type", response[2][v][5]);
-                                curChild.setAttribute("episodes", response[2][v][6]);
-                                curChild.setAttribute("genres", response[2][v][7].join(","));
-                                curChild.setAttribute("studios", response[2][v][8].join(", "));
-                                curChild.addEventListener("click", eve => {
-                                    eve.preventDefault();
-                                    let curItem = eve.target.closest("li");
-                                    setTimeout(() => { animeName.value = curItem.getAttribute("name"); }, 100);
-                                    document.getElementById("animeJapaneseName").value = "";
-                                    document.getElementById("animeJapaneseName").classList.remove("valid");
-                                    document.getElementById("animeJapaneseName").nextElementSibling.classList.remove("active");
-                                    if(curItem.getAttribute("jname").length > 0) {
-                                        document.getElementById("animeJapaneseName").value = curItem.getAttribute("jname");
-                                        document.getElementById("animeJapaneseName").classList.add("valid");
-                                        document.getElementById("animeJapaneseName").nextElementSibling.classList.add("active");
-                                    }
-                                    document.getElementById("animeStudio").value = "";
-                                    document.getElementById("animeStudio").classList.remove("valid");
-                                    document.getElementById("animeStudio").nextElementSibling.classList.remove("active");
-                                    if(curItem.getAttribute("studios").length > 0) {
-                                        document.getElementById("animeStudio").value = curItem.getAttribute("studios");
-                                        document.getElementById("animeStudio").classList.add("valid");
-                                        document.getElementById("animeStudio").nextElementSibling.classList.add("active");
-                                    }
-                                    Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
-                                    let possibleGenres = curItem.getAttribute("genres").split(",");
-                                    possibleGenres.forEach(genreItem => {
-                                        let genreIter = genreItem;
-                                        if(genreIter == "Coming-Of-Age") {
-                                            genreIter = "ComingOfAge";
-                                        }
-                                        else if(genreIter == "Post-Apocalyptic") {
-                                            genreIter = "PostApocalyptic";
-                                        }
-                                        else if(genreIter == "Sci-Fi") {
-                                            genreIter = "SciFi";
-                                        }
-                                        else if(genreIter == "Slice of Life") {
-                                            genreIter = "SliceOfLife";
-                                        }
-                                        if(document.getElementById("animeGenre" + genreIter) != undefined) {
-                                            document.getElementById("animeGenre" + genreIter).checked = true;
-                                        }
-                                    });
-                                });
+                            if(curChild.children[0].getAttribute("src") == response[2][v][1]) {
+                                curChild.setAttribute("pageurl", response[2][v][2]);
+                                // curChild.setAttribute("name", response[2][v][0]);
+                                // curChild.setAttribute("jname", response[2][v][1]);
+                                // curChild.setAttribute("image", response[2][v][2]);
+                                // curChild.setAttribute("start", response[2][v][3]);
+                                // curChild.setAttribute("end", response[2][v][4]);
+                                // curChild.setAttribute("type", response[2][v][5]);
+                                // curChild.setAttribute("episodes", response[2][v][6]);
+                                // curChild.setAttribute("genres", response[2][v][7].join(","));
+                                // curChild.setAttribute("studios", response[2][v][8].join(", "));
                             }
                         }
+                        curChild.addEventListener("click", eve => {
+                            // eve.preventDefault();
+                            // console.log(eve.currentTarget.dataset.triggered);
+                            if(eve.currentTarget.dataset.triggered) return;
+                            eve.currentTarget.dataset.triggered = true;
+                                eve.currentTarget.dataset.triggered = true;
+                                console.log("clicked");
+                                let curItem = eve.target.closest("li");
+                                // eve.target.setAttribute("disabled", "true");
+                                // eve.target.remove();
+                                ipcRenderer.send("animeFetchDetails", curItem.getAttribute("pageurl"));
+                                // ipcRenderer.on("animeFetchDetailsResult", (newEve, newResponse) => {
+                                //     console.log(newResponse);
+                                // });
+                            // }
+
+                            // eve.preventDefault();
+                            // setTimeout(() => { animeName.value = curItem.getAttribute("name"); }, 100);
+                            // document.getElementById("animeJapaneseName").value = "";
+                            // document.getElementById("animeJapaneseName").classList.remove("valid");
+                            // document.getElementById("animeJapaneseName").nextElementSibling.classList.remove("active");
+                            // if(curItem.getAttribute("jname").length > 0) {
+                            //     document.getElementById("animeJapaneseName").value = curItem.getAttribute("jname");
+                            //     document.getElementById("animeJapaneseName").classList.add("valid");
+                            //     document.getElementById("animeJapaneseName").nextElementSibling.classList.add("active");
+                            // }
+                            // document.getElementById("animeStudio").value = "";
+                            // document.getElementById("animeStudio").classList.remove("valid");
+                            // document.getElementById("animeStudio").nextElementSibling.classList.remove("active");
+                            // if(curItem.getAttribute("studios").length > 0) {
+                            //     document.getElementById("animeStudio").value = curItem.getAttribute("studios");
+                            //     document.getElementById("animeStudio").classList.add("valid");
+                            //     document.getElementById("animeStudio").nextElementSibling.classList.add("active");
+                            // }
+                            // Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
+                            // let possibleGenres = curItem.getAttribute("genres").split(",");
+                            // possibleGenres.forEach(genreItem => {
+                            //     let genreIter = genreItem;
+                            //     if(genreIter == "Coming-Of-Age") {
+                            //         genreIter = "ComingOfAge";
+                            //     }
+                            //     else if(genreIter == "Post-Apocalyptic") {
+                            //         genreIter = "PostApocalyptic";
+                            //     }
+                            //     else if(genreIter == "Sci-Fi") {
+                            //         genreIter = "SciFi";
+                            //     }
+                            //     else if(genreIter == "Slice of Life") {
+                            //         genreIter = "SliceOfLife";
+                            //     }
+                            //     if(document.getElementById("animeGenre" + genreIter) != undefined) {
+                            //         document.getElementById("animeGenre" + genreIter).checked = true;
+                            //     }
+                            // });
+                        }, { "once": true });
                     }
                 }, 500);
             }
             else { animeNameAutocomplete.updateData({}); }
+        });
+        ipcRenderer.on("animeFetchDetailsResult", (newEve, newResponse) => {
+            console.log(newResponse);
+            if(newResponse[1] != "") {
+                const jnameInput = document.getElementById("animeJapaneseName");
+                jnameInput.value = newResponse[1];
+                jnameInput.classList.add("valid");
+                jnameInput.nextElementSibling.classList.add("active");
+            }
+            if(newResponse[8] != "") {
+                const studioInput = document.getElementById("animeStudio");
+                studioInput.value = newResponse[8];
+                studioInput.classList.add("valid");
+                studioInput.nextElementSibling.classList.add("active");
+            }
+            if(newResponse[9].length > 0) {
+                const directorsInput = document.getElementById("animeDirectors");
+                directorsInput.value = newResponse[9].join(", ");
+                directorsInput.classList.add("valid");
+                directorsInput.nextElementSibling.classList.add("active");
+            }
+            if(newResponse[10].length > 0) {
+                const producersInput = document.getElementById("animeProducers");
+                producersInput.value = newResponse[10].join(", ");
+                producersInput.classList.add("valid");
+                producersInput.nextElementSibling.classList.add("active");
+            }
+            if(newResponse[11].length > 0) {
+                const writersInput = document.getElementById("animeWriters");
+                writersInput.value = newResponse[11].join(", ");
+                writersInput.classList.add("valid");
+                writersInput.nextElementSibling.classList.add("active");
+            }
+            if(newResponse[12].length > 0) {
+                const musicInput = document.getElementById("animeMusicians");
+                musicInput.value = newResponse[12].join(", ");
+                musicInput.classList.add("valid");
+                musicInput.nextElementSibling.classList.add("active");
+            }
+            Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
+            newResponse[7].forEach(genreItem => {
+                let genreIter = genreItem;
+                if(genreIter == "Coming-Of-Age") {
+                    genreIter = "ComingOfAge";
+                }
+                else if(genreIter == "Post-Apocalyptic") {
+                    genreIter = "PostApocalyptic";
+                }
+                else if(genreIter == "Sci-Fi") {
+                    genreIter = "SciFi";
+                }
+                else if(genreIter == "Slice of Life") {
+                    genreIter = "SliceOfLife";
+                }
+                if(document.getElementById("animeGenre" + genreIter) != undefined) {
+                    document.getElementById("animeGenre" + genreIter).checked = true;
+                }
+            });
         });
         // window.addEventListener("resize", e => {
         //     maxCharCount = Math.floor(((3/19) * (animeName.getBoundingClientRect().width - 467)) + 35);

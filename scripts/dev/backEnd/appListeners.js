@@ -424,7 +424,7 @@ Driver function for adding all app listeners.
 	- path and fs provide the means to work with local files.
 	- zipper is a library object which can create zip files.
 	- tools provides a collection of local functions meant to help with writing files and generating pdf files.
-	- anime provides the means to attain anime records from myanimelist.
+	- malScraper provides the means to attain anime and manga records from myanimelist.
 	- exec and shell provide the means to open files, folders, and links.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the current path to the local user data.
@@ -432,7 +432,7 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, anime, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -542,10 +542,87 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, 
 
 	// Handles the search of a string through all possible anime listings on myanimelist.
 	ipc.on("animeSearch", (event, search) => {
-		anime({ "client_id": "1df17d90d7e7eeec634557919e095f59", "q": search[1], "limit": 25 }).anime_list()().then((data) => {
-			event.sender.send("animeSearchResults", [search[0], search[1], Array.from(data.data).map(elem => {
-				return [elem.node.title, elem.node.alternative_titles.ja, elem.node.main_picture.large, elem.node.start_date, elem.node.end_date, elem.node.media_type, elem.node.num_episodes, elem.node.genres.map(item => item.name), elem.node.studios.map(item => item.name)];
-			})]);
+		// let resArr = [];
+		malScraper.getResultsFromSearch(search[1], "anime").then(data => {
+			// console.log(data);
+			event.sender.send("animeSearchResults", [search[0], search[1], data.map(elem => [elem.name, elem.image_url, elem.url])]);
+			// for(let g = 0; g < data.length; g++) {
+			// 	resArr.push(new Promise((res, rej) => {
+			// 		malScraper.getInfoFromURL(data[g].url).then(animeData => {
+			// 			res(animeData);
+			// 		});
+			// 	}));
+			// }
+			// Promise.all(resArr).then(finalArr => {
+			// 	// console.log(finalArr[0]);
+			// 	event.sender.send("animeSearchResults", [search[0], search[1], finalArr.map(elem => {
+			// 		let startDate = "",
+			// 			endDate = "";
+			// 		if(elem.aired != undefined) {
+			// 			let splitArr = elem.aired.split("to");
+			// 			startDate = splitArr[0];
+			// 			if(splitArr.length > 1) {
+			// 				endDate = splitArr[1];
+			// 			}
+			// 		}
+			// 		return [elem.englishTitle, elem.japaneseTitle, elem.picture, startDate, endDate, elem.type, elem.episodes, elem.genres, elem.studios];
+			// 	})]);
+			// });
+			// // console.log(resArr);
+			// // let finalArr = await Promise.all(resArr);
+			// // console.log(finalArr);
+			// // console.log(await Promise.all(resArr));
+			// // malScraper.getInfoFromURL(data[0].url).then(res => {
+			// // 	console.log(res);
+			// // });
+			// // malScraper.getInfoFromURL(data[0].url);
+			
+		});
+
+
+		// anime({ "client_id": "1df17d90d7e7eeec634557919e095f59", "q": search[1], "limit": 3 }).anime_list()().then((data) => {
+		// 	console.log(data.data);
+		// 	// event.sender.send("animeSearchResults", [search[0], search[1], Array.from(data.data).map(elem => {
+		// 	// 	return [elem.node.title, elem.node.alternative_titles.ja, elem.node.main_picture.large, elem.node.start_date, elem.node.end_date, elem.node.media_type, elem.node.num_episodes, elem.node.genres.map(item => item.name), elem.node.studios.map(item => item.name)];
+		// 	// })]);
+		// });
+	});
+
+	ipc.on("animeFetchDetails", (event, url) => {
+		malScraper.getInfoFromURL(url).then(animeData => {
+			console.log(animeData);
+			let startDate = "",
+				endDate = "",
+				directorsArr = [],
+				producersArr = [],
+				writersArr = [],
+				musicArr = [];
+			if(animeData.aired != undefined) {
+				let splitArr = animeData.aired.split("to");
+				startDate = splitArr[0];
+				if(splitArr.length > 1) {
+					endDate = splitArr[1];
+				}
+			}
+			animeData.staff.forEach(person => {
+				console.log(person.role);
+				console.log(person.role.split(", "));
+				person.role.split(", ").forEach(personRole => {
+					if(personRole.toLowerCase().includes("director") && !personRole.toLowerCase().includes("sound")) {
+						directorsArr.push(person.name.split(", ").reverse().join(" "));
+					}
+					if(personRole.toLowerCase().includes("producer")) {
+						producersArr.push(person.name.split(", ").reverse().join(" "));
+					}
+					if(personRole.toLowerCase().includes("storyboard")) {
+						writersArr.push(person.name.split(", ").reverse().join(" "));
+					}
+					if(personRole.toLowerCase().includes("sound") || person.role.toLowerCase().includes("music")) {
+						musicArr.push(person.name.split(", ").reverse().join(" "));
+					}
+				});
+			});
+			event.sender.send("animeFetchDetailsResult", [animeData.englishTitle, animeData.japaneseTitle, animeData.picture, startDate, endDate, animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr, animeData.producers.concat(producersArr), writersArr, musicArr]);
 		});
 	});
 };
