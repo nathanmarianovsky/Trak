@@ -49,8 +49,9 @@ var recordChoicesButtons = () => {
         drake.on("dragend", () => { animeListReorganize(); });
         // Define the portions of the page associated to the autocomplete 
         const animeName = document.getElementById("animeName"),
-            animeNameAutocomplete = M.Autocomplete.init(animeName, { "sortFunction": (a, b) => a.localeCompare(b) });
-            animeNameUL = animeName.nextElementSibling;
+            animeNameAutocomplete = M.Autocomplete.init(animeName, { "sortFunction": (a, b) => a.localeCompare(b) }),
+            animeNameUL = animeName.nextElementSibling,
+            animePreloader = document.getElementById("animePreloader");
         // Define the autocomplete previous input and character max count for display purposes.
         let previousName = "",
             maxCharCount = 0;
@@ -79,7 +80,7 @@ var recordChoicesButtons = () => {
                 // Define the object which will be used to update the autocomplete options.
                 let autoObj = {};
                 // Set the max character count based on the width of the page anime name input.
-                maxCharCount = Math.floor(((3/19) * (animeName.getBoundingClientRect().width - 467)) + 35);
+                maxCharCount = Math.floor(((20/190) * (animeName.getBoundingClientRect().width - 467)) + 38);
                 // Iterate through all attained autocomplete options.
                 for(let t = 0; t < response[2].length; t++) {
                     // If the autocomplete option has a name which is too long truncate it properly and add it as a page option.
@@ -127,6 +128,7 @@ var recordChoicesButtons = () => {
                             let curItem = eve.target.closest("li");
                             // Update the page anime name in case the name was truncated in the autocomplete list.
                             setTimeout(() => { animeName.value = curItem.getAttribute("name"); }, 10);
+                            animePreloader.style.visibility = "visible";
                             // Send a request for the details to be fetched on the back-end.
                             ipcRenderer.send("animeFetchDetails", curItem.getAttribute("pageurl"));
                         }, { "once": true });
@@ -136,6 +138,25 @@ var recordChoicesButtons = () => {
             // If the anime name is not long enough then update the page autocomplete options to be empty.
             else { animeNameAutocomplete.updateData({}); }
         });
+        // // Listen for the "Enter" button press on a page autocomplete option in order to fetch the associated details from myanimelist.
+        // document.body.addEventListener("keydown", eve => {
+        //     console.log("enter pressed!");
+        //     console.log(eve.target);
+        //     console.log(eve.key);
+        //     console.log(eve);
+        //     // if(eve.keyCode == 13) {
+        //     //     // Make sure that only a single request is made for details to be fetched.
+        //     //     if(eve.currentTarget.dataset.triggered) { return; }
+        //     //     eve.currentTarget.dataset.triggered = true;
+        //     //     // Define the list item which was clicked on.
+        //     //     // let curItem = eve.target.closest("li");
+        //     //     // Update the page anime name in case the name was truncated in the autocomplete list.
+        //     //     setTimeout(() => { animeName.value = eve.target.getAttribute("name"); }, 10);
+        //     //     animePreloader.style.visibility = "visible";
+        //     //     // Send a request for the details to be fetched on the back-end.
+        //     //     ipcRenderer.send("animeFetchDetails", eve.target.getAttribute("pageurl"));
+        //     // }
+        // });
         // Update the page accordingly based on the fetched anime details.
         ipcRenderer.on("animeFetchDetailsResult", (newEve, newResponse) => {
             // Update the anime japanese name if available.
@@ -144,6 +165,11 @@ var recordChoicesButtons = () => {
                 jnameInput.value = newResponse[1];
                 jnameInput.classList.add("valid");
                 jnameInput.nextElementSibling.classList.add("active");
+            }
+            if(newResponse[2] != "") {
+                const animeImg = document.getElementById("addRecordAnimeImg");
+                animeImg.setAttribute("list", newResponse[2]);
+                animeImg.setAttribute("src", newResponse[2]);
             }
             // Update the anime studios if available.
             if(newResponse[8] != "") {
@@ -201,6 +227,7 @@ var recordChoicesButtons = () => {
                     document.getElementById("animeGenre" + genreIter).checked = true;
                 }
             });
+            animePreloader.style.visibility = "hidden";
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         if(introHolder == true) {

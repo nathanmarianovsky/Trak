@@ -41,7 +41,112 @@
                 The only field required to add a record is the name. All other fields are optional.
             </div>
             <div class="row addRecordDiv">
-                <form id="categoryAnimeForm1" class="col s12">
+                <div id="addRecordAnimeImageDiv" class="left">
+                    <img id="addRecordAnimeImg" src="../../assets/animeDef.png" list="">
+                    <div id="addRecordAnimeImgBtnDiv">
+                        <div class="addRecordAnimeImgBtnContainer"><a class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_before</i></a></div>
+                        <div class="addRecordAnimeImgBtnContainer"><a class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">add</i></a></div>
+                        <div class="addRecordAnimeImgBtnContainer"><a class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">remove</i></a></div>
+                        <div class="addRecordAnimeImgBtnContainer"><a class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_next</i></a></div>
+                    </div>
+                </div>
+                <form id="categoryAnimeForm1" class="col s8">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input id="animeName" type="text" class="validate center autocomplete">
+                            <label for="animeName">English Name:</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="animeJapaneseName" type="text" class="validate center">
+                            <label for="animeJapaneseName">Japanese Name:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s2">
+                            <input id="animeRating" type="text" class="center" readonly="true" value="N/A">
+                            <label for="animeRating">Rating: <a class="modal-trigger" href="#globalRatingModal"><i class="material-icons infoIcon">info</i></a></label>
+                        </div>
+                        <div class="input-field col s10">
+                            <textarea id="animeReview" class="validate materialize-textarea" rows="8" wrap="hard" maxlength="500"></textarea>
+                            <label for="animeReview">Comments/Review:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea id="animeSynopsis" class="validate materialize-textarea" rows="8" wrap="hard" maxlength="500"></textarea>
+                            <label for="animeSynopsis">Synopsis:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <a class="waves-effect waves-light btn addRecordBtn modal-trigger" href="#animeMoreDetailsModal"><i class="material-icons right">add</i>More Details</a>
+                        <div id="animePreloader" class="preloader-wrapper big active">
+                            <div class="spinner-layer">
+                                <div class="circle-clipper left">
+                                    <div class="circle"></div>
+                                </div>
+                                <div class="gap-patch">
+                                    <div class="circle"></div>
+                                </div>
+                                <div class="circle-clipper right">
+                                    <div class="circle"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div id="animeMoreDetailsModal" class="modal modal-fixed-footer">
+                    <div class="modal-content">
+                        <h4 class="center">More Details</h4>
+                        <form id="categoryAnimeForm1" class="col s10">
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="animeDirectors" type="text" class="validate center">
+                                    <label for="animeDirectors">Directed By:</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="animeProducers" type="text" class="validate center">
+                                    <label for="animeProducers">Produced By:</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="animeWriters" type="text" class="validate center">
+                                    <label for="animeWriters">Written By:</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="animeMusicians" type="text" class="validate center">
+                                    <label for="animeMusicians">Music By:</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="animeStudio" type="text" class="validate center">
+                                    <label for="animeStudio">Studio:</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="animeLicense" type="text" class="validate center">
+                                    <label for="animeLicense">Licensed By:</label>
+                                </div>
+                            </div>
+                            <div id="animeAddRecordFilesOuterDiv" class="file-field input-field">
+                                <div id="animeAddRecordFilesDiv" class="btn addRecordFilesDiv">
+                                    <span>
+                                        File<i class="material-icons right">add</i>
+                                    </span>
+                                    <input id="animeAddRecordFiles" type="file" multiple>
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input id="animeAddRecordFilesText" class="file-path validate" type="text">
+                                    <label for="animeAddRecordFilesText">Upload one or more files.</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                    </div>
+                </div>
+                <!-- <form id="categoryAnimeForm1" class="col s12">
                     <div class="row">
                         <div class="input-field col s5">
                             <input id="animeName" type="text" class="validate center autocomplete">
@@ -102,7 +207,7 @@
                             <label for="animeAddRecordFilesText">Upload one or more files.</label>
                         </div>
                     </div>
-                </form>
+                </form> -->
             </div>
             <h2 id="genresTitle">Genres/Tags:</h2>
             <div class="row addRecordDiv">

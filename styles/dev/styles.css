@@ -490,7 +490,6 @@ footer {
 .tap-target {
 	background-color: #2A2A8E !important;
 	color: white;
-/*	mix-blend-mode: difference;*/
 }
 
 
@@ -541,8 +540,60 @@ footer {
 	bottom: 10px;
 }
 
+#categoryAnimeForm1 {
+	margin-left: 5%;
+	display: inline-block;
+}
+
+#addRecordAnimeImg {
+	margin-bottom: 5px;
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+	height: auto;
+	width: 100%;
+}
+
+#animeMoreDetailsModal {
+	width: 65%;
+	height: 55%;
+}
+
+#animePreloader {
+	visibility: hidden;
+	position: relative;
+    top: 30px;
+    left: 30%;
+}
+
+#addRecordAnimeImgBtnDiv {
+	width: 100%;
+	margin-bottom: 3%;
+	display: flex;
+	justify-content: space-between;
+}
+
+#addRecordAnimeImageDiv {
+	width: 22%;
+}
+
+.addRecordAnimeImgBtnContainer {
+	width: 20%;
+	display: inline-block;
+}
+
 .addRecordFilesDiv {
 	background-color: #2A2A8E !important;
+}
+
+.addRecordBtn {
+	background-color: #2A2A8E !important;
+	margin-left: 1.5%;
+}
+
+.addRecordAnimeImgBtn {
+	background-color: #2A2A8E !important;
+	width: 100%;
 }
 
 .addRecordDiv {
