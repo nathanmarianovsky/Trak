@@ -4,6 +4,7 @@ Declare all of the necessary variables.
 
 	- app, BrowserWindow, Menu, MenuItem, Tray, ipc, and shell provide the means to operate the Electron app.
 	- fs and path provide the means to work with local files.
+	- https provides the means to download files.
 	- contextMenu provides the means to handle the menu associated to a right-click in the app.
 	- tools provides a collection of local functions meant to help with writing files.
 	- appListeners provides all of the back-end listeners.
@@ -18,6 +19,7 @@ const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
 	ipc = require("electron").ipcMain,
 	path = require("path"),
 	fs = require("fs-extra"),
+	https = require("https"),
 	contextMenu = require('electron-context-menu'),
 	tools = require("./scripts/dist/backEnd/tools"),
 	appListeners = require("./scripts/dist/backEnd/appListeners"),
@@ -189,7 +191,7 @@ app.whenReady().then(() => {
 														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 															tools.createTrayMenu("h", primaryWindow, tray, Menu);
 															// Add all of the back-end listeners.
-															appListeners.addListeners(app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, malScraper, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															appListeners.addListeners(app, BrowserWindow, path, fs, https, exec, shell, ipc, zipper, tools, malScraper, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 														}
 													});
 												}

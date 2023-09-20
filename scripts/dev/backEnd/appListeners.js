@@ -68,10 +68,14 @@ exports.writeDataFile = (globalWin, curWin, writeData, mode, savePath, fs, path,
 
 Creates an object associated to an anime record in order to save/update.
 
+	- path and fs provide the means to work with local files.
+	- https provides the means to download files.
+	- tools provides a collection of local functions.
+	- dir is the path to the local user data.
 	- providedData is the data provided by the front-end user submission for anime record save/update.
 
 */
-var animeObjCreation = providedData => {
+var animeObjCreation = (path, fs, https, tools, dir, providedData) => {
 	const animeObj = {
 		"category": providedData[0],
 		"name": providedData[1],
@@ -84,8 +88,33 @@ var animeObjCreation = providedData => {
 		"studio": providedData[8],
 		"license": providedData[9],
 		"genres": providedData[11],
+		"synopsis": providedData[13],
+		"img": [],
 		"content": []
 	};
+	if(providedData[14][0] == false) {
+		for(let y = 0; y < providedData[14][1].length; y++) {
+			if(tools.isURL(providedData[14][1][y])) {
+				let downloadFilePath = path.join(dir, "Trak", "data",
+						providedData[0] + "-" + (providedData[1] != "" ? providedData[1] : providedData[2]),
+						"assets", tools.parseURLFilename(providedData[14][1][y]));
+		        animeObj.img.push(downloadFilePath);
+				https.get(providedData[14][1][y], res => {
+				    let filePath = fs.createWriteStream(downloadFilePath);
+				    res.pipe(filePath);
+				    filePath.on("finish", () => { filePath.close(); });
+				});
+			}
+			else {
+				let copyFilePath = path.join(dir, "Trak", "data",
+						providedData[0] + "-" + (providedData[1] != "" ? providedData[1] : providedData[2]),
+						"assets", providedData[14][1][y].replace(/^.*[\\\/]/, ""));
+				fs.copySync(providedData[14][1][y], copyFilePath);
+				animeObj.img.push(copyFilePath);
+			}
+		}
+	}
+	else { animeObj.img = providedData[14][1]; }
 	for(let m = 0; m < providedData[12].length; m++) {
 		if(providedData[12][m][0] == "Single") {
 			animeObj.content.push({
@@ -129,18 +158,20 @@ Handles the saving of anime record by creating the associated folders and data f
 
 	- BrowserWindow provides the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
+	- https provides the means to download files.
 	- mainWindow is an object referencing the primary window of the Electron app.
+	- tools provides a collection of local functions.
 	- dataPath is the path to the local user data.
 	- evnt provides the means to interact with the front-end of the Electron app.
 	- data is the information associated to the record.
 
 */
-exports.animeSave = (BrowserWindow, path, fs, mainWindow, dataPath, evnt, data) => {
+exports.animeSave = (BrowserWindow, path, fs, https, tools, mainWindow, dataPath, evnt, data) => {
 	// Check to see that the folder associated to the new record does not exist.
 	if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[1])) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[2]))) {
 		// Create a new directory for the assets associated to the new record.
 		fs.mkdirSync(path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]), "assets"), { "recursive": true });
-		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(data), "A", dataPath, fs, path, evnt, data);
+		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data);
 	}
 	else {
 		evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
@@ -155,29 +186,31 @@ Handles the update of an anime record.
 
 	- BrowserWindow provides the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
+	- https provides the means to download files.
 	- mainWindow is an object referencing the primary window of the Electron app.
+	- tools provides a collection of local functions.
 	- dataPath is the path to the local user data.
 	- evnt provides the means to interact with the front-end of the Electron app.
 	- data is the information associated to the record.
 
 */
-exports.animeUpdate = (BrowserWindow, path, fs, mainWindow, dataPath, evnt, data) => {
+exports.animeUpdate = (BrowserWindow, path, fs, https, tools, mainWindow, dataPath, evnt, data) => {
 	// If the name has been updated then change the associated record folder name.
-	if((data[1] != "" && data[1] != data[13]) || (data[1] == "" && data[2] != "" && data[2] != data[13]) ) {
-		fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + data[13]), path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2])), err => {
+	if((data[1] != "" && data[1] != data[data.length - 1]) || (data[1] == "" && data[2] != "" && data[2] != data[data.length - 1]) ) {
+		fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + data[data.length - 1]), path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2])), err => {
 			// If there was an error in renaming the record folder notify the user.
 			if(err) {
-				evnt.sender.send("recordFolderRenameFailure", [data[13], data[1] != "" ? data[1] : data[2]]);
+				evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1] != "" ? data[1] : data[2]]);
 			}
 			// If no error occured in renaming the record folder write the data file, and copy over the file assets.
 			else {
-				exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(data), "U", dataPath, fs, path, evnt, data);
+				exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
 			}
 		});
 	}
 	else {
 		// Write the data file, and copy over the file assets.
-		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(data), "U", dataPath, fs, path, evnt, data);
+		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
 	}
 };
 
@@ -422,8 +455,9 @@ Driver function for adding all app listeners.
 
 	- app, BrowserWindow, and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
+	- https provides the means to download files.
 	- zipper is a library object which can create zip files.
-	- tools provides a collection of local functions meant to help with writing files and generating pdf files.
+	- tools provides a collection of local functions.
 	- malScraper provides the means to attain anime and manga records from myanimelist.
 	- exec and shell provide the means to open files, folders, and links.
 	- mainWindow is an object referencing the primary window of the Electron app.
@@ -432,7 +466,7 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, https, exec, shell, ipc, zipper, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -497,7 +531,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, 
   			ipc.once("performSave", (event, submission) => {
 				// If the record is an anime then save the corresponding data.
 				if(submission[0] == "Anime") {
-	  				exports.animeSave(BrowserWindow, path, fs, mainWindow, dataPath, event, submission);
+	  				exports.animeSave(BrowserWindow, path, fs, https, tools, mainWindow, dataPath, event, submission);
 				}
   			});
   		});
@@ -509,7 +543,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, 
   		recordUpdateWindow.webContents.on("did-finish-load", () => {
   			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
   			ipc.once("performSave", (event, submission) => {
-  				exports.animeUpdate(BrowserWindow, path, fs, mainWindow, dataPath, event, submission);
+  				exports.animeUpdate(BrowserWindow, path, fs, https, tools, mainWindow, dataPath, event, submission);
   			});
   		});
   	});

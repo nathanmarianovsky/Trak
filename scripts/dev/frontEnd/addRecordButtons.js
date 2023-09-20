@@ -224,7 +224,7 @@ var recordChoicesButtons = () => {
         // Update the page accordingly based on the fetched anime details.
         ipcRenderer.on("animeFetchDetailsResult", (newEve, newResponse) => {
             // Update the anime japanese name if available.
-            if(newResponse[1] != "") {
+            if(newResponse[1] != "" && newResponse[1] != "None found, add some") {
                 const jnameInput = document.getElementById("animeJapaneseName");
                 jnameInput.value = newResponse[1];
                 jnameInput.classList.add("valid");
@@ -236,46 +236,49 @@ var recordChoicesButtons = () => {
                 animeImg.setAttribute("src", newResponse[2]);
             }
             // Update the anime studios if available.
-            if(newResponse[8] != "") {
+            if(newResponse[8] != "" && newResponse[8] != "None found, add some") {
                 const studioInput = document.getElementById("animeStudio");
                 studioInput.value = newResponse[8];
                 studioInput.classList.add("valid");
                 studioInput.nextElementSibling.classList.add("active");
             }
             // Update the anime directors if available.
-            if(newResponse[9].length > 0) {
+            if(newResponse[9].length > 0 && newResponse[9][0] != "None found, add some") {
                 const directorsInput = document.getElementById("animeDirectors");
                 directorsInput.value = newResponse[9].join(", ");
                 directorsInput.classList.add("valid");
                 directorsInput.nextElementSibling.classList.add("active");
             }
             // Update the anime producers if available.
-            if(newResponse[10].length > 0) {
+            if(newResponse[10].length > 0 && newResponse[10][0] != "None found, add some") {
                 const producersInput = document.getElementById("animeProducers");
                 producersInput.value = newResponse[10].join(", ");
                 producersInput.classList.add("valid");
                 producersInput.nextElementSibling.classList.add("active");
             }
             // Update the anime writers if available.
-            if(newResponse[11].length > 0) {
+            if(newResponse[11].length > 0 && newResponse[11][0] != "None found, add some") {
                 const writersInput = document.getElementById("animeWriters");
                 writersInput.value = newResponse[11].join(", ");
                 writersInput.classList.add("valid");
                 writersInput.nextElementSibling.classList.add("active");
             }
             // Update the anime musicians if available.
-            if(newResponse[12].length > 0) {
+            if(newResponse[12].length > 0 && newResponse[12][0] != "None found, add some") {
                 const musicInput = document.getElementById("animeMusicians");
                 musicInput.value = newResponse[12].join(", ");
                 musicInput.classList.add("valid");
                 musicInput.nextElementSibling.classList.add("active");
             }
             // Update the anime synopsis if available.
-            if(newResponse[13].length > 0) {
+            if(newResponse[13] != "" && newResponse[13] != "None found, add some") {
                 const synopsisInput = document.getElementById("animeSynopsis");
                 synopsisInput.value = newResponse[13].replace("[Written by MAL Rewrite]", "").trim();
                 synopsisInput.classList.add("valid");
                 synopsisInput.nextElementSibling.classList.add("active");
+                // synopsisInput.dispatchEvent(new Event("input", { "bubbles": true }));
+                // synopsisInput.style.height = "auto";
+                synopsisInput.style.height = synopsisInput.scrollHeight + "px";
             }
             // Reset all anime genres to not be checked.
             Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
@@ -300,6 +303,13 @@ var recordChoicesButtons = () => {
             });
             animePreloader.style.visibility = "hidden";
         });
+        // Handle the auto resizing of the anime review and synopsis.
+        // let autoResize = e => {
+        //     e.target.style.height = "auto";
+        //     e.target.style.height = e.target.scrollHeight + "px";
+        // }
+        // document.getElementById("animeReview").addEventListener("input", autoResize, false);
+        // document.getElementById("animeSynopsis").addEventListener("input", autoResize, false);
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         if(introHolder == true) {
             const instancesTapAnimeSave = M.TapTarget.init(document.getElementById("introductionTargetAnimeSave"), { "onClose": () => {
@@ -362,6 +372,8 @@ var animeSave = () => {
             animeMusicians = document.getElementById("animeMusicians").value,
             animeStudio = document.getElementById("animeStudio").value,
             animeLicense = document.getElementById("animeLicense").value,
+            animeSynopsis = document.getElementById("animeSynopsis").value,
+            animeImg = document.getElementById("addRecordAnimeImg").getAttribute("list").split(","),
             animeFiles = Array.from(document.getElementById("animeAddRecordFiles").files).map(elem => elem.path),
             genresLst = animeGenreList(),
             genres = [],
@@ -409,8 +421,9 @@ var animeSave = () => {
             const pageElement = document.getElementById("infoDiv"),
                 oldTitle = typeof(pageElement) != "undefined" && pageElement != null ? pageElement.title : "";
             // Send the request to the back-end portion of the app.
-            const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers,
-                animeWriters, animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres], content, oldTitle];
+            const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers, animeWriters,
+                animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres], content, animeSynopsis,
+                [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), animeImg], oldTitle];
             ipcRenderer.send("performSave", submissionMaterial);
         }
         // If no name has been provided then notify the user.

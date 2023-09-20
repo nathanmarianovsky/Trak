@@ -10,6 +10,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - initModal: Initialize all modals on the page.
     - initSelectObservers: Initialize the observers for style mutations on related content select tags.
     - initAnimeReviewObserver: Initialize the observer for style mutations on the anime review.
+    - initAnimeSynopsisObserver: Initialize the observer for style mutations on the anime synopsis.
     - toastParse: Handles the parsing of a record folder name to display to the user.
     - filterGenreList: Provides the list of all genres/tags that can be selected from the index.page filter.
 
@@ -143,6 +144,27 @@ var initAnimeReviewObserver = () => {
     let animeReview = document.getElementById("animeReview");
     // Tell the observer to watch for changes.
     observer.observe(animeReview, { "attributes": true, "attributeFilter": ["style"] });
+};
+
+
+
+/*
+
+Initialize the observer for style mutations on the anime synopsis.
+
+*/
+var initAnimeSynopsisObserver = () => {
+    // Define the select tags observer.
+    let observer = new MutationObserver(mutations => {
+        // Define the item target on the page.
+        let trgt = mutations[0].target;
+        // If the height of the textarea is extended then display the vertical scroll bar.
+        trgt.style.height == "45px" ? document.body.style.overflowY = "hidden" : document.body.style.overflowY = "visible";
+    });
+    // Define the anime review input.
+    let animeSynopsis = document.getElementById("animeSynopsis");
+    // Tell the observer to watch for changes.
+    observer.observe(animeSynopsis, { "attributes": true, "attributeFilter": ["style"] });
 };
 
 

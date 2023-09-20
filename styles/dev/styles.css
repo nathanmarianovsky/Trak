@@ -581,6 +581,10 @@ footer {
 	display: none;
 }
 
+#animeReview, #animeSynopsis {
+	max-height: 400px
+}
+
 .addRecordAnimeImgBtnContainer {
 	width: 20%;
 	display: inline-block;

@@ -9,6 +9,7 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
    - createWindow: Executes the creation of the primary window with all necessary parameters.
    - tutorialLoad: Tells the front-end to load the application tutorial.
    - startCommandLineFolder: Provides the necessary command to execute the opening of a folder.
+   - isURL: Tests whether a given string represents a url.
 
 */
 
@@ -295,6 +296,31 @@ exports.startCommandLineFolder = () => {
       default : return "xdg-open";
    }
 };
+
+
+
+/*
+
+Tests whether a given string represents a url.
+
+    - url is the string to be tested.
+
+*/
+exports.isURL = url => {
+    const urlRegEx = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+    return urlRegEx.test(url);
+};
+
+
+
+/*
+
+Extracts the filename from a given string representing a url.
+
+    - url is the path corresponding to a file.
+
+*/
+exports.parseURLFilename = url => new URL(url, "https://example.com").href.split("#").shift().split("?").shift().split("/").pop();
 
 
 

@@ -104,18 +104,20 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 const animeName = document.getElementById("animeName"),
                     animeJapaneseName = document.getElementById("animeJapaneseName"),
                     animeReview = document.getElementById("animeReview"),
+                    animeSynopsis = document.getElementById("animeSynopsis"),
                     animeDirectors = document.getElementById("animeDirectors"),
                     animeProducers = document.getElementById("animeProducers"),
                     animeWriters = document.getElementById("animeWriters"),
                     animeMusicians = document.getElementById("animeMusicians"),
                     animeStudio = document.getElementById("animeStudio"),
-                    animeLicense = document.getElementById("animeLicense");
+                    animeLicense = document.getElementById("animeLicense"),
+                    animeImg = document.getElementById("addRecordAnimeImg");
                 // Load the anime record portion of the addRecord page.
                 document.getElementById("categoryAnime").click();
                 // Populate the anime record page with the saved data.
                 animeName.value = recordData.name;
                 animeName.setAttribute("lastValue", recordData.name);
-                if(recordData.name != "") { animeName.parentNode.children[1].classList.add("active"); }
+                if(recordData.name != "") { animeName.parentNode.children[2].classList.add("active"); }
                 animeName.addEventListener("change", e => {
                     e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
                 });
@@ -133,11 +135,26 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 });
                 animeReview.value = recordData.review;
                 animeReview.setAttribute("lastValue", recordData.review);
-                if(recordData.review != "") { animeReview.parentNode.children[1].classList.add("active"); }
+                if(recordData.review != "") {
+                    animeReview.parentNode.children[1].classList.add("active");
+                    animeReview.style.height = animeReview.scrollHeight + "px";
+                }
                 animeReview.addEventListener("change", e => {
                     e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
                 });
                 animeReview.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                animeSynopsis.value = recordData.synopsis;
+                animeSynopsis.setAttribute("lastValue", recordData.synopsis);
+                if(recordData.synopsis != "") {
+                    animeSynopsis.parentNode.children[1].classList.add("active");
+                    animeSynopsis.style.height = animeSynopsis.scrollHeight + "px";
+                }
+                animeSynopsis.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                animeSynopsis.addEventListener("click", e => {
                     e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
                 });
                 animeDirectors.value = recordData.directors;
@@ -194,6 +211,9 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 animeLicense.addEventListener("click", e => {
                     e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
                 });
+                animeImg.setAttribute("list", recordData.img.join(","));
+                animeImg.setAttribute("previous", recordData.img.join(","));
+                animeImg.setAttribute("src", recordData.img.length > 0 ? recordData.img[0] : animeImg.getAttribute("default"));
                 for(let v = 0; v < recordData.genres[0].length; v++) {
                     document.getElementById("animeGenre" + recordData.genres[0][v]).checked = recordData.genres[1][v];
                 }
@@ -370,4 +390,6 @@ window.addEventListener("load", () => {
     animeModalButtons();
     // Initialize the observer for the anime review.
     initAnimeReviewObserver();
+    // Initialize the observer for the anime synopsis.
+    initAnimeSynopsisObserver();
 });
