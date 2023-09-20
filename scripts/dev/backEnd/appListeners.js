@@ -458,7 +458,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, 
   		});
   	});
 
-    ipc.on("introductionFileSave", (event, launchIntro) => {
+   ipc.on("introductionFileSave", (event, launchIntro) => {
     	if(!fs.existsSync(path.join(originalPath, "Trak", "config", "tutorial.json"))) {
 	    	fs.writeFile(path.join(originalPath, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": launchIntro }), "UTF8", err => {
 	    		if(err) { event.sender.send("introductionFileSaveFailure"); }
@@ -475,7 +475,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, 
 	    		}
 	    	});
     	}
-    });
+   });
 
   	// Handle the opening of the github link on the about section.
   	ipc.on("aboutGithub", event => {

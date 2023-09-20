@@ -15,14 +15,14 @@ const htmlMinify = require("html-minifier").minify,
 	yui = require("@node-minify/yui"),
 	uglifyJS = require("@node-minify/uglify-js"),
 	cliProgress = require("cli-progress"),
-	fs = require("fs"),
+	fs = require("fs-extra"),
 	path = require("path"),
 	cheerio = require("cheerio");
 
 
 
 // Append the app settings to the appropriate html files.
-console.log("Adding Menu to Appropriate HTML Files.");
+console.log("Adding Settings to Appropriate HTML Files.");
 const htmlSettingsList = ["index.html"],
 	htmlList = ["addRecord.html"],
 	htmlSettings = fs.readFileSync(path.join(__dirname, "pages", "dev", "settings.html"));
