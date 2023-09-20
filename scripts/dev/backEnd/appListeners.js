@@ -586,7 +586,11 @@ exports.addListeners = (app, BrowserWindow, path, fs, exec, shell, ipc, zipper, 
 				});
 			});
 			// Send the attained data to the front-end.
-			event.sender.send("animeFetchDetailsResult", [animeData.englishTitle, animeData.japaneseTitle, animeData.picture, startDate, endDate, animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr, animeData.producers.concat(producersArr), writersArr, musicArr]);
+			event.sender.send("animeFetchDetailsResult", [
+				animeData.englishTitle, animeData.japaneseTitle, animeData.picture, startDate, endDate,
+				animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
+				animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
+			]);
 		});
 	});
 };

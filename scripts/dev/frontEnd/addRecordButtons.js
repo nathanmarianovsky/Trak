@@ -47,26 +47,30 @@ var recordChoicesButtons = () => {
         // Initialize the dragging of the related content.
         let drake = dragula({"containers": [document.querySelector('#animeList')]});
         drake.on("dragend", () => { animeListReorganize(); });
-
-
+        // Define all image buttons.
         const animePreviousImgBtn = document.getElementById("animePreviousImgBtn"),
             animeAddImgBtn = document.getElementById("animeAddImgBtn"),
             animeAddImgInput = document.getElementById("animeAddImgInput"),
             animeRemoveImgBtn = document.getElementById("animeRemoveImgBtn"),
             animeNextImgBtn = document.getElementById("animeNextImgBtn"),
             addRecordAnimeImg = document.getElementById("addRecordAnimeImg");
+        // Listen for a click event on the previous image button.
         animePreviousImgBtn.addEventListener("click", e => {
             let curListArr = addRecordAnimeImg.getAttribute("list").split(","),
                 index = curListArr.indexOf(addRecordAnimeImg.getAttribute("src"));
+            // Change the image source to the previous one in the list, wrapping around if necessary.
             if(curListArr.length > 1) {
                 addRecordAnimeImg.setAttribute("src", index == 0 ? curListArr[curListArr.length - 1] : curListArr[index - 1]);
             }
         });
+        // Listen for a click event on the add image button.
         animeAddImgBtn.addEventListener("click", e => { animeAddImgInput.click(); });
+        // Listen for a submission on the add image input.
         animeAddImgInput.addEventListener("change", e => {
             let curList = addRecordAnimeImg.getAttribute("list"),
                 newList = Array.from(e.target.files),
                 newStr = curList;
+            // Iterate through the submitted files and add them to the list if they are not already included.
             newList.forEach(fle => {
                 if(newStr == "") {
                     addRecordAnimeImg.setAttribute("src", fle.path);
@@ -78,31 +82,35 @@ var recordChoicesButtons = () => {
             });
             addRecordAnimeImg.setAttribute("list", newStr);
         });
+        // Listen for a click event on the remove image button.
         animeRemoveImgBtn.addEventListener("click", e => {
             let curListArr = addRecordAnimeImg.getAttribute("list").split(","),
                 remItem = addRecordAnimeImg.getAttribute("src"),
                 index = curListArr.indexOf(remItem),
                 next = "";
             if(curListArr.length > 0) {
+                // If the list of images has more than one image then set the current image to the next one.
                 if(curListArr.length > 1) {
                     if(index == curListArr.length - 1) { next = curListArr[0]; }
                     else { next = curListArr[index + 1]; }
                     addRecordAnimeImg.setAttribute("src", next);
                 }
+                // If the list of images only has the image about to be deleted then set the current image to the default one.
                 else { addRecordAnimeImg.setAttribute("src", addRecordAnimeImg.getAttribute("default")); }
+                // Remove the image from the list.
                 curListArr.splice(index, 1);
                 addRecordAnimeImg.setAttribute("list", curListArr.join(","));
             }
         });
+        // Listen for a click event on the next image button.
         animeNextImgBtn.addEventListener("click", e => {
             let curListArr = addRecordAnimeImg.getAttribute("list").split(","),
                 index = curListArr.indexOf(addRecordAnimeImg.getAttribute("src"));
+            // Change the image source to the previous one in the list, wrapping around if necessary.
             if(curListArr.length > 1) {
                 addRecordAnimeImg.setAttribute("src", index == curListArr.length - 1 ? curListArr[0] : curListArr[index + 1]);
             }
         });
-
-
         // Define the portions of the page associated to the autocomplete 
         const animeName = document.getElementById("animeName"),
             animeNameAutocomplete = M.Autocomplete.init(animeName, { "sortFunction": (a, b) => a.localeCompare(b) }),
@@ -261,6 +269,13 @@ var recordChoicesButtons = () => {
                 musicInput.value = newResponse[12].join(", ");
                 musicInput.classList.add("valid");
                 musicInput.nextElementSibling.classList.add("active");
+            }
+            // Update the anime synopsis if available.
+            if(newResponse[13].length > 0) {
+                const synopsisInput = document.getElementById("animeSynopsis");
+                synopsisInput.value = newResponse[13].replace("[Written by MAL Rewrite]", "").trim();
+                synopsisInput.classList.add("valid");
+                synopsisInput.nextElementSibling.classList.add("active");
             }
             // Reset all anime genres to not be checked.
             Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
