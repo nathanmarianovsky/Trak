@@ -113,14 +113,6 @@ app.whenReady().then(() => {
 		fs.mkdirSync(path.join(basePath, "Trak", "localStyles"));
 	}
 
-	// // Create the localAssets folder if it does not exist.
-	// if(!fs.existsSync(path.join(basePath, "Trak", "localAssets", "animeDef.png"))) {
-	// 	if(!fs.existsSync(path.join(basePath, "Trak", "localAssets"))) {
-	// 		fs.mkdirSync(path.join(basePath, "Trak", "localAssets"));
-	// 	}
-	// 	fs.copySync(path.join(__dirname, "assets", "animeDef.png"), path.join(basePath, "Trak", "localAssets", "animeDef.png"));
-	// }
-
 	// Load the user's preferred window sizes if they exist.
 	fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
 		// If there was an issue reading the configuration.json file display a notification on the console.
@@ -163,7 +155,7 @@ app.whenReady().then(() => {
 								// If there was an issue reading the addRecord.html file display a notification on the console.
 								if(iss) { console.log("There was an issue reading the addRecord.html file."); }
 								else {
-									// Update the href values of the css and js files referenced in the addRecord.html file.
+									// Update the href values of the css and js files along with src values associated to images referenced in the addRecord.html file.
 									addRecordPage = addRecordPage.replace(regCSS, path.join(basePath, "Trak", "localStyles", "styles.css"));
 									addRecordPage = addRecordPage.replace(regJS, path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "scripts", "dist", "frontEnd", " ").trim());
 									addRecordPage = addRecordPage.replace(new RegExp("../../assets/animeDef.png", "g"), path.join(__dirname, "assets", "animeDef.png"));

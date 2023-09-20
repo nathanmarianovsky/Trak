@@ -577,6 +577,10 @@ footer {
 	width: 22%;
 }
 
+#animeAddImgInput {
+	display: none;
+}
+
 .addRecordAnimeImgBtnContainer {
 	width: 20%;
 	display: inline-block;

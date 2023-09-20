@@ -42,13 +42,14 @@
             </div>
             <div class="row addRecordDiv">
                 <div id="addRecordAnimeImageDiv" class="left">
-                    <img id="addRecordAnimeImg" src="../../assets/animeDef.png" list="">
+                    <img id="addRecordAnimeImg" src="../../assets/animeDef.png" list="" default="../../assets/animeDef.png">
                     <div id="addRecordAnimeImgBtnDiv">
-                        <div class="addRecordAnimeImgBtnContainer"><a class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_before</i></a></div>
-                        <div class="addRecordAnimeImgBtnContainer"><a class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">add</i></a></div>
-                        <div class="addRecordAnimeImgBtnContainer"><a class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">remove</i></a></div>
-                        <div class="addRecordAnimeImgBtnContainer"><a class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_next</i></a></div>
+                        <div class="addRecordAnimeImgBtnContainer"><a id="animePreviousImgBtn" class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_before</i></a></div>
+                        <div class="addRecordAnimeImgBtnContainer"><a id="animeAddImgBtn" class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">add</i></a></div>
+                        <div class="addRecordAnimeImgBtnContainer"><a id="animeRemoveImgBtn" class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">remove</i></a></div>
+                        <div class="addRecordAnimeImgBtnContainer"><a id="animeNextImgBtn" class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_next</i></a></div>
                     </div>
+                    <input id="animeAddImgInput" type="file" multiple>
                 </div>
                 <form id="categoryAnimeForm1" class="col s8">
                     <div class="row">

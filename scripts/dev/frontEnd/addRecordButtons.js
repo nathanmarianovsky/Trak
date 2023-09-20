@@ -47,6 +47,62 @@ var recordChoicesButtons = () => {
         // Initialize the dragging of the related content.
         let drake = dragula({"containers": [document.querySelector('#animeList')]});
         drake.on("dragend", () => { animeListReorganize(); });
+
+
+        const animePreviousImgBtn = document.getElementById("animePreviousImgBtn"),
+            animeAddImgBtn = document.getElementById("animeAddImgBtn"),
+            animeAddImgInput = document.getElementById("animeAddImgInput"),
+            animeRemoveImgBtn = document.getElementById("animeRemoveImgBtn"),
+            animeNextImgBtn = document.getElementById("animeNextImgBtn"),
+            addRecordAnimeImg = document.getElementById("addRecordAnimeImg");
+        animePreviousImgBtn.addEventListener("click", e => {
+            let curListArr = addRecordAnimeImg.getAttribute("list").split(","),
+                index = curListArr.indexOf(addRecordAnimeImg.getAttribute("src"));
+            if(curListArr.length > 1) {
+                addRecordAnimeImg.setAttribute("src", index == 0 ? curListArr[curListArr.length - 1] : curListArr[index - 1]);
+            }
+        });
+        animeAddImgBtn.addEventListener("click", e => { animeAddImgInput.click(); });
+        animeAddImgInput.addEventListener("change", e => {
+            let curList = addRecordAnimeImg.getAttribute("list"),
+                newList = Array.from(e.target.files),
+                newStr = curList;
+            newList.forEach(fle => {
+                if(newStr == "") {
+                    addRecordAnimeImg.setAttribute("src", fle.path);
+                    newStr = fle.path;
+                }
+                else if(!curList.includes(fle.path)) {
+                    newStr += "," + fle.path;
+                }
+            });
+            addRecordAnimeImg.setAttribute("list", newStr);
+        });
+        animeRemoveImgBtn.addEventListener("click", e => {
+            let curListArr = addRecordAnimeImg.getAttribute("list").split(","),
+                remItem = addRecordAnimeImg.getAttribute("src"),
+                index = curListArr.indexOf(remItem),
+                next = "";
+            if(curListArr.length > 0) {
+                if(curListArr.length > 1) {
+                    if(index == curListArr.length - 1) { next = curListArr[0]; }
+                    else { next = curListArr[index + 1]; }
+                    addRecordAnimeImg.setAttribute("src", next);
+                }
+                else { addRecordAnimeImg.setAttribute("src", addRecordAnimeImg.getAttribute("default")); }
+                curListArr.splice(index, 1);
+                addRecordAnimeImg.setAttribute("list", curListArr.join(","));
+            }
+        });
+        animeNextImgBtn.addEventListener("click", e => {
+            let curListArr = addRecordAnimeImg.getAttribute("list").split(","),
+                index = curListArr.indexOf(addRecordAnimeImg.getAttribute("src"));
+            if(curListArr.length > 1) {
+                addRecordAnimeImg.setAttribute("src", index == curListArr.length - 1 ? curListArr[0] : curListArr[index + 1]);
+            }
+        });
+
+
         // Define the portions of the page associated to the autocomplete 
         const animeName = document.getElementById("animeName"),
             animeNameAutocomplete = M.Autocomplete.init(animeName, { "sortFunction": (a, b) => a.localeCompare(b) }),
