@@ -96,7 +96,9 @@ ipcRenderer.on("addRecordInitialMessage", event => {
 
 // Handle the load of record information on the update page.
 ipcRenderer.on("recordUpdateInfo", (event, name) => {
+    // Hide the top nav of the addRecord page.
     document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display = "none";
+    // Define the addRecord preloader and display it while the data file is read and page is populated with the associated data.
     const updateRecordPreloader = document.getElementById("updateRecordPreloader");
     updateRecordPreloader.style.display = "block";
     // Attempt to read a record's data file.
@@ -311,6 +313,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
             oldInfo.style.display = "none";
             document.body.append(oldInfo);
         }
+        // Hide the addRecord preloader once the file data has been added.
         updateRecordPreloader.style.display = "none";
         // Initialize the observer for the select tags.
         initSelectObservers();

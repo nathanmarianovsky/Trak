@@ -76,7 +76,6 @@ Creates an object associated to an anime record in order to save/update.
 
 */
 var animeObjCreation = (path, fs, https, tools, dir, providedData) => {
-	console.log(providedData);
 	const animeObj = {
 		"category": providedData[0],
 		"name": providedData[1],
@@ -148,7 +147,6 @@ var animeObjCreation = (path, fs, https, tools, dir, providedData) => {
 			animeObj.content.push(animeSeasonObj);
 		}
 	}
-	console.log(animeObj);
 	return animeObj;
 };
 
@@ -514,9 +512,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, https, exec, shell, ipc, z
    });
 
   	// Handle the opening of the github link on the about section.
-  	ipc.on("aboutGithub", event => {
-  		shell.openExternal("https://github.com/nathanmarianovsky/Trak");
-  	});
+  	ipc.on("aboutGithub", event => { shell.openExternal("https://github.com/nathanmarianovsky/Trak"); });
 
 	// If the data folder does not exist, then create it.
 	if(!fs.existsSync(path.join(dataPath, "Trak", "data"))) {

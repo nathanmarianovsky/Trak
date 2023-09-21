@@ -122,6 +122,7 @@ var recordChoicesButtons = () => {
             }),
             animeNameUL = animeName.nextElementSibling,
             animePreloader = document.getElementById("animePreloader");
+        // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
         document.getElementById("animeFetchDetailsBtn").addEventListener("click", e => {
             if(animeName.value.length > 2) {
                 animePreloader.style.visibility = "visible";

@@ -304,8 +304,9 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         tdNameDiv.textContent = recordData.name != "" ? recordData.name : recordData.jname;
         tdNameDiv.classList.add("recordsNameRowDiv");
         tdName.append(tdNameDiv);
-
+        // If a synopsis is availble then create link for it to open the synopsis modal.
         if(recordData.synopsis != undefined && recordData.synopsis.length > 0) {
+            // Define the link and icon.
             let tdNameLink = document.createElement("a"),
                 tdNameIcon = document.createElement("i");
             tdNameLink.setAttribute("href", "#synopsisModal");
@@ -313,9 +314,10 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             tdNameLink.classList.add("modal-trigger");
             tdNameIcon.textContent = "info";
             tdNameIcon.classList.add("material-icons", "infoIcon");
+            // Append the icon and link accordingly.
             tdNameLink.append(tdNameIcon);
             tdName.append(tdNameLink);
-
+            // Listen for a click event on the icon in order to open the synopsis modal.
             tdNameIcon.addEventListener("click", e => {
                 synopsisPreloader.style.display = "block";
                 fs.readFile(e.target.parentNode.getAttribute("path"), "UTF8", (err, synopsisFile) => {
@@ -327,9 +329,6 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 });
             });
         }
-
-
-
         // Modify the category portion.
         tdCategoryDiv.textContent = recordData.category;
         tdCategoryDiv.classList.add("recordsRowDiv");
