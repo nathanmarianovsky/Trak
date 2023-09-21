@@ -137,7 +137,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 animeReview.setAttribute("lastValue", recordData.review);
                 if(recordData.review != "") {
                     animeReview.parentNode.children[1].classList.add("active");
-                    animeReview.style.height = animeReview.scrollHeight + "px";
+                    M.textareaAutoResize(animeReview);
                 }
                 animeReview.addEventListener("change", e => {
                     e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
@@ -149,7 +149,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 animeSynopsis.setAttribute("lastValue", recordData.synopsis);
                 if(recordData.synopsis != "") {
                     animeSynopsis.parentNode.children[1].classList.add("active");
-                    animeSynopsis.style.height = animeSynopsis.scrollHeight + "px";
+                    M.textareaAutoResize(animeSynopsis);
                 }
                 animeSynopsis.addEventListener("change", e => {
                     e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");

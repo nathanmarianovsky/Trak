@@ -97,7 +97,7 @@ Initialize all modals on the page.
 var initModal = () => {
     // Define the current instances of modals found on the page.
     const elemsModal = document.querySelectorAll(".modal"),
-        instancesModal = M.Modal.init(elemsModal);
+        instancesModal = M.Modal.init(elemsModal, { "onCloseEnd": () => document.body.style.overflowY = "visible" });
 };
 
 

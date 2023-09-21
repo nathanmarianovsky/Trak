@@ -412,6 +412,7 @@ var singleAddition = () => {
         option2SingleType = document.createElement("option"),
         option3SingleType = document.createElement("option"),
         option4SingleType = document.createElement("option"),
+        option5SingleType = document.createElement("option"),
         labelSingleType = document.createElement("label"),
         divSingleReleaseDate = document.createElement("div"),
         inputSingleReleaseDate = document.createElement("input"),
@@ -446,13 +447,15 @@ var singleAddition = () => {
     divSingleType.style.marginLeft = "25px";
     option1SingleType.setAttribute("value", "");
     option1SingleType.textContent = "N/A";
-    option2SingleType.setAttribute("value", "Film");
-    option2SingleType.textContent = "Film";
+    option2SingleType.setAttribute("value", "Movie");
+    option2SingleType.textContent = "Movie";
     option3SingleType.setAttribute("value", "ONA");
     option3SingleType.textContent = "ONA";
     option4SingleType.setAttribute("value", "OVA");
     option4SingleType.textContent = "OVA";
-    selectSingleType.append(option1SingleType, option2SingleType, option3SingleType, option4SingleType);
+    option5SingleType.setAttribute("value", "Special");
+    option5SingleType.textContent = "Special";
+    selectSingleType.append(option1SingleType, option2SingleType, option3SingleType, option4SingleType, option5SingleType);
     selectSingleType.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Type");
     labelSingleType.textContent = "Type:";
     // Prepare the film/ONA/OVA release date.

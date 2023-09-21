@@ -276,9 +276,7 @@ var recordChoicesButtons = () => {
                 synopsisInput.value = newResponse[13].replace("[Written by MAL Rewrite]", "").trim();
                 synopsisInput.classList.add("valid");
                 synopsisInput.nextElementSibling.classList.add("active");
-                // synopsisInput.dispatchEvent(new Event("input", { "bubbles": true }));
-                // synopsisInput.style.height = "auto";
-                synopsisInput.style.height = synopsisInput.scrollHeight + "px";
+                M.textareaAutoResize(synopsisInput);
             }
             // Reset all anime genres to not be checked.
             Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
@@ -301,15 +299,62 @@ var recordChoicesButtons = () => {
                     document.getElementById("animeGenre" + genreIter).checked = true;
                 }
             });
+
+
+            document.getElementById("animeList").innerHTML = "";
+            if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
+                seasonAddition();
+                const seasonName = document.getElementById("li_1_Season_Name");
+                if(newResponse[3] != "") {
+                    let dateStart = new Date(newResponse[3]);
+                    dateStart.setDate(dateStart.getDate() - 1);
+                    document.getElementById("li_1_Season_Start").value = dateStart.getFullYear() + "-"
+                        + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
+                        + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
+                }
+                if(newResponse[4] != "") {
+                    let dateEnd = new Date(newResponse[4]);
+                    dateEnd.setDate(dateEnd.getDate() - 1);
+                    document.getElementById("li_1_Season_End").value = dateEnd.getFullYear() + "-"
+                        + (dateEnd.getMonth() + 1 > 9 ? dateEnd.getMonth() + 1 : "0" + (dateEnd.getMonth() + 1)) + "-"
+                        + (dateEnd.getDate() + 1 > 9 ? dateEnd.getDate() + 1 : "0" + (dateEnd.getDate() + 1));
+                }
+                seasonName.value = "Season 1";
+                seasonName.classList.add("valid");
+                seasonName.nextElementSibling.classList.add("active");
+                for(let f = 0; f < parseInt(newResponse[6]); f++) {
+                    document.getElementById("li_1_Season_AddEpisode").click();
+                    let episodeName = document.getElementById("li_1_Episode_Name_" + (f + 1));
+                    episodeName.value = "Episode " + (f + 1);
+                    episodeName.classList.add("valid");
+                    episodeName.nextElementSibling.classList.add("active");
+                }
+                document.getElementById("li_1_Season").children[0].click();
+            }
+            else {
+                singleAddition();
+                const singleName = document.getElementById("li_1_Single_Name"),
+                    singleType = document.getElementById("li_1_Single_Type");
+                if(newResponse[3] != "") {
+                    let dateStart = new Date(newResponse[3]);
+                    dateStart.setDate(dateStart.getDate() - 1);
+                    document.getElementById("li_1_Single_Release").value = dateStart.getFullYear() + "-"
+                        + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
+                        + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
+                }
+                singleName.value = "Item 1";
+                singleName.classList.add("valid");
+                singleName.nextElementSibling.classList.add("active");
+                singleType.value = newResponse[5];
+                // Initialize the select tags.
+                initSelect();
+            }
+
+
+
+
             animePreloader.style.visibility = "hidden";
         });
-        // Handle the auto resizing of the anime review and synopsis.
-        // let autoResize = e => {
-        //     e.target.style.height = "auto";
-        //     e.target.style.height = e.target.scrollHeight + "px";
-        // }
-        // document.getElementById("animeReview").addEventListener("input", autoResize, false);
-        // document.getElementById("animeSynopsis").addEventListener("input", autoResize, false);
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         if(introHolder == true) {
             const instancesTapAnimeSave = M.TapTarget.init(document.getElementById("introductionTargetAnimeSave"), { "onClose": () => {
