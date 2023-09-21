@@ -87,8 +87,18 @@ ipcRenderer.on("recordFolderRenameFailure", (event, response) => {
 
 
 
+// If the addRecord page is loading for a new addition then show the initial messanging.
+ipcRenderer.on("addRecordInitialMessage", event => {
+    document.getElementById("categoryInitial").style.display = "initial";
+});
+
+
+
 // Handle the load of record information on the update page.
 ipcRenderer.on("recordUpdateInfo", (event, name) => {
+    document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display = "none";
+    const updateRecordPreloader = document.getElementById("updateRecordPreloader");
+    updateRecordPreloader.style.display = "block";
     // Attempt to read a record's data file.
     fs.readFile(path.join(localPath, "Trak", "data", name, "data.json"), (err, file) => {
         // Display a notification if there was an error in reading the data file.
@@ -114,6 +124,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     animeImg = document.getElementById("addRecordAnimeImg");
                 // Load the anime record portion of the addRecord page.
                 document.getElementById("categoryAnime").click();
+                document.getElementById("categoryAnimeDiv").children[0].style.marginTop = "3%";
                 // Populate the anime record page with the saved data.
                 animeName.value = recordData.name;
                 animeName.setAttribute("lastValue", recordData.name);
@@ -300,6 +311,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
             oldInfo.style.display = "none";
             document.body.append(oldInfo);
         }
+        updateRecordPreloader.style.display = "none";
         // Initialize the observer for the select tags.
         initSelectObservers();
     });

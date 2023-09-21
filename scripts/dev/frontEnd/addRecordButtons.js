@@ -123,8 +123,13 @@ var recordChoicesButtons = () => {
             animeNameUL = animeName.nextElementSibling,
             animePreloader = document.getElementById("animePreloader");
         document.getElementById("animeFetchDetailsBtn").addEventListener("click", e => {
-            animePreloader.style.visibility = "visible";
-            ipcRenderer.send("animeFetchDetails", animeName.value);
+            if(animeName.value.length > 2) {
+                animePreloader.style.visibility = "visible";
+                ipcRenderer.send("animeFetchDetails", animeName.value);
+            }
+            else {
+                M.toast({"html": "The name is too short to fetch details from MyAnimeList", "classes": "rounded"});
+            }
         });
         // Define the autocomplete previous input and character max count for display purposes.
         let previousName = "",
