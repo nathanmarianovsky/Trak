@@ -122,6 +122,10 @@ var recordChoicesButtons = () => {
             }),
             animeNameUL = animeName.nextElementSibling,
             animePreloader = document.getElementById("animePreloader");
+        document.getElementById("animeFetchDetailsBtn").addEventListener("click", e => {
+            animePreloader.style.visibility = "visible";
+            ipcRenderer.send("animeFetchDetails", animeName.value);
+        });
         // Define the autocomplete previous input and character max count for display purposes.
         let previousName = "",
             maxCharCount = 0;
