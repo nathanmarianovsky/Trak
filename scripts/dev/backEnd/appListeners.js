@@ -76,6 +76,7 @@ Creates an object associated to an anime record in order to save/update.
 
 */
 var animeObjCreation = (path, fs, https, tools, dir, providedData) => {
+	console.log(providedData);
 	const animeObj = {
 		"category": providedData[0],
 		"name": providedData[1],
@@ -92,7 +93,7 @@ var animeObjCreation = (path, fs, https, tools, dir, providedData) => {
 		"img": [],
 		"content": []
 	};
-	if(providedData[14][0] == false) {
+	if(providedData[14][0] == false && providedData[14][1][0] != "") {
 		for(let y = 0; y < providedData[14][1].length; y++) {
 			if(tools.isURL(providedData[14][1][y])) {
 				let downloadFilePath = path.join(dir, "Trak", "data",
@@ -147,6 +148,7 @@ var animeObjCreation = (path, fs, https, tools, dir, providedData) => {
 			animeObj.content.push(animeSeasonObj);
 		}
 	}
+	console.log(animeObj);
 	return animeObj;
 };
 
@@ -528,6 +530,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, https, exec, shell, ipc, z
   			if(scenario == true) {
   				addWindow.webContents.send("addIntroduction");
   			}
+  			addWindow.webContents.send("addRecordInitialMessage");
   			ipc.once("performSave", (event, submission) => {
 				// If the record is an anime then save the corresponding data.
 				if(submission[0] == "Anime") {

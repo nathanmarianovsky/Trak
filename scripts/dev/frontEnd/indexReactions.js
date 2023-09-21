@@ -270,9 +270,11 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             return lhsVal.localeCompare(rhsVal);
         });
     }
-    // Attach a row to the html table body for each contact.
+    // Attach a row to the html table body for each record.
     const tableDiv = document.getElementById("tableDiv"),
-        tableBody = document.getElementById("tableBody");
+        tableBody = document.getElementById("tableBody"),
+        synopsisPreloader = document.getElementById("synopsisPreloader"),
+        synopsisModalContent = document.getElementById("synopsisModalContent");
     tableDiv.style.height = (tableDiff + 467) + "px";
     tableBody.textContent = "";
     document.getElementById("preloader").style.setProperty("display", "none", "important");
@@ -302,6 +304,32 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         tdNameDiv.textContent = recordData.name != "" ? recordData.name : recordData.jname;
         tdNameDiv.classList.add("recordsNameRowDiv");
         tdName.append(tdNameDiv);
+
+        if(recordData.synopsis != undefined && recordData.synopsis.length > 0) {
+            let tdNameLink = document.createElement("a"),
+                tdNameIcon = document.createElement("i");
+            tdNameLink.setAttribute("href", "#synopsisModal");
+            tdNameLink.setAttribute("path", path.join(localPath, "Trak", "data", list[n], "data.json"));
+            tdNameLink.classList.add("modal-trigger");
+            tdNameIcon.textContent = "info";
+            tdNameIcon.classList.add("material-icons", "infoIcon");
+            tdNameLink.append(tdNameIcon);
+            tdName.append(tdNameLink);
+
+            tdNameIcon.addEventListener("click", e => {
+                synopsisPreloader.style.display = "block";
+                fs.readFile(e.target.parentNode.getAttribute("path"), "UTF8", (err, synopsisFile) => {
+                    if(err) { M.toast({"html": "There was an issue reading the data file associated to the " + toastParse(e.parentNode.parentNode.parentNode.id) + ".", "classes": "rounded"}); }
+                    else {
+                        synopsisPreloader.style.display = "none";
+                        synopsisModalContent.innerHTML = JSON.parse(synopsisFile).synopsis.split("").map(elem => elem == "\n" ? "<br>" : elem).join("");
+                    }
+                });
+            });
+        }
+
+
+
         // Modify the category portion.
         tdCategoryDiv.textContent = recordData.category;
         tdCategoryDiv.classList.add("recordsRowDiv");
