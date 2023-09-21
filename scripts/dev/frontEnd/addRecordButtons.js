@@ -111,21 +111,11 @@ var recordChoicesButtons = () => {
                 addRecordAnimeImg.setAttribute("src", index == curListArr.length - 1 ? curListArr[0] : curListArr[index + 1]);
             }
         });
-
-
-        // const selector = 'input.autocomplete';
-        // let currentActiveAutoCompleteInput = null;
-        // document.querySelectorAll(selector).forEach(el => {
-        //     el.onchange = function(evt) {
-        //         currentActiveAutoCompleteInput = evt.target;
-        //     };
-        // });
-
-
-
         // Define the portions of the page associated to the autocomplete 
         const animeName = document.getElementById("animeName"),
-            animeNameAutocomplete = M.Autocomplete.init(animeName, { "sortFunction": (a, b) => a.localeCompare(b), "onAutocomplete": txt => {
+            animeNameAutocomplete = M.Autocomplete.init(animeName, {
+                "sortFunction": (a, b) => a.localeCompare(b),
+                "onAutocomplete": txt => {
                     animePreloader.style.visibility = "visible";
                     ipcRenderer.send("animeFetchDetails", txt);
                 }
@@ -163,21 +153,8 @@ var recordChoicesButtons = () => {
                 maxCharCount = Math.floor(((20/190) * (animeName.getBoundingClientRect().width - 467)) + 38);
                 // Iterate through all attained autocomplete options.
                 for(let t = 0; t < response[2].length; t++) {
-                    // // If the autocomplete option has a name which is too long truncate it properly and add it as a page option.
-                    // if(response[2][t][0].length > maxCharCount) {
-                    //     let z = 3;
-                    //     while(true) {
-                    //         if(!autoObj.hasOwnProperty(response[2][t][0].substring(0, maxCharCount).concat(new Array(z).fill(".").join("")))) {
-                    //             autoObj[response[2][t][0].substring(0, maxCharCount).concat(new Array(z).fill(".").join(""))] = response[2][t][1];
-                    //             break;
-                    //         }
-                    //         z++;
-                    //     }
-                    // }
-                    // // If no truncation is necessary simply add the name as is as a page option.
-                    // else {
-                        autoObj[response[2][t][0]] = response[2][t][1];
-                    // }
+                    // Add each option to the autocomplete object.
+                    autoObj[response[2][t][0]] = response[2][t][1];
                 }
                 // Update the page autocomplete options.
                 animeNameAutocomplete.updateData(autoObj);
@@ -196,47 +173,14 @@ var recordChoicesButtons = () => {
                         for(let v = 0; v < response[2].length; v++) {
                             if(curChild.children[0].getAttribute("src") == response[2][v][1]) {
                                 curChild.setAttribute("name", response[2][v][0]);
-                                // curChild.setAttribute("pageurl", response[2][v][2]);
                             }
                         }
-                        // // Listen for a click event on a page autocomplete option in order to fetch the associated details from myanimelist.
-                        // curChild.addEventListener("click", eve => {
-                        //     // Make sure that only a single request is made for details to be fetched.
-                        //     if(eve.currentTarget.dataset.triggered) { return; }
-                        //     eve.currentTarget.dataset.triggered = true;
-                        //     // Define the list item which was clicked on.
-                        //     let curItem = eve.target.closest("li");
-                        //     // Update the page anime name in case the name was truncated in the autocomplete list.
-                        //     setTimeout(() => { animeName.value = curItem.getAttribute("name"); }, 10);
-                        //     animePreloader.style.visibility = "visible";
-                        //     // Send a request for the details to be fetched on the back-end.
-                        //     ipcRenderer.send("animeFetchDetails", curItem.getAttribute("pageurl"));
-                        // }, { "once": true });
                     }
                 }, 500);
             }
             // If the anime name is not long enough then update the page autocomplete options to be empty.
             else { animeNameAutocomplete.updateData({}); }
         });
-        // // Listen for the "Enter" button press on a page autocomplete option in order to fetch the associated details from myanimelist.
-        // document.body.addEventListener("keydown", eve => {
-        //     console.log("enter pressed!");
-        //     console.log(eve.target);
-        //     console.log(eve.key);
-        //     console.log(eve);
-        //     // if(eve.keyCode == 13) {
-        //     //     // Make sure that only a single request is made for details to be fetched.
-        //     //     if(eve.currentTarget.dataset.triggered) { return; }
-        //     //     eve.currentTarget.dataset.triggered = true;
-        //     //     // Define the list item which was clicked on.
-        //     //     // let curItem = eve.target.closest("li");
-        //     //     // Update the page anime name in case the name was truncated in the autocomplete list.
-        //     //     setTimeout(() => { animeName.value = eve.target.getAttribute("name"); }, 10);
-        //     //     animePreloader.style.visibility = "visible";
-        //     //     // Send a request for the details to be fetched on the back-end.
-        //     //     ipcRenderer.send("animeFetchDetails", eve.target.getAttribute("pageurl"));
-        //     // }
-        // });
         // Update the page accordingly based on the fetched anime details.
         ipcRenderer.on("animeFetchDetailsResult", (newEve, newResponse) => {
             // Update the anime japanese name if available.
@@ -316,11 +260,14 @@ var recordChoicesButtons = () => {
                 }
             });
 
-
+            // Reset the related content modal.
             document.getElementById("animeList").innerHTML = "";
+            // If the anime type is a season then add a season to the related content.
             if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
+                // Attach a season.
                 seasonAddition();
                 const seasonName = document.getElementById("li_1_Season_Name");
+                // If the start date is provided then set it as the value for the season start date input. 
                 if(newResponse[3] != "") {
                     let dateStart = new Date(newResponse[3]);
                     dateStart.setDate(dateStart.getDate() - 1);
@@ -328,6 +275,7 @@ var recordChoicesButtons = () => {
                         + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
                         + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
                 }
+                // If the end date is provided then set it as the value for the season end date input. 
                 if(newResponse[4] != "") {
                     let dateEnd = new Date(newResponse[4]);
                     dateEnd.setDate(dateEnd.getDate() - 1);
@@ -335,9 +283,11 @@ var recordChoicesButtons = () => {
                         + (dateEnd.getMonth() + 1 > 9 ? dateEnd.getMonth() + 1 : "0" + (dateEnd.getMonth() + 1)) + "-"
                         + (dateEnd.getDate() + 1 > 9 ? dateEnd.getDate() + 1 : "0" + (dateEnd.getDate() + 1));
                 }
+                // Provide a default season name.
                 seasonName.value = "Season 1";
                 seasonName.classList.add("valid");
                 seasonName.nextElementSibling.classList.add("active");
+                // Add the appropriate number of episodes with a default episode name.
                 for(let f = 0; f < parseInt(newResponse[6]); f++) {
                     document.getElementById("li_1_Season_AddEpisode").click();
                     let episodeName = document.getElementById("li_1_Episode_Name_" + (f + 1));
@@ -345,12 +295,15 @@ var recordChoicesButtons = () => {
                     episodeName.classList.add("valid");
                     episodeName.nextElementSibling.classList.add("active");
                 }
+                // Hide the episodes by default.
                 document.getElementById("li_1_Season").children[0].click();
             }
             else {
+                // Attach a single film/ona/ova.
                 singleAddition();
                 const singleName = document.getElementById("li_1_Single_Name"),
                     singleType = document.getElementById("li_1_Single_Type");
+                // If the release date is provided then set it as the value for the single release date input. 
                 if(newResponse[3] != "") {
                     let dateStart = new Date(newResponse[3]);
                     dateStart.setDate(dateStart.getDate() - 1);
@@ -358,17 +311,16 @@ var recordChoicesButtons = () => {
                         + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
                         + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
                 }
+                // Provide a default film/ona/ova name.
                 singleName.value = "Item 1";
                 singleName.classList.add("valid");
                 singleName.nextElementSibling.classList.add("active");
+                // Set the type for the item.
                 singleType.value = newResponse[5];
                 // Initialize the select tags.
                 initSelect();
             }
-
-
-
-
+            // Hide the preloader now that everything has been loaded.
             animePreloader.style.visibility = "hidden";
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
