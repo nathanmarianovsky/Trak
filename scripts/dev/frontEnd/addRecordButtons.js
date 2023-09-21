@@ -111,9 +111,25 @@ var recordChoicesButtons = () => {
                 addRecordAnimeImg.setAttribute("src", index == curListArr.length - 1 ? curListArr[0] : curListArr[index + 1]);
             }
         });
+
+
+        // const selector = 'input.autocomplete';
+        // let currentActiveAutoCompleteInput = null;
+        // document.querySelectorAll(selector).forEach(el => {
+        //     el.onchange = function(evt) {
+        //         currentActiveAutoCompleteInput = evt.target;
+        //     };
+        // });
+
+
+
         // Define the portions of the page associated to the autocomplete 
         const animeName = document.getElementById("animeName"),
-            animeNameAutocomplete = M.Autocomplete.init(animeName, { "sortFunction": (a, b) => a.localeCompare(b) }),
+            animeNameAutocomplete = M.Autocomplete.init(animeName, { "sortFunction": (a, b) => a.localeCompare(b), "onAutocomplete": txt => {
+                    animePreloader.style.visibility = "visible";
+                    ipcRenderer.send("animeFetchDetails", txt);
+                }
+            }),
             animeNameUL = animeName.nextElementSibling,
             animePreloader = document.getElementById("animePreloader");
         // Define the autocomplete previous input and character max count for display purposes.
@@ -147,21 +163,21 @@ var recordChoicesButtons = () => {
                 maxCharCount = Math.floor(((20/190) * (animeName.getBoundingClientRect().width - 467)) + 38);
                 // Iterate through all attained autocomplete options.
                 for(let t = 0; t < response[2].length; t++) {
-                    // If the autocomplete option has a name which is too long truncate it properly and add it as a page option.
-                    if(response[2][t][0].length > maxCharCount) {
-                        let z = 3;
-                        while(true) {
-                            if(!autoObj.hasOwnProperty(response[2][t][0].substring(0, maxCharCount).concat(new Array(z).fill(".").join("")))) {
-                                autoObj[response[2][t][0].substring(0, maxCharCount).concat(new Array(z).fill(".").join(""))] = response[2][t][1];
-                                break;
-                            }
-                            z++;
-                        }
-                    }
-                    // If no truncation is necessary simply add the name as is as a page option.
-                    else {
+                    // // If the autocomplete option has a name which is too long truncate it properly and add it as a page option.
+                    // if(response[2][t][0].length > maxCharCount) {
+                    //     let z = 3;
+                    //     while(true) {
+                    //         if(!autoObj.hasOwnProperty(response[2][t][0].substring(0, maxCharCount).concat(new Array(z).fill(".").join("")))) {
+                    //             autoObj[response[2][t][0].substring(0, maxCharCount).concat(new Array(z).fill(".").join(""))] = response[2][t][1];
+                    //             break;
+                    //         }
+                    //         z++;
+                    //     }
+                    // }
+                    // // If no truncation is necessary simply add the name as is as a page option.
+                    // else {
                         autoObj[response[2][t][0]] = response[2][t][1];
-                    }
+                    // }
                 }
                 // Update the page autocomplete options.
                 animeNameAutocomplete.updateData(autoObj);
@@ -180,22 +196,22 @@ var recordChoicesButtons = () => {
                         for(let v = 0; v < response[2].length; v++) {
                             if(curChild.children[0].getAttribute("src") == response[2][v][1]) {
                                 curChild.setAttribute("name", response[2][v][0]);
-                                curChild.setAttribute("pageurl", response[2][v][2]);
+                                // curChild.setAttribute("pageurl", response[2][v][2]);
                             }
                         }
-                        // Listen for a click event on a page autocomplete option in order to fetch the associated details from myanimelist.
-                        curChild.addEventListener("click", eve => {
-                            // Make sure that only a single request is made for details to be fetched.
-                            if(eve.currentTarget.dataset.triggered) { return; }
-                            eve.currentTarget.dataset.triggered = true;
-                            // Define the list item which was clicked on.
-                            let curItem = eve.target.closest("li");
-                            // Update the page anime name in case the name was truncated in the autocomplete list.
-                            setTimeout(() => { animeName.value = curItem.getAttribute("name"); }, 10);
-                            animePreloader.style.visibility = "visible";
-                            // Send a request for the details to be fetched on the back-end.
-                            ipcRenderer.send("animeFetchDetails", curItem.getAttribute("pageurl"));
-                        }, { "once": true });
+                        // // Listen for a click event on a page autocomplete option in order to fetch the associated details from myanimelist.
+                        // curChild.addEventListener("click", eve => {
+                        //     // Make sure that only a single request is made for details to be fetched.
+                        //     if(eve.currentTarget.dataset.triggered) { return; }
+                        //     eve.currentTarget.dataset.triggered = true;
+                        //     // Define the list item which was clicked on.
+                        //     let curItem = eve.target.closest("li");
+                        //     // Update the page anime name in case the name was truncated in the autocomplete list.
+                        //     setTimeout(() => { animeName.value = curItem.getAttribute("name"); }, 10);
+                        //     animePreloader.style.visibility = "visible";
+                        //     // Send a request for the details to be fetched on the back-end.
+                        //     ipcRenderer.send("animeFetchDetails", curItem.getAttribute("pageurl"));
+                        // }, { "once": true });
                     }
                 }, 500);
             }

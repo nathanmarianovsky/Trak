@@ -583,10 +583,10 @@ exports.addListeners = (app, BrowserWindow, path, fs, https, exec, shell, ipc, z
 		});
 	});
 
-	// Handles the fetching of details for a given anime via its url.
-	ipc.on("animeFetchDetails", (event, url) => {
+	// Handles the fetching of details for a given anime via its name.
+	ipc.on("animeFetchDetails", (event, name) => {
 		// Fetch anime details.
-		malScraper.getInfoFromURL(url).then(animeData => {
+		malScraper.getInfoFromName(name, true, "anime").then(animeData => {
 			// Define the parameters which will be passed to the front-end based on the details received.
 			let startDate = "",
 				endDate = "";
