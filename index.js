@@ -11,6 +11,8 @@ Declare all of the necessary variables.
 	- exec provides the means to open files and folders.
 	- zipper is a library object which can create zip files.
 	- malScraper provides the means to attain anime and manga records from myanimelist.
+	- os provides the means to get information on the user operating system.
+	- semver provides the means to compare semantic versioning.
 	- basePath is the path to the local settings data.
 	- localPath is the path to the local user data.
 
@@ -26,6 +28,8 @@ const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
 	exec = require("child_process").exec,
 	zipper = require("zip-local"),
 	malScraper = require("mal-scraper"),
+	os = require("os"),
+	semver = require("semver"),
 	basePath = localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
 if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
 	var localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
@@ -115,6 +119,11 @@ app.whenReady().then(() => {
 		fs.mkdirSync(path.join(basePath, "Trak", "localStyles"));
 	}
 
+	// Create the downloads folder if it does not exist.
+	if(!fs.existsSync(path.join(basePath, "Trak", "downloads"))) {
+		fs.mkdirSync(path.join(basePath, "Trak", "downloads"));
+	}
+
 	// Load the user's preferred window sizes if they exist.
 	fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
 		// If there was an issue reading the configuration.json file display a notification on the console.
@@ -186,12 +195,13 @@ app.whenReady().then(() => {
 															primaryWindow.webContents.on("did-finish-load", () => {
 																primaryWindow.webContents.send("loadRows", primWinFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
 																tools.tutorialLoad(fs, path, primaryWindow, basePath);
+																tools.checkForUpdate(os, semver, https, fs, path, basePath, primaryWindow);
 															});
 														  	// Create the system tray icon and menu. 
 														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 															tools.createTrayMenu("h", primaryWindow, tray, Menu);
 															// Add all of the back-end listeners.
-															appListeners.addListeners(app, BrowserWindow, path, fs, https, exec, shell, ipc, zipper, tools, malScraper, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															appListeners.addListeners(app, BrowserWindow, path, fs, os, semver, https, exec, shell, ipc, zipper, tools, malScraper, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 														}
 													});
 												}

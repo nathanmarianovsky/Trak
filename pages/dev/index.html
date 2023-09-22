@@ -29,6 +29,7 @@
                     <li><a id="clearFilter" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Clear Filter"><i class="material-icons">clear_all</i></a></li>
                 </ul>
                 <ul class="right">
+                    <li><a id="updateAvailable" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Update Available" href="#updateModal"><i class="material-icons">update</i></a></li>
                     <li>
                         <div class="topNavTapContainer">
                             <a id="openDatabase" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Export/Import" href="#databaseModal"><i class="material-icons">library_books</i></a>
@@ -281,6 +282,16 @@
             </div>
             <div class="modal-footer">
                 <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+            </div>
+        </div>
+        <div id="updateModal" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h4 class="center">Update Available</h4>
+                <p id="updateModalContent"></p>
+            </div>
+            <div class="modal-footer">
+                <a class="modal-close waves-effect waves-light btn-flat modalButtons left">Exit</a>
+                <a id="appUpdate" class="modal-close waves-effect waves-light btn-flat modalButtons">Update</a>
             </div>
         </div>
     </body>

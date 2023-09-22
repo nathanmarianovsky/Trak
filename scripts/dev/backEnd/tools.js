@@ -289,11 +289,11 @@ Provides the necessary command to execute the opening of a folder.
 
 */
 exports.startCommandLineFolder = () => {
-   switch(process.platform) { 
-      case "darwin" : return "open";
-      case "win32" : return "explorer";
-      case "win64" : return "explorer";
-      default : return "xdg-open";
+    switch(process.platform) { 
+      	case "darwin" : return "open";
+      	case "win32" : return "explorer";
+      	case "win64" : return "explorer";
+  		default : return "xdg-open";
    }
 };
 
@@ -321,6 +321,55 @@ Extracts the filename from a given string representing a url.
 
 */
 exports.parseURLFilename = url => new URL(url, "https://example.com").href.split("#").shift().split("?").shift().split("/").pop();
+
+
+
+
+exports.checkForUpdate = (os, semver, https, fs, path, dir, win) => {
+	// console.log("called");
+	const options = { "host": "api.github.com", "path": "/repos/nathanmarianovsky/Trak/releases", "method": "GET", "headers": { "user-agent": "node.js" } };
+	const request = https.request(options, response => {
+		// console.log("inside");
+		let body = "";
+		response.on("data", chunk => body += chunk.toString("UTF8"));
+		response.on("end", () => {
+		    var githubData = JSON.parse(body)[0];
+			console.log(githubData);
+		    fs.readFile(path.join(dir, "Trak", "config", "location.json"), "UTF8", (resp, fl) => {
+		    	const curVer = JSON.parse(fs.readFileSync(path.join(JSON.parse(fl).appLocation, "package.json"), "UTF8")).version;
+                if(resp) { win.webContents.send("locationFileIssue"); }
+                else if(semver.gt(githubData.tag_name.substring(1), curVer)) {
+                	let fileName = "Trak-",
+                		ending = ""
+                		downloadURL = "";
+                	if(os.type() == "Windows_NT") { fileName += "Windows-"; ending = ".msi"; }
+                	else if(os.type() == "Linux") { fileName += "Linux-"; ending = ".deb"; }
+                	if(os.arch() == "x64") { fileName += "amd64" }
+                	else if(os.arch() == "arm64") { fileName += "arm64" }
+                	fileName += ending;
+                	for(let q = 0; q < githubData.assets.length; q++) {
+                		if(githubData.assets[q].name == fileName) {
+                			downloadURL = githubData.assets[q].browser_download_url;
+                			break;
+                		}
+                	}
+                	win.webContents.send("updateAvailable", [githubData.url, githubData.tag_name.substring(1), curVer, githubData.body, downloadURL, fileName]);
+                }
+            });
+	    });
+	});
+	request.end();
+
+
+
+
+
+
+		    // console.log(githubData[0]);
+
+		    // console.log(os.type());
+		    // console.log(os.arch());
+};
 
 
 

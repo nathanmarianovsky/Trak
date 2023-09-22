@@ -129,6 +129,32 @@ ipcRenderer.on("importZipFileSuccess", (event, response) => {
 
 
 
+// Display a notification if there was an issue reading the location.json file.
+ipcRenderer.on("locationFileIssue", event => {
+    M.toast({"html": "There was an issue reading the location.json file.", "classes": "rounded"});
+});
+
+
+
+// Display a notification if there was an issue reading the location.json file.
+ipcRenderer.on("updateAvailable", (event, response) => {
+    console.log("updateAvailable");
+
+
+    document.getElementById("updateModalContent").innerHTML = response[3] + "<br><br>"
+        + "More information can be found at: <a id='updateLink' val='" + response[0] + "' class='hyperlink'>Github Release</a>" + "." + "<br><br>"
+        + "Current Version: " + response[2] + "<br>" + "Update Version: " + response[1];
+
+    document.getElementById("appUpdate").addEventListener("click", e => {
+        console.log("clicked");
+        console.log(response);
+        ipcRenderer.send("appUpdate", response.slice(4));
+    });
+
+});
+
+
+
 // Display the import modal in order to ask the user on whether an imported record should overwrite a record with the same name in the current library.
 ipcRenderer.on("importRecordExists", (event, response) => {
     // Define the form to which record checkboxes will be appended for user approval.
