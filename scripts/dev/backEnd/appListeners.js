@@ -521,6 +521,9 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease
   	// Handle the opening of the github link on the about section.
   	ipc.on("aboutGithub", event => { shell.openExternal("https://github.com/nathanmarianovsky/Trak"); });
 
+  	// Handle the opening of the github release link on the update modal.
+  	ipc.on("githubRelease", (event, url) => { shell.openExternal(url); });
+
 	// If the data folder does not exist, then create it.
 	if(!fs.existsSync(path.join(dataPath, "Trak", "data"))) {
 		fs.mkdirSync(path.join(dataPath, "Trak", "data"), { "recursive": true });
