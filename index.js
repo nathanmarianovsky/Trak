@@ -12,6 +12,8 @@ Declare all of the necessary variables.
 	- zipper is a library object which can create zip files.
 	- malScraper provides the means to attain anime and manga records from myanimelist.
 	- os provides the means to get information on the user operating system.
+	- spawn provides the means to launch an update via an installer.
+	- downloadRelease provides the means to download a github release asset.
 	- semver provides the means to compare semantic versioning.
 	- basePath is the path to the local settings data.
 	- localPath is the path to the local user data.
@@ -29,6 +31,8 @@ const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
 	zipper = require("zip-local"),
 	malScraper = require("mal-scraper"),
 	os = require("os"),
+	spawn = require("child_process").spawn,
+	downloadRelease = require("download-github-release"),
 	semver = require("semver"),
 	basePath = localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
 if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
@@ -119,10 +123,11 @@ app.whenReady().then(() => {
 		fs.mkdirSync(path.join(basePath, "Trak", "localStyles"));
 	}
 
-	// Create the downloads folder if it does not exist.
-	if(!fs.existsSync(path.join(basePath, "Trak", "downloads"))) {
-		fs.mkdirSync(path.join(basePath, "Trak", "downloads"));
+	// Create the downloads folder if it does not exist. If it does exist then empty it on load.
+	if(!fs.existsSync(path.join(process.env.HOME, "TrakDownloads"))) {
+		fs.mkdirSync(path.join(process.env.HOME, "TrakDownloads"));
 	}
+	else { fs.emptyDirSync(path.join(process.env.HOME, "TrakDownloads")); }
 
 	// Load the user's preferred window sizes if they exist.
 	fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
@@ -201,7 +206,7 @@ app.whenReady().then(() => {
 														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 															tools.createTrayMenu("h", primaryWindow, tray, Menu);
 															// Add all of the back-end listeners.
-															appListeners.addListeners(app, BrowserWindow, path, fs, os, semver, https, exec, shell, ipc, zipper, tools, malScraper, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															appListeners.addListeners(app, BrowserWindow, path, fs, os, spawn, downloadRelease, semver, https, exec, shell, ipc, zipper, tools, malScraper, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 														}
 													});
 												}

@@ -10,6 +10,7 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
    - tutorialLoad: Tells the front-end to load the application tutorial.
    - startCommandLineFolder: Provides the necessary command to execute the opening of a folder.
    - isURL: Tests whether a given string represents a url.
+   - checkForUpdate: Checks against the most recent release on github to determine if an update is available.
 
 */
 
@@ -324,20 +325,38 @@ exports.parseURLFilename = url => new URL(url, "https://example.com").href.split
 
 
 
+/*
 
+Checks against the most recent release on github to determine if an update is available.
+
+	- os provides the means to get information on the user operating system.
+	- semver provides the means to compare semantic versioning.
+    - https provides the means to download files.
+    - fs and path provide the means to work with local files.
+    - dir is the directory containing the configuration files.
+    - win is an object that represents the primary window of the Electron app.
+
+*/
 exports.checkForUpdate = (os, semver, https, fs, path, dir, win) => {
-	// console.log("called");
+	// Define the options associated to the GET request for github releases.
 	const options = { "host": "api.github.com", "path": "/repos/nathanmarianovsky/Trak/releases", "method": "GET", "headers": { "user-agent": "node.js" } };
+	// Put the GET request in.
 	const request = https.request(options, response => {
-		// console.log("inside");
+		// Define the holder for the fetched data.
 		let body = "";
+		// Update the holder as the data is fetched.
 		response.on("data", chunk => body += chunk.toString("UTF8"));
+		// Once the data has been fetched completely check the current app version against the latest in the github releases.
 		response.on("end", () => {
-		    var githubData = JSON.parse(body)[0];
-			console.log(githubData);
+			// Define the latest release from github.
+		    const githubData = JSON.parse(body)[0];
+		    // Read the location.json file to extract the location of the app installation location.
 		    fs.readFile(path.join(dir, "Trak", "config", "location.json"), "UTF8", (resp, fl) => {
+		    	// Define the current version of the app.
 		    	const curVer = JSON.parse(fs.readFileSync(path.join(JSON.parse(fl).appLocation, "package.json"), "UTF8")).version;
+		    	// If there was an issue reading the location.json file notify the user.
                 if(resp) { win.webContents.send("locationFileIssue"); }
+                // Compare the current version against the latest version on github to determine whether an update is available.
                 else if(semver.gt(githubData.tag_name.substring(1), curVer)) {
                 	let fileName = "Trak-",
                 		ending = ""
@@ -353,22 +372,14 @@ exports.checkForUpdate = (os, semver, https, fs, path, dir, win) => {
                 			break;
                 		}
                 	}
+                	// With an update available send a request to the front-end to display the associated update button on the top nav.
                 	win.webContents.send("updateAvailable", [githubData.url, githubData.tag_name.substring(1), curVer, githubData.body, downloadURL, fileName]);
                 }
             });
 	    });
 	});
+	// End the HTTPS request.
 	request.end();
-
-
-
-
-
-
-		    // console.log(githubData[0]);
-
-		    // console.log(os.type());
-		    // console.log(os.arch());
 };
 
 

@@ -137,20 +137,29 @@ ipcRenderer.on("locationFileIssue", event => {
 
 
 // Display a notification if there was an issue reading the location.json file.
+ipcRenderer.on("updateDownloadComplete", event => {
+    document.getElementById("appUpdate").previousElementSibling.click();
+    document.getElementById("updatePreloaderDiv").style.display = "none";
+    M.toast({"html": "The update has finished downloading. The app will now close to proceed with the update.", "classes": "rounded"});
+});
+
+
+
+// IF there is an update then display the button on the index page and wait for the user to confirm that they want to update.
 ipcRenderer.on("updateAvailable", (event, response) => {
-    console.log("updateAvailable");
-
-
+    // Display the update available button on the top nav of the index page.
+    document.getElementById("updateAvailable").style.display = "inline-block";
+    // Fill the update modal with content obtained from the github api.
     document.getElementById("updateModalContent").innerHTML = response[3] + "<br><br>"
         + "More information can be found at: <a id='updateLink' val='" + response[0] + "' class='hyperlink'>Github Release</a>" + "." + "<br><br>"
         + "Current Version: " + response[2] + "<br>" + "Update Version: " + response[1];
-
+    // Listen for a click on the update modal submission button in order to start downloading the updated installer.
     document.getElementById("appUpdate").addEventListener("click", e => {
-        console.log("clicked");
-        console.log(response);
+        // Display the download preloader.
+        document.getElementById("updatePreloaderDiv").style.display = "block";
+        // Send a request to the back-end for the update process to start.
         ipcRenderer.send("appUpdate", response.slice(4));
     });
-
 });
 
 

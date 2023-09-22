@@ -456,6 +456,8 @@ Driver function for adding all app listeners.
 	- app, BrowserWindow, and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
 	- os provides the means to get information on the user operating system.
+	- spawn provides the means to launch an update via an installer.
+	- downloadRelease provides the means to download a github release asset.
 	- semver provides the means to compare semantic versioning.
 	- https provides the means to download files.
 	- zipper is a library object which can create zip files.
@@ -468,7 +470,7 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, os, semver, https, exec, shell, ipc, zipper, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease, semver, https, exec, shell, ipc, zipper, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -578,68 +580,24 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, semver, https, exec, s
 		tools.importDriver(fs, path, ipc, zipper, mainWindow, originalPath, event, list);
 	});
 
+	// Handles the download of an updated installer and launching it.
 	ipc.on("appUpdate", (event, appUpdateData) => {
-	    let filePath = fs.createWriteStream(path.join(originalPath, "Trak", "downloads", appUpdateData[1]));
-		// https.get(appUpdateData[0], res => {
-		//     res.pipe(filePath);
-		//     filePath.on("finish", () => {
-	    // 		filePath.close();
-	    // 		console.log("done downloading");
-	    // 		// var spawn = require('child_process').spawn;
-		// 		// var child = spawn('cmd', ["/S /C " + path.join(originalPath, "Trak", "downloads", appUpdateData[1])], { // /S strips quotes and /C executes the runnable file (node way)
-		// 		// 	detached: true, //see node docs to see what it does
-		// 		// 	cwd: os.homedir(), //current working directory where the command line is going to be spawned and the file is also located
-		// 		// 	env: process.env
-		// 		// 	//1) uncomment following if you want to "redirect" standard output and error from the process to files
-		// 		// 	//stdio: ['ignore', out, err]
-		// 		// });
-		// 	});
-		// });
-
-
-
-
-		var downloadRelease = require('download-github-release');
- 
-		var user = 'nathanmarianovsky';
-		var repo = 'Trak';
-		var outputdir = path.join(originalPath, "Trak", "downloads");
-		var leaveZipped = false;
-		 
-		// Define a function to filter releases.
-		function filterRelease(release) {
-		  // Filter out prereleases.
-		  return release.prerelease === false;
-		}
-		 
-		// Define a function to filter assets.
-		function filterAsset(asset) {
-		  // Select assets that contain the string 'windows'.
-		  // return asset.name.indexOf('windows') >= 0;
-			// return true;
-			return asset.name == appUpdateData[1];
-		}
-		 
-		downloadRelease(user, repo, outputdir, filterRelease, filterAsset, leaveZipped)
-		  .then(function() {
-		    console.log('All done!');
-		    var spawn = require("child_process").spawn;
-			var child = spawn("cmd", ["/S /C " + appUpdateData[1]], { // /S strips quotes and /C executes the runnable file (node way)
-			// var child = spawn("msiexec", ["/S /C " + path.join(originalPath, "Trak", "downloads", appUpdateData[1])], { // /S strips quotes and /C executes the runnable file (node way)
-			// var child = spawn("msiexec", [`/i ${path.join(originalPath, "Trak", "downloads", appUpdateData[1])} /quiet`], { // /S strips quotes and /C executes the runnable file (node way)
-				detached: true, //see node docs to see what it does
-				cwd: path.join(originalPath, "Trak", "downloads"), //current working directory where the command line is going to be spawned and the file is also located
-				// cwd: os.homedir(), //current working directory where the command line is going to be spawned and the file is also located
-				env: process.env
-				//1) uncomment following if you want to "redirect" standard output and error from the process to files
-				//stdio: ['ignore', out, err]
-			});
-
-		  })
-		  .catch(function(err) {
-		    console.error(err.message);
-		  });
-
+		// Define the path where the updated installer will download.
+		const outputdir = path.join(process.env.HOME, "TrakDownloads");
+		// Fetch the required asset from github.
+		downloadRelease("nathanmarianovsky", "Trak", outputdir, release => release.prerelease === false, asset => asset.name == appUpdateData[1], false).then(function() {
+		    // Notify the user that the app will close to proceed with the update.
+		    event.sender.send("updateDownloadComplete");
+		    // After a five second delay launch the updated installer and close the app.
+		    setTimeout(() => {
+				var child = spawn("cmd", ["/S /C " + appUpdateData[1]], {
+					"detached": true,
+					"cwd": outputdir,
+					"env": process.env
+				});
+				app.quit();
+		    }, 5000);
+		});
 	});
 
 	// Handles the search of a string through all possible anime listings on myanimelist.
