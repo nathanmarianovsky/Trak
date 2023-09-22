@@ -160,6 +160,7 @@ ipcRenderer.on("updateAvailable", (event, response) => {
         // Send a request to the back-end for the update process to start.
         ipcRenderer.send("appUpdate", response.slice(4));
     });
+    // Listen for a click on the github release link in order to open it in the default browser.
     document.getElementById("updateLink").addEventListener("click", e => {
         ipcRenderer.send("githubRelease", response[0]);
     });
