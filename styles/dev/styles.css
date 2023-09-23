@@ -218,6 +218,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	display: none;
 }
 
+#tableBody {
+	font-size: 12px;
+}
+
 .spinner-layer {
 	border-color: #2A2A8E !important;
 }
@@ -272,6 +276,14 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 .topNavTapContainer {
 	display: inline-block;
+}
+
+.synopsisIconDiv {
+	display: inline;
+}
+
+.recordsNameContainer {
+	text-align: left;
 }
 
 
@@ -587,9 +599,10 @@ footer {
 
 #animePreloader {
 	visibility: hidden;
-	position: relative;
-    top: 30px;
-    left: 25%;
+	position: absolute;
+    top: 23px;
+    right: 23px;
+    display: inline;
 }
 
 #addRecordAnimeImgBtnDiv {

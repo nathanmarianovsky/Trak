@@ -104,6 +104,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
         animeOptions = document.getElementById("animeOptions"),
         animeMoreDetailsBtn = document.getElementById("animeMoreDetailsBtn"),
         animeFetchDetailsBtn = document.getElementById("animeFetchDetailsBtn");
+    // Hide the page buttons until all data has loaded in.
     updateRecordPreloader.style.display = "block";
     animeSave.style.visibility = "hidden";
     animeOptions.style.visibility = "hidden";
@@ -317,11 +318,12 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     // Write the global average rating of the anime record on the page.
                     const animeRtng = rtngList.length > 0 ? (rtngList.reduce((accum, cur) => accum + cur, 0) / rtngList.length).toFixed(2) : "N/A";
                     document.getElementById("animeRating").value = animeRtng;
-                    // Hide the anime preloader to indicate that the related content has finished loading.
+                    // Display all page buttons now that all data has loaded.
                     animeSave.style.visibility = "visible";
                     animeOptions.style.visibility = "visible";
                     animeMoreDetailsBtn.style.visibility = "visible";
                     animeFetchDetailsBtn.style.visibility = "visible";
+                    // Hide the anime preloader to indicate that the related content has finished loading.
                     updateAnimePreloader.style.visibility = "hidden";
                 }, 500)
             }

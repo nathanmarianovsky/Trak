@@ -288,12 +288,12 @@ var episodeAddition = tgt => {
     // Prepare the season episode name.
     seasonEpisodeNameInput.setAttribute("type", "text");
     seasonEpisodeNameInput.setAttribute("id", "li_" + addTargetNum + "_Episode_Name_" + (tgt.children[1].children[0].children.length + 1));
-    seasonEpisodeNameInput.classList.add("validate", "center");
+    seasonEpisodeNameInput.classList.add("validate", "left");
     seasonEpisodeNameLabel.setAttribute("for", "li_" + addTargetNum + "_Episode_Name_" + (tgt.children[1].children[0].children.length + 1));
     seasonEpisodeNameLabel.textContent = "Episode Name:";
     seasonEpisodeNameDiv.classList.add("input-field", "col", "s2");
     // Prepare the season episode last watched date.
-    seasonEpisodeLastWatchedInput.classList.add("validate", "center");
+    seasonEpisodeLastWatchedInput.classList.add("validate", "left");
     seasonEpisodeLastWatchedInput.setAttribute("id", "li_" + addTargetNum + "_Episode_LastWatched_" + (tgt.children[1].children[0].children.length + 1));
     seasonEpisodeLastWatchedInput.setAttribute("type", "date");
     seasonEpisodeLastWatchedLabel.setAttribute("for", "li_" + addTargetNum + "_Episode_LastWatched_" + (tgt.children[1].children[0].children.length + 1));
@@ -436,7 +436,7 @@ var singleAddition = () => {
     // Prepare the film/ONA/OVA name.
     divSingleName.classList.add("input-field");
     divSingleName.style.width = "20%";
-    inputSingleName.classList.add("validate", "center");
+    inputSingleName.classList.add("validate", "left");
     inputSingleName.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Name");
     inputSingleName.setAttribute("type", "text");
     labelSingleName.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_Name");
@@ -462,7 +462,7 @@ var singleAddition = () => {
     divSingleReleaseDate.classList.add("input-field");
     divSingleReleaseDate.style.width = "20%";
     divSingleReleaseDate.style.marginLeft = "25px";
-    inputSingleReleaseDate.classList.add("validate", "center");
+    inputSingleReleaseDate.classList.add("validate", "left");
     inputSingleReleaseDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Release");
     inputSingleReleaseDate.setAttribute("type", "date");
     labelSingleReleaseDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_Release");
@@ -471,7 +471,7 @@ var singleAddition = () => {
     divSingleLastWatchedDate.classList.add("input-field");
     divSingleLastWatchedDate.style.width = "20%";
     divSingleLastWatchedDate.style.marginLeft = "25px";
-    inputSingleLastWatchedDate.classList.add("validate", "center");
+    inputSingleLastWatchedDate.classList.add("validate", "left");
     inputSingleLastWatchedDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_LastWatched");
     inputSingleLastWatchedDate.setAttribute("type", "date");
     labelSingleLastWatchedDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_LastWatched");
@@ -588,7 +588,7 @@ var seasonAddition = () => {
     // Prepare the season name.
     divName.classList.add("input-field");
     divName.style.width = "17%";
-    inputName.classList.add("validate", "center");
+    inputName.classList.add("validate", "left");
     inputName.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_Name");
     inputName.setAttribute("type", "text");
     labelName.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_Name");
@@ -597,7 +597,7 @@ var seasonAddition = () => {
     divStartDate.classList.add("input-field");
     divStartDate.style.width = "15%";
     divStartDate.style.marginLeft = "25px";
-    inputStartDate.classList.add("validate", "center");
+    inputStartDate.classList.add("validate", "left");
     inputStartDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_Start");
     inputStartDate.setAttribute("type", "date");
     labelStartDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_Start");
@@ -606,7 +606,7 @@ var seasonAddition = () => {
     divEndDate.classList.add("input-field");
     divEndDate.style.width = "15%";
     divEndDate.style.marginLeft = "25px";
-    inputEndDate.classList.add("validate", "center");
+    inputEndDate.classList.add("validate", "left");
     inputEndDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_End");
     inputEndDate.setAttribute("type", "date");
     labelEndDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_End");
@@ -634,7 +634,7 @@ var seasonAddition = () => {
     divAverageRating.classList.add("input-field");
     divAverageRating.style.width = "13%";
     divAverageRating.style.marginLeft = "25px";
-    inputAverageRating.classList.add("center");
+    inputAverageRating.classList.add("left");
     inputAverageRating.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_AverageRating");
     inputAverageRating.setAttribute("type", "text");
     inputAverageRating.readOnly = "true";

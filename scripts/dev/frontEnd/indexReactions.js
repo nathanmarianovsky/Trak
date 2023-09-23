@@ -324,7 +324,8 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         // Define the items needed to construct the row.
         let tr = document.createElement("tr"),
             tdName = document.createElement("td"),
-            tdNameDiv = document.createElement("div"),
+            tdNameOuterDiv = document.createElement("ul"),
+            tdNameDiv = document.createElement("li"),
             tdCategory = document.createElement("td"),
             tdCategoryDiv = document.createElement("div"),
             tdRating = document.createElement("td"),
@@ -342,20 +343,25 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         // Modify the name portion.
         tdNameDiv.textContent = recordData.name != "" ? recordData.name : recordData.jname;
         tdNameDiv.classList.add("recordsNameRowDiv");
-        tdName.append(tdNameDiv);
+        tdName.classList.add("left");
+        tdNameOuterDiv.classList.add("recordsNameContainer");
+        tdNameOuterDiv.append(tdNameDiv);
         // If a synopsis is availble then create link for it to open the synopsis modal.
         if(recordData.synopsis != undefined && recordData.synopsis.length > 0) {
             // Define the link and icon.
-            let tdNameLink = document.createElement("a"),
+            let tdNameLinkDiv = document.createElement("li"),
+                tdNameLink = document.createElement("a"),
                 tdNameIcon = document.createElement("i");
             tdNameLink.setAttribute("href", "#synopsisModal");
             tdNameLink.setAttribute("path", path.join(localPath, "Trak", "data", list[n], "data.json"));
             tdNameLink.classList.add("modal-trigger");
             tdNameIcon.textContent = "info";
             tdNameIcon.classList.add("material-icons", "infoIcon");
+            tdNameLinkDiv.classList.add("synopsisIconDiv");
             // Append the icon and link accordingly.
             tdNameLink.append(tdNameIcon);
-            tdName.append(tdNameLink);
+            tdNameLinkDiv.append(tdNameLink);
+            tdNameOuterDiv.append(tdNameLinkDiv);
             // Listen for a click event on the icon in order to open the synopsis modal.
             tdNameIcon.addEventListener("click", e => {
                 synopsisPreloader.style.display = "block";
@@ -368,9 +374,10 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 });
             });
         }
+        tdName.append(tdNameOuterDiv);
         // Modify the category portion.
         tdCategoryDiv.textContent = recordData.category;
-        tdCategoryDiv.classList.add("recordsRowDiv");
+        tdCategoryDiv.classList.add("recordsRowDiv", "left");
         tdCategory.append(tdCategoryDiv);
         // Modify the rating portion.
         let displayRating = "N/A",
@@ -397,7 +404,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         }
         if(displayRatingArr.length > 0) { displayRating = (displayRatingArr.reduce((accum, cur) => accum + cur, 0) / displayRatingArr.length).toFixed(2); }
         tdRatingDiv.textContent = displayRating;
-        tdRatingDiv.classList.add("recordsRowDiv");
+        tdRatingDiv.classList.add("recordsRowDiv", "left");
         tdRating.append(tdRatingDiv);
         // Modify the genres portion.
         let count = 0,
@@ -406,9 +413,9 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         for(let y = 0; y < recordData.genres[0].length; y++) {
             if(recordData.genres[1][y] == true) {
                 rowGenreInfo.length == 0 ? rowGenreInfo = recordData.genres[0][y] : rowGenreInfo += "," + recordData.genres[0][y];
-                if(count <= 2) {
+                if(count <= 3) {
                     if(rowGenreStr.length > 0) { rowGenreStr += ", "; }
-                    if(count == 2) { rowGenreStr += "..."; }
+                    if(count == 3) { rowGenreStr += "..."; }
                     else {
                         if(recordData.genres[0][y] == "CGDCT") {
                             rowGenreStr += "CGDCT";
@@ -434,7 +441,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             }
         }
         tdGenresDiv.textContent = rowGenreStr;
-        tdGenresDiv.classList.add("recordsRowDiv");
+        tdGenresDiv.classList.add("recordsRowDiv", "left");
         tdGenres.append(tdGenresDiv);
         // Modify the files button to be used for opening the assets folder of a record.
         filesButton.setAttribute("type", "submit");
@@ -484,7 +491,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         // Listen for a click on the name of a record in order to open the update page.
         tdNameDiv.addEventListener("click", e => {
             e.preventDefault();
-            ipcRenderer.send("updateRecord", e.target.parentNode.parentNode.id);
+            ipcRenderer.send("updateRecord", e.target.parentNode.parentNode.parentNode.id);
         });
         // Listen for a click on the files button in order to open the associated assets folder of a record.
         filesButton.addEventListener("click", e => {
