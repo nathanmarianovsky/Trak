@@ -219,7 +219,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 }
 
 #tableBody {
-	font-size: 12px;
+	font-size: 13px;
 }
 
 .spinner-layer {
@@ -286,6 +286,15 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	text-align: left;
 }
 
+.synopsisInfoIcon {
+	font-size: 15px !important;
+	color: #2A2A8E!important;
+    position: relative;
+    top: 4px;
+    left: 4px;
+    cursor: pointer;
+}
+
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/
@@ -317,7 +326,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 #databaseModal {
 	width: 75%;
-	height: 45%;
+	height: 60%;
 }
 
 #databaseImportBtn {
@@ -342,6 +351,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 #databaseExportContainer p, #databaseImportContainer p {
 	margin-left: 32px;
+	margin-right: 32px;
 	margin-top: 35px;
 }
 
@@ -353,6 +363,27 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 #databaseCheckSpan {
 	line-height: 19px;
+}
+
+#databaseImportSwitchDiv {
+	display: none;
+	position: relative;
+    top: 12px;
+    left: 25px;
+}
+
+#databaseImportSwitchDiv label,
+#databaseCheckLabel span {
+	color: initial;
+	font-weight: bold;
+}
+
+#databaseImportSwitchDiv label input[type=checkbox]:checked+.lever:after {
+	background-color: #2A2A8E !important;
+}
+
+#importCSVContent {
+	display: none;
 }
 
 .databaseImportDiv {
@@ -369,6 +400,18 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 .databaseContainer {
 	display: none;
+}
+
+.textFocus {
+	display: block;
+	margin-left: 5%;
+	margin-right: 5%;
+	font-weight: bold;
+	font-size: 13px;
+}
+
+.verticalDivider {
+/*	font-weight: bold;*/
 }
 
 

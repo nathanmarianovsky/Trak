@@ -356,7 +356,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             tdNameLink.setAttribute("path", path.join(localPath, "Trak", "data", list[n], "data.json"));
             tdNameLink.classList.add("modal-trigger");
             tdNameIcon.textContent = "info";
-            tdNameIcon.classList.add("material-icons", "infoIcon");
+            tdNameIcon.classList.add("material-icons", "synopsisInfoIcon");
             tdNameLinkDiv.classList.add("synopsisIconDiv");
             // Append the icon and link accordingly.
             tdNameLink.append(tdNameIcon);

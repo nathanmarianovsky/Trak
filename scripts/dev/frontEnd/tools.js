@@ -2,6 +2,7 @@
 
 BASIC DETAILS: This file provides front-end functions designed to be used by multiple aspects of the app.
 
+    - rgba2hex: Convert a RGBA color to hex.
     - clearTooltips: Remove all tooltips on the page.
     - initFAB: Initialize the floating action button on the page.
     - initCollapsible: Initialize the collapsible divs on the page.
@@ -19,6 +20,31 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*
+
+Convert a RGBA color to hex.
+
+   - rgba is a color in RGBA form.
+
+*/
+var rgba2hex = rgba => `#${rgba.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.{0,1}\d*))?\)$/).slice(1).map((n, i) => (i === 3 ? Math.round(parseFloat(n) * 255) : parseFloat(n)).toString(16).padStart(2, '0').replace('NaN', '')).join('')}`;
+
+
+
+/*
+
+Provides a hex representing a color with a certain opacity of the given hex color.
+
+   - color is a hex string.
+   - opacity is a value between zero and one representing the opacity desired.
+
+*/
+var addAlpha = (color, opacity) => color + Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255).toString(16).toUpperCase();
+    // var _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
+    // return color + _opacity.toString(16).toUpperCase();
 
 
 

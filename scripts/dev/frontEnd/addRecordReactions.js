@@ -235,12 +235,13 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 });
                 animeImg.setAttribute("list", recordData.img.join(","));
                 animeImg.setAttribute("previous", recordData.img.join(","));
-                animeImg.setAttribute("src", recordData.img.length > 0 ? recordData.img[0] : animeImg.getAttribute("default"));
+                animeImg.setAttribute("src", recordData.img.length > 0 && recordData.img[0] != "" ? recordData.img[0] : animeImg.getAttribute("default"));
                 for(let v = 0; v < recordData.genres[0].length; v++) {
                     document.getElementById("animeGenre" + recordData.genres[0][v]).checked = recordData.genres[1][v];
                 }
                 // Display a preloader to indicate that the page is still loading the anime related content. This can take a bit of time depending on the amount to be loaded.
                 const updateAnimePreloader = document.getElementById("animePreloader");
+                updateAnimePreloader.style.top = "-32px";
                 updateAnimePreloader.style.visibility = "visible";
                 setTimeout(() => {
                     // Define the collection of ratings to be used in calculating the global average rating of an anime.

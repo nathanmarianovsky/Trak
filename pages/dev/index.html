@@ -207,7 +207,8 @@
                     </div>
                 </div>
                 <div id="databaseImportContainer" class="databaseContainer">
-                    <p>To import into the library records simply select the zip files which contain the data.</p>
+                    <p id="importZipContent">To import into the library records simply select the zip files which contain the data and click to import. The zip file should correspond to an export from this application.</p>
+                    <p id="importCSVContent">To import into the library records via a csv file the columns are expected to be in the order:<br><br><span class="center textFocus"><span class="verticalDivider">|</span> Category <span class="verticalDivider">|</span> Name <span class="verticalDivider">|</span> Japanese Name <span class="verticalDivider">|</span> Rating <span class="verticalDivider">|</span> Comments/Review <span class="verticalDivider">|</span> Synopsis <span class="verticalDivider">|</span> Directors <span class="verticalDivider">|</span> Producers <span class="verticalDivider">|</span> Writers <span class="verticalDivider">|</span> Music Directors <span class="verticalDivider">|</span> Studios <span class="verticalDivider">|</span> Licensed By <span class="verticalDivider">|</span> Release Date <span class="verticalDivider">|</span></span><br>The category of a record can be one of five values: Anime, Book, Film, Manga, or Show. Select the csv files which contain the data and click to import.</p>
                     <div class="row databaseImportDiv">
                         <form class="col s12">
                             <div class="file-field input-field col s10">
@@ -231,6 +232,14 @@
                     <input type="checkbox" class="filled-in" id="exportCheck"/>
                     <span id="databaseCheckSpan">Compress</span>
                 </label>
+                <div id="databaseImportSwitchDiv" class="switch left">
+                    <label>
+                        ZIP
+                        <input id="databaseImportSwitch" type="checkbox">
+                        <span class="lever"></span>
+                        CSV
+                    </label>
+                </div>
                 <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
                 <a id="databaseExportBtn" class="modal-close waves-effect waves-light btn-flat modalButtons">Export</a>
                 <a id="databaseImportBtn" class="modal-close waves-effect waves-light btn-flat modalButtons">Import</a>

@@ -52,7 +52,8 @@ window.addEventListener("load", () => {
         databaseImport = document.getElementById("databaseImport"),
         databaseExportBtn = document.getElementById("databaseExportBtn"),
         databaseImportBtn = document.getElementById("databaseImportBtn"),
-        importOverideBtn = document.getElementById("importOverideBtn");
+        importOverideBtn = document.getElementById("importOverideBtn"),
+        importTypeSwitch = document.getElementById("databaseImportSwitch");
     // Listen for a click event on the add button in order to open a window whose inputs will generate a new record.
     add.addEventListener("click", e => {
         e.preventDefault();
@@ -206,6 +207,8 @@ window.addEventListener("load", () => {
        e.preventDefault();
        // Show the checkbox for the compression option.
        document.getElementById("databaseCheckLabel").style.display = "initial";
+       // Hide the import switch for the type of file.
+       document.getElementById("databaseImportSwitchDiv").style.display = "none";
        // Highlight the export tab and unhighlight the import tab.
        databaseExport.parentNode.classList.add("active");
        databaseImport.parentNode.classList.remove("active");
@@ -220,6 +223,8 @@ window.addEventListener("load", () => {
        e.preventDefault();
        // Hide the checkbox for the compression option.
        document.getElementById("databaseCheckLabel").style.display = "none";
+       // Show the import switch for the type of file.
+       document.getElementById("databaseImportSwitchDiv").style.display = "initial";
        // Highlight the import tab and unhighlight the export tab.
        databaseExport.parentNode.classList.remove("active");
        databaseImport.parentNode.classList.add("active");
@@ -255,10 +260,27 @@ window.addEventListener("load", () => {
             M.toast({"html": "In order to import at least one zip file must be chosen.", "classes": "rounded"});
         }
     });
+    // Ensure that the export option is the default view in the database modal.
+    databaseExport.click();
     // Listen for a click event on the import overide button in order to proceed with overwriting the requested library records in the import process.
     importOverideBtn.addEventListener("click", e => {
         ipcRenderer.send("importOveride", Array.from(document.querySelectorAll("#importModal .importModalCheckbox")).map(elem => { return { "record": elem.id, "overwrite": elem.checked }}));
     });
-    // Ensure that the export option is the default view in the database modal.
-    databaseExport.click();
+    // Listen for a change in the import data type to change the content accordingly.
+    const originalSwitchBackground = "#00000061";
+    importTypeSwitch.addEventListener("change", e => {
+        const importCSVContent = document.getElementById("importCSVContent"),
+            importZipContent = document.getElementById("importZipContent");
+        if(e.target.checked == true) {
+            document.querySelector(".switch label input[type=checkbox]:checked+.lever").style.backgroundColor = "#" + addAlpha(rgba2hex(getComputedStyle(document.getElementById("databaseImportBtn")).backgroundColor).substring(1), 0.6);
+            importZipContent.style.display = "none";
+            importCSVContent.style.display = "block";
+        }
+        else {
+            document.querySelector(".switch label .lever").style.backgroundColor = originalSwitchBackground;
+            importZipContent.style.display = "block";
+            importCSVContent.style.display = "none";
+        }
+    });
+
 });
