@@ -4,7 +4,7 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
 
    - exportData: Create a zip file containing the exported library records.
    - importData: Reads a zip file and adds its content to the library records.
-   - importDriver: Iterates through the list of zip files to be imported by waiting for each one to finish prior to proceeding to the next one.
+   - importDriverZIP: Iterates through the list of zip files to be imported by waiting for each one to finish prior to proceeding to the next one.
    - createTrayMenu: Create the system tray icon and menu.
    - createWindow: Executes the creation of the primary window with all necessary parameters.
    - tutorialLoad: Tells the front-end to load the application tutorial.
@@ -193,7 +193,7 @@ Iterates through the list of zip files to be imported by waiting for each one to
 	- lst is the list of zip files to be imported.
 
 */ 
-exports.importDriver = async (fs, path, ipc, zipper, mainWin, ogPath, evnt, lst) => {
+exports.importDriverZIP = async (fs, path, ipc, zipper, mainWin, ogPath, evnt, lst) => {
   	for(let i = 0; i < lst.length; i++) {
     	await exports.importData(fs, path, ipc, zipper, mainWin, evnt, ogPath, lst[i]);
   	}

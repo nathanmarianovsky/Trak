@@ -326,7 +326,8 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 #databaseModal {
 	width: 75%;
-	height: 60%;
+	height: 600px;
+	max-height: 100%;
 }
 
 #databaseImportBtn {
@@ -357,32 +358,41 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 #databaseCheckLabel {
 	position: relative;
-	top: 11px;
-	left: 16px;
+	top: 14px;
+	left: 70px;
 }
 
 #databaseCheckSpan {
 	line-height: 19px;
 }
 
-#databaseImportSwitchDiv {
-	display: none;
+#databaseSwitchDiv {
+/*	display: none;*/
 	position: relative;
     top: 12px;
     left: 25px;
 }
 
-#databaseImportSwitchDiv label,
+#CSVTypeSwitchDiv {
+	display: none;
+	position: relative;
+    top: 12px;
+    left: 55px;
+}
+
+#databaseSwitchDiv label,
+#CSVTypeSwitchDiv label,
 #databaseCheckLabel span {
 	color: initial;
 	font-weight: bold;
 }
 
-#databaseImportSwitchDiv label input[type=checkbox]:checked+.lever:after {
+#databaseSwitchDiv label input[type=checkbox]:checked+.lever:after,
+#CSVTypeSwitchDiv label input[type=checkbox]:checked+.lever:after {
 	background-color: #2A2A8E !important;
 }
 
-#importCSVContent {
+#importCSVContentSimple, #importCSVContentDetailed {
 	display: none;
 }
 
@@ -408,10 +418,6 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	margin-right: 5%;
 	font-weight: bold;
 	font-size: 13px;
-}
-
-.verticalDivider {
-/*	font-weight: bold;*/
 }
 
 

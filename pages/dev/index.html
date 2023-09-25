@@ -194,7 +194,7 @@
                     </nav>
                 </div>
                 <div id="databaseExportContainer" class="databaseContainer">
-                    <p>To export the checked library records simply provide the directory to which the zip file should be saved. The zip file can be compressed if desired.</p>
+                    <p>In order to export the checked library records simply provide the directory to which the csv or zip file should be saved. In the case of a zip file the data can be compressed if desired. Otherwise, for a csv file either a simple file can be generated containing a single worksheet with all basic record details or a detailed file containing the information provided by the simple version along with a separate worksheet for each record containing details such as season information, episode information, etc...</p>
                     <div class="row databaseWindowDiv">
                         <form class="col s12">
                             <div class="row">
@@ -208,7 +208,20 @@
                 </div>
                 <div id="databaseImportContainer" class="databaseContainer">
                     <p id="importZipContent">To import into the library records simply select the zip files which contain the data and click to import. The zip file should correspond to an export from this application.</p>
-                    <p id="importCSVContent">To import into the library records via a csv file the columns are expected to be in the order:<br><br><span class="center textFocus"><span class="verticalDivider">|</span> Category <span class="verticalDivider">|</span> Name <span class="verticalDivider">|</span> Japanese Name <span class="verticalDivider">|</span> Rating <span class="verticalDivider">|</span> Comments/Review <span class="verticalDivider">|</span> Synopsis <span class="verticalDivider">|</span> Directors <span class="verticalDivider">|</span> Producers <span class="verticalDivider">|</span> Writers <span class="verticalDivider">|</span> Music Directors <span class="verticalDivider">|</span> Studios <span class="verticalDivider">|</span> Licensed By <span class="verticalDivider">|</span> Release Date <span class="verticalDivider">|</span></span><br>The category of a record can be one of five values: Anime, Book, Film, Manga, or Show. Select the csv files which contain the data and click to import.</p>
+                    <p id="importCSVContentSimple">
+                        In order to import into the library records a simple csv file there should be a single worksheet whose columns are expected to be in the order:
+                        <br><br>
+                        <span class="center textFocus">| Category | Name | Japanese Name | Rating | Comments/Review | Synopsis | Directors |<br>| Producers | Writers | Music Directors | Studios | Licensed By | Release Date | Genres</span>
+                        <br>
+                        The first row should be used for column headers with data starting on the second row. Furthermore, the genres component should consist of a comma separated list while the category of a record can take on one of five values: Anime, Book, Film, Manga, or Show. Select the csv files which contain the data and click to import.
+                    </p>
+                    <p id="importCSVContentDetailed">
+                        In order to import into the library records a detailed csv file multiple worksheets are expected to be provided where the first worksheet should correspond to the same data provided for a simple csv import. All other worksheets are expected to be titled with the record name whose columns are expected to be in the order:
+                        <br><br>
+                        <span class="center textFocus">| Type | Name | Start Date | End Date | Status | Last Watched | Rating | Episode # | Episode Name | Comments/Review |</span>
+                        <br>
+                        The first row should be used for column headers with data starting on the second row. Furthermore, the value of a record's related content type can be either a Season or Single where a single corresponds to an entry with a single episode. For type single provide the release date under the start date column and ignore the columns corresponding to an episode number and episode name. Select the csv files which contain the data and click to import.
+                    </p>
                     <div class="row databaseImportDiv">
                         <form class="col s12">
                             <div class="file-field input-field col s10">
@@ -228,16 +241,24 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <div id="databaseSwitchDiv" class="switch left">
+                    <label>
+                        ZIP
+                        <input id="databaseSwitch" type="checkbox">
+                        <span class="lever"></span>
+                        CSV
+                    </label>
+                </div>
                 <label id="databaseCheckLabel" class="left">
                     <input type="checkbox" class="filled-in" id="exportCheck"/>
                     <span id="databaseCheckSpan">Compress</span>
                 </label>
-                <div id="databaseImportSwitchDiv" class="switch left">
+                <div id="CSVTypeSwitchDiv" class="switch left">
                     <label>
-                        ZIP
-                        <input id="databaseImportSwitch" type="checkbox">
+                        Simple
+                        <input id="CSVTypeSwitch" type="checkbox">
                         <span class="lever"></span>
-                        CSV
+                        Detailed
                     </label>
                 </div>
                 <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>

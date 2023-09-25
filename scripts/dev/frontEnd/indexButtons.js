@@ -16,10 +16,12 @@ BASIC DETAILS: This file handles all buttons on the index.html page.
 
 Remove all active filters.
 
+   - bodyElem is the table body associated to the page records.
+
 */
-var cleanFilter = () => {
+var cleanFilter = bodyElem => {
     // Define the category and genre arrays along with the record rows.
-    const pageTable = Array.from(document.getElementById("tableBody").children);
+    const pageTable = Array.from(bodyElem.children);
     // Iterate through the records rows.
     for(let x = 0; x < pageTable.length; x++) {
         // Show all record rows.
@@ -48,12 +50,21 @@ window.addEventListener("load", () => {
         ratingSort = document.getElementById("ratingSort"),
         clearFilter = document.getElementById("clearFilter"),
         filterModalClear = document.getElementById("filterModalClear"),
+        databaseCheckLabel = document.getElementById("databaseCheckLabel"),
         databaseExport = document.getElementById("databaseExport"),
         databaseImport = document.getElementById("databaseImport"),
         databaseExportBtn = document.getElementById("databaseExportBtn"),
         databaseImportBtn = document.getElementById("databaseImportBtn"),
         importOverideBtn = document.getElementById("importOverideBtn"),
-        importTypeSwitch = document.getElementById("databaseImportSwitch");
+        typeSwitch = document.getElementById("databaseSwitch"),
+        CSVTypeSwitch = document.getElementById("CSVTypeSwitch");
+    // Define all page components which will be utilized.
+    const tableBody = document.getElementById("tableBody"),
+        CSVTypeSwitchDiv = document.getElementById("CSVTypeSwitchDiv"),
+        importCSVContentSimple = document.getElementById("importCSVContentSimple"),
+        importCSVContentDetailed = document.getElementById("importCSVContentDetailed"),
+        databaseExportContainer = document.getElementById("databaseExportContainer"),
+        databaseImportContainer = document.getElementById("databaseImportContainer");
     // Listen for a click event on the add button in order to open a window whose inputs will generate a new record.
     add.addEventListener("click", e => {
         e.preventDefault();
@@ -62,7 +73,7 @@ window.addEventListener("load", () => {
     // Listen for a click event on the remove button in order to open a confirmation window asking for the deletion of all checked records.
     remove.addEventListener("click", e => {
         const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
-        ipcRenderer.send("removeRecords", document.getElementById("checkAll").checked ? list.slice(1) : list);
+        ipcRenderer.send("removeRecords", checkAll.checked ? list.slice(1) : list);
     });
     // Listen for an input change event on the search bar in order to filter the records table.
     searchBar.addEventListener("input", e => {
@@ -79,7 +90,7 @@ window.addEventListener("load", () => {
     // Listen for a click event on the check all checkbox in order to check or uncheck all record checkboxes.
     checkAll.addEventListener("click", e => {
         // Define the collection of all record rows and the remove button.
-        const bodyList = document.getElementById("tableBody").children,
+        const bodyList = tableBody.children,
             btn = document.getElementById("remove");
         // If the checkAll is checked then check all records.
         if(checkAll.checked) {
@@ -102,7 +113,7 @@ window.addEventListener("load", () => {
     nameSort.addEventListener("click", e => {
         e.preventDefault();
         // Define the collection of all record rows and associated table body.
-        const assortmentTable = document.getElementById("tableBody");
+        const assortmentTable = tableBody;
         let assortment = Array.from(assortmentTable.children);
         // Sort the records only if at least two records exist.
         if(assortment.length > 1) {
@@ -135,7 +146,7 @@ window.addEventListener("load", () => {
     categorySort.addEventListener("click", e => {
         e.preventDefault();
         // Define the collection of all record rows and associated table body.
-        const assortmentTable = document.getElementById("tableBody");
+        const assortmentTable = tableBody;
         let assortment = Array.from(assortmentTable.children);
         // Sort the records only if at least two records exist.
         if(assortment.length > 1) {
@@ -168,7 +179,7 @@ window.addEventListener("load", () => {
     ratingSort.addEventListener("click", e => {
         e.preventDefault();
         // Define the collection of all record rows and associated table body.
-        const assortmentTable = document.getElementById("tableBody");
+        const assortmentTable = tableBody;
         let assortment = Array.from(assortmentTable.children);
         // Sort the records only if at least two records exist.
         if(assortment.length > 0) {
@@ -198,51 +209,65 @@ window.addEventListener("load", () => {
         }
     });
     // Listen for a click event on the clear filter button in order to remove all active filters.
-    clearFilter.addEventListener("click", e => { cleanFilter(); });
+    clearFilter.addEventListener("click", e => { cleanFilter(tableBody); });
     // Listen for a click event on the clear filter button in order to remove all active filters.
-    filterModalClear.addEventListener("click", e => { cleanFilter(); });
-    
+    filterModalClear.addEventListener("click", e => { cleanFilter(tableBody); });
     // Listen for a click event on the database export tab in order to update the database modal view.
     databaseExport.addEventListener("click", e => {
-       e.preventDefault();
-       // Show the checkbox for the compression option.
-       document.getElementById("databaseCheckLabel").style.display = "initial";
-       // Hide the import switch for the type of file.
-       document.getElementById("databaseImportSwitchDiv").style.display = "none";
-       // Highlight the export tab and unhighlight the import tab.
-       databaseExport.parentNode.classList.add("active");
-       databaseImport.parentNode.classList.remove("active");
-       // Show the database modal export content and associated buttons.
-       document.getElementById("databaseExportContainer").style.display = "initial";
-       document.getElementById("databaseImportContainer").style.display = "none";
-       document.getElementById("databaseExportBtn").style.display = "inline-block";
-       document.getElementById("databaseImportBtn").style.display = "none";
+        e.preventDefault();
+        // Show the checkbox for the compression option.
+        databaseCheckLabel.style.display = "initial";
+        // Highlight the export tab and unhighlight the import tab.
+        databaseExport.parentNode.classList.add("active");
+        databaseImport.parentNode.classList.remove("active");
+        // Show the database modal export content and associated buttons.
+        databaseExportContainer.style.display = "initial";
+        databaseImportContainer.style.display = "none";
+        databaseExportBtn.style.display = "inline-block";
+        databaseImportBtn.style.display = "none";
+        if(typeSwitch.checked == true) {
+            databaseCheckLabel.style.display = "none";
+            CSVTypeSwitchDiv.style.display = "initial";
+        }
+        else {
+            databaseCheckLabel.style.display = "initial";
+            CSVTypeSwitchDiv.style.display = "none";
+        }
     });
     // Listen for a click event on the database import tab in order to update the database modal view.
     databaseImport.addEventListener("click", e => {
-       e.preventDefault();
-       // Hide the checkbox for the compression option.
-       document.getElementById("databaseCheckLabel").style.display = "none";
-       // Show the import switch for the type of file.
-       document.getElementById("databaseImportSwitchDiv").style.display = "initial";
-       // Highlight the import tab and unhighlight the export tab.
-       databaseExport.parentNode.classList.remove("active");
-       databaseImport.parentNode.classList.add("active");
-       // Show the database modal import content and associated buttons.
-       document.getElementById("databaseExportContainer").style.display = "none";
-       document.getElementById("databaseImportContainer").style.display = "initial";
-       document.getElementById("databaseExportBtn").style.display = "none";
-       document.getElementById("databaseImportBtn").style.display = "inline-block";
+        e.preventDefault();
+        // Hide the checkbox for the compression option.
+        databaseCheckLabel.style.display = "none";
+        // Highlight the import tab and unhighlight the export tab.
+        databaseExport.parentNode.classList.remove("active");
+        databaseImport.parentNode.classList.add("active");
+        // Show the database modal import content and associated buttons.
+        databaseExportContainer.style.display = "none";
+        databaseImportContainer.style.display = "initial";
+        databaseExportBtn.style.display = "none";
+        databaseImportBtn.style.display = "inline-block";
+        if(typeSwitch.checked == true) {
+            importZipContent.style.display = "none";
+            CSVTypeSwitchDiv.style.display = "initial";
+            CSVTypeSwitch.checked == true ? importCSVContentDetailed.style.display = "block" : importCSVContentSimple.style.display = "block";
+        }
+        else {
+            importZipContent.style.display = "block";
+            importCSVContentSimple.style.display = "none";
+            importCSVContentDetailed.style.display = "none";
+        }
     });
     // Listen for a click event on the database export button in order to process an export of the chosen library records.
     databaseExportBtn.addEventListener("click", e => {
         // Define the list of records which the user desires to export.
         const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]),
-            submissionList = document.getElementById("checkAll").checked ? list.slice(1) : list;
+            submissionList = checkAll.checked ? list.slice(1) : list,
+            exportPath = document.getElementById("exportPath");
         // Check that at least one record has been chosen by the user.
         if(submissionList.length > 0) {
-            ipcRenderer.send("databaseExport", [document.getElementById("exportPath").value, submissionList, document.getElementById("exportCheck").checked]);
-            document.getElementById("exportPath").value = "";
+            ipcRenderer.send("databaseExport", [exportPath.value, submissionList, typeSwitch.checked == true ? "CSV" : "ZIP", typeSwitch.checked == true ? CSVTypeSwitch.checked : document.getElementById("exportCheck").checked]);
+            exportPath.value = "";
         }
         else {
             M.toast({"html": "In order to export at least one record has to be checked.", "classes": "rounded"});
@@ -254,10 +279,10 @@ window.addEventListener("load", () => {
         const pathArr = Array.from(document.getElementById("importZipFile").files);
         // Make sure that at least one zip file has been chosen by the user.
         if(pathArr.length > 0) {
-            ipcRenderer.send("databaseImport", pathArr.map(elem => elem.path));
+            ipcRenderer.send("databaseImport", [pathArr.map(elem => elem.path), typeSwitch.checked == true ? "CSV" : "ZIP", CSVTypeSwitch.checked]);
         }
         else {
-            M.toast({"html": "In order to import at least one zip file must be chosen.", "classes": "rounded"});
+            M.toast({"html": "In order to import at least one file must be chosen.", "classes": "rounded"});
         }
     });
     // Ensure that the export option is the default view in the database modal.
@@ -267,20 +292,44 @@ window.addEventListener("load", () => {
         ipcRenderer.send("importOveride", Array.from(document.querySelectorAll("#importModal .importModalCheckbox")).map(elem => { return { "record": elem.id, "overwrite": elem.checked }}));
     });
     // Listen for a change in the import data type to change the content accordingly.
-    const originalSwitchBackground = "#00000061";
-    importTypeSwitch.addEventListener("change", e => {
-        const importCSVContent = document.getElementById("importCSVContent"),
-            importZipContent = document.getElementById("importZipContent");
+    const originalSwitchBackground = "#00000061",
+        newSwitchBackground = "#" + addAlpha(rgba2hex(getComputedStyle(databaseImportBtn).backgroundColor).substring(1), 0.6);
+    typeSwitch.addEventListener("change", e => {
+        const importZipContent = document.getElementById("importZipContent");
         if(e.target.checked == true) {
-            document.querySelector(".switch label input[type=checkbox]:checked+.lever").style.backgroundColor = "#" + addAlpha(rgba2hex(getComputedStyle(document.getElementById("databaseImportBtn")).backgroundColor).substring(1), 0.6);
-            importZipContent.style.display = "none";
-            importCSVContent.style.display = "block";
+            document.querySelector("#databaseSwitchDiv label input[type=checkbox]:checked+.lever").style.backgroundColor = newSwitchBackground;
+            CSVTypeSwitchDiv.style.display = "initial";
+            if(databaseImport.parentNode.classList.contains("active")) {
+                importZipContent.style.display = "none";
+                CSVTypeSwitch.checked == true ? importCSVContentDetailed.style.display = "block" : importCSVContentSimple.style.display = "block";
+            }
+            else {
+                databaseCheckLabel.style.display = "none";
+            }
         }
         else {
-            document.querySelector(".switch label .lever").style.backgroundColor = originalSwitchBackground;
-            importZipContent.style.display = "block";
-            importCSVContent.style.display = "none";
+            document.querySelector("#databaseSwitchDiv label .lever").style.backgroundColor = originalSwitchBackground;
+            CSVTypeSwitchDiv.style.display = "none";
+            if(databaseImport.parentNode.classList.contains("active")) {
+                importZipContent.style.display = "block";
+                importCSVContentSimple.style.display = "none";
+                importCSVContentDetailed.style.display = "none";
+            }
+            else {
+                databaseCheckLabel.style.display = "initial";
+            }
         }
     });
-
+    CSVTypeSwitch.addEventListener("change", e => {
+        if(e.target.checked == true) {
+            document.querySelector("#CSVTypeSwitchDiv label input[type=checkbox]:checked+.lever").style.backgroundColor = newSwitchBackground;
+            importCSVContentSimple.style.display = "none";
+            importCSVContentDetailed.style.display = "block";
+        }
+        else {
+            document.querySelector("#CSVTypeSwitchDiv label .lever").style.backgroundColor = originalSwitchBackground;
+            importCSVContentSimple.style.display = "block";
+            importCSVContentDetailed.style.display = "none";
+        }
+    });
 });

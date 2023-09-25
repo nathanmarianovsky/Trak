@@ -579,8 +579,13 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease
 	});
 
 	// Handles the import of chosen zip files containing records into the library. Duplicate records are checked for.
-	ipc.on("databaseImport", (event, list) => {
-		tools.importDriver(fs, path, ipc, zipper, mainWindow, originalPath, event, list);
+	ipc.on("databaseImport", (event, submission) => {
+		if(submission[1] == "CSV") {
+			tools.importDriverCSV(fs, path, ipc, zipper, mainWindow, originalPath, event, submission[0]);
+		}
+		else if(submission[1] == "ZIP") {
+			tools.importDriverZIP(fs, path, ipc, zipper, mainWindow, originalPath, event, submission[0]);
+		}
 	});
 
 	// Handles the download of an updated installer and launching it.
