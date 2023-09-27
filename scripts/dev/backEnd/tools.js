@@ -101,7 +101,7 @@ exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, re
 				workbook = new ExcelJS.Workbook();
 			workbook.creator = "Trak";
 			workbook.created = new Date();
-			const animeWorksheet = workbook.addWorksheet("Category - Anime");
+			const animeWorksheet = workbook.addWorksheet("Category-Anime");
 			animeWorksheet.views = [{"state": "frozen", "xSplit": 1, "ySplit": 1, "activeCell": "A2"}];
 			animeWorksheet.getRow(1).height = 20;
 			animeWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
@@ -132,7 +132,7 @@ exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, re
 				animeWorksheet.getRow(x + 2).height = 75;
 				let iterData = JSON.parse(fs.readFileSync(path.join(dataPath, records[x], "data.json"), "UTF8"));
 				if(iterData.category == "Anime") {
-					animeWorksheet.getCell("A" + (x + 2)).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
+					animeWorksheet.getCell("A" + (x + 2)).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true, "underline": true, "color": { "argb": "FF0000FF" } };
 					animeWorksheet.getCell("A" + (x + 2)).border = {
 						"top": { "style": "thin" },
 						"left": { "style": "thin" },
@@ -194,7 +194,7 @@ exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, re
 					if(filterGenreStr == "") { filterGenreStr = "N/A"; }
 					animeWorksheet.getCell("M" + (x + 2)).value = filterGenreStr;
 					if(detailed == true) {
-						let detailedWorksheet = workbook.addWorksheet("Anime - " + iterData.name);
+						let detailedWorksheet = workbook.addWorksheet("Anime-" + iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""));
 						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
 						detailedWorksheet.getRow(1).height = 20;
 						detailedWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
@@ -223,21 +223,20 @@ exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, re
 								for(let t = 0; t < iterData.content[v].episodes.length; t++) {
 									detailedWorksheet.getRow(rowPos).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
 									detailedWorksheet.getRow(rowPos).height = 75;
-									if(t == 0) {
-										detailedWorksheet.getCell("A" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
-										detailedWorksheet.getCell("A" + rowPos).value = "Season";
-										detailedWorksheet.getCell("B" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
-										detailedWorksheet.getCell("B" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
-										detailedWorksheet.getCell("C" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
-										detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-										dateArr = iterData.content[v].start.split("-");
-										detailedWorksheet.getCell("C" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-										detailedWorksheet.getCell("D" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
-										detailedWorksheet.getCell("D" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-										dateArr = iterData.content[v].end.split("-");
-										detailedWorksheet.getCell("D" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-										detailedWorksheet.getCell("E" + rowPos).value = iterData.content[v].status != "" ? iterData.content[v].status : "N/A";
-									}
+									detailedWorksheet.getCell("A" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+									detailedWorksheet.getCell("A" + rowPos).value = "Season";
+									detailedWorksheet.getCell("B" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+									detailedWorksheet.getCell("B" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
+									detailedWorksheet.getCell("C" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+									detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+									dateArr = iterData.content[v].start.split("-");
+									detailedWorksheet.getCell("C" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+									detailedWorksheet.getCell("D" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+									detailedWorksheet.getCell("D" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+									dateArr = iterData.content[v].end.split("-");
+									detailedWorksheet.getCell("D" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+									detailedWorksheet.getCell("E" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+									detailedWorksheet.getCell("E" + rowPos).value = iterData.content[v].status != "" ? iterData.content[v].status : "N/A";
 									detailedWorksheet.getCell("F" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									detailedWorksheet.getCell("F" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 									dateArr = iterData.content[v].episodes[t].watched.split("-");
@@ -247,7 +246,7 @@ exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, re
 									detailedWorksheet.getCell("G" + rowPos).value = iterData.content[v].episodes[t].rating != "" ? iterData.content[v].episodes[t].rating : "N/A";
 									detailedWorksheet.getCell("H" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									let maxCharCount = String(iterData.content[v].episodes.length).length;
-									detailedWorksheet.getCell("H" + rowPos).value = String(t).length < maxCharCount ? new Array(maxCharCount - String(t).length).fill("0").join("") + t : t;
+									detailedWorksheet.getCell("H" + rowPos).value = String(t + 1).length < maxCharCount ? new Array(maxCharCount - String(t + 1).length).fill("0").join("") + (t + 1) : t + 1;
 									detailedWorksheet.getCell("I" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									detailedWorksheet.getCell("I" + rowPos).value = iterData.content[v].episodes[t].name != "" ? iterData.content[v].episodes[t].name : "N/A";
 									detailedWorksheet.getCell("J" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
@@ -269,7 +268,8 @@ exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, re
 								detailedWorksheet.getCell("D" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 								detailedWorksheet.getCell("D" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 								detailedWorksheet.getCell("D" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-								detailedWorksheet.getCell("E" + rowPos).value = iterData.content[v].status != "" ? iterData.content[v].status : "N/A";
+								detailedWorksheet.getCell("E" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+								detailedWorksheet.getCell("E" + rowPos).value = "N/A";
 								detailedWorksheet.getCell("F" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 								detailedWorksheet.getCell("F" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 								dateArr = iterData.content[v].watched.split("-");
@@ -286,56 +286,60 @@ exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, re
 								rowPos++;
 							}
 						}
+						animeWorksheet.getCell("A" + (x + 2)).value = { hyperlink: "#\'Anime-" + iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("") + "\'!A2", text: iterData.name }
 					}
 				}
 			}
-			workbook.xlsx.writeFile(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".xlsx")).then(() => console.log("done xlsx"));
+			if(!fs.existsSync(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, "."))))) {
+				fs.mkdirSync(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, "."))));
+			}
+			workbook.xlsx.writeFile(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")), "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".xlsx")).then(() => console.log("done xlsx"));
 			// workbook.csv.writeFile(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".csv")).then(() => console.log("done csv"));
 
-			// // Copy over all library records which will be included in the export.
-			// let listPromise = new Promise((resolve, reject) => {
-			//     records.forEach((elem, index, arr) => {
-			// 		fs.copySync(path.join(dataPath, elem), path.join(dir, "Trak", "exportTemp", elem), { "overwrite": true });
-			// 		if(index == arr.length - 1) { resolve(); }
-			// 	});
-			// });
-			// // Once all necessary records have copied over, zip the records and compress if necessary.
-			// listPromise.then(() => {
-			// 	zipper.zip(path.join(dir, "Trak", "exportTemp"), (prob, zipped) => {
-			// 		// If there was an issue creating the zip file notify the user.
-			// 		if(prob) { eve.sender.send("exportZippingFailure"); }
-			// 		else {
-			// 			// Define the zip file name.
-			// 			let zipStr = "Trak-Export-";
-			// 			// Compress the zip file if requested.
-			// 			if(compressionVal == true) {
-			// 				zipStr += "Compressed-";
-			// 				zipped.compress();
-			// 			}
-			// 			zipStr += (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".zip";
-			// 			// Delete a previous export if it exists for the current day.
-			// 			let deletePromise = new Promise((resolve, reject) => {
-			// 				if(fs.existsSync(path.join(exportLocation, zipStr))) {
-			// 					fs.unlink(path.join(exportLocation, zipStr), delErr => {
-			// 						if(delErr) { eve.sender.send("exportZipFileDeleteFailure"); }
-			// 						else { resolve(); }
-			// 					});
-			// 				}
-			// 				else { resolve(); }
-			// 			});
-			// 			// Save the zip file, empty the exportTemp folder, and notify the user that the export process has finished.
-			// 			deletePromise.then(() => {
-			// 				zipped.save(path.join(exportLocation, zipStr), zipErr => {
-			// 					if(zipErr) { eve.sender.send("exportZipFileFailure"); }
-			// 					else {
-			// 						fs.emptyDirSync(path.join(dir, "Trak", "exportTemp"));
-			// 						eve.sender.send("exportZipFileSuccess", exportLocation);
-			// 					}
-			// 				});
-			// 			});
-			// 		}
-			// 	});
-			// });
+			// Copy over all library records which will be included in the export.
+			let listPromise = new Promise((resolve, reject) => {
+			    records.forEach((elem, index, arr) => {
+					fs.copySync(path.join(dataPath, elem, "assets"), path.join(dir, "Trak", "exportTemp", elem, "assets"), { "overwrite": true });
+					if(index == arr.length - 1) { resolve(); }
+				});
+			});
+			// Once all necessary records have copied over, zip the assets.
+			listPromise.then(() => {
+				zipper.zip(path.join(dir, "Trak", "exportTemp"), (prob, zipped) => {
+					// If there was an issue creating the zip file notify the user.
+					if(prob) { eve.sender.send("exportZippingFailure"); }
+					else {
+						// Define the zip file name.
+						let zipStr = "Trak-Export-";
+						// // Compress the zip file if requested.
+						// if(compressionVal == true) {
+						// 	zipStr += "Compressed-";
+						// 	zipped.compress();
+						// }
+						zipStr += (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".zip";
+						// Delete a previous export if it exists for the current day.
+						let deletePromise = new Promise((resolve, reject) => {
+							if(fs.existsSync(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")), zipStr))) {
+								fs.unlink(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")), zipStr), delErr => {
+									if(delErr) { eve.sender.send("exportZipFileDeleteFailure"); }
+									else { resolve(); }
+								});
+							}
+							else { resolve(); }
+						});
+						// Save the zip file, empty the exportTemp folder, and notify the user that the export process has finished.
+						deletePromise.then(() => {
+							zipped.save(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")), zipStr), zipErr => {
+								if(zipErr) { eve.sender.send("exportZipFileFailure"); }
+								else {
+									fs.emptyDirSync(path.join(dir, "Trak", "exportTemp"));
+									// eve.sender.send("exportZipFileSuccess", exportLocation);
+								}
+							});
+						});
+					}
+				});
+			});
 		}
 	});
 };
