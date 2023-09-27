@@ -459,6 +459,7 @@ Driver function for adding all app listeners.
 	- spawn provides the means to launch an update via an installer.
 	- downloadRelease provides the means to download a github release asset.
 	- semver provides the means to compare semantic versioning.
+	- ExcelJS provides the means to export/import csv files.
 	- https provides the means to download files.
 	- zipper is a library object which can create zip files.
 	- tools provides a collection of local functions.
@@ -470,7 +471,7 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease, semver, https, exec, shell, ipc, zipper, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease, semver, ExcelJS, https, exec, shell, ipc, zipper, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -575,13 +576,18 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease
 
 	// Handles the export of the chosen library records into a single zip file, possibly compressed.
 	ipc.on("databaseExport", (event, submission) => {
-		tools.exportData(fs, path, zipper, event, originalPath, submission[0], submission[1], submission[2]);
+		if(submission[2] == "CSV") {
+			tools.exportDataCSV(fs, path, zipper, ExcelJS, event, originalPath, submission[0], submission[1], submission[3]);
+		}
+		else if(submission[2] == "ZIP") {
+			tools.exportDataZIP(fs, path, zipper, event, originalPath, submission[0], submission[1], submission[3]);
+		}
 	});
 
 	// Handles the import of chosen zip files containing records into the library. Duplicate records are checked for.
 	ipc.on("databaseImport", (event, submission) => {
 		if(submission[1] == "CSV") {
-			tools.importDriverCSV(fs, path, ipc, zipper, mainWindow, originalPath, event, submission[0]);
+			// tools.importDriverCSV(fs, path, ipc, zipper, mainWindow, originalPath, event, submission[0]);
 		}
 		else if(submission[1] == "ZIP") {
 			tools.importDriverZIP(fs, path, ipc, zipper, mainWindow, originalPath, event, submission[0]);

@@ -2,8 +2,8 @@
 
 BASIC DETAILS: This file serves as the collection of tools utilized by the various back-end requests.
 
-   - exportData: Create a zip file containing the exported library records.
-   - importData: Reads a zip file and adds its content to the library records.
+   - exportDataZIP: Create a zip file containing the exported library records.
+   - importDataZIP: Reads a zip file and adds its content to the library records.
    - importDriverZIP: Iterates through the list of zip files to be imported by waiting for each one to finish prior to proceeding to the next one.
    - createTrayMenu: Create the system tray icon and menu.
    - createWindow: Executes the creation of the primary window with all necessary parameters.
@@ -24,6 +24,324 @@ var exports = {};
 
 
 
+exports.calculateReleaseDate = contentArr => {
+	let candidate = "";
+	for(let z = 0; z < contentArr.length; z++) {
+		let candidateHolder = "";
+		if((contentArr[z].scenario == "Season" ? contentArr[z].start : contentArr[z].release) != "") {
+			candidateHolder = new Date(contentArr[z].scenario == "Season" ? contentArr[z].start : contentArr[z].release);
+		}
+		if(candidate == "" && candidateHolder != "") {
+			candidate = new Date(contentArr[z].scenario == "Season" ? contentArr[z].start : contentArr[z].release);
+		}
+		else if(candidate != "" && candidateHolder != "") {
+			if(candidateHolder < candidate) {
+				candidate = new Date(contentArr[z].scenario == "Season" ? contentArr[z].start : contentArr[z].release);
+			}
+		}
+	}
+	return candidate != "" ? candidate.toJSON().split("T")[0] : "N/A";
+};
+
+
+
+exports.calculateGlobalRating = contentArr => {
+	let overallSum = 0,
+		overallCount = 0;
+	for(let r = 0; r < contentArr.length; r++) {
+		if(contentArr[r].scenario == "Season" && contentArr[r].episodes.length > 0) {
+			let seasonSum = 0,
+				seasonCount = 0;
+			for(let s = 0; s < contentArr[r].episodes.length; s++) {
+				if(contentArr[r].episodes[s].rating != "") {
+					seasonSum += parseInt(contentArr[r].episodes[s].rating);
+					seasonCount++;
+				}
+			}
+			if(seasonCount > 0) {
+				overallSum += (seasonSum / seasonCount);
+				overallCount++;
+			}
+		}
+		else if(contentArr[r].scenario == "Single" && contentArr[r].rating != "") {
+			overallSum += parseInt(contentArr[r].rating);
+			overallCount++;
+		}
+	}
+	return overallCount != 0 ? String((overallSum / overallCount).toFixed(2)) : "N/A";
+};
+
+
+
+// /*
+
+// Create a csv file containing the exported library records.
+
+// 	- fs and path provide the means to work with local files.
+	// - zipper is a library object which can create zip files.
+// 	- ExcelJS provides the means to export/import csv files.
+// 	- eve is the object which allows for interaction with the fron-end of the Electron application.
+// 	- dir is a string representing the base directory corresponding to the location of the configuration file.
+// 	- exportLocation is a string representing the location where the generated zip file will be placed.
+
+// */ 
+exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, records, detailed = false) => {
+	// If the exportTemp folder does not exist, then create it.
+	if(!fs.existsSync(path.join(dir, "Trak", "exportTemp"))) {
+		fs.mkdirSync(path.join(dir, "Trak", "exportTemp"));
+	}
+	// Read the settings configuration file.
+	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
+		// If there was an issue reading the settings configuration file notify the user.
+		if(err) { eve.sender.send("configurationFileOpeningFailure");  }
+		else {
+			// Define the configuration file data and associated library records path.
+			const fileData = JSON.parse(fileContent),
+				dataPath = fileData.current != undefined ? fileData.current.path : fileData.original.path,
+				workbook = new ExcelJS.Workbook();
+			workbook.creator = "Trak";
+			workbook.created = new Date();
+			const animeWorksheet = workbook.addWorksheet("Category - Anime");
+			animeWorksheet.views = [{"state": "frozen", "xSplit": 1, "ySplit": 1, "activeCell": "A2"}];
+			animeWorksheet.getRow(1).height = 20;
+			animeWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
+			animeWorksheet.getRow(1).border = {
+				"top": { "style": "thin" },
+				"left": { "style": "thin" },
+				"bottom": { "style": "thin" },
+				"right": { "style": "thin" }
+			};
+			animeWorksheet.getRow(1).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
+			animeWorksheet.columns = [
+			  	{ "header": "Name", "width": 40},
+			  	{ "header": "Japanese Name", "width": 30 },
+			  	{ "header": "Rating", "width": 10 },
+			  	{ "header": "Comments/Review", "width": 125 },
+			  	{ "header": "Synopsis", "width": 125 },
+			  	{ "header": "Directors", "width": 30 },
+			  	{ "header": "Producers", "width": 30 },
+			  	{ "header": "Writers", "width": 30 },
+			  	{ "header": "Music Directors", "width": 30 },
+			  	{ "header": "Studios", "width": 30 },
+			  	{ "header": "Licensed By", "width": 30 },
+			  	{ "header": "Release Date", "width": 15 },
+			  	{ "header": "Genres", "width": 40 },
+			];
+			for(let x = 0; x < records.length; x++) {
+				animeWorksheet.getRow(x + 2).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
+				animeWorksheet.getRow(x + 2).height = 75;
+				let iterData = JSON.parse(fs.readFileSync(path.join(dataPath, records[x], "data.json"), "UTF8"));
+				if(iterData.category == "Anime") {
+					animeWorksheet.getCell("A" + (x + 2)).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
+					animeWorksheet.getCell("A" + (x + 2)).border = {
+						"top": { "style": "thin" },
+						"left": { "style": "thin" },
+						"bottom": { "style": "thin" },
+						"right": { "style": "thin" }
+					};
+					animeWorksheet.getCell("A" + (x + 2)).value = iterData.name;
+					animeWorksheet.getCell("B" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+					animeWorksheet.getCell("B" + (x + 2)).value = iterData.jname != "" ? iterData.jname : "N/A";
+					animeWorksheet.getCell("C" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+					animeWorksheet.getCell("C" + (x + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					animeWorksheet.getCell("C" + (x + 2)).value = exports.calculateGlobalRating(iterData.content);
+					animeWorksheet.getCell("D" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+					animeWorksheet.getCell("D" + (x + 2)).value = iterData.review != "" ? iterData.review : "N/A";
+					animeWorksheet.getCell("E" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+					animeWorksheet.getCell("E" + (x + 2)).value = iterData.synopsis != "" ? iterData.synopsis : "N/A";
+					animeWorksheet.getCell("F" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+					animeWorksheet.getCell("F" + (x + 2)).value = iterData.directors != "" ? iterData.directors : "N/A";
+					animeWorksheet.getCell("G" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+					animeWorksheet.getCell("G" + (x + 2)).value = iterData.producers != "" ? iterData.producers : "N/A";
+					animeWorksheet.getCell("H" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+					animeWorksheet.getCell("H" + (x + 2)).value = iterData.writers != "" ? iterData.writers : "N/A";
+					animeWorksheet.getCell("I" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+					animeWorksheet.getCell("I" + (x + 2)).value = iterData.musicians != "" ? iterData.musicians : "N/A";
+					animeWorksheet.getCell("J" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+					animeWorksheet.getCell("J" + (x + 2)).value = iterData.studio != "" ? iterData.studio : "N/A";
+					animeWorksheet.getCell("K" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+					animeWorksheet.getCell("K" + (x + 2)).value = iterData.license != "" ? iterData.license : "N/A";
+					animeWorksheet.getCell("L" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+					animeWorksheet.getCell("L" + (x + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					let dateArr = exports.calculateReleaseDate(iterData.content).split("-");
+					animeWorksheet.getCell("L" + (x + 2)).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+					let filterGenreStr = "";
+					for(let f = 0; f < iterData.genres[0].length; f++) {
+						if(iterData.genres[1][f] == true) {
+							if(filterGenreStr.length > 0) {
+								filterGenreStr += ", "
+							}
+				            if(iterData.genres[0][f] == "CGDCT") {
+				                filterGenreStr += "CGDCT";
+				            }
+				            else if(iterData.genres[0][f] == "ComingOfAge") {
+				                filterGenreStr += "Coming-of-Age";
+				            }
+				            else if(iterData.genres[0][f] == "PostApocalyptic") {
+				                filterGenreStr += "Post-Apocalyptic";
+				            }
+				            else if(iterData.genres[0][f] == "SciFi") {
+				                filterGenreStr += "Sci-Fi";
+				            }
+				            else if(iterData.genres[0][f] == "SliceOfLife") {
+				                filterGenreStr += "Slice of Life";
+				            }
+				            else {
+				                filterGenreStr += iterData.genres[0][f].split(/(?=[A-Z])/).join(" ");
+				            }
+						}
+					}
+					if(filterGenreStr == "") { filterGenreStr = "N/A"; }
+					animeWorksheet.getCell("M" + (x + 2)).value = filterGenreStr;
+					if(detailed == true) {
+						let detailedWorksheet = workbook.addWorksheet("Anime - " + iterData.name);
+						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
+						detailedWorksheet.getRow(1).height = 20;
+						detailedWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
+						detailedWorksheet.getRow(1).border = {
+							"top": { "style": "thin" },
+							"left": { "style": "thin" },
+							"bottom": { "style": "thin" },
+							"right": { "style": "thin" }
+						};
+						detailedWorksheet.getRow(1).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
+						detailedWorksheet.columns = [
+						  	{ "header": "Type", "width": 20},
+						  	{ "header": "Name", "width": 40 },
+						  	{ "header": "Start Date", "width": 15 },
+						  	{ "header": "End Date", "width": 15 },
+						  	{ "header": "Status", "width": 30 },
+						  	{ "header": "Last Watched", "width": 15 },
+						  	{ "header": "Rating", "width": 10 },
+						  	{ "header": "Episode #", "width": 15 },
+						  	{ "header": "Episode Name", "width": 30 },
+						  	{ "header": "Comments/Review", "width": 125 }
+						];
+						let rowPos = 2;
+						for(let v = 0; v < iterData.content.length; v++) {
+							if(iterData.content[v].scenario == "Season") {
+								for(let t = 0; t < iterData.content[v].episodes.length; t++) {
+									detailedWorksheet.getRow(rowPos).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
+									detailedWorksheet.getRow(rowPos).height = 75;
+									if(t == 0) {
+										detailedWorksheet.getCell("A" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+										detailedWorksheet.getCell("A" + rowPos).value = "Season";
+										detailedWorksheet.getCell("B" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+										detailedWorksheet.getCell("B" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
+										detailedWorksheet.getCell("C" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+										detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+										dateArr = iterData.content[v].start.split("-");
+										detailedWorksheet.getCell("C" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+										detailedWorksheet.getCell("D" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+										detailedWorksheet.getCell("D" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+										dateArr = iterData.content[v].end.split("-");
+										detailedWorksheet.getCell("D" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+										detailedWorksheet.getCell("E" + rowPos).value = iterData.content[v].status != "" ? iterData.content[v].status : "N/A";
+									}
+									detailedWorksheet.getCell("F" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+									detailedWorksheet.getCell("F" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+									dateArr = iterData.content[v].episodes[t].watched.split("-");
+									detailedWorksheet.getCell("F" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+									detailedWorksheet.getCell("G" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+									detailedWorksheet.getCell("G" + rowPos).alignment = { "vertical": "middle", "horizontal": "center" };
+									detailedWorksheet.getCell("G" + rowPos).value = iterData.content[v].episodes[t].rating != "" ? iterData.content[v].episodes[t].rating : "N/A";
+									detailedWorksheet.getCell("H" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+									let maxCharCount = String(iterData.content[v].episodes.length).length;
+									detailedWorksheet.getCell("H" + rowPos).value = String(t).length < maxCharCount ? new Array(maxCharCount - String(t).length).fill("0").join("") + t : t;
+									detailedWorksheet.getCell("I" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+									detailedWorksheet.getCell("I" + rowPos).value = iterData.content[v].episodes[t].name != "" ? iterData.content[v].episodes[t].name : "N/A";
+									detailedWorksheet.getCell("J" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+									detailedWorksheet.getCell("J" + rowPos).value = iterData.content[v].episodes[t].review != "" ? iterData.content[v].episodes[t].review : "N/A";
+									rowPos++;
+								}
+							}
+							else if(iterData.content[v].scenario == "Single") {
+								detailedWorksheet.getRow(rowPos).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
+								detailedWorksheet.getRow(rowPos).height = 75;
+								detailedWorksheet.getCell("A" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+								detailedWorksheet.getCell("A" + rowPos).value = iterData.content[v].type != "" ? iterData.content[v].type : "Single";
+								detailedWorksheet.getCell("B" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+								detailedWorksheet.getCell("B" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
+								detailedWorksheet.getCell("C" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+								detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+								dateArr = iterData.content[v].release.split("-");
+								detailedWorksheet.getCell("C" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+								detailedWorksheet.getCell("D" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+								detailedWorksheet.getCell("D" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+								detailedWorksheet.getCell("D" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+								detailedWorksheet.getCell("E" + rowPos).value = iterData.content[v].status != "" ? iterData.content[v].status : "N/A";
+								detailedWorksheet.getCell("F" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+								detailedWorksheet.getCell("F" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+								dateArr = iterData.content[v].watched.split("-");
+								detailedWorksheet.getCell("F" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+								detailedWorksheet.getCell("G" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+								detailedWorksheet.getCell("G" + rowPos).alignment = { "vertical": "middle", "horizontal": "center" };
+								detailedWorksheet.getCell("G" + rowPos).value = iterData.content[v].rating != "" ? iterData.content[v].rating : "N/A";
+								detailedWorksheet.getCell("H" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+								detailedWorksheet.getCell("H" + rowPos).value = "1";
+								detailedWorksheet.getCell("I" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+								detailedWorksheet.getCell("I" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
+								detailedWorksheet.getCell("J" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+								detailedWorksheet.getCell("J" + rowPos).value = iterData.content[v].review != "" ? iterData.content[v].review : "N/A";
+								rowPos++;
+							}
+						}
+					}
+				}
+			}
+			workbook.xlsx.writeFile(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".xlsx")).then(() => console.log("done xlsx"));
+			// workbook.csv.writeFile(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".csv")).then(() => console.log("done csv"));
+
+			// // Copy over all library records which will be included in the export.
+			// let listPromise = new Promise((resolve, reject) => {
+			//     records.forEach((elem, index, arr) => {
+			// 		fs.copySync(path.join(dataPath, elem), path.join(dir, "Trak", "exportTemp", elem), { "overwrite": true });
+			// 		if(index == arr.length - 1) { resolve(); }
+			// 	});
+			// });
+			// // Once all necessary records have copied over, zip the records and compress if necessary.
+			// listPromise.then(() => {
+			// 	zipper.zip(path.join(dir, "Trak", "exportTemp"), (prob, zipped) => {
+			// 		// If there was an issue creating the zip file notify the user.
+			// 		if(prob) { eve.sender.send("exportZippingFailure"); }
+			// 		else {
+			// 			// Define the zip file name.
+			// 			let zipStr = "Trak-Export-";
+			// 			// Compress the zip file if requested.
+			// 			if(compressionVal == true) {
+			// 				zipStr += "Compressed-";
+			// 				zipped.compress();
+			// 			}
+			// 			zipStr += (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".zip";
+			// 			// Delete a previous export if it exists for the current day.
+			// 			let deletePromise = new Promise((resolve, reject) => {
+			// 				if(fs.existsSync(path.join(exportLocation, zipStr))) {
+			// 					fs.unlink(path.join(exportLocation, zipStr), delErr => {
+			// 						if(delErr) { eve.sender.send("exportZipFileDeleteFailure"); }
+			// 						else { resolve(); }
+			// 					});
+			// 				}
+			// 				else { resolve(); }
+			// 			});
+			// 			// Save the zip file, empty the exportTemp folder, and notify the user that the export process has finished.
+			// 			deletePromise.then(() => {
+			// 				zipped.save(path.join(exportLocation, zipStr), zipErr => {
+			// 					if(zipErr) { eve.sender.send("exportZipFileFailure"); }
+			// 					else {
+			// 						fs.emptyDirSync(path.join(dir, "Trak", "exportTemp"));
+			// 						eve.sender.send("exportZipFileSuccess", exportLocation);
+			// 					}
+			// 				});
+			// 			});
+			// 		}
+			// 	});
+			// });
+		}
+	});
+};
+
+
+
 /*
 
 Create a zip file containing the exported library records.
@@ -33,9 +351,11 @@ Create a zip file containing the exported library records.
 	- eve is the object which allows for interaction with the fron-end of the Electron application.
 	- dir is a string representing the base directory corresponding to the location of the configuration file.
 	- exportLocation is a string representing the location where the generated zip file will be placed.
+	- records is the list of items which the user desires to export.
+	- compressionVal is a boolean representing whether the zip file should be compressed.
 
 */ 
-exports.exportData = (fs, path, zipper, eve, dir, exportLocation, records, compressionVal = false) => {
+exports.exportDataZIP = (fs, path, zipper, eve, dir, exportLocation, records, compressionVal = false) => {
 	// If the exportTemp folder does not exist, then create it.
 	if(!fs.existsSync(path.join(dir, "Trak", "exportTemp"))) {
 		fs.mkdirSync(path.join(dir, "Trak", "exportTemp"));
@@ -111,7 +431,7 @@ Reads a zip file and adds its content to the library records.
 	- zipFile is the zip file to be imported.
 
 */ 
-exports.importData = async (fs, path, ipc, zipper, win, eve, dir, zipFile) => {
+exports.importDataZIP = async (fs, path, ipc, zipper, win, eve, dir, zipFile) => {
 	return new Promise((res, rej) => {
 		// If the exportTemp folder does not exist, then create it.
 		if(!fs.existsSync(path.join(dir, "Trak", "importTemp"))) {
@@ -195,7 +515,7 @@ Iterates through the list of zip files to be imported by waiting for each one to
 */ 
 exports.importDriverZIP = async (fs, path, ipc, zipper, mainWin, ogPath, evnt, lst) => {
   	for(let i = 0; i < lst.length; i++) {
-    	await exports.importData(fs, path, ipc, zipper, mainWin, evnt, ogPath, lst[i]);
+    	await exports.importDataZIP(fs, path, ipc, zipper, mainWin, evnt, ogPath, lst[i]);
   	}
 };
 

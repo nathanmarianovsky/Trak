@@ -15,6 +15,7 @@ Declare all of the necessary variables.
 	- spawn provides the means to launch an update via an installer.
 	- downloadRelease provides the means to download a github release asset.
 	- semver provides the means to compare semantic versioning.
+	- ExcelJS provides the means to export/import csv files.
 	- basePath is the path to the local settings data.
 	- localPath is the path to the local user data.
 
@@ -34,6 +35,7 @@ const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
 	spawn = require("child_process").spawn,
 	downloadRelease = require("download-github-release"),
 	semver = require("semver"),
+	ExcelJS = require("exceljs"),
 	basePath = localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
 if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
 	var localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
@@ -206,7 +208,7 @@ app.whenReady().then(() => {
 														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 															tools.createTrayMenu("h", primaryWindow, tray, Menu);
 															// Add all of the back-end listeners.
-															appListeners.addListeners(app, BrowserWindow, path, fs, os, spawn, downloadRelease, semver, https, exec, shell, ipc, zipper, tools, malScraper, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															appListeners.addListeners(app, BrowserWindow, path, fs, os, spawn, downloadRelease, semver, ExcelJS, https, exec, shell, ipc, zipper, tools, malScraper, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 														}
 													});
 												}
