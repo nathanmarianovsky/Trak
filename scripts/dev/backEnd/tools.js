@@ -2,6 +2,9 @@
 
 BASIC DETAILS: This file serves as the collection of tools utilized by the various back-end requests.
 
+   - calculateReleaseDate: Calculate the earliest release date of an anime record based on the related content information.
+   - calculateGlobalRating: Calculate the average rating of an anime record based on the related content information.
+   - exportDataXLSX: Create a xlsx file containing the exported library records along with a zip of the associated assets.
    - exportDataZIP: Create a zip file containing the exported library records.
    - importDataZIP: Reads a zip file and adds its content to the library records.
    - importDriverZIP: Iterates through the list of zip files to be imported by waiting for each one to finish prior to proceeding to the next one.
@@ -24,6 +27,13 @@ var exports = {};
 
 
 
+/*
+
+Calculate the earliest release date of an anime record based on the related content information.
+
+	- contentArr is an array containing the related content details for a library record.
+
+*/ 
 exports.calculateReleaseDate = contentArr => {
 	let candidate = "";
 	for(let z = 0; z < contentArr.length; z++) {
@@ -45,6 +55,13 @@ exports.calculateReleaseDate = contentArr => {
 
 
 
+/*
+
+Calculate the average rating of an anime record based on the related content information.
+
+	- contentArr is an array containing the related content details for a library record.
+
+*/ 
 exports.calculateGlobalRating = contentArr => {
 	let overallSum = 0,
 		overallCount = 0;
@@ -73,36 +90,52 @@ exports.calculateGlobalRating = contentArr => {
 
 
 
-// /*
+/*
 
-// Create a csv file containing the exported library records.
+Create a xlsx file containing the exported library records along with a zip of the associated assets.
 
-// 	- fs and path provide the means to work with local files.
-	// - zipper is a library object which can create zip files.
-// 	- ExcelJS provides the means to export/import csv files.
-// 	- eve is the object which allows for interaction with the fron-end of the Electron application.
-// 	- dir is a string representing the base directory corresponding to the location of the configuration file.
-// 	- exportLocation is a string representing the location where the generated zip file will be placed.
+	- fs and path provide the means to work with local files.
+	- zipper is a library object which can create zip files.
+	- ExcelJS provides the means to export/import xlsx files.
+	- eve is the object which allows for interaction with the fron-end of the Electron application.
+	- dir is a string representing the base directory corresponding to the location of the configuration file.
+	- exportLocation is a string representing the location where the generated zip file will be placed.
+	- records is the list of items which the user desires to export.
+	- detailed is a boolean representing whether the xlsx file should contain only basic details or everything.
+	- compressionVal is a boolean representing whether the zip file should be compressed.
 
-// */ 
-exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, records, detailed = false) => {
+*/ 
+exports.exportDataXLSX = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, records, detailed = false, compressionVal = false) => {
 	// If the exportTemp folder does not exist, then create it.
 	if(!fs.existsSync(path.join(dir, "Trak", "exportTemp"))) {
 		fs.mkdirSync(path.join(dir, "Trak", "exportTemp"));
+	}
+	// If the export folder does not exist, then create it.
+	const fileDateArr = (new Date().toJSON().slice(0, 10)).split("-"),
+		fileDate = fileDateArr[1] + "." + fileDateArr[2] + "." + fileDateArr[0];
+	if(!fs.existsSync(path.join(exportLocation, "Trak-XLSX-Export-" + fileDate))) {
+		fs.mkdirSync(path.join(exportLocation, "Trak-XLSX-Export-" + fileDate));
+	}
+	// Otherwise empty it.
+	else {
+		fs.emptyDirSync(path.join(exportLocation, "Trak-XLSX-Export-" + fileDate));
 	}
 	// Read the settings configuration file.
 	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
 		// If there was an issue reading the settings configuration file notify the user.
 		if(err) { eve.sender.send("configurationFileOpeningFailure");  }
 		else {
-			// Define the configuration file data and associated library records path.
+			// Define the configuration file data, associated library records path, and create a xlsx workbook.
 			const fileData = JSON.parse(fileContent),
 				dataPath = fileData.current != undefined ? fileData.current.path : fileData.original.path,
 				workbook = new ExcelJS.Workbook();
+			// Define parameters pertaining to the workbook.
 			workbook.creator = "Trak";
 			workbook.created = new Date();
+			// Define the anime worksheet.
 			const animeWorksheet = workbook.addWorksheet("Category-Anime");
 			animeWorksheet.views = [{"state": "frozen", "xSplit": 1, "ySplit": 1, "activeCell": "A2"}];
+			// Update the style of the first row.
 			animeWorksheet.getRow(1).height = 20;
 			animeWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
 			animeWorksheet.getRow(1).border = {
@@ -112,6 +145,7 @@ exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, re
 				"right": { "style": "thin" }
 			};
 			animeWorksheet.getRow(1).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
+			// Construct the column headers.
 			animeWorksheet.columns = [
 			  	{ "header": "Name", "width": 40},
 			  	{ "header": "Japanese Name", "width": 30 },
@@ -127,41 +161,30 @@ exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, re
 			  	{ "header": "Release Date", "width": 15 },
 			  	{ "header": "Genres", "width": 40 },
 			];
+			// Iterate through all records the user desires to export.
 			for(let x = 0; x < records.length; x++) {
-				animeWorksheet.getRow(x + 2).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
-				animeWorksheet.getRow(x + 2).height = 75;
+				// Define the data associated to an anime record.
 				let iterData = JSON.parse(fs.readFileSync(path.join(dataPath, records[x], "data.json"), "UTF8"));
+				// Generate the worksheets associated to anime library records.
 				if(iterData.category == "Anime") {
+					// Update each row with the relevant anime record details on the anime worksheet.
+					animeWorksheet.getRow(x + 2).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
+					animeWorksheet.getRow(x + 2).height = 75;
+					animeWorksheet.getRow(x + 2).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 					animeWorksheet.getCell("A" + (x + 2)).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true, "underline": true, "color": { "argb": "FF0000FF" } };
-					animeWorksheet.getCell("A" + (x + 2)).border = {
-						"top": { "style": "thin" },
-						"left": { "style": "thin" },
-						"bottom": { "style": "thin" },
-						"right": { "style": "thin" }
-					};
+					animeWorksheet.getCell("A" + (x + 2)).border = { "top": { "style": "thin" }, "left": { "style": "thin" }, "bottom": { "style": "thin" }, "right": { "style": "thin" } };
 					animeWorksheet.getCell("A" + (x + 2)).value = iterData.name;
-					animeWorksheet.getCell("B" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 					animeWorksheet.getCell("B" + (x + 2)).value = iterData.jname != "" ? iterData.jname : "N/A";
-					animeWorksheet.getCell("C" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 					animeWorksheet.getCell("C" + (x + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 					animeWorksheet.getCell("C" + (x + 2)).value = exports.calculateGlobalRating(iterData.content);
-					animeWorksheet.getCell("D" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 					animeWorksheet.getCell("D" + (x + 2)).value = iterData.review != "" ? iterData.review : "N/A";
-					animeWorksheet.getCell("E" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 					animeWorksheet.getCell("E" + (x + 2)).value = iterData.synopsis != "" ? iterData.synopsis : "N/A";
-					animeWorksheet.getCell("F" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 					animeWorksheet.getCell("F" + (x + 2)).value = iterData.directors != "" ? iterData.directors : "N/A";
-					animeWorksheet.getCell("G" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 					animeWorksheet.getCell("G" + (x + 2)).value = iterData.producers != "" ? iterData.producers : "N/A";
-					animeWorksheet.getCell("H" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 					animeWorksheet.getCell("H" + (x + 2)).value = iterData.writers != "" ? iterData.writers : "N/A";
-					animeWorksheet.getCell("I" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 					animeWorksheet.getCell("I" + (x + 2)).value = iterData.musicians != "" ? iterData.musicians : "N/A";
-					animeWorksheet.getCell("J" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 					animeWorksheet.getCell("J" + (x + 2)).value = iterData.studio != "" ? iterData.studio : "N/A";
-					animeWorksheet.getCell("K" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 					animeWorksheet.getCell("K" + (x + 2)).value = iterData.license != "" ? iterData.license : "N/A";
-					animeWorksheet.getCell("L" + (x + 2)).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 					animeWorksheet.getCell("L" + (x + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 					let dateArr = exports.calculateReleaseDate(iterData.content).split("-");
 					animeWorksheet.getCell("L" + (x + 2)).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
@@ -193,9 +216,12 @@ exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, re
 					}
 					if(filterGenreStr == "") { filterGenreStr = "N/A"; }
 					animeWorksheet.getCell("M" + (x + 2)).value = filterGenreStr;
+					// If the user desires to export a detailed xlsx file then create a new worksheet for each anime record and populate it with the related content information.
 					if(detailed == true) {
+						// Define the worksheet associated to the anime record.
 						let detailedWorksheet = workbook.addWorksheet("Anime-" + iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""));
 						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
+						// Update the style of the first row.
 						detailedWorksheet.getRow(1).height = 20;
 						detailedWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
 						detailedWorksheet.getRow(1).border = {
@@ -205,6 +231,7 @@ exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, re
 							"right": { "style": "thin" }
 						};
 						detailedWorksheet.getRow(1).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
+						// Construct the column headers.
 						detailedWorksheet.columns = [
 						  	{ "header": "Type", "width": 20},
 						  	{ "header": "Name", "width": 40 },
@@ -217,127 +244,99 @@ exports.exportDataCSV = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, re
 						  	{ "header": "Episode Name", "width": 30 },
 						  	{ "header": "Comments/Review", "width": 125 }
 						];
+						// Keep track of the row position in the worksheet.
 						let rowPos = 2;
+						// Iterate through the related content of an anime record.
 						for(let v = 0; v < iterData.content.length; v++) {
+							// If the related content item corresponds to a season then add all associated episodes.
 							if(iterData.content[v].scenario == "Season") {
 								for(let t = 0; t < iterData.content[v].episodes.length; t++) {
+									detailedWorksheet.getRow(rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									detailedWorksheet.getRow(rowPos).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
 									detailedWorksheet.getRow(rowPos).height = 75;
-									detailedWorksheet.getCell("A" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									detailedWorksheet.getCell("A" + rowPos).value = "Season";
-									detailedWorksheet.getCell("B" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									detailedWorksheet.getCell("B" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
-									detailedWorksheet.getCell("C" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 									dateArr = iterData.content[v].start.split("-");
 									detailedWorksheet.getCell("C" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-									detailedWorksheet.getCell("D" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									detailedWorksheet.getCell("D" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 									dateArr = iterData.content[v].end.split("-");
 									detailedWorksheet.getCell("D" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-									detailedWorksheet.getCell("E" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									detailedWorksheet.getCell("E" + rowPos).value = iterData.content[v].status != "" ? iterData.content[v].status : "N/A";
-									detailedWorksheet.getCell("F" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									detailedWorksheet.getCell("F" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 									dateArr = iterData.content[v].episodes[t].watched.split("-");
 									detailedWorksheet.getCell("F" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-									detailedWorksheet.getCell("G" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									detailedWorksheet.getCell("G" + rowPos).alignment = { "vertical": "middle", "horizontal": "center" };
 									detailedWorksheet.getCell("G" + rowPos).value = iterData.content[v].episodes[t].rating != "" ? iterData.content[v].episodes[t].rating : "N/A";
-									detailedWorksheet.getCell("H" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									let maxCharCount = String(iterData.content[v].episodes.length).length;
 									detailedWorksheet.getCell("H" + rowPos).value = String(t + 1).length < maxCharCount ? new Array(maxCharCount - String(t + 1).length).fill("0").join("") + (t + 1) : t + 1;
-									detailedWorksheet.getCell("I" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									detailedWorksheet.getCell("I" + rowPos).value = iterData.content[v].episodes[t].name != "" ? iterData.content[v].episodes[t].name : "N/A";
-									detailedWorksheet.getCell("J" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 									detailedWorksheet.getCell("J" + rowPos).value = iterData.content[v].episodes[t].review != "" ? iterData.content[v].episodes[t].review : "N/A";
 									rowPos++;
 								}
 							}
+							// Otherwise if the related content item corresponds to a single listing then add a single episode.
 							else if(iterData.content[v].scenario == "Single") {
+								detailedWorksheet.getRow(rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 								detailedWorksheet.getRow(rowPos).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
 								detailedWorksheet.getRow(rowPos).height = 75;
-								detailedWorksheet.getCell("A" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 								detailedWorksheet.getCell("A" + rowPos).value = iterData.content[v].type != "" ? iterData.content[v].type : "Single";
-								detailedWorksheet.getCell("B" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 								detailedWorksheet.getCell("B" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
-								detailedWorksheet.getCell("C" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 								detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 								dateArr = iterData.content[v].release.split("-");
 								detailedWorksheet.getCell("C" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-								detailedWorksheet.getCell("D" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 								detailedWorksheet.getCell("D" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 								detailedWorksheet.getCell("D" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-								detailedWorksheet.getCell("E" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 								detailedWorksheet.getCell("E" + rowPos).value = "N/A";
-								detailedWorksheet.getCell("F" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 								detailedWorksheet.getCell("F" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 								dateArr = iterData.content[v].watched.split("-");
 								detailedWorksheet.getCell("F" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-								detailedWorksheet.getCell("G" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 								detailedWorksheet.getCell("G" + rowPos).alignment = { "vertical": "middle", "horizontal": "center" };
 								detailedWorksheet.getCell("G" + rowPos).value = iterData.content[v].rating != "" ? iterData.content[v].rating : "N/A";
-								detailedWorksheet.getCell("H" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 								detailedWorksheet.getCell("H" + rowPos).value = "1";
-								detailedWorksheet.getCell("I" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 								detailedWorksheet.getCell("I" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
-								detailedWorksheet.getCell("J" + rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
 								detailedWorksheet.getCell("J" + rowPos).value = iterData.content[v].review != "" ? iterData.content[v].review : "N/A";
 								rowPos++;
 							}
 						}
+						// For a detailed xlsx export the names on the anime worksheet become hyperlinks to their respective worksheet.
 						animeWorksheet.getCell("A" + (x + 2)).value = { hyperlink: "#\'Anime-" + iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("") + "\'!A2", text: iterData.name }
 					}
 				}
 			}
-			if(!fs.existsSync(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, "."))))) {
-				fs.mkdirSync(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, "."))));
-			}
-			workbook.xlsx.writeFile(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")), "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".xlsx")).then(() => console.log("done xlsx"));
-			// workbook.csv.writeFile(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".csv")).then(() => console.log("done csv"));
-
-			// Copy over all library records which will be included in the export.
-			let listPromise = new Promise((resolve, reject) => {
-			    records.forEach((elem, index, arr) => {
-					fs.copySync(path.join(dataPath, elem, "assets"), path.join(dir, "Trak", "exportTemp", elem, "assets"), { "overwrite": true });
-					if(index == arr.length - 1) { resolve(); }
+			// Write the xlsx file in the desired export location.
+			workbook.xlsx.writeFile(path.join(exportLocation, "Trak-XLSX-Export-" + fileDate, "Trak-XLSX-Export-" + fileDate + ".xlsx")).then(() => {
+				// Copy over all library records which will be included in the export.
+				let listPromise = new Promise((resolve, reject) => {
+				    records.forEach((elem, index, arr) => {
+						fs.copySync(path.join(dataPath, elem, "assets"), path.join(dir, "Trak", "exportTemp", elem, "assets"), { "overwrite": true });
+						if(index == arr.length - 1) { resolve(); }
+					});
 				});
-			});
-			// Once all necessary records have copied over, zip the assets.
-			listPromise.then(() => {
-				zipper.zip(path.join(dir, "Trak", "exportTemp"), (prob, zipped) => {
-					// If there was an issue creating the zip file notify the user.
-					if(prob) { eve.sender.send("exportZippingFailure"); }
-					else {
-						// Define the zip file name.
-						let zipStr = "Trak-Export-";
-						// // Compress the zip file if requested.
-						// if(compressionVal == true) {
-						// 	zipStr += "Compressed-";
-						// 	zipped.compress();
-						// }
-						zipStr += (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".zip";
-						// Delete a previous export if it exists for the current day.
-						let deletePromise = new Promise((resolve, reject) => {
-							if(fs.existsSync(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")), zipStr))) {
-								fs.unlink(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")), zipStr), delErr => {
-									if(delErr) { eve.sender.send("exportZipFileDeleteFailure"); }
-									else { resolve(); }
-								});
+				// Once all necessary records have copied over, zip the assets.
+				listPromise.then(() => {
+					zipper.zip(path.join(dir, "Trak", "exportTemp"), (prob, zipped) => {
+						// If there was an issue creating the zip file notify the user.
+						if(prob) { eve.sender.send("exportXLSXZippingFailure"); }
+						else {
+							// Define the zip file name.
+							let zipStr = "Trak-XLSX-Export-";
+							// Compress the assets zip file if requested.
+							if(compressionVal == true) {
+								zipStr += "Compressed-";
+								zipped.compress();
 							}
-							else { resolve(); }
-						});
-						// Save the zip file, empty the exportTemp folder, and notify the user that the export process has finished.
-						deletePromise.then(() => {
-							zipped.save(path.join(exportLocation, "Trak-Export-" + (new Date().toJSON().slice(0, 10).replace(/-/g, ".")), zipStr), zipErr => {
-								if(zipErr) { eve.sender.send("exportZipFileFailure"); }
+							zipStr += fileDate + ".zip";
+							// Save the assets zip file, empty the exportTemp folder, and notify the user that the export process has finished.
+							zipped.save(path.join(exportLocation, "Trak-XLSX-Export-" + fileDate, zipStr), zipErr => {
+								if(zipErr) { eve.sender.send("exportXLSXFileFailure"); }
 								else {
 									fs.emptyDirSync(path.join(dir, "Trak", "exportTemp"));
-									// eve.sender.send("exportZipFileSuccess", exportLocation);
+									eve.sender.send("exportSuccess", exportLocation);
 								}
 							});
-						});
-					}
+						}
+					});
 				});
 			});
 		}
@@ -364,6 +363,8 @@ exports.exportDataZIP = (fs, path, zipper, eve, dir, exportLocation, records, co
 	if(!fs.existsSync(path.join(dir, "Trak", "exportTemp"))) {
 		fs.mkdirSync(path.join(dir, "Trak", "exportTemp"));
 	}
+	const fileDateArr = (new Date().toJSON().slice(0, 10)).split("-"),
+		fileDate = fileDateArr[1] + "." + fileDateArr[2] + "." + fileDateArr[0];
 	// Read the settings configuration file.
 	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
 		// If there was an issue reading the settings configuration file notify the user.
@@ -383,21 +384,21 @@ exports.exportDataZIP = (fs, path, zipper, eve, dir, exportLocation, records, co
 			listPromise.then(() => {
 				zipper.zip(path.join(dir, "Trak", "exportTemp"), (prob, zipped) => {
 					// If there was an issue creating the zip file notify the user.
-					if(prob) { eve.sender.send("exportZippingFailure"); }
+					if(prob) { eve.sender.send("exportZIPZippingFailure"); }
 					else {
 						// Define the zip file name.
-						let zipStr = "Trak-Export-";
+						let zipStr = "Trak-ZIP-Export-";
 						// Compress the zip file if requested.
 						if(compressionVal == true) {
 							zipStr += "Compressed-";
 							zipped.compress();
 						}
-						zipStr += (new Date().toJSON().slice(0, 10).replace(/-/g, ".")) + ".zip";
+						zipStr += fileDate + ".zip";
 						// Delete a previous export if it exists for the current day.
 						let deletePromise = new Promise((resolve, reject) => {
 							if(fs.existsSync(path.join(exportLocation, zipStr))) {
 								fs.unlink(path.join(exportLocation, zipStr), delErr => {
-									if(delErr) { eve.sender.send("exportZipFileDeleteFailure"); }
+									if(delErr) { eve.sender.send("exportZIPFileDeleteFailure"); }
 									else { resolve(); }
 								});
 							}
@@ -406,10 +407,10 @@ exports.exportDataZIP = (fs, path, zipper, eve, dir, exportLocation, records, co
 						// Save the zip file, empty the exportTemp folder, and notify the user that the export process has finished.
 						deletePromise.then(() => {
 							zipped.save(path.join(exportLocation, zipStr), zipErr => {
-								if(zipErr) { eve.sender.send("exportZipFileFailure"); }
+								if(zipErr) { eve.sender.send("exportZIPFileFailure"); }
 								else {
 									fs.emptyDirSync(path.join(dir, "Trak", "exportTemp"));
-									eve.sender.send("exportZipFileSuccess", exportLocation);
+									eve.sender.send("exportSuccess", exportLocation);
 								}
 							});
 						});

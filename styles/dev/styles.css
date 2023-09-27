@@ -373,7 +373,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
     left: 25px;
 }
 
-#CSVTypeSwitchDiv {
+#XLSXTypeSwitchDiv {
 	display: none;
 	position: relative;
     top: 12px;
@@ -381,18 +381,18 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 }
 
 #databaseSwitchDiv label,
-#CSVTypeSwitchDiv label,
+#XLSXTypeSwitchDiv label,
 #databaseCheckLabel span {
 	color: initial;
 	font-weight: bold;
 }
 
 #databaseSwitchDiv label input[type=checkbox]:checked+.lever:after,
-#CSVTypeSwitchDiv label input[type=checkbox]:checked+.lever:after {
+#XLSXTypeSwitchDiv label input[type=checkbox]:checked+.lever:after {
 	background-color: #2A2A8E !important;
 }
 
-#importCSVContentSimple, #importCSVContentDetailed {
+#importXLSXContentSimple, #importXLSXContentDetailed {
 	display: none;
 }
 

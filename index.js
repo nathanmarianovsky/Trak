@@ -15,7 +15,7 @@ Declare all of the necessary variables.
 	- spawn provides the means to launch an update via an installer.
 	- downloadRelease provides the means to download a github release asset.
 	- semver provides the means to compare semantic versioning.
-	- ExcelJS provides the means to export/import csv files.
+	- ExcelJS provides the means to export/import xlsx files.
 	- basePath is the path to the local settings data.
 	- localPath is the path to the local user data.
 

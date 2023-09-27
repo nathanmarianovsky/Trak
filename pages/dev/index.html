@@ -211,14 +211,14 @@
                 </div>
                 <div id="databaseImportContainer" class="databaseContainer">
                     <p id="importZipContent">To import into the library records simply select the zip files which contain the data and click to import. The zip file should correspond to an export from this application.</p>
-                    <p id="importCSVContentSimple">
+                    <p id="importXLSXContentSimple">
                         In order to import into the library records a simple csv file there should be a single worksheet whose columns are expected to be in the order:
                         <br><br>
                         <span class="center textFocus">| Category | Name | Japanese Name | Rating | Comments/Review | Synopsis | Directors |<br>| Producers | Writers | Music Directors | Studios | Licensed By | Release Date | Genres</span>
                         <br>
                         The first row should be used for column headers with data starting on the second row. Furthermore, the genres component should consist of a comma separated list while the category of a record can take on one of five values: Anime, Book, Film, Manga, or Show. Select the csv files which contain the data and click to import.
                     </p>
-                    <p id="importCSVContentDetailed">
+                    <p id="importXLSXContentDetailed">
                         In order to import into the library records a detailed csv file multiple worksheets are expected to be provided where the first worksheet should correspond to the same data provided for a simple csv import. All other worksheets are expected to be titled with the record name whose columns are expected to be in the order:
                         <br><br>
                         <span class="center textFocus">| Type | Name | Start Date | End Date | Status | Last Watched |<br>| Rating | Episode # | Episode Name | Comments/Review |</span>
@@ -249,21 +249,21 @@
                         ZIP
                         <input id="databaseSwitch" type="checkbox">
                         <span class="lever"></span>
-                        CSV
+                        XLSX
+                    </label>
+                </div>
+                <div id="XLSXTypeSwitchDiv" class="switch left">
+                    <label>
+                        Simple
+                        <input id="XLSXTypeSwitch" type="checkbox">
+                        <span class="lever"></span>
+                        Detailed
                     </label>
                 </div>
                 <label id="databaseCheckLabel" class="left">
                     <input type="checkbox" class="filled-in" id="exportCheck"/>
                     <span id="databaseCheckSpan">Compress</span>
                 </label>
-                <div id="CSVTypeSwitchDiv" class="switch left">
-                    <label>
-                        Simple
-                        <input id="CSVTypeSwitch" type="checkbox">
-                        <span class="lever"></span>
-                        Detailed
-                    </label>
-                </div>
                 <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
                 <a id="databaseExportBtn" class="modal-close waves-effect waves-light btn-flat modalButtons">Export</a>
                 <a id="databaseImportBtn" class="modal-close waves-effect waves-light btn-flat modalButtons">Import</a>

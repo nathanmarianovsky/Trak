@@ -57,12 +57,12 @@ window.addEventListener("load", () => {
         databaseImportBtn = document.getElementById("databaseImportBtn"),
         importOverideBtn = document.getElementById("importOverideBtn"),
         typeSwitch = document.getElementById("databaseSwitch"),
-        CSVTypeSwitch = document.getElementById("CSVTypeSwitch");
+        XLSXTypeSwitch = document.getElementById("XLSXTypeSwitch");
     // Define all page components which will be utilized.
     const tableBody = document.getElementById("tableBody"),
-        CSVTypeSwitchDiv = document.getElementById("CSVTypeSwitchDiv"),
-        importCSVContentSimple = document.getElementById("importCSVContentSimple"),
-        importCSVContentDetailed = document.getElementById("importCSVContentDetailed"),
+        XLSXTypeSwitchDiv = document.getElementById("XLSXTypeSwitchDiv"),
+        importXLSXContentSimple = document.getElementById("importXLSXContentSimple"),
+        importXLSXContentDetailed = document.getElementById("importXLSXContentDetailed"),
         databaseExportContainer = document.getElementById("databaseExportContainer"),
         databaseImportContainer = document.getElementById("databaseImportContainer");
     // Listen for a click event on the add button in order to open a window whose inputs will generate a new record.
@@ -227,11 +227,11 @@ window.addEventListener("load", () => {
         databaseImportBtn.style.display = "none";
         if(typeSwitch.checked == true) {
             databaseCheckLabel.style.display = "none";
-            CSVTypeSwitchDiv.style.display = "initial";
+            XLSXTypeSwitchDiv.style.display = "initial";
         }
         else {
             databaseCheckLabel.style.display = "initial";
-            CSVTypeSwitchDiv.style.display = "none";
+            XLSXTypeSwitchDiv.style.display = "none";
         }
     });
     // Listen for a click event on the database import tab in order to update the database modal view.
@@ -249,13 +249,13 @@ window.addEventListener("load", () => {
         databaseImportBtn.style.display = "inline-block";
         if(typeSwitch.checked == true) {
             importZipContent.style.display = "none";
-            CSVTypeSwitchDiv.style.display = "initial";
-            CSVTypeSwitch.checked == true ? importCSVContentDetailed.style.display = "block" : importCSVContentSimple.style.display = "block";
+            XLSXTypeSwitchDiv.style.display = "initial";
+            XLSXTypeSwitch.checked == true ? importXLSXContentDetailed.style.display = "block" : importXLSXContentSimple.style.display = "block";
         }
         else {
             importZipContent.style.display = "block";
-            importCSVContentSimple.style.display = "none";
-            importCSVContentDetailed.style.display = "none";
+            importXLSXContentSimple.style.display = "none";
+            importXLSXContentDetailed.style.display = "none";
         }
     });
     // Listen for a click event on the database export button in order to process an export of the chosen library records.
@@ -266,7 +266,7 @@ window.addEventListener("load", () => {
             exportPath = document.getElementById("exportPath");
         // Check that at least one record has been chosen by the user.
         if(submissionList.length > 0) {
-            ipcRenderer.send("databaseExport", [exportPath.value, submissionList, typeSwitch.checked == true ? "CSV" : "ZIP", typeSwitch.checked == true ? CSVTypeSwitch.checked : document.getElementById("exportCheck").checked]);
+            ipcRenderer.send("databaseExport", [exportPath.value, submissionList, typeSwitch.checked == true ? "XLSX" : "ZIP", XLSXTypeSwitch.checked, document.getElementById("exportCheck").checked]);
             exportPath.value = "";
         }
         else {
@@ -279,7 +279,7 @@ window.addEventListener("load", () => {
         const pathArr = Array.from(document.getElementById("importZipFile").files);
         // Make sure that at least one zip file has been chosen by the user.
         if(pathArr.length > 0) {
-            ipcRenderer.send("databaseImport", [pathArr.map(elem => elem.path), typeSwitch.checked == true ? "CSV" : "ZIP", CSVTypeSwitch.checked]);
+            ipcRenderer.send("databaseImport", [pathArr.map(elem => elem.path), typeSwitch.checked == true ? "XLSX" : "ZIP", XLSXTypeSwitch.checked]);
         }
         else {
             M.toast({"html": "In order to import at least one file must be chosen.", "classes": "rounded"});
@@ -298,38 +298,38 @@ window.addEventListener("load", () => {
         const importZipContent = document.getElementById("importZipContent");
         if(e.target.checked == true) {
             document.querySelector("#databaseSwitchDiv label input[type=checkbox]:checked+.lever").style.backgroundColor = newSwitchBackground;
-            CSVTypeSwitchDiv.style.display = "initial";
+            XLSXTypeSwitchDiv.style.display = "initial";
             if(databaseImport.parentNode.classList.contains("active")) {
                 importZipContent.style.display = "none";
-                CSVTypeSwitch.checked == true ? importCSVContentDetailed.style.display = "block" : importCSVContentSimple.style.display = "block";
+                XLSXTypeSwitch.checked == true ? importXLSXContentDetailed.style.display = "block" : importXLSXContentSimple.style.display = "block";
             }
             else {
-                databaseCheckLabel.style.display = "none";
+                databaseCheckLabel.style.left = "90px";
             }
         }
         else {
             document.querySelector("#databaseSwitchDiv label .lever").style.backgroundColor = originalSwitchBackground;
-            CSVTypeSwitchDiv.style.display = "none";
+            XLSXTypeSwitchDiv.style.display = "none";
             if(databaseImport.parentNode.classList.contains("active")) {
                 importZipContent.style.display = "block";
-                importCSVContentSimple.style.display = "none";
-                importCSVContentDetailed.style.display = "none";
+                importXLSXContentSimple.style.display = "none";
+                importXLSXContentDetailed.style.display = "none";
             }
             else {
-                databaseCheckLabel.style.display = "initial";
+                databaseCheckLabel.style.left = "70px";
             }
         }
     });
-    CSVTypeSwitch.addEventListener("change", e => {
+    XLSXTypeSwitch.addEventListener("change", e => {
         if(e.target.checked == true) {
-            document.querySelector("#CSVTypeSwitchDiv label input[type=checkbox]:checked+.lever").style.backgroundColor = newSwitchBackground;
-            importCSVContentSimple.style.display = "none";
-            importCSVContentDetailed.style.display = "block";
+            document.querySelector("#XLSXTypeSwitchDiv label input[type=checkbox]:checked+.lever").style.backgroundColor = newSwitchBackground;
+            importXLSXContentSimple.style.display = "none";
+            importXLSXContentDetailed.style.display = "block";
         }
         else {
-            document.querySelector("#CSVTypeSwitchDiv label .lever").style.backgroundColor = originalSwitchBackground;
-            importCSVContentSimple.style.display = "block";
-            importCSVContentDetailed.style.display = "none";
+            document.querySelector("#XLSXTypeSwitchDiv label .lever").style.backgroundColor = originalSwitchBackground;
+            importXLSXContentSimple.style.display = "block";
+            importXLSXContentDetailed.style.display = "none";
         }
     });
 });

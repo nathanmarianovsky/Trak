@@ -79,8 +79,15 @@ ipcRenderer.on("introductionFileSaveSuccess", event => {
 
 
 // Display a notification if there was an issue zipping up the library records.
-ipcRenderer.on("exportZippingFailure", event => {
+ipcRenderer.on("exportZIPZippingFailure", event => {
     M.toast({"html": "There was an error in zipping up the library records.", "classes": "rounded"});
+});
+
+
+
+// Display a notification if there was an issue zipping up the assets.
+ipcRenderer.on("exportXLSXZippingFailure", event => {
+    M.toast({"html": "There was an error in zipping up the library assets.", "classes": "rounded"});
 });
 
 
@@ -93,14 +100,28 @@ ipcRenderer.on("importUnzippingFailure", (event, response) => {
 
 
 // Display a notification if there was an issue creating the zip file for the database export.
-ipcRenderer.on("exportZipFileFailure", event => {
+ipcRenderer.on("exportZIPFileFailure", event => {
     M.toast({"html": "There was an error in creating the zip file for the library records export.", "classes": "rounded"});
 });
 
 
 
 // Display a notification if there was an issue creating the zip file for the database export.
-ipcRenderer.on("exportZipFileDeleteFailure", event => {
+ipcRenderer.on("exportXLSXFileFailure", event => {
+    M.toast({"html": "There was an error in creating the zip file for the library records assets export.", "classes": "rounded"});
+});
+
+
+
+// Display a notification if there was an issue deleting a zip file corresponding to a previous export.
+ipcRenderer.on("exportZIPFileDeleteFailure", event => {
+    M.toast({"html": "There was an error in deleting the zip file associated to a previous export today.", "classes": "rounded"});
+});
+
+
+
+// Display a notification if there was an issue deleting a zip file corresponding to a previous export.
+ipcRenderer.on("exportXLSXFileDeleteFailure", event => {
     M.toast({"html": "There was an error in deleting the zip file associated to a previous export today.", "classes": "rounded"});
 });
 
@@ -114,7 +135,7 @@ ipcRenderer.on("importZipFileFailure", (event, response) => {
 
 
 // Display a notification for the successful export of the library records.
-ipcRenderer.on("exportZipFileSuccess", (event, response) => {
+ipcRenderer.on("exportSuccess", (event, response) => {
     Array.from(document.querySelectorAll(".recordsChecks")).forEach(elem => elem.checked = false);
     document.getElementById("remove").style.display = "none";
     M.toast({"html": "The library records have been exported to " + response + ".", "classes": "rounded"});

@@ -459,7 +459,7 @@ Driver function for adding all app listeners.
 	- spawn provides the means to launch an update via an installer.
 	- downloadRelease provides the means to download a github release asset.
 	- semver provides the means to compare semantic versioning.
-	- ExcelJS provides the means to export/import csv files.
+	- ExcelJS provides the means to export/import xlsx files.
 	- https provides the means to download files.
 	- zipper is a library object which can create zip files.
 	- tools provides a collection of local functions.
@@ -574,19 +574,19 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease
 		exports.updateSettings(fs, path, ipc, app, submissionArr, originalPath, event);
 	});
 
-	// Handles the export of the chosen library records into a single zip file, possibly compressed.
+	// Handles the export of the chosen library records into a single zip file, possibly compressed, or a xlsx file containing the details along with a zip, possibly compressed, for the assets.
 	ipc.on("databaseExport", (event, submission) => {
-		if(submission[2] == "CSV") {
-			tools.exportDataCSV(fs, path, zipper, ExcelJS, event, originalPath, submission[0], submission[1], submission[3]);
+		if(submission[2] == "XLSX") {
+			tools.exportDataXLSX(fs, path, zipper, ExcelJS, event, originalPath, submission[0], submission[1], submission[3], submission[4]);
 		}
 		else if(submission[2] == "ZIP") {
-			tools.exportDataZIP(fs, path, zipper, event, originalPath, submission[0], submission[1], submission[3]);
+			tools.exportDataZIP(fs, path, zipper, event, originalPath, submission[0], submission[1], submission[4]);
 		}
 	});
 
 	// Handles the import of chosen zip files containing records into the library. Duplicate records are checked for.
 	ipc.on("databaseImport", (event, submission) => {
-		if(submission[1] == "CSV") {
+		if(submission[1] == "XLSX") {
 			// tools.importDriverCSV(fs, path, ipc, zipper, mainWindow, originalPath, event, submission[0]);
 		}
 		else if(submission[1] == "ZIP") {
