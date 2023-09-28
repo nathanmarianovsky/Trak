@@ -215,35 +215,35 @@ var recordChoicesButtons = () => {
             // Update the anime studios if available.
             if(newResponse[8] != "" && newResponse[8] != "None found, add some") {
                 const studioInput = document.getElementById("animeStudio");
-                updateDetector == true ? studioInput.value += newResponse[8] : studioInput.value = newResponse[8];
+                updateDetector == true ? studioInput.value += (studioInput.value == "" ? newResponse[8] : ", " + newResponse[8]) : studioInput.value = newResponse[8];
                 studioInput.classList.add("valid");
                 studioInput.nextElementSibling.classList.add("active");
             }
             // Update the anime directors if available.
             if(newResponse[9].length > 0 && newResponse[9][0] != "None found, add some") {
                 const directorsInput = document.getElementById("animeDirectors");
-                updateDetector == true ? directorsInput.value += newResponse[9].join(", ") : directorsInput.value = newResponse[9].join(", ");
+                updateDetector == true ? directorsInput.value += (directorsInput.value == "" ? newResponse[9].join(", ") : ", " + newResponse[9].join(", ")) : directorsInput.value = newResponse[9].join(", ");
                 directorsInput.classList.add("valid");
                 directorsInput.nextElementSibling.classList.add("active");
             }
             // Update the anime producers if available.
             if(newResponse[10].length > 0 && newResponse[10][0] != "None found, add some") {
                 const producersInput = document.getElementById("animeProducers");
-                updateDetector == true ? producersInput.value += newResponse[10].join(", ") : producersInput.value = newResponse[10].join(", ");
+                updateDetector == true ? producersInput.value += (producersInput.value == "" ? newResponse[10].join(", ") : ", " + newResponse[10].join(", ")) : producersInput.value = newResponse[10].join(", ");
                 producersInput.classList.add("valid");
                 producersInput.nextElementSibling.classList.add("active");
             }
             // Update the anime writers if available.
             if(newResponse[11].length > 0 && newResponse[11][0] != "None found, add some") {
                 const writersInput = document.getElementById("animeWriters");
-                updateDetector == true ? writersInput.value += newResponse[11].join(", ") : writersInput.value = newResponse[11].join(", ");
+                updateDetector == true ? writersInput.value += (writersInput.value == "" ? newResponse[11].join(", ") : ", " + newResponse[11].join(", ")) : writersInput.value = newResponse[11].join(", ");
                 writersInput.classList.add("valid");
                 writersInput.nextElementSibling.classList.add("active");
             }
             // Update the anime musicians if available.
             if(newResponse[12].length > 0 && newResponse[12][0] != "None found, add some") {
                 const musicInput = document.getElementById("animeMusicians");
-                updateDetector == true ? musicInput.value += newResponse[12].join(", ") : musicInput.value = newResponse[12].join(", ");
+                updateDetector == true ? musicInput.value += (musicInput.value == "" ? newResponse[12].join(", ") : ", " + newResponse[12].join(", ")) : musicInput.value = newResponse[12].join(", ");
                 musicInput.classList.add("valid");
                 musicInput.nextElementSibling.classList.add("active");
             }

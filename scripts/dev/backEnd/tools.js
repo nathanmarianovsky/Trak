@@ -466,6 +466,7 @@ Reads a xlsx file and adds its content to the library records.
 */ 
 exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, xlsxFile, full) => {
 	const imgExtArr = [".jpg", ".jpeg", ".png"];
+	let relDateArr = [];
 	return new Promise((res, rej) => {
 		// If the exportTemp folder does not exist, then create it.
 		if(!fs.existsSync(path.join(dir, "Trak", "importTemp"))) {
@@ -491,131 +492,165 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 				}
 				workbook.xlsx.readFile(xlsxFile).then(wb => {
 					const workbookPromise = new Promise((resolve, reject) => {
-						if(full == false) {
-							wb.worksheets.forEach(elem => {
-								if(elem.name == "Category-Anime") {
-									let genreLst = exports.animeGenreList();
-									for(let q = 2; q < elem.rowCount + 1; q++) {
-										let animeObj = {
-											"category": "Anime",
-											"name": (typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value,
-											"jname": elem.getCell("B" + q).value != "N/A" ? elem.getCell("B" + q).value : "", 
-											"review": elem.getCell("D" + q).value != "N/A" ? elem.getCell("D" + q).value : "", 
-											"directors": elem.getCell("F" + q).value != "N/A" ? elem.getCell("F" + q).value : "", 
-											"producers": elem.getCell("G" + q).value != "N/A" ? elem.getCell("G" + q).value : "", 
-											"writers": elem.getCell("H" + q).value != "N/A" ? elem.getCell("H" + q).value : "", 
-											"musicians": elem.getCell("I" + q).value != "N/A" ? elem.getCell("I" + q).value : "", 
-											"studio": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "", 
-											"license": elem.getCell("K" + q).value != "N/A" ? elem.getCell("K" + q).value : "", 
-											"genres": [genreLst, []],
-											"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "", 
-											"img": [],
-											"content": [{ "scenario": "Single", "name": "Item 1", "type": "", "release": "", "watched": "", "rating": "", "review": "" }]
-										};
-										for(let p = 0; p < genreLst.length; p++) {
-											let compare = genreLst[p];
-											if(compare == "ComingOfAge") {
-							                    compare = "Coming-Of-Age";
-							                }
-							                else if(compare == "PostApocalyptic") {
-							                    compare = "Post-Apocalyptic";
-							                }
-							                else if(compare == "SciFi") {
-							                    compare = "Sci-Fi";
-							                }
-							                else if(compare == "SliceOfLife") {
-							                    compare = "Slice of Life";
-							                }
-							                elem.getCell("M" + q).value.includes(compare) ? animeObj.genres[1].push(true) : animeObj.genres[1].push(false);
-										}
-										if(elem.getCell("L" + q).value != "" && elem.getCell("L" + q).value != "N/A") {
-											let relDateArr = elem.getCell("L" + q).value.split("-");
-											animeObj.content[0].release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
-										}
-										if(elem.getCell("C" + q).value != "" && elem.getCell("C" + q).value != "N/A") {
-											animeObj.content[0].rating = parseInt(elem.getCell("C" + q).value);
-										}
-										if(fs.existsSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "assets"))) {
-											fs.readdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "assets")).forEach(asset => {
-												if(imgExtArr.includes(path.extname(asset))) {
-													animeObj.img.push(path.join(fileData, "Anime-" + animeObj.name, "assets", asset));
-												}
-											});
-										}
-										else {
-											fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "assets"), { "recursive": true });
-										}
-										fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "data.json"), JSON.stringify(animeObj), "UTF8");
-										if(q == elem.rowCount) { resolve(); }
+						wb.worksheets.forEach(elem => {
+							if(elem.name == "Category-Anime") {
+								let genreLst = exports.animeGenreList();
+								for(let q = 2; q < elem.rowCount + 1; q++) {
+									let animeObj = {
+										"category": "Anime",
+										"name": (typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value,
+										"jname": elem.getCell("B" + q).value != "N/A" ? elem.getCell("B" + q).value : "", 
+										"review": elem.getCell("D" + q).value != "N/A" ? elem.getCell("D" + q).value : "", 
+										"directors": elem.getCell("F" + q).value != "N/A" ? elem.getCell("F" + q).value : "", 
+										"producers": elem.getCell("G" + q).value != "N/A" ? elem.getCell("G" + q).value : "", 
+										"writers": elem.getCell("H" + q).value != "N/A" ? elem.getCell("H" + q).value : "", 
+										"musicians": elem.getCell("I" + q).value != "N/A" ? elem.getCell("I" + q).value : "", 
+										"studio": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "", 
+										"license": elem.getCell("K" + q).value != "N/A" ? elem.getCell("K" + q).value : "", 
+										"genres": [genreLst, []],
+										"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "", 
+										"img": [],
+										"content": [{ "scenario": "Single", "name": "Item 1", "type": "", "release": "", "watched": "", "rating": "", "review": "" }]
+									};
+									for(let p = 0; p < genreLst.length; p++) {
+										let compare = genreLst[p];
+										if(compare == "ComingOfAge") {
+						                    compare = "Coming-Of-Age";
+						                }
+						                else if(compare == "PostApocalyptic") {
+						                    compare = "Post-Apocalyptic";
+						                }
+						                else if(compare == "SciFi") {
+						                    compare = "Sci-Fi";
+						                }
+						                else if(compare == "SliceOfLife") {
+						                    compare = "Slice of Life";
+						                }
+						                elem.getCell("M" + q).value.includes(compare) ? animeObj.genres[1].push(true) : animeObj.genres[1].push(false);
 									}
+									if(elem.getCell("L" + q).value != "" && elem.getCell("L" + q).value != "N/A") {
+										relDateArr = elem.getCell("L" + q).value.split("-");
+										animeObj.content[0].release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+									}
+									if(elem.getCell("C" + q).value != "" && elem.getCell("C" + q).value != "N/A") {
+										animeObj.content[0].rating = parseInt(elem.getCell("C" + q).value);
+									}
+									if(full == true) {
+										wb.worksheets.forEach(newElem => {
+											if(newElem.name == "Anime-" + animeObj.name.split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1)).join("")) {
+												animeObj.content = [];
+												for(let l = 2; l < newElem.rowCount + 1; l++) {
+													if(newElem.getCell("A" + l).value == "Season") {
+														let seasonContentObj = {
+															"scenario": "Season",
+															"name": newElem.getCell("B" + l).value != "N/A" ? newElem.getCell("B" + l).value : "",
+															"start": "",
+															"end": "",
+															"status": newElem.getCell("E" + l).value != "N/A" ? newElem.getCell("E" + l).value : "",
+															"episodes": []
+														};
+														if(newElem.getCell("C" + l).value != "" && newElem.getCell("C" + l).value != "N/A") {
+															relDateArr = newElem.getCell("C" + l).value.split("-");
+															seasonContentObj.start = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+														}
+														if(newElem.getCell("D" + l).value != "" && newElem.getCell("D" + l).value != "N/A") {
+															relDateArr = newElem.getCell("D" + l).value.split("-");
+															seasonContentObj.end = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+														}
+														while(newElem.getCell("B" + l).value == seasonContentObj.name) {
+															let episodeContentObj = {
+																"name": newElem.getCell("I" + l).value != "N/A" ? newElem.getCell("I" + l).value : "",
+																"watched": "",
+																"rating": newElem.getCell("G" + l).value != "N/A" ? parseInt(newElem.getCell("G" + l).value) : "",
+																"review": newElem.getCell("J" + l).value != "N/A" ? newElem.getCell("J" + l).value : ""
+															};
+															if(newElem.getCell("F" + l).value != "" && newElem.getCell("F" + l).value != "N/A") {
+																relDateArr = newElem.getCell("F" + l).value.split("-");
+																episodeContentObj.watched = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+															}
+															seasonContentObj.episodes.push(episodeContentObj);
+															l++;
+														}
+														animeObj.content.push(seasonContentObj);
+													}
+													else {
+														let singleContentObj = {
+															"scenario": "Single",
+															"name": newElem.getCell("B" + l).value != "N/A" ? newElem.getCell("B" + l).value : "",
+															"type": newElem.getCell("A" + l).value != "N/A" ? newElem.getCell("A" + l).value : "",
+															"release": "",
+															"watched": "",
+															"rating": newElem.getCell("G" + l).value != "N/A" ? parseInt(newElem.getCell("G" + l).value) : "",
+															"review": newElem.getCell("J" + l).value != "N/A" ? newElem.getCell("J" + l).value : ""
+														};
+														if(newElem.getCell("C" + l).value != "" && newElem.getCell("C" + l).value != "N/A") {
+															relDateArr = newElem.getCell("C" + l).value.split("-");
+															singleContentObj.release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+														}
+														if(newElem.getCell("F" + l).value != "" && newElem.getCell("F" + l).value != "N/A") {
+															relDateArr = newElem.getCell("F" + l).value.split("-");
+															singleContentObj.watched = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+														}
+														animeObj.content.push(singleContentObj);
+													}
+												}
+											}
+										});
+									}
+									if(fs.existsSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "assets"))) {
+										fs.readdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "assets")).forEach(asset => {
+											if(imgExtArr.includes(path.extname(asset))) {
+												animeObj.img.push(path.join(fileData, "Anime-" + animeObj.name, "assets", asset));
+											}
+										});
+									}
+									else {
+										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "assets"), { "recursive": true });
+									}
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "data.json"), JSON.stringify(animeObj), "UTF8");
+									if(q == elem.rowCount) { resolve(); }
 								}
+							}
+						});
+					});
+					workbookPromise.then(() => {
+						// Compare the list of records in the zip file and compare them to the current library records to see which reference the same record.
+						let list = fs.readdirSync(path.join(dir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(dir, "Trak", "importTemp"), file)).isDirectory()),
+							listFilterDoExist = list.filter(elem => fs.existsSync(path.join(fileData, elem))),
+							listFilterDoNotExist = list.filter(elem => !fs.existsSync(path.join(fileData, elem)));
+						// If there are records being imported which do not exist in the current library records simply copy them over.
+						if(listFilterDoNotExist.length > 0) {
+							listFilterDoNotExist.forEach(elem => { fs.moveSync(path.join(dir, "Trak", "importTemp", elem), path.join(fileData, elem)); });
+						}
+						// If there are no records being imported which do exist in the current library records then empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
+						if(listFilterDoExist.length == 0) {
+							fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
+							win.reload();
+							setTimeout(() => { res(); win.webContents.send("importFileSuccess", xlsxFile); }, 1000);
+						}
+						else {
+							// If there are records being imported which do exist in the current library records notify the user.
+							eve.sender.send("importRecordExists", listFilterDoExist);
+							// Once the user chooses which records to overwrite proceed by copying them from the importTemp folder.
+							ipc.once("importOveride", (event, overwriteList) => {
+								let savePromise = new Promise((resolve, reject) => {
+								    overwriteList.forEach((elem, index, arr) => {
+										if(elem.overwrite == true) {
+											fs.moveSync(path.join(dir, "Trak", "importTemp", elem.record), path.join(fileData, elem.record));
+										}
+										if(index == arr.length - 1) { resolve(); }
+									});
+								});
+								// Once the desired records have been overwritten empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
+								savePromise.then(() => {
+									fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
+									win.reload();
+									setTimeout(() => { res(); win.webContents.send("importFileSuccess", xlsxFile); }, 1000);
+								});
 							});
 						}
 					});
-					workbookPromise.then(() => {
-						
-
-
-
-
-						// zipper.unzip(zipFile, (er, unzipped) => {
-							// // If there was an issue unzipping the zip file notify the user.
-							// if(er) { eve.sender.send("importUnzippingFailure", zipFile); }
-							// else {
-								// // Save the contents of the zip file to the importTemp folder.
-								// unzipped.save(path.join(dir, "Trak", "importTemp"), issue => {
-									// If there was an issue saving the contents of the zip file notify the user.
-									// if(issue) { eve.sender.send("importZipFileFailure", zipFile); }
-									// else {
-										// Compare the list of records in the zip file and compare them to the current library records to see which reference the same record.
-										let list = fs.readdirSync(path.join(dir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(dir, "Trak", "importTemp"), file)).isDirectory()),
-											listFilterDoExist = list.filter(elem => fs.existsSync(path.join(fileData, elem))),
-											listFilterDoNotExist = list.filter(elem => !fs.existsSync(path.join(fileData, elem)));
-										// If there are records being imported which do not exist in the current library records simply copy them over.
-										if(listFilterDoNotExist.length > 0) {
-											listFilterDoNotExist.forEach(elem => { fs.moveSync(path.join(dir, "Trak", "importTemp", elem), path.join(fileData, elem)); });
-										}
-										// If there are no records being imported which do exist in the current library records then empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
-										if(listFilterDoExist.length == 0) {
-											fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
-											win.reload();
-											setTimeout(() => { res(); win.webContents.send("importFileSuccess", xlsxFile); }, 1000);
-										}
-										else {
-											// If there are records being imported which do exist in the current library records notify the user.
-											eve.sender.send("importRecordExists", listFilterDoExist);
-											// Once the user chooses which records to overwrite proceed by copying them from the importTemp folder.
-											ipc.once("importOveride", (event, overwriteList) => {
-												let savePromise = new Promise((resolve, reject) => {
-												    overwriteList.forEach((elem, index, arr) => {
-														if(elem.overwrite == true) {
-															fs.moveSync(path.join(dir, "Trak", "importTemp", elem.record), path.join(fileData, elem.record));
-														}
-														if(index == arr.length - 1) { resolve(); }
-													});
-												});
-												// Once the desired records have been overwritten empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
-												savePromise.then(() => {
-													fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
-													win.reload();
-													setTimeout(() => { res(); win.webContents.send("importFileSuccess", xlsxFile); }, 1000);
-												});
-											});
-										}
-									// }
-								// });
-							// }
-						// });
-					});
 				});
-
-
-
-
-
-
-
-
 			}
 		});
 	});

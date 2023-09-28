@@ -129,6 +129,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	height: 125px !important;
 }
 
+.select-wrapper input.select-dropdown:focus {
+	border-bottom-color: #2A2A8E !important;
+}
+
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/
