@@ -2,6 +2,7 @@
 
 BASIC DETAILS: This file serves as the collection of tools utilized by the various back-end requests.
 
+   - animeGenreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
    - calculateReleaseDate: Calculate the earliest release date of an anime record based on the related content information.
    - calculateGlobalRating: Calculate the average rating of an anime record based on the related content information.
    - exportDataXLSX: Create a xlsx file containing the exported library records along with a zip of the associated assets.
@@ -24,6 +25,24 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
 
 
 var exports = {};
+
+
+
+/*
+
+Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
+
+*/
+exports.animeGenreList = () => {
+    return ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
+            "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
+            "Hentai", "Historical", "Horror", "Isekai", "Josei", "Kids", "Medical", "Mystery", "Magic",
+            "MagicalSexShift", "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police",
+            "PostApocalyptic", "Psychological", "Racing", "Reincarnation", "ReverseHarem", "Romance", "Samurai",
+            "School", "SciFi", "Seinen", "Shoujo", "Shounen", "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame",
+            "SuperPower", "Supernatural", "Survival", "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy",
+            "Vampire", "VideoGame", "War", "Western", "Workplace", "Yaoi", "Yuri"];
+};
 
 
 
@@ -420,6 +439,189 @@ exports.exportDataZIP = (fs, path, zipper, eve, dir, exportLocation, records, co
 		}
 	});
 };
+
+
+
+
+
+
+
+
+/*
+
+Reads a xlsx file and adds its content to the library records.
+
+	- fs and path provide the means to work with local files.
+	- ipc provides the means to operate the Electron app.
+	- zipper is a library object which can create zip files.
+	- ExcelJS provides the means to export/import xlsx files.
+	- win is an object referencing the primary window of the Electron app.
+	- eve is the object which allows for interaction with the fron-end of the Electron application.
+	- dir is a string representing the base directory corresponding to the location of the configuration file.
+	- xlsxFile is the zip file to be imported.
+	- full is a boolean representing whether the xlsx file should contain only basic details or everything.
+
+*/ 
+exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, xlsxFile, full) => {
+	return new Promise((res, rej) => {
+		// If the exportTemp folder does not exist, then create it.
+		if(!fs.existsSync(path.join(dir, "Trak", "importTemp"))) {
+			fs.mkdirSync(path.join(dir, "Trak", "importTemp"));
+		}
+		// Read the settings configuration file.
+		fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
+			// If there was an issue reading the settings configuration file notify the user.
+			if(err) { eve.sender.send("configurationFileOpeningFailure");  }
+			else {
+				// Define the configuration file data and associated library records path.
+				const fileData = JSON.parse(fileContent).current != undefined ? JSON.parse(fileContent).current.path : JSON.parse(fileContent).original.path;
+
+
+
+				const workbook = new ExcelJS.Workbook();
+				workbook.xlsx.readFile(xlsxFile).then(wb => {
+					if(full == false) {
+						wb.worksheets.forEach(elem => {
+							if(elem.name == "Category-Anime") {
+								let genreLst = exports.animeGenreList();
+								for(let q = 2; q < elem.rowCount; q++) {
+									let animeObj = {
+										"category": "Anime",
+										"name": (typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value,
+										"jname": elem.getCell("B" + q).value,
+										"review": elem.getCell("D" + q).value,
+										"directors": elem.getCell("F" + q).value,
+										"producers": elem.getCell("G" + q).value,
+										"writers": elem.getCell("H" + q).value,
+										"musicians": elem.getCell("I" + q).value,
+										"studio": elem.getCell("J" + q).value,
+										"license": elem.getCell("K" + q).value,
+										"genres": [genreLst, []],
+										"synopsis": elem.getCell("E" + q).value,
+										"img": [],
+										"content": [{ "scenario": "Single", "name": "Item 1", "type": "", "release": "", "watched": "", "rating": "", "review": "" }]
+									};
+									for(let p = 0; p < genreLst.length; p++) {
+										let compare = genreLst[p];
+										if(compare == "ComingOfAge") {
+						                    compare = "Coming-Of-Age";
+						                }
+						                else if(compare == "PostApocalyptic") {
+						                    compare = "Post-Apocalyptic";
+						                }
+						                else if(compare == "SciFi") {
+						                    compare = "Sci-Fi";
+						                }
+						                else if(compare == "SliceOfLife") {
+						                    compare = "Slice of Life";
+						                }
+						                elem.getCell("M" + q).value.includes(compare) ? animeObj.genres[1].push(true) : animeObj.genres[1].push(false);
+									}
+									if(elem.getCell("L" + q).value != "" && elem.getCell("L" + q).value != "N/A") {
+										let relDateArr = elem.getCell("L" + q).value.split("-");
+										animeObj.content[0].release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+									}
+									if(elem.getCell("C" + q).value != "" && elem.getCell("C" + q).value != "N/A") {
+										animeObj.content[0].rating = parseInt(elem.getCell("C" + q).value);
+									}
+									fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name));
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "data.json"), JSON.stringify(animeObj), "UTF8");
+								}
+							}
+						});
+					}
+				});
+
+
+
+
+
+
+
+
+				// // Unzip the zip file.
+				// zipper.unzip(zipFile, (er, unzipped) => {
+				// 	// If there was an issue unzipping the zip file notify the user.
+				// 	if(er) { eve.sender.send("importUnzippingFailure", zipFile); }
+				// 	else {
+				// 		// Save the contents of the zip file to the importTemp folder.
+				// 		unzipped.save(path.join(dir, "Trak", "importTemp"), issue => {
+				// 			// If there was an issue saving the contents of the zip file notify the user.
+				// 			if(issue) { eve.sender.send("importZipFileFailure", zipFile); }
+				// 			else {
+				// 				// Compare the list of records in the zip file and compare them to the current library records to see which reference the same record.
+				// 				let list = fs.readdirSync(path.join(dir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(dir, "Trak", "importTemp"), file)).isDirectory()),
+				// 					listFilterDoExist = list.filter(elem => fs.existsSync(path.join(fileData, elem))),
+				// 					listFilterDoNotExist = list.filter(elem => !fs.existsSync(path.join(fileData, elem)));
+				// 				// If there are records being imported which do not exist in the current library records simply copy them over.
+				// 				if(listFilterDoNotExist.length > 0) {
+				// 					listFilterDoNotExist.forEach(elem => { fs.moveSync(path.join(dir, "Trak", "importTemp", elem), path.join(fileData, elem)); });
+				// 				}
+				// 				// If there are no records being imported which do exist in the current library records then empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
+				// 				if(listFilterDoExist.length == 0) {
+				// 					fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
+				// 					win.reload();
+				// 					setTimeout(() => { res(); win.webContents.send("importZipFileSuccess", zipFile); }, 1000);
+				// 				}
+				// 				else {
+				// 					// If there are records being imported which do exist in the current library records notify the user.
+				// 					eve.sender.send("importRecordExists", listFilterDoExist);
+				// 					// Once the user chooses which records to overwrite proceed by copying them from the importTemp folder.
+				// 					ipc.once("importOveride", (event, overwriteList) => {
+				// 						let savePromise = new Promise((resolve, reject) => {
+				// 						    overwriteList.forEach((elem, index, arr) => {
+				// 								if(elem.overwrite == true) {
+				// 									fs.moveSync(path.join(dir, "Trak", "importTemp", elem.record), path.join(fileData, elem.record));
+				// 								}
+				// 								if(index == arr.length - 1) { resolve(); }
+				// 							});
+				// 						});
+				// 						// Once the desired records have been overwritten empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
+				// 						savePromise.then(() => {
+				// 							fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
+				// 							win.reload();
+				// 							setTimeout(() => { res(); win.webContents.send("importZipFileSuccess", zipFile); }, 1000);
+				// 						});
+				// 					});
+				// 				}
+				// 			}
+				// 		});
+				// 	}
+				// });
+			}
+		});
+	});
+};
+
+
+
+/*
+
+Iterates through the list of xlsx files to be imported by waiting for each one to finish prior to proceeding to the next one.
+
+	- fs and path provide the means to work with local files.
+	- ipc provides the means to operate the Electron app.
+	- zipper is a library object which can create zip files.
+	- ExcelJS provides the means to export/import xlsx files.
+	- mainWin is an object referencing the primary window of the Electron app.
+	- ogPath is a string representing the base directory corresponding to the location of the configuration file.
+	- evnt is the object which allows for interaction with the fron-end of the Electron application.
+	- lst is the list of zip files to be imported.
+	- detailed is a boolean representing whether the xlsx file should contain only basic details or everything.
+
+*/ 
+exports.importDriverXLSX = async (fs, path, ipc, zipper, ExcelJS, mainWin, ogPath, evnt, lst, detailed = false) => {
+  	for(let i = 0; i < lst.length; i++) {
+    	await exports.importDataXLSX(fs, path, ipc, zipper, ExcelJS, mainWin, evnt, ogPath, lst[i], detailed);
+  	}
+};
+
+
+
+
+
+
+
 
 
 

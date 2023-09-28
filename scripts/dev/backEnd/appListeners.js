@@ -75,7 +75,7 @@ Creates an object associated to an anime record in order to save/update.
 	- providedData is the data provided by the front-end user submission for anime record save/update.
 
 */
-var animeObjCreation = (path, fs, https, tools, dir, providedData) => {
+exports.animeObjCreation = (path, fs, https, tools, dir, providedData) => {
 	const animeObj = {
 		"category": providedData[0],
 		"name": providedData[1],
@@ -171,7 +171,7 @@ exports.animeSave = (BrowserWindow, path, fs, https, tools, mainWindow, dataPath
 	if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[1])) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[2]))) {
 		// Create a new directory for the assets associated to the new record.
 		fs.mkdirSync(path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]), "assets"), { "recursive": true });
-		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data);
+		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data);
 	}
 	else {
 		evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
@@ -204,13 +204,13 @@ exports.animeUpdate = (BrowserWindow, path, fs, https, tools, mainWindow, dataPa
 			}
 			// If no error occured in renaming the record folder write the data file, and copy over the file assets.
 			else {
-				exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
+				exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
 			}
 		});
 	}
 	else {
 		// Write the data file, and copy over the file assets.
-		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
+		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
 	}
 };
 
@@ -584,10 +584,10 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease
 		}
 	});
 
-	// Handles the import of chosen zip files containing records into the library. Duplicate records are checked for.
+	// Handles the import of chosen zip xlsx files containing records into the library. Duplicate records are checked for.
 	ipc.on("databaseImport", (event, submission) => {
 		if(submission[1] == "XLSX") {
-			// tools.importDriverCSV(fs, path, ipc, zipper, mainWindow, originalPath, event, submission[0]);
+			tools.importDriverXLSX(fs, path, ipc, zipper, ExcelJS, mainWindow, originalPath, event, submission[0], submission[2]);
 		}
 		else if(submission[1] == "ZIP") {
 			tools.importDriverZIP(fs, path, ipc, zipper, mainWindow, originalPath, event, submission[0]);
