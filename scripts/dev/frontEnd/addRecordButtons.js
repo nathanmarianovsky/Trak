@@ -193,50 +193,57 @@ var recordChoicesButtons = () => {
         });
         // Update the page accordingly based on the fetched anime details.
         ipcRenderer.on("animeFetchDetailsResult", (newEve, newResponse) => {
+            const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none";
             // Update the anime japanese name if available.
             if(newResponse[1] != "" && newResponse[1] != "None found, add some") {
                 const jnameInput = document.getElementById("animeJapaneseName");
+                updateDetector == true ? jnameInput.value += newResponse[1] : jnameInput.value = newResponse[1];
                 jnameInput.value = newResponse[1];
                 jnameInput.classList.add("valid");
                 jnameInput.nextElementSibling.classList.add("active");
             }
             if(newResponse[2] != "") {
                 const animeImg = document.getElementById("addRecordAnimeImg");
-                animeImg.setAttribute("list", newResponse[2]);
-                animeImg.setAttribute("src", newResponse[2]);
+                if(!animeImg.getAttribute("list").includes(newResponse[2])) {
+                    if(updateDetector == true) {
+                        animeImg.getAttribute("list") == "" ? animeImg.setAttribute("list", newResponse[2]) : animeImg.setAttribute("list", animeImg.getAttribute("list") + "," + newResponse[2]);
+                    }
+                    else { animeImg.setAttribute("list", newResponse[2]); }
+                    animeImg.setAttribute("src", newResponse[2]);
+                }
             }
             // Update the anime studios if available.
             if(newResponse[8] != "" && newResponse[8] != "None found, add some") {
                 const studioInput = document.getElementById("animeStudio");
-                studioInput.value = newResponse[8];
+                updateDetector == true ? studioInput.value += newResponse[8] : studioInput.value = newResponse[8];
                 studioInput.classList.add("valid");
                 studioInput.nextElementSibling.classList.add("active");
             }
             // Update the anime directors if available.
             if(newResponse[9].length > 0 && newResponse[9][0] != "None found, add some") {
                 const directorsInput = document.getElementById("animeDirectors");
-                directorsInput.value = newResponse[9].join(", ");
+                updateDetector == true ? directorsInput.value += newResponse[9].join(", ") : directorsInput.value = newResponse[9].join(", ");
                 directorsInput.classList.add("valid");
                 directorsInput.nextElementSibling.classList.add("active");
             }
             // Update the anime producers if available.
             if(newResponse[10].length > 0 && newResponse[10][0] != "None found, add some") {
                 const producersInput = document.getElementById("animeProducers");
-                producersInput.value = newResponse[10].join(", ");
+                updateDetector == true ? producersInput.value += newResponse[10].join(", ") : producersInput.value = newResponse[10].join(", ");
                 producersInput.classList.add("valid");
                 producersInput.nextElementSibling.classList.add("active");
             }
             // Update the anime writers if available.
             if(newResponse[11].length > 0 && newResponse[11][0] != "None found, add some") {
                 const writersInput = document.getElementById("animeWriters");
-                writersInput.value = newResponse[11].join(", ");
+                updateDetector == true ? writersInput.value += newResponse[11].join(", ") : writersInput.value = newResponse[11].join(", ");
                 writersInput.classList.add("valid");
                 writersInput.nextElementSibling.classList.add("active");
             }
             // Update the anime musicians if available.
             if(newResponse[12].length > 0 && newResponse[12][0] != "None found, add some") {
                 const musicInput = document.getElementById("animeMusicians");
-                musicInput.value = newResponse[12].join(", ");
+                updateDetector == true ? musicInput.value += newResponse[12].join(", ") : musicInput.value = newResponse[12].join(", ");
                 musicInput.classList.add("valid");
                 musicInput.nextElementSibling.classList.add("active");
             }
@@ -269,19 +276,21 @@ var recordChoicesButtons = () => {
                     document.getElementById("animeGenre" + genreIter).checked = true;
                 }
             });
-
             // Reset the related content modal.
-            document.getElementById("animeList").innerHTML = "";
+            if(updateDetector == false) {
+                document.getElementById("animeList").innerHTML = "";
+            }
+            const listNum = document.getElementById("animeList").children.length + 1;
             // If the anime type is a season then add a season to the related content.
             if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
                 // Attach a season.
                 seasonAddition();
-                const seasonName = document.getElementById("li_1_Season_Name");
+                const seasonName = document.getElementById("li_" + listNum + "_Season_Name");
                 // If the start date is provided then set it as the value for the season start date input. 
                 if(newResponse[3] != "") {
                     let dateStart = new Date(newResponse[3]);
                     dateStart.setDate(dateStart.getDate() - 1);
-                    document.getElementById("li_1_Season_Start").value = dateStart.getFullYear() + "-"
+                    document.getElementById("li_" + listNum + "_Season_Start").value = dateStart.getFullYear() + "-"
                         + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
                         + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
                 }
@@ -289,40 +298,40 @@ var recordChoicesButtons = () => {
                 if(newResponse[4] != "") {
                     let dateEnd = new Date(newResponse[4]);
                     dateEnd.setDate(dateEnd.getDate() - 1);
-                    document.getElementById("li_1_Season_End").value = dateEnd.getFullYear() + "-"
+                    document.getElementById("li_" + listNum + "_Season_End").value = dateEnd.getFullYear() + "-"
                         + (dateEnd.getMonth() + 1 > 9 ? dateEnd.getMonth() + 1 : "0" + (dateEnd.getMonth() + 1)) + "-"
                         + (dateEnd.getDate() + 1 > 9 ? dateEnd.getDate() + 1 : "0" + (dateEnd.getDate() + 1));
                 }
                 // Provide a default season name.
-                seasonName.value = "Season 1";
+                seasonName.value = "Season";
                 seasonName.classList.add("valid");
                 seasonName.nextElementSibling.classList.add("active");
                 // Add the appropriate number of episodes with a default episode name.
                 for(let f = 0; f < parseInt(newResponse[6]); f++) {
-                    document.getElementById("li_1_Season_AddEpisode").click();
-                    let episodeName = document.getElementById("li_1_Episode_Name_" + (f + 1));
+                    document.getElementById("li_" + listNum + "_Season_AddEpisode").click();
+                    let episodeName = document.getElementById("li_" + listNum + "_Episode_Name_" + (f + 1));
                     episodeName.value = "Episode " + (f + 1);
                     episodeName.classList.add("valid");
                     episodeName.nextElementSibling.classList.add("active");
                 }
                 // Hide the episodes by default.
-                document.getElementById("li_1_Season").children[0].click();
+                document.getElementById("li_" + listNum + "_Season").children[0].click();
             }
             else {
                 // Attach a single film/ona/ova.
                 singleAddition();
-                const singleName = document.getElementById("li_1_Single_Name"),
-                    singleType = document.getElementById("li_1_Single_Type");
+                const singleName = document.getElementById("li_" + listNum + "_Single_Name"),
+                    singleType = document.getElementById("li_" + listNum + "_Single_Type");
                 // If the release date is provided then set it as the value for the single release date input. 
                 if(newResponse[3] != "") {
                     let dateStart = new Date(newResponse[3]);
                     dateStart.setDate(dateStart.getDate() - 1);
-                    document.getElementById("li_1_Single_Release").value = dateStart.getFullYear() + "-"
+                    document.getElementById("li_" + listNum + "_Single_Release").value = dateStart.getFullYear() + "-"
                         + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
                         + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
                 }
                 // Provide a default film/ona/ova name.
-                singleName.value = "Item 1";
+                singleName.value = "Single";
                 singleName.classList.add("valid");
                 singleName.nextElementSibling.classList.add("active");
                 // Set the type for the item.

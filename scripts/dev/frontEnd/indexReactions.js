@@ -144,7 +144,7 @@ ipcRenderer.on("exportSuccess", (event, response) => {
 
 
 // Display a notification for the successful import of library records.
-ipcRenderer.on("importZipFileSuccess", (event, response) => {
+ipcRenderer.on("importFileSuccess", (event, response) => {
     M.toast({"html": "The library records have been updated with the contents of the file " + response + ".", "classes": "rounded"});
 });
 
