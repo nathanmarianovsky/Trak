@@ -7,6 +7,9 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
    - calculateGlobalRating: Calculate the average rating of an anime record based on the related content information.
    - exportDataXLSX: Create a xlsx file containing the exported library records along with a zip of the associated assets.
    - exportDataZIP: Create a zip file containing the exported library records.
+   - importCompare: Finishes the application import process by checking whether the new records already exist in the library.
+   - importDataXLSX: Reads a xlsx file and adds its content to the library records.
+   - importDriverXLSX: Iterates through the list of xlsx files to be imported by waiting for each one to finish prior to proceeding to the next one.
    - importDataZIP: Reads a zip file and adds its content to the library records.
    - importDriverZIP: Iterates through the list of zip files to be imported by waiting for each one to finish prior to proceeding to the next one.
    - createTrayMenu: Create the system tray icon and menu.
@@ -54,21 +57,28 @@ Calculate the earliest release date of an anime record based on the related cont
 
 */ 
 exports.calculateReleaseDate = contentArr => {
+	// Define the variable which will represent the earliest release date.
 	let candidate = "";
+	// Iterate through all record related content.
 	for(let z = 0; z < contentArr.length; z++) {
 		let candidateHolder = "";
+		// If the related content entry has a start or release date then save it to compare to the current earliest date.
 		if((contentArr[z].scenario == "Season" ? contentArr[z].start : contentArr[z].release) != "") {
 			candidateHolder = new Date(contentArr[z].scenario == "Season" ? contentArr[z].start : contentArr[z].release);
 		}
+		// If the current earliest date has not been defined yet, then set it to the current start or release date.
 		if(candidate == "" && candidateHolder != "") {
 			candidate = new Date(contentArr[z].scenario == "Season" ? contentArr[z].start : contentArr[z].release);
 		}
+		// Compare the current earliest date and compare it to the current related content date.
 		else if(candidate != "" && candidateHolder != "") {
+			// Update the earliest date if the new date found references an earlier date.
 			if(candidateHolder < candidate) {
 				candidate = new Date(contentArr[z].scenario == "Season" ? contentArr[z].start : contentArr[z].release);
 			}
 		}
 	}
+	// Return the earliest date found or N/A if none were found.
 	return candidate != "" ? candidate.toJSON().split("T")[0] : "N/A";
 };
 
@@ -82,9 +92,12 @@ Calculate the average rating of an anime record based on the related content inf
 
 */ 
 exports.calculateGlobalRating = contentArr => {
+	// Define the sum of all related content ratings and count of how many are used in the sum.
 	let overallSum = 0,
 		overallCount = 0;
+	// Iterate through all record related content.
 	for(let r = 0; r < contentArr.length; r++) {
+		// If the entry in the related content is a season then calculate the average rating of the season and count it towards the sum and count.
 		if(contentArr[r].scenario == "Season" && contentArr[r].episodes.length > 0) {
 			let seasonSum = 0,
 				seasonCount = 0;
@@ -99,11 +112,13 @@ exports.calculateGlobalRating = contentArr => {
 				overallCount++;
 			}
 		}
+		// If the entry in the related content is a single then add the rating of the item to the sum and count.
 		else if(contentArr[r].scenario == "Single" && contentArr[r].rating != "") {
 			overallSum += parseInt(contentArr[r].rating);
 			overallCount++;
 		}
 	}
+	// Return the anime record global rating if the count is non-zero, otherwise provide N/A.
 	return overallCount != 0 ? String((overallSum / overallCount).toFixed(2)) : "N/A";
 };
 
@@ -451,6 +466,60 @@ exports.exportDataZIP = (fs, path, zipper, eve, dir, exportLocation, records, co
 
 /*
 
+Finishes the application import process by checking whether the new records already exist in the library.
+
+	- fs and path provide the means to work with local files.
+	- ipc provides the means to operate the Electron app.
+	- appWin is an object referencing the primary window of the Electron app.
+	- winEvent is the object which allows for interaction with the fron-end of the Electron application.
+	- promiseResolver is the resolver callback for the file import promise.
+	- configFir is a string representing the base directory corresponding to the location of the configuration file.
+	- dataDir is the directory where the user library records are stored.
+	- impFile is the zip file to be imported.
+
+*/ 
+exports.importCompare = (fs, path, ipc, appWin, winEvent, promiseResolver, configDir, dataDir, impFile) => {
+	// Compare the list of records in the zip file and compare them to the current library records to see which reference the same record.
+	let list = fs.readdirSync(path.join(configDir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(configDir, "Trak", "importTemp"), file)).isDirectory()),
+		listFilterDoExist = list.filter(elem => fs.existsSync(path.join(dataDir, elem))),
+		listFilterDoNotExist = list.filter(elem => !fs.existsSync(path.join(dataDir, elem)));
+	// If there are records being imported which do not exist in the current library records simply copy them over.
+	if(listFilterDoNotExist.length > 0) {
+		listFilterDoNotExist.forEach(elem => { fs.moveSync(path.join(configDir, "Trak", "importTemp", elem), path.join(dataDir, elem)); });
+	}
+	// If there are no records being imported which do exist in the current library records then empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
+	if(listFilterDoExist.length == 0) {
+		fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
+		appWin.reload();
+		setTimeout(() => { promiseResolver(); appWin.webContents.send("importFileSuccess", impFile); }, 1000);
+	}
+	else {
+		// If there are records being imported which do exist in the current library records notify the user.
+		winEvent.sender.send("importRecordExists", listFilterDoExist);
+		// Once the user chooses which records to overwrite proceed by copying them from the importTemp folder.
+		ipc.once("importOveride", (event, overwriteList) => {
+			let savePromise = new Promise((resolve, reject) => {
+			    overwriteList.forEach((elem, index, arr) => {
+					if(elem.overwrite == true) {
+						fs.moveSync(path.join(configDir, "Trak", "importTemp", elem.record), path.join(dataDir, elem.record));
+					}
+					if(index == arr.length - 1) { resolve(); }
+				});
+			});
+			// Once the desired records have been overwritten empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
+			savePromise.then(() => {
+				fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
+				appWin.reload();
+				setTimeout(() => { promiseResolver(); appWin.webContents.send("importFileSuccess", impFile); }, 1000);
+			});
+		});
+	}
+};
+
+
+
+/*
+
 Reads a xlsx file and adds its content to the library records.
 
 	- fs and path provide the means to work with local files.
@@ -465,13 +534,16 @@ Reads a xlsx file and adds its content to the library records.
 
 */ 
 exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, xlsxFile, full) => {
+	// Define the file extensions which will correspond to an image.
 	const imgExtArr = [".jpg", ".jpeg", ".png"];
+	// Define an array to act as a holder in reformatting dates.
 	let relDateArr = [];
 	return new Promise((res, rej) => {
 		// If the exportTemp folder does not exist, then create it.
 		if(!fs.existsSync(path.join(dir, "Trak", "importTemp"))) {
 			fs.mkdirSync(path.join(dir, "Trak", "importTemp"));
 		}
+		// Otherwise empty the directory just in case.
 		else {
 			fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
 		}
@@ -480,22 +552,25 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 			// If there was an issue reading the settings configuration file notify the user.
 			if(err) { eve.sender.send("configurationFileOpeningFailure");  }
 			else {
-				// Define the configuration file data and associated library records path.
-				const fileData = JSON.parse(fileContent).current != undefined ? JSON.parse(fileContent).current.path : JSON.parse(fileContent).original.path;
-
-
-
-				const workbook = new ExcelJS.Workbook();
+				// Define the configuration file data, associated library records path, and a workbook which will be written to in order to produce a xlsx file.
+				const fileData = JSON.parse(fileContent).current != undefined ? JSON.parse(fileContent).current.path : JSON.parse(fileContent).original.path,
+					workbook = new ExcelJS.Workbook();
 				// Unzip the assets zip file if it exists and copy the content over to the temporary import folder.
 				if(fs.existsSync(xlsxFile.replace(".xlsx", ".zip"))) {
 					zipper.sync.unzip(xlsxFile.replace(".xlsx", ".zip")).save(path.join(dir, "Trak", "importTemp"));
 				}
+				// Read the xlsx file the user wants to import.
 				workbook.xlsx.readFile(xlsxFile).then(wb => {
 					const workbookPromise = new Promise((resolve, reject) => {
+						// Iterate through all workbook worksheets.
 						wb.worksheets.forEach(elem => {
+							// Handle the import of simple anime records.
 							if(elem.name == "Category-Anime") {
+								// Get the list of anime genres.
 								let genreLst = exports.animeGenreList();
+								// Iterate through all the rows of the anime worksheet.
 								for(let q = 2; q < elem.rowCount + 1; q++) {
+									// Define the object which will correspond to an anime record.
 									let animeObj = {
 										"category": "Anime",
 										"name": (typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value,
@@ -512,6 +587,7 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 										"img": [],
 										"content": [{ "scenario": "Single", "name": "Item 1", "type": "", "release": "", "watched": "", "rating": "", "review": "" }]
 									};
+									// Update the genres of the anime record object.
 									for(let p = 0; p < genreLst.length; p++) {
 										let compare = genreLst[p];
 										if(compare == "ComingOfAge") {
@@ -528,18 +604,25 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 						                }
 						                elem.getCell("M" + q).value.includes(compare) ? animeObj.genres[1].push(true) : animeObj.genres[1].push(false);
 									}
+									// Update the release date of the anime record object.
 									if(elem.getCell("L" + q).value != "" && elem.getCell("L" + q).value != "N/A") {
 										relDateArr = elem.getCell("L" + q).value.split("-");
 										animeObj.content[0].release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 									}
+									// Update the rating of the anime record object.
 									if(elem.getCell("C" + q).value != "" && elem.getCell("C" + q).value != "N/A") {
 										animeObj.content[0].rating = parseInt(elem.getCell("C" + q).value);
 									}
+									// If the user requests a detailed import then update the related content of the anime record object.
 									if(full == true) {
+										// Iterate through all workbook worksheets.
 										wb.worksheets.forEach(newElem => {
-											if(newElem.name == "Anime-" + animeObj.name.split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1)).join("")) {
+											// Detect the anime record detailed worksheet by its name.
+											if(newElem.name == "Anime-" + animeObj.name.split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1)).join("").substring(0, 25)) {
 												animeObj.content = [];
+												// Iterate through the detailed worksheet's rows.
 												for(let l = 2; l < newElem.rowCount + 1; l++) {
+													// If the detailed worksheet has a season entry then iterate through all corresponding rows and add the season as an object to the related content array.
 													if(newElem.getCell("A" + l).value == "Season") {
 														let seasonContentObj = {
 															"scenario": "Season",
@@ -573,6 +656,7 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 														}
 														animeObj.content.push(seasonContentObj);
 													}
+													// Otherwise if the detailed worksheet has a single entry then add the row information to a single object and add to the related content array.
 													else {
 														let singleContentObj = {
 															"scenario": "Single",
@@ -597,6 +681,7 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 											}
 										});
 									}
+									// Check the assets that were imported from the associated zip file and add the images to the anime record object.
 									if(fs.existsSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "assets"))) {
 										fs.readdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "assets")).forEach(asset => {
 											if(imgExtArr.includes(path.extname(asset))) {
@@ -604,52 +689,19 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 											}
 										});
 									}
+									// Otherwise if no assets were found then create the assets folder.
 									else {
 										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "assets"), { "recursive": true });
 									}
+									// Write data.json file associated to the anime record.
 									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "data.json"), JSON.stringify(animeObj), "UTF8");
 									if(q == elem.rowCount) { resolve(); }
 								}
 							}
 						});
 					});
-					workbookPromise.then(() => {
-						// Compare the list of records in the zip file and compare them to the current library records to see which reference the same record.
-						let list = fs.readdirSync(path.join(dir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(dir, "Trak", "importTemp"), file)).isDirectory()),
-							listFilterDoExist = list.filter(elem => fs.existsSync(path.join(fileData, elem))),
-							listFilterDoNotExist = list.filter(elem => !fs.existsSync(path.join(fileData, elem)));
-						// If there are records being imported which do not exist in the current library records simply copy them over.
-						if(listFilterDoNotExist.length > 0) {
-							listFilterDoNotExist.forEach(elem => { fs.moveSync(path.join(dir, "Trak", "importTemp", elem), path.join(fileData, elem)); });
-						}
-						// If there are no records being imported which do exist in the current library records then empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
-						if(listFilterDoExist.length == 0) {
-							fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
-							win.reload();
-							setTimeout(() => { res(); win.webContents.send("importFileSuccess", xlsxFile); }, 1000);
-						}
-						else {
-							// If there are records being imported which do exist in the current library records notify the user.
-							eve.sender.send("importRecordExists", listFilterDoExist);
-							// Once the user chooses which records to overwrite proceed by copying them from the importTemp folder.
-							ipc.once("importOveride", (event, overwriteList) => {
-								let savePromise = new Promise((resolve, reject) => {
-								    overwriteList.forEach((elem, index, arr) => {
-										if(elem.overwrite == true) {
-											fs.moveSync(path.join(dir, "Trak", "importTemp", elem.record), path.join(fileData, elem.record));
-										}
-										if(index == arr.length - 1) { resolve(); }
-									});
-								});
-								// Once the desired records have been overwritten empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
-								savePromise.then(() => {
-									fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
-									win.reload();
-									setTimeout(() => { res(); win.webContents.send("importFileSuccess", xlsxFile); }, 1000);
-								});
-							});
-						}
-					});
+					// Once all records have been imported into the temporary folder check them against the current ones to see which ones will be kept.
+					workbookPromise.then(() => { exports.importCompare(fs, path, ipc, win, eve, res, dir, fileData, xlsxFile); });
 				});
 			}
 		});
@@ -681,13 +733,6 @@ exports.importDriverXLSX = async (fs, path, ipc, zipper, ExcelJS, mainWin, ogPat
 
 
 
-
-
-
-
-
-
-
 /*
 
 Reads a zip file and adds its content to the library records.
@@ -707,6 +752,10 @@ exports.importDataZIP = async (fs, path, ipc, zipper, win, eve, dir, zipFile) =>
 		if(!fs.existsSync(path.join(dir, "Trak", "importTemp"))) {
 			fs.mkdirSync(path.join(dir, "Trak", "importTemp"));
 		}
+		// Otherwise empty the directory just in case.
+		else {
+			fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
+		}
 		// Read the settings configuration file.
 		fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
 			// If there was an issue reading the settings configuration file notify the user.
@@ -723,43 +772,8 @@ exports.importDataZIP = async (fs, path, ipc, zipper, win, eve, dir, zipFile) =>
 						unzipped.save(path.join(dir, "Trak", "importTemp"), issue => {
 							// If there was an issue saving the contents of the zip file notify the user.
 							if(issue) { eve.sender.send("importZipFileFailure", zipFile); }
-							else {
-								// Compare the list of records in the zip file and compare them to the current library records to see which reference the same record.
-								let list = fs.readdirSync(path.join(dir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(dir, "Trak", "importTemp"), file)).isDirectory()),
-									listFilterDoExist = list.filter(elem => fs.existsSync(path.join(fileData, elem))),
-									listFilterDoNotExist = list.filter(elem => !fs.existsSync(path.join(fileData, elem)));
-								// If there are records being imported which do not exist in the current library records simply copy them over.
-								if(listFilterDoNotExist.length > 0) {
-									listFilterDoNotExist.forEach(elem => { fs.moveSync(path.join(dir, "Trak", "importTemp", elem), path.join(fileData, elem)); });
-								}
-								// If there are no records being imported which do exist in the current library records then empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
-								if(listFilterDoExist.length == 0) {
-									fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
-									win.reload();
-									setTimeout(() => { res(); win.webContents.send("importFileSuccess", zipFile); }, 1000);
-								}
-								else {
-									// If there are records being imported which do exist in the current library records notify the user.
-									eve.sender.send("importRecordExists", listFilterDoExist);
-									// Once the user chooses which records to overwrite proceed by copying them from the importTemp folder.
-									ipc.once("importOveride", (event, overwriteList) => {
-										let savePromise = new Promise((resolve, reject) => {
-										    overwriteList.forEach((elem, index, arr) => {
-												if(elem.overwrite == true) {
-													fs.moveSync(path.join(dir, "Trak", "importTemp", elem.record), path.join(fileData, elem.record));
-												}
-												if(index == arr.length - 1) { resolve(); }
-											});
-										});
-										// Once the desired records have been overwritten empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
-										savePromise.then(() => {
-											fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
-											win.reload();
-											setTimeout(() => { res(); win.webContents.send("importFileSuccess", zipFile); }, 1000);
-										});
-									});
-								}
-							}
+							// Once all records have been imported into the temporary folder check them against the current ones to see which ones will be kept.
+							else { exports.importCompare(fs, path, ipc, win, eve, res, dir, fileData, zipFile); }
 						});
 					}
 				});
