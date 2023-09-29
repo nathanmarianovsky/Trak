@@ -319,6 +319,7 @@ ipcRenderer.on("introduction", (event, response) => {
 
 // Load all of the contacts as rows in the table once the page has loaded.
 ipcRenderer.on("loadRows", (event, tableDiff) => {
+    console.log(tableDiff);
     // Define the path for all items and get a list of all available records.
     const pathDir = path.join(localPath, "Trak", "data");
     let list = [];
@@ -335,7 +336,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         tableBody = document.getElementById("tableBody"),
         synopsisPreloader = document.getElementById("synopsisPreloader"),
         synopsisModalContent = document.getElementById("synopsisModalContent");
-    tableDiv.style.height = (tableDiff + 467) + "px";
+    tableDiv.style.height = (tableDiff + 506) + "px";
     tableBody.textContent = "";
     // Listen for a window resize event in order to change the table height.
     window.addEventListener("resize", () => ipcRenderer.send("getAppHeight"));
