@@ -692,10 +692,10 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 									}
 									// Otherwise if no assets were found then create the assets folder.
 									else {
-										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "assets"), { "recursive": true });
+										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "assets"), { "recursive": true });
 									}
 									// Write data.json file associated to the anime record.
-									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "data.json"), JSON.stringify(animeObj), "UTF8");
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "data.json"), JSON.stringify(animeObj), "UTF8");
 									if(q == elem.rowCount) { resolve(); }
 								}
 							}

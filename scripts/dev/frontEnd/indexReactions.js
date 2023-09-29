@@ -337,6 +337,9 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         synopsisModalContent = document.getElementById("synopsisModalContent");
     tableDiv.style.height = (tableDiff + 467) + "px";
     tableBody.textContent = "";
+    // Listen for a window resize event in order to change the table height.
+    window.addEventListener("resize", () => ipcRenderer.send("getAppHeight"));
+    ipcRenderer.on("appHeight", (ev, newTableDiff) => tableDiv.style.height = (newTableDiff + 467) + "px");
     document.getElementById("preloader").style.setProperty("display", "none", "important");
     // Hide the vertical scroll bar.
     document.body.style.overflowY = "hidden";

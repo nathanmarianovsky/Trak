@@ -477,7 +477,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease
     	if(BrowserWindow.getAllWindows().length === 0) {
    		let win = tools.createWindow("index", originalPath, BrowserWindow, path, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
    		win.webContents.on("did-finish-load", () => {
-  				win.webContents.send("loadRows", primaryWindowFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
+  				win.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
   				tools.tutorialLoad(fs, path, primaryWindow, originalPath);
   				tools.checkForUpdate(os, semver, https, fs, path, originalPath, win);
   			});
@@ -494,7 +494,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease
   	ipc.on("home", event => {
   		mainWindow.loadFile(path.join(originalPath, "Trak", "localPages", "index.html"));
   		mainWindow.webContents.on("did-finish-load", () => {
-  			mainWindow.webContents.send("loadRows", primaryWindowFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
+  			mainWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
   			tools.tutorialLoad(fs, path, primaryWindow, originalPath);
   			tools.checkForUpdate(os, semver, https, fs, path, originalPath, mainWindow);
   		});
@@ -666,6 +666,11 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease
 				animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
 			]);
 		});
+	});
+
+	// Handles the fetching of the primary window's current height in order to provide the necessary difference for the index page table height to be updated.
+	ipc.on("getAppHeight", event => {
+		event.sender.send("appHeight", mainWindow.getBounds().height - 800);
 	});
 };
 

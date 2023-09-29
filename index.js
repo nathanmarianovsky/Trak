@@ -200,7 +200,7 @@ app.whenReady().then(() => {
 															// Create the primary window.
 														  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);
 															primaryWindow.webContents.on("did-finish-load", () => {
-																primaryWindow.webContents.send("loadRows", primWinFullscreen == true ? primaryWindow.getContentSize()[1] - 800 : primWinHeight - 800);
+																primaryWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
 																tools.tutorialLoad(fs, path, primaryWindow, basePath);
 																tools.checkForUpdate(os, semver, https, fs, path, basePath, primaryWindow);
 															});
