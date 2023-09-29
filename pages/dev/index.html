@@ -211,20 +211,22 @@
                     </div>
                 </div>
                 <div id="databaseImportContainer" class="databaseContainer">
-                    <p id="importZipContent">To import into the library records simply select the zip files which contain the data and click to import. Any zip file to be imported should correspond to an export generated from this application.</p>
+                    <p id="importZipContent">
+                        To import into the library records simply select the zip files which contain the data and click to import. Any zip file to be imported should correspond to an export generated from this application. A sample can be found <a id="importSampleZIP" class="hyperlink">here</a>.
+                    </p>
                     <p id="importXLSXContentSimple">
-                        In order to import into the library records a simple csv file there should be a single worksheet whose columns are expected to be in the order:
+                        To import into the library records a simple xlsx file there should be a single worksheet titled "Category-Anime" whose columns are expected to be in the order:
                         <br><br>
-                        <span class="center textFocus">| Category | Name | Japanese Name | Rating | Comments/Review | Synopsis | Directors |<br>| Producers | Writers | Music Directors | Studios | Licensed By | Release Date | Genres</span>
+                        <span class="center textFocus">| Name | Japanese Name | Rating | Comments/Review | Synopsis | Directors |<br>| Producers | Writers | Music Directors | Studios | Licensed By | Release Date | Genres |</span>
                         <br>
-                        The first row should be used for column headers with data starting on the second row. Furthermore, the genres component should consist of a comma separated list while the category of a record can take on one of five values: Anime, Book, Film, Manga, or Show. Select the csv files which contain the data and click to import.
+                        The first row should be used for column headers with data starting on the second row with the genres component consisting of a comma separated list. Select the xlsx files which contain the data and click to import. A sample can be found <a id="importSampleSimpleXLSX" class="hyperlink">here</a>.
                     </p>
                     <p id="importXLSXContentDetailed">
-                        In order to import into the library records a detailed csv file multiple worksheets are expected to be provided where the first worksheet should correspond to the same data provided for a simple csv import. All other worksheets are expected to be titled with the record name whose columns are expected to be in the order:
+                        To import into the library records a detailed xlsx file multiple worksheets are expected to be provided where the first worksheet corresponds to the same data provided for a simple xlsx import. All other worksheets are expected to be titled in the format "Category-FormattedName" where Category can take on one of the five values "Anime", "Book", "Film", "Manga", or "Show" and FormattedName is the value in the first column of the "Category-Anime" worksheet whose words all start with a capital letter and has all whitespaces removed. The columns for these same worksheets are expected to be in the order:
                         <br><br>
                         <span class="center textFocus">| Type | Name | Start Date | End Date | Status | Last Watched |<br>| Rating | Episode # | Episode Name | Comments/Review |</span>
                         <br>
-                        The first row should be used for column headers with data starting on the second row. Furthermore, the value of a record's related content type can be either a Season or Single where a single corresponds to an entry with a single episode. For type single provide the release date under the start date column and ignore the columns corresponding to an episode number and episode name. Select the csv files which contain the data and click to import.
+                        The first row should be used for column headers with data starting on the second row. Furthermore, the value of a record's related content type can be either a Season or Single where single corresponds to an entry with a single episode and Status can take on one of five values "Watching", "Completed", "On-Hold", "Dropped", or "Plan To Watch". For type single provide the release date under the start date column and ignore the columns corresponding to the episode number and episode name. Select the xlsx files which contain the data and click to import. A sample can be found <a id="importSampleDetailedXLSX" class="hyperlink">here</a>.
                     </p>
                     <div class="row databaseImportDiv">
                         <form class="col s12">

@@ -57,6 +57,26 @@ ipcRenderer.on("recordFilesSuccess", (event, response) => {
 
 
 
+// Display a notification for the successful opening of the sample zip import directory.
+ipcRenderer.on("importSampleZIPSuccess", event => {
+    M.toast({"html": "The directory containg the sample zip import has been opened.", "classes": "rounded"});
+});
+
+
+
+// Display a notification for the successful opening of the sample simple xlsx import directory.
+ipcRenderer.on("importSampleSimpleXLSXSuccess", event => {
+    M.toast({"html": "The directory containg the sample simple xlsx import has been opened.", "classes": "rounded"});
+});
+
+
+// Display a notification for the successful opening of the sample detailed xlsx import directory.
+ipcRenderer.on("importSampleDetailedXLSXSuccess", event => {
+    M.toast({"html": "The directory containg the sample detailed xlsx import has been opened.", "classes": "rounded"});
+});
+
+
+
 // Display a notification if there was an error in the update of the tutorial configuration file.
 ipcRenderer.on("introductionFileSaveFailure", event => {
     M.toast({"html": "There was an error in saving the tutorial configuration file.", "classes": "rounded"});
@@ -319,7 +339,6 @@ ipcRenderer.on("introduction", (event, response) => {
 
 // Load all of the contacts as rows in the table once the page has loaded.
 ipcRenderer.on("loadRows", (event, tableDiff) => {
-    console.log(tableDiff);
     // Define the path for all items and get a list of all available records.
     const pathDir = path.join(localPath, "Trak", "data");
     let list = [];

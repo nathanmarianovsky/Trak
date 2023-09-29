@@ -330,7 +330,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 #databaseModal {
 	width: 75%;
-	height: 600px;
+	height: 670px;
 	max-height: 100%;
 }
 

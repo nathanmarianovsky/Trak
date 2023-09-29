@@ -526,6 +526,24 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, checkInternetCo
   	// Handle the opening of the github release link on the update modal.
   	ipc.on("githubRelease", (event, url) => { shell.openExternal(url); });
 
+
+  	ipc.on("importSampleZIP", event => {
+  		exec(tools.startCommandLineFolder() + " " + path.join(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "location.json"), "UTF8")).appLocation, "assets", "importSamples"));
+		event.sender.send("importSampleZIPSuccess");
+  	});
+
+
+  	ipc.on("importSampleSimpleXLSX", event => {
+  		exec(tools.startCommandLineFolder() + " " + path.join(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "location.json"), "UTF8")).appLocation, "assets", "importSamples", "Trak-Simple-XLSX-Export-Sample"));
+		event.sender.send("importSampleSimpleXLSXSuccess");
+  	});
+
+
+  	ipc.on("importSampleDetailedXLSX", event => {
+  		exec(tools.startCommandLineFolder() + " " + path.join(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "location.json"), "UTF8")).appLocation, "assets", "importSamples", "Trak-Detailed-XLSX-Export-Sample"));
+		event.sender.send("importSampleDetailedXLSXSuccess");
+  	});
+
 	// If the data folder does not exist, then create it.
 	if(!fs.existsSync(path.join(dataPath, "Trak", "data"))) {
 		fs.mkdirSync(path.join(dataPath, "Trak", "data"), { "recursive": true });

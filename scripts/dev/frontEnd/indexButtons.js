@@ -57,7 +57,10 @@ window.addEventListener("load", () => {
         databaseImportBtn = document.getElementById("databaseImportBtn"),
         importOverideBtn = document.getElementById("importOverideBtn"),
         typeSwitch = document.getElementById("databaseSwitch"),
-        XLSXTypeSwitch = document.getElementById("XLSXTypeSwitch");
+        XLSXTypeSwitch = document.getElementById("XLSXTypeSwitch"),
+        importSampleZIP = document.getElementById("importSampleZIP"),
+        importSampleSimpleXLSX = document.getElementById("importSampleSimpleXLSX"),
+        importSampleDetailedXLSX = document.getElementById("importSampleDetailedXLSX");
     // Define all page components which will be utilized.
     const tableBody = document.getElementById("tableBody"),
         XLSXTypeSwitchDiv = document.getElementById("XLSXTypeSwitchDiv"),
@@ -257,6 +260,21 @@ window.addEventListener("load", () => {
             importXLSXContentSimple.style.display = "none";
             importXLSXContentDetailed.style.display = "none";
         }
+    });
+    // Listen for a click event on the importSampleZIP button in the import section in order to open a folder to it.
+    importSampleZIP.addEventListener("click", e => {
+        e.preventDefault();
+        ipcRenderer.send("importSampleZIP");
+    });
+     // Listen for a click event on the importSampleSimpleXLSX button in the import section in order to open a folder to it.
+    importSampleSimpleXLSX.addEventListener("click", e => {
+        e.preventDefault();
+        ipcRenderer.send("importSampleSimpleXLSX");
+    });
+     // Listen for a click event on the importSampleDetailedXLSX button in the import section in order to open a folder to it.
+    importSampleDetailedXLSX.addEventListener("click", e => {
+        e.preventDefault();
+        ipcRenderer.send("importSampleDetailedXLSX");
     });
     // Listen for a click event on the database export button in order to process an export of the chosen library records.
     databaseExportBtn.addEventListener("click", e => {
