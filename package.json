@@ -19,6 +19,7 @@
     "html-minifier": "^4.0.0",
     "mal-scraper": "^2.13.1",
     "node-minify": "^3.6.0",
+    "semver": "^7.5.4",
     "zip-local": "^0.3.5"
   },
   "devDependencies": {
