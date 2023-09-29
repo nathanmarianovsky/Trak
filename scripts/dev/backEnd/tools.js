@@ -682,19 +682,19 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 										});
 									}
 									// Check the assets that were imported from the associated zip file and add the images to the anime record object.
-									if(fs.existsSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "assets"))) {
-										fs.readdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "assets")).forEach(asset => {
+									if(fs.existsSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name.replace(/[/\\?%*:|"<>]/g, "_"), "assets"))) {
+										fs.readdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name.replace(/[/\\?%*:|"<>]/g, "_"), "assets")).forEach(asset => {
 											if(imgExtArr.includes(path.extname(asset))) {
-												animeObj.img.push(path.join(fileData, "Anime-" + animeObj.name, "assets", asset));
+												animeObj.img.push(path.join(fileData, "Anime-" + animeObj.name.replace(/[/\\?%*:|"<>]/g, "_"), "assets", asset));
 											}
 										});
 									}
 									// Otherwise if no assets were found then create the assets folder.
 									else {
-										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "assets"), { "recursive": true });
+										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name.replace(/[/\\?%*:|"<>]/g, "_"), "assets"), { "recursive": true });
 									}
 									// Write data.json file associated to the anime record.
-									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name, "data.json"), JSON.stringify(animeObj), "UTF8");
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name.replace(/[/\\?%*:|"<>]/g, "_"), "data.json"), JSON.stringify(animeObj), "UTF8");
 									if(q == elem.rowCount) { resolve(); }
 								}
 							}
