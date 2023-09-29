@@ -681,20 +681,21 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 											}
 										});
 									}
+									let fldrName = animeObj.name.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
 									// Check the assets that were imported from the associated zip file and add the images to the anime record object.
-									if(fs.existsSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name.replace(/[/\\?%*:|"<>]/g, "_"), "assets"))) {
-										fs.readdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name.replace(/[/\\?%*:|"<>]/g, "_"), "assets")).forEach(asset => {
+									if(fs.existsSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "assets"))) {
+										fs.readdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "assets")).forEach(asset => {
 											if(imgExtArr.includes(path.extname(asset))) {
-												animeObj.img.push(path.join(fileData, "Anime-" + animeObj.name.replace(/[/\\?%*:|"<>]/g, "_"), "assets", asset));
+												animeObj.img.push(path.join(fileData, "Anime-" + fldrName, "assets", asset));
 											}
 										});
 									}
 									// Otherwise if no assets were found then create the assets folder.
 									else {
-										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name.replace(/[/\\?%*:|"<>]/g, "_"), "assets"), { "recursive": true });
+										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "assets"), { "recursive": true });
 									}
 									// Write data.json file associated to the anime record.
-									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + animeObj.name.replace(/[/\\?%*:|"<>]/g, "_"), "data.json"), JSON.stringify(animeObj), "UTF8");
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "data.json"), JSON.stringify(animeObj), "UTF8");
 									if(q == elem.rowCount) { resolve(); }
 								}
 							}

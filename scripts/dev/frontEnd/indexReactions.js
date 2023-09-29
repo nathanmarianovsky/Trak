@@ -519,7 +519,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             e.preventDefault();
             let holder = e.target.id.split("_-_");
             holder.shift();
-            ipcRenderer.send("recordFiles", holder.join(""));
+            ipcRenderer.send("recordFiles", [holder.join(""), e.target.closest("tr").getAttribute("category") + "-" + e.target.closest("tr").getAttribute("name")]);
         });
     }
     // Initialize the tooltips.

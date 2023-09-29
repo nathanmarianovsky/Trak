@@ -40,14 +40,14 @@ exports.writeDataFile = (globalWin, curWin, writeData, mode, savePath, fs, path,
 	let fldr = "";
 	const modeStr = (mode == "A" ? "add" : "update");
 	if(info[0] == "Anime") { fldr = info[0] + "-" + (info[1] != "" ? info[1] : info[2]); };
-	fs.writeFile(path.join(savePath, "Trak", "data", fldr.replace(/[/\\?%*:|"<>]/g, "_"), "data.json"), JSON.stringify(writeData), "UTF8", err => {
+	fs.writeFile(path.join(savePath, "Trak", "data", fldr.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "data.json"), JSON.stringify(writeData), "UTF8", err => {
 		// If there was an error in writing to the data file, then notify the user.
 		if(err) { evt.sender.send(modeStr + "RecordFailure", fldr); }
 		else {
 			// Copy over the files asked to be added as assets in association to a particular contact.
 			let i = 0;
 			for(; i < info[10].length; i++) {
-				let dest = path.join(savePath, "Trak", "data", fldr.replace(/[/\\?%*:|"<>]/g, "_"), "assets", path.basename(info[10][i]));
+				let dest = path.join(savePath, "Trak", "data", fldr.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "assets", path.basename(info[10][i]));
 				fs.copyFile(info[10][i], dest, err => {
 					if(err) { evt.sender.send("copyFailure", info[10][i]); }
 				});
@@ -96,7 +96,7 @@ exports.animeObjCreation = (path, fs, https, tools, dir, providedData) => {
 		for(let y = 0; y < providedData[14][1].length; y++) {
 			if(tools.isURL(providedData[14][1][y])) {
 				let downloadFilePath = path.join(dir, "Trak", "data",
-						providedData[0] + "-" + (providedData[1] != "" ? providedData[1] : providedData[2]).replace(/[/\\?%*:|"<>]/g, "_"),
+						providedData[0] + "-" + (providedData[1] != "" ? providedData[1] : providedData[2]).replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""),
 						"assets", tools.parseURLFilename(providedData[14][1][y]));
 		        animeObj.img.push(downloadFilePath);
 				https.get(providedData[14][1][y], res => {
@@ -107,7 +107,7 @@ exports.animeObjCreation = (path, fs, https, tools, dir, providedData) => {
 			}
 			else {
 				let copyFilePath = path.join(dir, "Trak", "data",
-						providedData[0] + "-" + (providedData[1] != "" ? providedData[1] : providedData[2]).replace(/[/\\?%*:|"<>]/g, "_"),
+						providedData[0] + "-" + (providedData[1] != "" ? providedData[1] : providedData[2]).replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""),
 						"assets", providedData[14][1][y].replace(/^.*[\\\/]/, ""));
 				fs.copySync(providedData[14][1][y], copyFilePath);
 				animeObj.img.push(copyFilePath);
@@ -168,9 +168,9 @@ Handles the saving of anime record by creating the associated folders and data f
 */
 exports.animeSave = (BrowserWindow, path, fs, https, tools, mainWindow, dataPath, evnt, data) => {
 	// Check to see that the folder associated to the new record does not exist.
-	if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[1].replace(/[/\\?%*:|"<>]/g, "_"))) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[2]))) {
+	if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""))) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[2].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")))) {
 		// Create a new directory for the assets associated to the new record.
-		fs.mkdirSync(path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]).replace(/[/\\?%*:|"<>]/g, "_"), "assets"), { "recursive": true });
+		fs.mkdirSync(path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]).replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "assets"), { "recursive": true });
 		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data);
 	}
 	else {
@@ -197,7 +197,7 @@ Handles the update of an anime record.
 exports.animeUpdate = (BrowserWindow, path, fs, https, tools, mainWindow, dataPath, evnt, data) => {
 	// If the name has been updated then change the associated record folder name.
 	if((data[1] != "" && data[1] != data[data.length - 1]) || (data[1] == "" && data[2] != "" && data[2] != data[data.length - 1]) ) {
-		fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + data[data.length - 1].replace(/[/\\?%*:|"<>]/g, "_")), path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]).replace(/[/\\?%*:|"<>]/g, "_")), err => {
+		fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + data[data.length - 1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")), path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]).replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")), err => {
 			// If there was an error in renaming the record folder notify the user.
 			if(err) {
 				evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1] != "" ? data[1] : data[2]]);
@@ -564,9 +564,9 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease
   	});
 
   	// Handles the opening of a record's assets folder.
-	ipc.on("recordFiles", (event, folder) => {
-		exec(tools.startCommandLineFolder() + " " + path.join(dataPath, "Trak", "data", folder, "assets"));
-		event.sender.send("recordFilesSuccess", folder);
+	ipc.on("recordFiles", (event, params) => {
+		exec(tools.startCommandLineFolder() + " " + path.join(dataPath, "Trak", "data", params[0], "assets"));
+		event.sender.send("recordFilesSuccess", params[1]);
 	});
 
 	// Handles the saving of all options in the user settings.
