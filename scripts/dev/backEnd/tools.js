@@ -147,12 +147,12 @@ exports.exportDataXLSX = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, r
 	// If the export folder does not exist, then create it.
 	const fileDateArr = (new Date().toJSON().slice(0, 10)).split("-"),
 		fileDate = fileDateArr[1] + "." + fileDateArr[2] + "." + fileDateArr[0];
-	if(!fs.existsSync(path.join(exportLocation, "Trak-XLSX-Export-" + fileDate))) {
-		fs.mkdirSync(path.join(exportLocation, "Trak-XLSX-Export-" + fileDate));
+	if(!fs.existsSync(path.join(exportLocation, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate))) {
+		fs.mkdirSync(path.join(exportLocation, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate));
 	}
 	// Otherwise empty it.
 	else {
-		fs.emptyDirSync(path.join(exportLocation, "Trak-XLSX-Export-" + fileDate));
+		fs.emptyDirSync(path.join(exportLocation, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate));
 	}
 	// Read the settings configuration file.
 	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
@@ -341,7 +341,7 @@ exports.exportDataXLSX = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, r
 				}
 			}
 			// Write the xlsx file in the desired export location.
-			workbook.xlsx.writeFile(path.join(exportLocation, "Trak-XLSX-Export-" + fileDate, "Trak-XLSX-Export-" + fileDate + ".xlsx")).then(() => {
+			workbook.xlsx.writeFile(path.join(exportLocation, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate + ".xlsx")).then(() => {
 				// Copy over all library records which will be included in the export.
 				let listPromise = new Promise((resolve, reject) => {
 				    records.forEach((elem, index, arr) => {
@@ -364,7 +364,7 @@ exports.exportDataXLSX = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, r
 							}
 							zipStr += fileDate + ".zip";
 							// Save the assets zip file, empty the exportTemp folder, and notify the user that the export process has finished.
-							zipped.save(path.join(exportLocation, "Trak-XLSX-Export-" + fileDate, zipStr), zipErr => {
+							zipped.save(path.join(exportLocation, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate, zipStr), zipErr => {
 								if(zipErr) { eve.sender.send("exportXLSXFileFailure"); }
 								else {
 									fs.emptyDirSync(path.join(dir, "Trak", "exportTemp"));
