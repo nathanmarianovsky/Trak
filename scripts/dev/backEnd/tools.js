@@ -937,54 +937,60 @@ Checks against the most recent release on github to determine if an update is av
 	- os provides the means to get information on the user operating system.
 	- semver provides the means to compare semantic versioning.
     - https provides the means to download files.
+    - checkInternetConnected provides the means to detect whether the app is connected to the internet or not.
     - fs and path provide the means to work with local files.
     - dir is the directory containing the configuration files.
     - win is an object that represents the primary window of the Electron app.
 
 */
-exports.checkForUpdate = (os, semver, https, fs, path, dir, win) => {
-	// Define the options associated to the GET request for github releases.
-	const options = { "host": "api.github.com", "path": "/repos/nathanmarianovsky/Trak/releases", "method": "GET", "headers": { "user-agent": "node.js" } };
-	// Put the GET request in.
-	const request = https.request(options, response => {
-		// Define the holder for the fetched data.
-		let body = "";
-		// Update the holder as the data is fetched.
-		response.on("data", chunk => body += chunk.toString("UTF8"));
-		// Once the data has been fetched completely check the current app version against the latest in the github releases.
-		response.on("end", () => {
-			// Define the latest release from github.
-		    const githubData = JSON.parse(body)[0];
-		    // Read the location.json file to extract the location of the app installation location.
-		    fs.readFile(path.join(dir, "Trak", "config", "location.json"), "UTF8", (resp, fl) => {
-		    	// Define the current version of the app.
-		    	const curVer = JSON.parse(fs.readFileSync(path.join(JSON.parse(fl).appLocation, "package.json"), "UTF8")).version;
-		    	// If there was an issue reading the location.json file notify the user.
-                if(resp) { win.webContents.send("locationFileIssue"); }
-                // Compare the current version against the latest version on github to determine whether an update is available.
-                else if(semver.gt(githubData.tag_name.substring(1), curVer)) {
-                	let fileName = "Trak-",
-                		ending = ""
-                		downloadURL = "";
-                	if(os.type() == "Windows_NT") { fileName += "Windows-"; ending = ".msi"; }
-                	else if(os.type() == "Linux") { fileName += "Linux-"; ending = ".deb"; }
-                	if(os.arch() == "x64") { fileName += "amd64" }
-                	else if(os.arch() == "arm64") { fileName += "arm64" }
-                	fileName += ending;
-                	for(let q = 0; q < githubData.assets.length; q++) {
-                		if(githubData.assets[q].name == fileName) {
-                			downloadURL = githubData.assets[q].browser_download_url;
-                			break;
-                		}
-                	}
-                	// With an update available send a request to the front-end to display the associated update button on the top nav.
-                	win.webContents.send("updateAvailable", [githubData.html_url, githubData.tag_name.substring(1), curVer, githubData.body, downloadURL, fileName]);
-                }
-            });
-	    });
+exports.checkForUpdate = (os, semver, https, checkInternetConnected, fs, path, dir, win) => {
+	// Check that the application is connected to the internet prior to checking for an available update.
+	checkInternetConnected({ "timeout": 500, "retries": 5, "domain": "https://google.com" }).then(() => {
+		// Define the options associated to the GET request for github releases.
+		const options = { "host": "api.github.com", "path": "/repos/nathanmarianovsky/Trak/releases", "method": "GET", "headers": { "user-agent": "node.js" } };
+		// Put the GET request in.
+		const request = https.request(options, response => {
+			// Define the holder for the fetched data.
+			let body = "";
+			// Update the holder as the data is fetched.
+			response.on("data", chunk => body += chunk.toString("UTF8"));
+			// Once the data has been fetched completely check the current app version against the latest in the github releases.
+			response.on("end", () => {
+				// Define the latest release from github.
+			    const githubData = JSON.parse(body)[0];
+			    // Read the location.json file to extract the location of the app installation location.
+			    fs.readFile(path.join(dir, "Trak", "config", "location.json"), "UTF8", (resp, fl) => {
+			    	// Define the current version of the app.
+			    	const curVer = JSON.parse(fs.readFileSync(path.join(JSON.parse(fl).appLocation, "package.json"), "UTF8")).version;
+			    	// If there was an issue reading the location.json file notify the user.
+	                if(resp) { win.webContents.send("locationFileIssue"); }
+	                // Compare the current version against the latest version on github to determine whether an update is available.
+	                else if(semver.gt(githubData.tag_name.substring(1), curVer)) {
+	                	let fileName = "Trak-",
+	                		ending = ""
+	                		downloadURL = "";
+	                	if(os.type() == "Windows_NT") { fileName += "Windows-"; ending = ".msi"; }
+	                	else if(os.type() == "Linux") { fileName += "Linux-"; ending = ".deb"; }
+	                	if(os.arch() == "x64") { fileName += "amd64" }
+	                	else if(os.arch() == "arm64") { fileName += "arm64" }
+	                	fileName += ending;
+	                	for(let q = 0; q < githubData.assets.length; q++) {
+	                		if(githubData.assets[q].name == fileName) {
+	                			downloadURL = githubData.assets[q].browser_download_url;
+	                			break;
+	                		}
+	                	}
+	                	// With an update available send a request to the front-end to display the associated update button on the top nav.
+	                	win.webContents.send("updateAvailable", [githubData.html_url, githubData.tag_name.substring(1), curVer, githubData.body, downloadURL, fileName]);
+	                }
+	            });
+		    });
+		});
+		// End the HTTPS request.
+		request.end();
+	}).catch(err => {
+		console.log("The app failed to check for an update because it could not connect to the internet. More specifically, connecting to https://google.com failed at the address " + err.address + ":" + err.port + " with exit code " + err.code + ".");
 	});
-	// End the HTTPS request.
-	request.end();
 };
 
 

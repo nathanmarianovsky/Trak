@@ -33,6 +33,7 @@ const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
 	malScraper = require("mal-scraper"),
 	os = require("os"),
 	spawn = require("child_process").spawn,
+	checkInternetConnected = require("check-internet-connected");
 	downloadRelease = require("download-github-release"),
 	semver = require("semver"),
 	ExcelJS = require("exceljs"),
@@ -202,13 +203,13 @@ app.whenReady().then(() => {
 															primaryWindow.webContents.on("did-finish-load", () => {
 																primaryWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
 																tools.tutorialLoad(fs, path, primaryWindow, basePath);
-																tools.checkForUpdate(os, semver, https, fs, path, basePath, primaryWindow);
+																tools.checkForUpdate(os, semver, https, checkInternetConnected, fs, path, basePath, primaryWindow);
 															});
 														  	// Create the system tray icon and menu. 
 														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 															tools.createTrayMenu("h", primaryWindow, tray, Menu);
 															// Add all of the back-end listeners.
-															appListeners.addListeners(app, BrowserWindow, path, fs, os, spawn, downloadRelease, semver, ExcelJS, https, exec, shell, ipc, zipper, tools, malScraper, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															appListeners.addListeners(app, BrowserWindow, path, fs, os, spawn, checkInternetConnected, downloadRelease, semver, ExcelJS, https, exec, shell, ipc, zipper, tools, malScraper, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 														}
 													});
 												}

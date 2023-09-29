@@ -457,6 +457,7 @@ Driver function for adding all app listeners.
 	- path and fs provide the means to work with local files.
 	- os provides the means to get information on the user operating system.
 	- spawn provides the means to launch an update via an installer.
+	- checkInternetConnected provides the means to detect whether the app is connected to the internet or not.
 	- downloadRelease provides the means to download a github release asset.
 	- semver provides the means to compare semantic versioning.
 	- ExcelJS provides the means to export/import xlsx files.
@@ -471,7 +472,7 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease, semver, ExcelJS, https, exec, shell, ipc, zipper, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, checkInternetConnected, downloadRelease, semver, ExcelJS, https, exec, shell, ipc, zipper, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -479,7 +480,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease
    		win.webContents.on("did-finish-load", () => {
   				win.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
   				tools.tutorialLoad(fs, path, primaryWindow, originalPath);
-  				tools.checkForUpdate(os, semver, https, fs, path, originalPath, win);
+  				tools.checkForUpdate(os, semver, https, checkInternetConnected, fs, path, originalPath, win);
   			});
     	}
   	});
@@ -496,7 +497,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease
   		mainWindow.webContents.on("did-finish-load", () => {
   			mainWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
   			tools.tutorialLoad(fs, path, primaryWindow, originalPath);
-  			tools.checkForUpdate(os, semver, https, fs, path, originalPath, mainWindow);
+  			tools.checkForUpdate(os, semver, https, checkInternetConnected, fs, path, originalPath, mainWindow);
   		});
   	});
 
@@ -599,7 +600,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, downloadRelease
 		// Define the path where the updated installer will download.
 		const outputdir = path.join(process.env.HOME, "TrakDownloads");
 		// Fetch the required asset from github.
-		downloadRelease("nathanmarianovsky", "Trak", outputdir, release => release.prerelease === false, asset => asset.name == appUpdateData[1], false).then(function() {
+		downloadRelease("nathanmarianovsky", "Trak", outputdir, release => release.prerelease === false, asset => asset.name == appUpdateData[1], false).then(() => {
 		    // Notify the user that the app will close to proceed with the update.
 		    event.sender.send("updateDownloadComplete");
 		    // After a five second delay launch the updated installer and close the app.
