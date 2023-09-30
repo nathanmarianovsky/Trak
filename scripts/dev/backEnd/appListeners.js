@@ -616,7 +616,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, checkInternetCo
 	// Handles the download of an updated installer and launching it.
 	ipc.on("appUpdate", (event, appUpdateData) => {
 		// Define the path where the updated installer will download.
-		const outputdir = path.join(process.env.HOME, "TrakDownloads");
+		const outputdir = path.join(os.homedir(), "TrakDownloads");
 		// Fetch the required asset from github.
 		downloadRelease("nathanmarianovsky", "Trak", outputdir, release => release.prerelease === false, asset => asset.name == appUpdateData[1], false).then(() => {
 		    // Notify the user that the app will close to proceed with the update.
