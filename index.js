@@ -124,7 +124,7 @@ app.whenReady().then(() => {
 	if(!fs.existsSync(path.join(os.homedir(), "TrakDownloads"))) {
 		fs.mkdirSync(path.join(os.homedir(), "TrakDownloads"));
 	}
-	else { fs.emptyDirSync(path.join(process.env.HOME, "TrakDownloads")); }
+	else { fs.emptyDirSync(path.join(os.homedir(), "TrakDownloads")); }
 
 	// Load the user's preferred window sizes if they exist.
 	fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
