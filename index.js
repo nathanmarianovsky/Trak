@@ -127,8 +127,8 @@ app.whenReady().then(() => {
 	}
 
 	// Create the downloads folder if it does not exist. If it does exist then empty it on load.
-	if(!fs.existsSync(path.join(process.env.HOME, "TrakDownloads"))) {
-		fs.mkdirSync(path.join(process.env.HOME, "TrakDownloads"));
+	if(!fs.existsSync(path.join(os.homedir(), "TrakDownloads"))) {
+		fs.mkdirSync(path.join(os.homedir(), "TrakDownloads"));
 	}
 	else { fs.emptyDirSync(path.join(process.env.HOME, "TrakDownloads")); }
 
