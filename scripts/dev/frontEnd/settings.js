@@ -223,7 +223,7 @@ window.addEventListener("load", () => {
             const tutorialLoad = document.getElementById("tutorialLoad");
             // If there was an issue in reading the tutorial.json file notify the user.
             if(err) {
-                M.toast({"html": "There was an error opening the configuration file associated to the tutorial settings.", "classes": "rounded"});
+                ipcRenderer.send("introductionFileSave", true);
                 tutorialLoad.checked = false;
                 tutorialLoad.setAttribute("lastValue", "false");
             }

@@ -104,12 +104,6 @@ app.whenReady().then(() => {
 		fs.writeFileSync(path.join(basePath, "Trak", "config", "configuration.json"), JSON.stringify(writeData), "UTF8");
 	}
 
-	// Create the tutorial file if it does not exist.
-	if(!fs.existsSync(path.join(basePath, "Trak", "config", "tutorial.json"))) {
-		const writeTutorial = { "introduction": true };
-		fs.writeFileSync(path.join(basePath, "Trak", "config", "tutorial.json"), JSON.stringify(writeTutorial), "UTF8");
-	}
-
 	// Create the location file if it does not exist.
 	if(!fs.existsSync(path.join(basePath, "Trak", "config", "location.json"))) {
 		const writeLocation = { "appLocation": __dirname };
@@ -177,7 +171,7 @@ app.whenReady().then(() => {
 									// Update the href values of the css and js files along with src values associated to images referenced in the addRecord.html file.
 									addRecordPage = addRecordPage.replace(regCSS, path.join(basePath, "Trak", "localStyles", "styles.css"));
 									addRecordPage = addRecordPage.replace(regJS, path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "scripts", "dist", "frontEnd", " ").trim());
-									addRecordPage = addRecordPage.replace(new RegExp("../../assets/animeDef.png", "g"), path.join(__dirname, "assets", "animeDef.png"));
+									addRecordPage = addRecordPage.replace(new RegExp("../../assets/animeDef.png", "g"), path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "assets", "animeDef.png"));
 									fs.writeFile(path.join(basePath, "Trak", "localPages", "addRecord.html"), addRecordPage, "UTF8", problem => {
 										// If there was an issue writing the addRecord.html file display a notification on the console.
 										if(problem) { console.log("There was an issue writing the addRecord.html file."); }
