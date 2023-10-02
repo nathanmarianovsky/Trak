@@ -44,7 +44,7 @@ ipcRenderer.once("recordsRemovalSuccess", (event, response) => {
 
 
 // Display a notification if there was an error in the removal of a record.
-ipcRenderer.once("removalFailure", (event, response) => {
+ipcRenderer.once("recordRemovalFailure", (event, response) => {
     M.toast({"html": "There was an error removing the record associated to the " + toastParse(response) + ".", "classes": "rounded"});
 });
 
@@ -198,6 +198,8 @@ ipcRenderer.on("updateAvailable", (event, response) => {
     document.getElementById("appUpdate").addEventListener("click", e => {
         // Display the download preloader.
         document.getElementById("updatePreloaderDiv").style.display = "block";
+        let updateModalContentDiv = document.getElementById("updateModal").children[0];
+        updateModalContentDiv.scrollTo(0, updateModalContentDiv.scrollHeight);
         // Send a request to the back-end for the update process to start.
         ipcRenderer.send("appUpdate", response.slice(4));
     });

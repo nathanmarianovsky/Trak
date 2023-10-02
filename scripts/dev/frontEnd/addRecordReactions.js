@@ -40,21 +40,14 @@ else {
 
 // Display a notification whenever a record already exists with a provided name.
 ipcRenderer.on("recordExists", (event, response) => {
-    M.toast({"html": "A record for the " + response.replace("-", " ") + " already exists! You can remove or update this record on a separate page.", "classes": "rounded"});
+    M.toast({"html": "A record for the " + toastParse(response) + " already exists! You can remove or update this record on a separate page.", "classes": "rounded"});
 });
 
 
 
 // Display a notification if there was an issue in writing to the data file of a record.
-ipcRenderer.on("addRecordFailure", (event, response) => {
-    M.toast({"html": "There was an issue in writing the data file associated to the " + response.replace("-", " ") + ".", "classes": "rounded"});
-});
-
-
-
-// Display a notification if there was an issue in writing to the data file of a record.
-ipcRenderer.on("updateRecordFailure", (event, response) => {
-    M.toast({"html": "There was an issue in writing the data file associated to the " + response.replace("-", " ") + ".", "classes": "rounded"});
+ipcRenderer.on("writeRecordFailure", (event, response) => {
+    M.toast({"html": "There was an issue in writing the data file associated to the " + toastParse(response) + ".", "classes": "rounded"});
 });
 
 
@@ -68,21 +61,21 @@ ipcRenderer.on("copyFailure", (event, response) => {
 
 // Display a notification for the successful addition of a record.
 ipcRenderer.on("addRecordSuccess", (event, response) => {
-    M.toast({"html": "The record associated to the " + response.replace("-", " ") + " has been created and saved. This window will now close!", "classes": "rounded"});
+    M.toast({"html": "The record associated to the " + toastParse(response) + " has been created and saved. This window will now close!", "classes": "rounded"});
 });
 
 
 
 // Display a notification for the successful update of a record.
 ipcRenderer.on("updateRecordSuccess", (event, response) => {
-    M.toast({"html": "The record associated to the " + response.replace("-", " ") + " has been updated. This window will now close!", "classes": "rounded"});
+    M.toast({"html": "The record associated to the " + toastParse(response) + " has been updated. This window will now close!", "classes": "rounded"});
 });
 
 
 
 // Display a notification if there was an error in renaming a record's directory.
 ipcRenderer.on("recordFolderRenameFailure", (event, response) => {
-    M.toast({"html": "There was an error in renaming the record folder " + response[0] + " to " + response[1] + ".", "classes": "rounded"});
+    M.toast({"html": "There was an error in renaming the anime record folder " + response[0] + " to " + response[1] + ".", "classes": "rounded"});
 });
 
 

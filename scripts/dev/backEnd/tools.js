@@ -875,13 +875,15 @@ Tells the front-end to load the application tutorial.
 	- sysPath is the system location for the application configuration.
 
 */
-exports.tutorialLoad = (fs, path, win, sysPath) => {
+exports.tutorialLoad = (fs, path, log, win, sysPath) => {
 	if(!fs.existsSync(path.join(sysPath, "Trak", "config", "tutorial.json"))) {
+		log.info("Loading the application tutorial for the index.html page for a first-time user.");
 		win.webContents.send("introduction", false);
 	}
 	else {
 		const intro = JSON.parse(fs.readFileSync(path.join(sysPath, "Trak", "config", "tutorial.json"), "UTF8")).introduction;
 		if(intro == true) {
+			log.info("Loading the application tutorial for the index.html page for a returning user.");
 			win.webContents.send("introduction", true);
 		}
 	}
@@ -937,15 +939,14 @@ Checks against the most recent release on github to determine if an update is av
 	- os provides the means to get information on the user operating system.
 	- semver provides the means to compare semantic versioning.
     - https provides the means to download files.
-    - checkInternetConnected provides the means to detect whether the app is connected to the internet or not.
     - fs and path provide the means to work with local files.
     - dir is the directory containing the configuration files.
     - win is an object that represents the primary window of the Electron app.
 
 */
-exports.checkForUpdate = (os, semver, https, checkInternetConnected, fs, path, dir, win) => {
+exports.checkForUpdate = (os, semver, https, fs, path, dir, win) => {
 	// Check that the application is connected to the internet prior to checking for an available update.
-	checkInternetConnected({ "timeout": 500, "retries": 5, "domain": "https://google.com" }).then(() => {
+	require("check-internet-connected")({ "timeout": 500, "retries": 5, "domain": "https://google.com" }).then(() => {
 		// Define the options associated to the GET request for github releases.
 		const options = { "host": "api.github.com", "path": "/repos/nathanmarianovsky/Trak/releases", "method": "GET", "headers": { "user-agent": "node.js" } };
 		// Put the GET request in.

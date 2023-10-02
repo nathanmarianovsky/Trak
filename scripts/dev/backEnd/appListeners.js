@@ -26,6 +26,7 @@ var exports = {};
 
 Handles the writing of files associated to a record.
 
+	- log provides the means to create application logs to keep track of what is going on.
 	- globalWin is an object representing the app's primary window.
 	- curWin is an object representing the current window of the Electron app.
 	- writeData is an object representing the data that is to be written to the data.json file.
@@ -36,24 +37,32 @@ Handles the writing of files associated to a record.
 	- info is the data associated to the record.
 
 */
-exports.writeDataFile = (globalWin, curWin, writeData, mode, savePath, fs, path, evt, info) => {
+exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, path, evt, info) => {
 	let fldr = "";
 	const modeStr = (mode == "A" ? "add" : "update");
 	if(info[0] == "Anime") { fldr = info[0] + "-" + (info[1] != "" ? info[1] : info[2]); };
 	fs.writeFile(path.join(savePath, "Trak", "data", fldr.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "data.json"), JSON.stringify(writeData), "UTF8", err => {
 		// If there was an error in writing to the data file, then notify the user.
-		if(err) { evt.sender.send(modeStr + "RecordFailure", fldr); }
+		if(err) {
+			log.error("There was an issue in writing the data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]));
+			evt.sender.send("writeRecordFailure", fldr);
+		}
 		else {
+			log.info("The data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]) + " has been successfully " + (modeStr == "A" ? "created and saved." : "updated."));
 			// Copy over the files asked to be added as assets in association to a particular contact.
 			let i = 0;
 			for(; i < info[10].length; i++) {
 				let dest = path.join(savePath, "Trak", "data", fldr.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "assets", path.basename(info[10][i]));
 				fs.copyFile(info[10][i], dest, err => {
-					if(err) { evt.sender.send("copyFailure", info[10][i]); }
+					if(err) {
+						log.error("There was an error in copying over the file " + info[10][i] + " as an asset.");
+						evt.sender.send("copyFailure", info[10][i]);
+					}
 				});
 			}
 			// Once all of the files have been updated, notify the user everything has been taken care of and close the window.
 			if(i == info[10].length) {
+				log.info("All assets associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]) + " have been copied over.");
 				globalWin.reload();
 				curWin.webContents.send(modeStr + "RecordSuccess", fldr);
 				setTimeout(() => { curWin.destroy(); }, 2000);
@@ -158,6 +167,7 @@ Handles the saving of anime record by creating the associated folders and data f
 
 	- BrowserWindow provides the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
 	- https provides the means to download files.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- tools provides a collection of local functions.
@@ -166,14 +176,17 @@ Handles the saving of anime record by creating the associated folders and data f
 	- data is the information associated to the record.
 
 */
-exports.animeSave = (BrowserWindow, path, fs, https, tools, mainWindow, dataPath, evnt, data) => {
+exports.animeSave = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
 	// Check to see that the folder associated to the new record does not exist.
 	if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""))) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[2].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")))) {
 		// Create a new directory for the assets associated to the new record.
-		fs.mkdirSync(path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]).replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "assets"), { "recursive": true });
-		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data);
+		const assetsPath = path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]).replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "assets");
+		log.info("Creating the assets directory for the new anime record. To be located at " + assetsPath);
+		fs.mkdirSync(assetsPath, { "recursive": true });
+		exports.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data);
 	}
 	else {
+		log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[2]) + " already exists!");
 		evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
 	}
 };
@@ -186,6 +199,7 @@ Handles the update of an anime record.
 
 	- BrowserWindow provides the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
 	- https provides the means to download files.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- tools provides a collection of local functions.
@@ -194,23 +208,24 @@ Handles the update of an anime record.
 	- data is the information associated to the record.
 
 */
-exports.animeUpdate = (BrowserWindow, path, fs, https, tools, mainWindow, dataPath, evnt, data) => {
+exports.animeUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
 	// If the name has been updated then change the associated record folder name.
 	if((data[1] != "" && data[1] != data[data.length - 1]) || (data[1] == "" && data[2] != "" && data[2] != data[data.length - 1]) ) {
 		fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + data[data.length - 1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")), path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]).replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")), err => {
 			// If there was an error in renaming the record folder notify the user.
 			if(err) {
+				log.error("There was an error in renaming the anime record folder " + data[data.length - 1] + " to " + (data[1] != "" ? data[1] : data[2]) + ".");
 				evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1] != "" ? data[1] : data[2]]);
 			}
 			// If no error occured in renaming the record folder write the data file, and copy over the file assets.
 			else {
-				exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
+				exports.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
 			}
 		});
 	}
 	else {
 		// Write the data file, and copy over the file assets.
-		exports.writeDataFile(mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
+		exports.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
 	}
 };
 
@@ -220,23 +235,29 @@ exports.animeUpdate = (BrowserWindow, path, fs, https, tools, mainWindow, dataPa
 
 Handles the removal of records by deleting the associated folders and data file.
 
+	- log provides the means to create application logs to keep track of what is going on.
 	- primaryWin is an object representing the current window of the Electron app.
 	- userPath is the path to the local user data.
 	- fs and path provide the means to work with local files.
 	- data is a collection of record names.
 
 */
-exports.removeRecords = (primaryWin, userPath, fs, path, data) => {
+exports.removeRecords = (log, primaryWin, userPath, fs, path, data) => {
 	// Once a confirmation has been provided by the user delete the associated record folders. 
 	let j = 0;
+	console.log(data);
 	for(; j < data.length; j++) {
 		fs.rm(path.join(userPath, "Trak", "data", data[j]), { "force": true, "recursive": true }, err => {
 			// If there was an error in deleting the record folder notify the user.
-			if(err) { primaryWin.webContents.send("recordRemovalFailure", data[j]); }
+			if(err) {
+				log.error("There was an issue removing the data record associated to the " + data[j].split("-")[0].toLowerCase() + " " + data[j].substring(data[j].split("-")[0].length + 1) + ".");
+				primaryWin.webContents.send("recordRemovalFailure", data[j]);
+			}
 		});
 	}
 	// Refresh the primary window and notify the user that all checked contacts have been removed.
 	if(j == data.length) {
+		log.info("The data records associated to the " + data.map(elem => elem.split("-")[0].toLowerCase() + " " + elem.substring(elem.split("-")[0].length + 1)).join(", ") + (data.length > 1 ? "have" : "has") + " been deleted.");
 		primaryWin.reload();
 		setTimeout(() => { primaryWin.webContents.send("recordsRemovalSuccess"); }, 500);
 	}
@@ -455,9 +476,9 @@ Driver function for adding all app listeners.
 
 	- app, BrowserWindow, and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
 	- os provides the means to get information on the user operating system.
 	- spawn provides the means to launch an update via an installer.
-	- checkInternetConnected provides the means to detect whether the app is connected to the internet or not.
 	- downloadRelease provides the means to download a github release asset.
 	- semver provides the means to compare semantic versioning.
 	- ExcelJS provides the means to export/import xlsx files.
@@ -472,95 +493,115 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, checkInternetConnected, downloadRelease, semver, ExcelJS, https, exec, shell, ipc, zipper, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRelease, semver, ExcelJS, https, exec, shell, ipc, zipper, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
    		let win = tools.createWindow("index", originalPath, BrowserWindow, path, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
    		win.webContents.on("did-finish-load", () => {
+   			log.info("The index.html page is now loading.");
   				win.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
-  				tools.tutorialLoad(fs, path, primaryWindow, originalPath);
-  				tools.checkForUpdate(os, semver, https, checkInternetConnected, fs, path, originalPath, win);
+  				tools.tutorialLoad(fs, path, log, primaryWindow, originalPath);
+  				tools.checkForUpdate(os, semver, https, fs, path, originalPath, win);
   			});
     	}
   	});
 
   	// Close the Electron app if the primary window is closed.
+	let logCheck = false;
   	mainWindow.on("close", () => {
+  		if(logCheck == false) {
+  			log.info("The application is quitting.");
+  			logCheck = true;
+  		}
     	mainWindow = null;
-       	app.quit();
+    	app.quit();
     });
 
   	// Handle the load of the home page.
   	ipc.on("home", event => {
   		mainWindow.loadFile(path.join(originalPath, "Trak", "localPages", "index.html"));
   		mainWindow.webContents.on("did-finish-load", () => {
+  			log.info("The index.html page is now loading.");
   			mainWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
-  			tools.tutorialLoad(fs, path, primaryWindow, originalPath);
-  			tools.checkForUpdate(os, semver, https, checkInternetConnected, fs, path, originalPath, mainWindow);
+  			tools.tutorialLoad(fs, path, log, primaryWindow, originalPath);
+  			tools.checkForUpdate(os, semver, https, fs, path, originalPath, mainWindow);
   		});
   	});
 
-   ipc.on("introductionFileSave", (event, launchIntro) => {
+  	// Handles the saving of the tutorial.json file.
+   	ipc.on("introductionFileSave", (event, launchIntro) => {
     	if(!fs.existsSync(path.join(originalPath, "Trak", "config", "tutorial.json"))) {
 	    	fs.writeFile(path.join(originalPath, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": launchIntro }), "UTF8", err => {
-	    		if(err) { event.sender.send("introductionFileSaveFailure"); }
+	    		if(err) { 
+	    			log.error("There was an error in saving the tutorial configuration file.");
+	    			event.sender.send("introductionFileSaveFailure");
+	    		}
 	    		else {
-	    			// event.sender.send("introductionFileSaveSuccess");
+	    			log.info("The tutorial configuration file has been updated.");
 	    		}
 	    	});
     	}
     	else if(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "tutorial.json"), "UTF8")).introduction != launchIntro) {
     		fs.writeFile(path.join(originalPath, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": launchIntro }), "UTF8", err => {
-	    		if(err) { event.sender.send("introductionFileSaveFailure"); }
+	    		if(err) {
+	    			log.error("There was an error in saving the tutorial configuration file.");
+	    			event.sender.send("introductionFileSaveFailure");
+	    		}
 	    		else {
+	    			log.info("The tutorial configuration file has been updated.");
 	    			event.sender.send("introductionFileSaveSuccess");
 	    		}
 	    	});
     	}
-   });
+   	});
 
   	// Handle the opening of the github link on the about section.
-  	ipc.on("aboutGithub", event => { shell.openExternal("https://github.com/nathanmarianovsky/Trak"); });
+  	ipc.on("aboutGithub", event => {
+  		log.info("Opening the Github project page in the default browser.");
+  		shell.openExternal("https://github.com/nathanmarianovsky/Trak");
+  	});
 
   	// Handle the opening of the github release link on the update modal.
-  	ipc.on("githubRelease", (event, url) => { shell.openExternal(url); });
+  	ipc.on("githubRelease", (event, url) => {
+  		log.info("Opening the update release page in the default browser.");
+  		shell.openExternal(url);
+  	});
 
-
+  	// Handles the opening of the zip import sample directory.
   	ipc.on("importSampleZIP", event => {
   		exec(tools.startCommandLineFolder() + " " + path.join(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "location.json"), "UTF8")).appLocation, "assets", "importSamples"));
+  		log.info("The directory containg the sample zip import has been opened.");
 		event.sender.send("importSampleZIPSuccess");
   	});
 
-
+  	// Handles the opening of the simple xlsx import sample directory.
   	ipc.on("importSampleSimpleXLSX", event => {
   		exec(tools.startCommandLineFolder() + " " + path.join(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "location.json"), "UTF8")).appLocation, "assets", "importSamples", "Trak-Simple-XLSX-Export-Sample"));
+  		log.info("The directory containg the sample simple xlsx import has been opened.");
 		event.sender.send("importSampleSimpleXLSXSuccess");
   	});
 
-
+  	// Handles the opening of the detailed xlsx import sample directory.
   	ipc.on("importSampleDetailedXLSX", event => {
   		exec(tools.startCommandLineFolder() + " " + path.join(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "location.json"), "UTF8")).appLocation, "assets", "importSamples", "Trak-Detailed-XLSX-Export-Sample"));
+  		log.info("The directory containg the sample detailed xlsx import has been opened.");
 		event.sender.send("importSampleDetailedXLSXSuccess");
   	});
-
-	// If the data folder does not exist, then create it.
-	if(!fs.existsSync(path.join(dataPath, "Trak", "data"))) {
-		fs.mkdirSync(path.join(dataPath, "Trak", "data"), { "recursive": true });
-	}
 
   	// Handles the load of the addRecord.html page for the creation of a record.
   	ipc.on("addLoad", (event, scenario) => {
   		let addWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		addWindow.webContents.on("did-finish-load", () => {
   			if(scenario == true) {
+  				log.info("Loading the application tutorial for the addRecord.html page.");
   				addWindow.webContents.send("addIntroduction");
   			}
   			addWindow.webContents.send("addRecordInitialMessage");
   			ipc.once("performSave", (event, submission) => {
 				// If the record is an anime then save the corresponding data.
 				if(submission[0] == "Anime") {
-	  				exports.animeSave(BrowserWindow, path, fs, https, tools, mainWindow, dataPath, event, submission);
+	  				exports.animeSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
 				}
   			});
   		});
@@ -572,14 +613,17 @@ exports.addListeners = (app, BrowserWindow, path, fs, os, spawn, checkInternetCo
   		recordUpdateWindow.webContents.on("did-finish-load", () => {
   			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
   			ipc.once("performSave", (event, submission) => {
-  				exports.animeUpdate(BrowserWindow, path, fs, https, tools, mainWindow, dataPath, event, submission);
+  				// If the record is an anime then save the corresponding data.
+				if(submission[0] == "Anime") {
+  					exports.animeUpdate(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
+  				}
   			});
   		});
   	});
 
   	// Handles the deletion of multiple contacts.
   	ipc.on("removeRecords", (event, list) => {
-  		exports.removeRecords(BrowserWindow.getFocusedWindow(), dataPath, fs, path, list);
+  		exports.removeRecords(log, BrowserWindow.getFocusedWindow(), dataPath, fs, path, list);
   	});
 
   	// Handles the opening of a record's assets folder.
