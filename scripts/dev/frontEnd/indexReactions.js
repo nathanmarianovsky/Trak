@@ -191,7 +191,7 @@ ipcRenderer.on("updateAvailable", (event, response) => {
     // Display the update available button on the top nav of the index page.
     document.getElementById("updateAvailable").style.display = "inline-block";
     // Fill the update modal with content obtained from the github api.
-    document.getElementById("updateModalContent").innerHTML = response[3] + "<br><br>"
+    document.getElementById("updateModalContent").innerHTML = response[3] + "<br>"
         + "More information can be found at: <a id='updateLink' val='" + response[0] + "' class='hyperlink'>Github Release</a>" + "." + "<br><br>"
         + "Current Version: " + response[2] + "<br>" + "Update Version: " + response[1];
     // Listen for a click on the update modal submission button in order to start downloading the updated installer.

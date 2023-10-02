@@ -226,6 +226,14 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	font-size: 13px;
 }
 
+#updateModalContent ul {
+	padding-left: 50px;
+}
+
+#updateModalContent ul li {
+	list-style-type: disc;
+}
+
 .spinner-layer {
 	border-color: #2A2A8E !important;
 }
