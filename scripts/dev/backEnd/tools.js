@@ -550,7 +550,7 @@ exports.importCompare = (fs, path, log, ipc, appWin, winEvent, promiseResolver, 
 	// If there are no records being imported which do exist in the current library records then empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
 	if(listFilterDoExist.length == 0) {
 		log.info("Emptying the importTemp folder.");
-		// fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
+		fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
 		appWin.reload();
 		setTimeout(() => {
 			promiseResolver();
@@ -578,7 +578,7 @@ exports.importCompare = (fs, path, log, ipc, appWin, winEvent, promiseResolver, 
 			// Once the desired records have been overwritten empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
 			savePromise.then(() => {
 				log.info("Emptying the importTemp folder.");
-				// fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
+				fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
 				appWin.reload();
 				setTimeout(() => {
 					promiseResolver();
@@ -624,7 +624,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 		// Otherwise empty the directory just in case.
 		else {
 			log.info("Emptying the importTemp folder.");
-			// fs.emptyDirSync(importTempFolder);
+			fs.emptyDirSync(importTempFolder);
 		}
 		// Read the settings configuration file.
 		fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
@@ -1050,14 +1050,13 @@ exports.parseURLFilename = url => new URL(url, "https://example.com").href.split
 Checks against the most recent release on github to determine if an update is available.
 
 	- os provides the means to get information on the user operating system.
-	- semver provides the means to compare semantic versioning.
     - https provides the means to download files.
     - fs and path provide the means to work with local files.
     - dir is the directory containing the configuration files.
     - win is an object that represents the primary window of the Electron app.
 
 */
-exports.checkForUpdate = (os, semver, https, fs, path, dir, win) => {
+exports.checkForUpdate = (os, https, fs, path, dir, win) => {
 	// Check that the application is connected to the internet prior to checking for an available update.
 	require("check-internet-connected")({ "timeout": 500, "retries": 5, "domain": "https://google.com" }).then(() => {
 		// Define the options associated to the GET request for github releases.
@@ -1079,7 +1078,7 @@ exports.checkForUpdate = (os, semver, https, fs, path, dir, win) => {
 			    	// If there was an issue reading the location.json file notify the user.
 	                if(resp) { win.webContents.send("locationFileIssue"); }
 	                // Compare the current version against the latest version on github to determine whether an update is available.
-	                else if(semver.gt(githubData.tag_name.substring(1), curVer)) {
+	                else if(require("semver").gt(githubData.tag_name.substring(1), curVer)) {
 	                	let fileName = "Trak-",
 	                		ending = ""
 	                		downloadURL = "";

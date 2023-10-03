@@ -6,15 +6,10 @@ Declare all of the necessary variables.
 	- fs and path provide the means to work with local files.
 	- https provides the means to download files.
 	- log provides the means to create application logs to keep track of what is going on.
-	- contextMenu provides the means to handle the menu associated to a right-click in the app.
 	- tools provides a collection of local functions meant to help with writing files.
-	- appListeners provides all of the back-end listeners.
-	- exec provides the means to open files and folders.
-	- malScraper provides the means to attain anime and manga records from myanimelist.
 	- os provides the means to get information on the user operating system.
+	- exec provides the means to open files and folders.
 	- spawn provides the means to launch an update via an installer.
-	- semver provides the means to compare semantic versioning.
-	- ExcelJS provides the means to export/import xlsx files.
 	- basePath is the path to the local settings data.
 	- localPath is the path to the local user data.
 
@@ -25,15 +20,10 @@ const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
 	fs = require("fs-extra"),
 	https = require("https"),
 	log = require("electron-log"),
-	contextMenu = require('electron-context-menu'),
 	tools = require("./scripts/dist/backEnd/tools"),
-	appListeners = require("./scripts/dist/backEnd/appListeners"),
-	exec = require("child_process").exec,
-	malScraper = require("mal-scraper"),
 	os = require("os"),
+	exec = require("child_process").exec,
 	spawn = require("child_process").spawn,
-	semver = require("semver"),
-	ExcelJS = require("exceljs"),
 	basePath = localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
 if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
 	var localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
@@ -83,7 +73,7 @@ app.whenReady().then(() => {
 		}
 	];
 	Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-	contextMenu({
+	require("electron-context-menu")({
 		"showSearchWithGoogle": true,
 		"showSelectAll": true
 	});
@@ -210,14 +200,14 @@ app.whenReady().then(() => {
 															primaryWindow.webContents.on("did-finish-load", () => {
 																primaryWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
 																tools.tutorialLoad(fs, path, log, primaryWindow, basePath);
-																tools.checkForUpdate(os, semver, https, fs, path, basePath, primaryWindow);
+																tools.checkForUpdate(os, https, fs, path, basePath, primaryWindow);
 															});
 														  	// Create the system tray icon and menu. 
 														  	log.info("The application is creating the tray menu.");
 														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 															tools.createTrayMenu("h", primaryWindow, tray, Menu);
 															// Add all of the back-end listeners.
-															appListeners.addListeners(app, BrowserWindow, path, fs, log, os, spawn, semver, ExcelJS, https, exec, shell, ipc, tools, malScraper, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, os, spawn, https, exec, shell, ipc, tools, require("mal-scraper"), primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 														}
 													});
 												}
