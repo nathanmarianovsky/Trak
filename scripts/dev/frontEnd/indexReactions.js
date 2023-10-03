@@ -218,7 +218,7 @@ ipcRenderer.on("importRecordExists", (event, response) => {
     // Clear the previous list of record checkboxes.
     importModalForm.innerHTML = "";
     // Iterate through each duplicate record and add a checkbox for it.
-    response.forEach(elem => {
+    response[0].forEach((elem, pos) => {
         let div = document.createElement("div"),
             label = document.createElement("label"),
             input = document.createElement("input"),
@@ -228,7 +228,7 @@ ipcRenderer.on("importRecordExists", (event, response) => {
         input.setAttribute("id", elem);
         input.classList.add("filled-in", "importModalCheckbox");
         span.classList.add("checkboxText");
-        span.textContent = elem.split("-")[0] + ": " + elem.substring(elem.split("-")[0].length + 1);
+        span.textContent = response[1][pos][0] + ": " + response[1][pos][1];
         label.append(input, span);
         div.append(label);
         importModalForm.append(div);
@@ -237,7 +237,6 @@ ipcRenderer.on("importRecordExists", (event, response) => {
     M.Modal.init(document.getElementById("importModal")).open();
     // Adjust the height of the div containing the checkboxes.
     document.getElementById("importModalFormDiv").style.height = (document.getElementById("importModal").offsetHeight - 220) + "px";
-
 });
 
 

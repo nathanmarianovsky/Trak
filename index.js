@@ -10,11 +10,9 @@ Declare all of the necessary variables.
 	- tools provides a collection of local functions meant to help with writing files.
 	- appListeners provides all of the back-end listeners.
 	- exec provides the means to open files and folders.
-	- zipper is a library object which can create zip files.
 	- malScraper provides the means to attain anime and manga records from myanimelist.
 	- os provides the means to get information on the user operating system.
 	- spawn provides the means to launch an update via an installer.
-	- downloadRelease provides the means to download a github release asset.
 	- semver provides the means to compare semantic versioning.
 	- ExcelJS provides the means to export/import xlsx files.
 	- basePath is the path to the local settings data.
@@ -31,11 +29,9 @@ const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
 	tools = require("./scripts/dist/backEnd/tools"),
 	appListeners = require("./scripts/dist/backEnd/appListeners"),
 	exec = require("child_process").exec,
-	zipper = require("zip-local"),
 	malScraper = require("mal-scraper"),
 	os = require("os"),
 	spawn = require("child_process").spawn,
-	downloadRelease = require("download-github-release"),
 	semver = require("semver"),
 	ExcelJS = require("exceljs"),
 	basePath = localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
@@ -221,7 +217,7 @@ app.whenReady().then(() => {
 														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 															tools.createTrayMenu("h", primaryWindow, tray, Menu);
 															// Add all of the back-end listeners.
-															appListeners.addListeners(app, BrowserWindow, path, fs, log, os, spawn, downloadRelease, semver, ExcelJS, https, exec, shell, ipc, zipper, tools, malScraper, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															appListeners.addListeners(app, BrowserWindow, path, fs, log, os, spawn, semver, ExcelJS, https, exec, shell, ipc, tools, malScraper, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 														}
 													});
 												}

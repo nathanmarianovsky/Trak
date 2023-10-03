@@ -245,7 +245,6 @@ Handles the removal of records by deleting the associated folders and data file.
 exports.removeRecords = (log, primaryWin, userPath, fs, path, data) => {
 	// Once a confirmation has been provided by the user delete the associated record folders. 
 	let j = 0;
-	console.log(data);
 	for(; j < data.length; j++) {
 		fs.rm(path.join(userPath, "Trak", "data", data[j]), { "force": true, "recursive": true }, err => {
 			// If there was an error in deleting the record folder notify the user.
@@ -542,11 +541,9 @@ Driver function for adding all app listeners.
 	- log provides the means to create application logs to keep track of what is going on.
 	- os provides the means to get information on the user operating system.
 	- spawn provides the means to launch an update via an installer.
-	- downloadRelease provides the means to download a github release asset.
 	- semver provides the means to compare semantic versioning.
 	- ExcelJS provides the means to export/import xlsx files.
 	- https provides the means to download files.
-	- zipper is a library object which can create zip files.
 	- tools provides a collection of local functions.
 	- malScraper provides the means to attain anime and manga records from myanimelist.
 	- exec and shell provide the means to open files, folders, and links.
@@ -556,7 +553,7 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRelease, semver, ExcelJS, https, exec, shell, ipc, zipper, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, semver, ExcelJS, https, exec, shell, ipc, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -702,20 +699,20 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRe
 	// Handles the export of the chosen library records into a single zip file, possibly compressed, or a xlsx file containing the details along with a zip, possibly compressed, for the assets.
 	ipc.on("databaseExport", (event, submission) => {
 		if(submission[2] == "XLSX") {
-			tools.exportDataXLSX(fs, path, log, zipper, ExcelJS, event, originalPath, submission[0], submission[1], submission[3], submission[4]);
+			tools.exportDataXLSX(fs, path, log, require("zip-local"), ExcelJS, event, originalPath, submission[0], submission[1], submission[3], submission[4]);
 		}
 		else if(submission[2] == "ZIP") {
-			tools.exportDataZIP(fs, path, log, zipper, event, originalPath, submission[0], submission[1], submission[4]);
+			tools.exportDataZIP(fs, path, log, require("zip-local"), event, originalPath, submission[0], submission[1], submission[4]);
 		}
 	});
 
 	// Handles the import of chosen zip xlsx files containing records into the library. Duplicate records are checked for.
 	ipc.on("databaseImport", (event, submission) => {
 		if(submission[1] == "XLSX") {
-			tools.importDriverXLSX(fs, path, log, ipc, zipper, ExcelJS, mainWindow, originalPath, event, submission[0], submission[2]);
+			tools.importDriverXLSX(fs, path, log, ipc, require("zip-local"), ExcelJS, mainWindow, originalPath, event, submission[0], submission[2]);
 		}
 		else if(submission[1] == "ZIP") {
-			tools.importDriverZIP(fs, path, log, ipc, zipper, mainWindow, originalPath, event, submission[0]);
+			tools.importDriverZIP(fs, path, log, ipc, require("zip-local"), mainWindow, originalPath, event, submission[0]);
 		}
 	});
 
@@ -733,7 +730,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRe
 			fs.emptyDirSync(outputdir);
 		}
 		// Fetch the required asset from github.
-		downloadRelease("nathanmarianovsky", "Trak", outputdir, release => release.prerelease === false, asset => asset.name == appUpdateData[1], false).then(() => {
+		require("download-github-release")("nathanmarianovsky", "Trak", outputdir, release => release.prerelease === false, asset => asset.name == appUpdateData[1], false).then(() => {
 		    // Notify the user that the app will close to proceed with the update.
 		    log.info("The newest release of the application has finished downloading.");
 		    event.sender.send("updateDownloadComplete");
@@ -744,7 +741,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRe
 					"cwd": outputdir,
 					"env": process.env
 				});
-				log.info("The application is quitting and launching the updated release installer.");
+				log.info("The application is launching the updated release installer.");
 				app.quit();
 		    }, 5000);
 		});

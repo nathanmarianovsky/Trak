@@ -357,8 +357,8 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 				}
 			}
 			// Write the xlsx file in the desired export location.
-			workbook.xlsx.writeFile(path.join(exportLocation, xlsxExportFolder, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate + ".xlsx")).then(() => {
-				log.info("The XLSX export file has been written. To be located at " + path.join(exportLocation, xlsxExportFolder, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate + ".xlsx"));
+			workbook.xlsx.writeFile(path.join(xlsxExportFolder, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate + ".xlsx")).then(() => {
+				log.info("The XLSX export file has been written. To be located at " + path.join(xlsxExportFolder, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate + ".xlsx"));
 				// Copy over all library records which will be included in the export.
 				let listPromise = new Promise((resolve, reject) => {
 				    records.forEach((elem, index, arr) => {
@@ -386,7 +386,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 							}
 							zipStr += fileDate + ".zip";
 							// Save the assets zip file, empty the exportTemp folder, and notify the user that the export process has finished.
-							zipped.save(path.join(exportLocation, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate, zipStr), zipErr => {
+							zipped.save(path.join(xlsxExportFolder, zipStr), zipErr => {
 								if(zipErr) {
 									log.error("There was an error in creating the zip file for the library records assets export.");
 									eve.sender.send("exportXLSXFileFailure");
@@ -550,7 +550,7 @@ exports.importCompare = (fs, path, log, ipc, appWin, winEvent, promiseResolver, 
 	// If there are no records being imported which do exist in the current library records then empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
 	if(listFilterDoExist.length == 0) {
 		log.info("Emptying the importTemp folder.");
-		fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
+		// fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
 		appWin.reload();
 		setTimeout(() => {
 			promiseResolver();
@@ -560,14 +560,17 @@ exports.importCompare = (fs, path, log, ipc, appWin, winEvent, promiseResolver, 
 	}
 	else {
 		// If there are records being imported which do exist in the current library records notify the user.
-		winEvent.sender.send("importRecordExists", listFilterDoExist);
+		winEvent.sender.send("importRecordExists", [listFilterDoExist, listFilterDoExist.map(elem => {
+			let associatedData = JSON.parse(fs.readFileSync(path.join(dataDir, elem, "data.json")));
+			return [associatedData.category, associatedData.name];
+		})]);
 		// Once the user chooses which records to overwrite proceed by copying them from the importTemp folder.
 		ipc.once("importOveride", (event, overwriteList) => {
-			log.info("The " + mode + " import process is copying over import records which currently exist in the library records.")
+			log.info("The " + mode + " import process is copying over import records which currently exist in the library records.");
 			let savePromise = new Promise((resolve, reject) => {
-			    overwriteList.forEach((elem, index, arr) => {
-					if(elem.overwrite == true) {
-						fs.moveSync(path.join(configDir, "Trak", "importTemp", elem.record), path.join(dataDir, elem.record));
+			    overwriteList[0].forEach((elem, index, arr) => {
+					if(overwriteList[1][index] == true) {
+						fs.moveSync(path.join(configDir, "Trak", "importTemp", elem), path.join(dataDir, elem), {"overwrite": true});
 					}
 					if(index == arr.length - 1) { resolve(); }
 				});
@@ -575,7 +578,7 @@ exports.importCompare = (fs, path, log, ipc, appWin, winEvent, promiseResolver, 
 			// Once the desired records have been overwritten empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
 			savePromise.then(() => {
 				log.info("Emptying the importTemp folder.");
-				fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
+				// fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
 				appWin.reload();
 				setTimeout(() => {
 					promiseResolver();
@@ -601,7 +604,7 @@ Reads a xlsx file and adds its content to the library records.
 	- win is an object referencing the primary window of the Electron app.
 	- eve is the object which allows for interaction with the fron-end of the Electron application.
 	- dir is a string representing the base directory corresponding to the location of the configuration file.
-	- xlsxFile is the zip file to be imported.
+	- xlsxFile is the xlsx file to be imported.
 	- full is a boolean representing whether the xlsx file should contain only basic details or everything.
 
 */ 
@@ -621,7 +624,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 		// Otherwise empty the directory just in case.
 		else {
 			log.info("Emptying the importTemp folder.");
-			fs.emptyDirSync(importTempFolder);
+			// fs.emptyDirSync(importTempFolder);
 		}
 		// Read the settings configuration file.
 		fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
@@ -636,9 +639,11 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 				const fileData = JSON.parse(fileContent).current != undefined ? JSON.parse(fileContent).current.path : JSON.parse(fileContent).original.path,
 					workbook = new ExcelJS.Workbook();
 				// Unzip the assets zip file if it exists and copy the content over to the temporary import folder.
-				if(fs.existsSync(xlsxFile.replace(".xlsx", ".zip"))) {
+				let zipXLSXFile = path.basename(xlsxFile).split("-");
+				zipXLSXFile.splice(1, 1);
+				if(fs.existsSync(path.join(path.dirname(xlsxFile), zipXLSXFile.join("-").replace(".xlsx", ".zip")))) {
 					log.info("The assets in the zip file associated to the XLSX import have been unzipped into the importTemp folder.");
-					zipper.sync.unzip(xlsxFile.replace(".xlsx", ".zip")).save(path.join(dir, "Trak", "importTemp"));
+					zipper.sync.unzip(path.join(path.dirname(xlsxFile), zipXLSXFile.join("-").replace(".xlsx", ".zip"))).save(importTempFolder);
 				}
 				// Read the xlsx file the user wants to import.
 				workbook.xlsx.readFile(xlsxFile).then(wb => {
@@ -878,7 +883,7 @@ exports.importDataZIP = async (fs, path, log, ipc, zipper, win, eve, dir, zipFil
 								eve.sender.send("importZipFileFailure", zipFile);
 							}
 							// Once all records have been imported into the temporary folder check them against the current ones to see which ones will be kept.
-							else { exports.importCompare(fs, path, log, ipc, win, eve, res, dir, fileData, zipFile); }
+							else { exports.importCompare(fs, path, log, ipc, win, eve, res, dir, fileData, zipFile, "ZIP"); }
 						});
 					}
 				});

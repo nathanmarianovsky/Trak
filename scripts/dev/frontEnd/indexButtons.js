@@ -307,7 +307,12 @@ window.addEventListener("load", () => {
     databaseExport.click();
     // Listen for a click event on the import overide button in order to proceed with overwriting the requested library records in the import process.
     importOverideBtn.addEventListener("click", e => {
-        ipcRenderer.send("importOveride", Array.from(document.querySelectorAll("#importModal .importModalCheckbox")).map(elem => { return { "record": elem.id, "overwrite": elem.checked }}));
+        const overwriteArr = [[], []];
+        Array.from(document.querySelectorAll("#importModal .importModalCheckbox")).map(elem => {
+            overwriteArr[0].push(elem.id);
+            overwriteArr[1].push(elem.checked);
+        })
+        ipcRenderer.send("importOveride", overwriteArr);
     });
     // Listen for a change in the import data type to change the content accordingly.
     const originalSwitchBackground = "#00000061",
