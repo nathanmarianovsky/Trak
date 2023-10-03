@@ -129,6 +129,7 @@ exports.calculateGlobalRating = contentArr => {
 Create a xlsx file containing the exported library records along with a zip of the associated assets.
 
 	- fs and path provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
 	- zipper is a library object which can create zip files.
 	- ExcelJS provides the means to export/import xlsx files.
 	- eve is the object which allows for interaction with the fron-end of the Electron application.
@@ -139,26 +140,41 @@ Create a xlsx file containing the exported library records along with a zip of t
 	- compressionVal is a boolean representing whether the zip file should be compressed.
 
 */ 
-exports.exportDataXLSX = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, records, detailed = false, compressionVal = false) => {
+exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocation, records, detailed = false, compressionVal = false) => {
+	log.info("The XLSX export process has started.");
 	// If the exportTemp folder does not exist, then create it.
-	if(!fs.existsSync(path.join(dir, "Trak", "exportTemp"))) {
-		fs.mkdirSync(path.join(dir, "Trak", "exportTemp"));
-	}
-	// If the export folder does not exist, then create it.
-	const fileDateArr = (new Date().toJSON().slice(0, 10)).split("-"),
-		fileDate = fileDateArr[1] + "." + fileDateArr[2] + "." + fileDateArr[0];
-	if(!fs.existsSync(path.join(exportLocation, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate))) {
-		fs.mkdirSync(path.join(exportLocation, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate));
+	const exportTempFolder = path.join(dir, "Trak", "exportTemp");
+	if(!fs.existsSync(exportTempFolder)) {
+		log.info("Creating the exportTemp folder. To be located at " + exportTempFolder);
+		fs.mkdirSync(exportTempFolder);
 	}
 	// Otherwise empty it.
 	else {
-		fs.emptyDirSync(path.join(exportLocation, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate));
+		log.info("Emptying the exportTemp folder.");
+		fs.emptyDirSync(exportTempFolder);
+	}
+	// If the export folder does not exist, then create it.
+	const fileDateArr = (new Date().toJSON().slice(0, 10)).split("-"),
+		fileDate = fileDateArr[1] + "." + fileDateArr[2] + "." + fileDateArr[0],
+		xlsxExportFolder = path.join(exportLocation, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate);
+	if(!fs.existsSync(xlsxExportFolder)) {
+		log.info("Creating the xlsx export folder. To be located at " + xlsxExportFolder)
+		fs.mkdirSync(xlsxExportFolder);
+	}
+	// Otherwise empty it.
+	else {
+		log.info("Emptying the xlsx export folder.");
+		fs.emptyDirSync(xlsxExportFolder);
 	}
 	// Read the settings configuration file.
 	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
 		// If there was an issue reading the settings configuration file notify the user.
-		if(err) { eve.sender.send("configurationFileOpeningFailure");  }
+		if(err) {
+			log.error("There was an error in reading the settings configuration file.");
+			eve.sender.send("configurationFileOpeningFailure");
+		}
 		else {
+			log.info("The settings configuration file has been successfully read.");
 			// Define the configuration file data, associated library records path, and create a xlsx workbook.
 			const fileData = JSON.parse(fileContent),
 				dataPath = fileData.current != undefined ? fileData.current.path : fileData.original.path,
@@ -341,7 +357,8 @@ exports.exportDataXLSX = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, r
 				}
 			}
 			// Write the xlsx file in the desired export location.
-			workbook.xlsx.writeFile(path.join(exportLocation, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate + ".xlsx")).then(() => {
+			workbook.xlsx.writeFile(path.join(exportLocation, xlsxExportFolder, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate + ".xlsx")).then(() => {
+				log.info("The XLSX export file has been written. To be located at " + path.join(exportLocation, xlsxExportFolder, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate + ".xlsx"));
 				// Copy over all library records which will be included in the export.
 				let listPromise = new Promise((resolve, reject) => {
 				    records.forEach((elem, index, arr) => {
@@ -351,10 +368,15 @@ exports.exportDataXLSX = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, r
 				});
 				// Once all necessary records have copied over, zip the assets.
 				listPromise.then(() => {
+					log.info("All assets have been copied to the exportTemp folder.");
 					zipper.zip(path.join(dir, "Trak", "exportTemp"), (prob, zipped) => {
 						// If there was an issue creating the zip file notify the user.
-						if(prob) { eve.sender.send("exportXLSXZippingFailure"); }
+						if(prob) {
+							log.error("There was an error in zipping up the library assets.");
+							eve.sender.send("exportXLSXZippingFailure");
+						}
 						else {
+							log.info("The library assets have been successfully zipped up.");
 							// Define the zip file name.
 							let zipStr = "Trak-XLSX-Export-";
 							// Compress the assets zip file if requested.
@@ -365,10 +387,16 @@ exports.exportDataXLSX = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, r
 							zipStr += fileDate + ".zip";
 							// Save the assets zip file, empty the exportTemp folder, and notify the user that the export process has finished.
 							zipped.save(path.join(exportLocation, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate, zipStr), zipErr => {
-								if(zipErr) { eve.sender.send("exportXLSXFileFailure"); }
+								if(zipErr) {
+									log.error("There was an error in creating the zip file for the library records assets export.");
+									eve.sender.send("exportXLSXFileFailure");
+								}
 								else {
-									fs.emptyDirSync(path.join(dir, "Trak", "exportTemp"));
+									log.info("Emptying the exportTemp folder.");
+									fs.emptyDirSync(exportTempFolder);
+									log.info("The library records have been exported to " + exportLocation + ".");
 									eve.sender.send("exportSuccess", exportLocation);
+									log.info("The XLSX export process has ended.");
 								}
 							});
 						}
@@ -386,6 +414,7 @@ exports.exportDataXLSX = (fs, path, zipper, ExcelJS, eve, dir, exportLocation, r
 Create a zip file containing the exported library records.
 
 	- fs and path provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
 	- zipper is a library object which can create zip files.
 	- eve is the object which allows for interaction with the fron-end of the Electron application.
 	- dir is a string representing the base directory corresponding to the location of the configuration file.
@@ -394,18 +423,30 @@ Create a zip file containing the exported library records.
 	- compressionVal is a boolean representing whether the zip file should be compressed.
 
 */ 
-exports.exportDataZIP = (fs, path, zipper, eve, dir, exportLocation, records, compressionVal = false) => {
+exports.exportDataZIP = (fs, path, log, zipper, eve, dir, exportLocation, records, compressionVal = false) => {
+	log.info("The ZIP export process has started.");
 	// If the exportTemp folder does not exist, then create it.
-	if(!fs.existsSync(path.join(dir, "Trak", "exportTemp"))) {
-		fs.mkdirSync(path.join(dir, "Trak", "exportTemp"));
+	const exportTempFolder = path.join(dir, "Trak", "exportTemp");
+	if(!fs.existsSync(exportTempFolder)) {
+		log.info("Creating the exportTemp folder. To be located at " + exportTempFolder);
+		fs.mkdirSync(exportTempFolder);
+	}
+	// Otherwise empty it.
+	else {
+		log.info("Emptying the exportTemp folder.");
+		fs.emptyDirSync(exportTempFolder);
 	}
 	const fileDateArr = (new Date().toJSON().slice(0, 10)).split("-"),
 		fileDate = fileDateArr[1] + "." + fileDateArr[2] + "." + fileDateArr[0];
 	// Read the settings configuration file.
 	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
 		// If there was an issue reading the settings configuration file notify the user.
-		if(err) { eve.sender.send("configurationFileOpeningFailure");  }
+		if(err) {
+			log.error("There was an error in reading the settings configuration file.");
+			eve.sender.send("configurationFileOpeningFailure");
+		}
 		else {
+			log.info("The settings configuration file has been successfully read.");
 			// Define the configuration file data and associated library records path.
 			const fileData = JSON.parse(fileContent),
 				dataPath = fileData.current != undefined ? fileData.current.path : fileData.original.path;
@@ -418,10 +459,15 @@ exports.exportDataZIP = (fs, path, zipper, eve, dir, exportLocation, records, co
 			});
 			// Once all necessary records have copied over, zip the records and compress if necessary.
 			listPromise.then(() => {
-				zipper.zip(path.join(dir, "Trak", "exportTemp"), (prob, zipped) => {
+				log.info("All library records which the user desires to export have been copied to the exportTemp folder.");
+				zipper.zip(exportTempFolder, (prob, zipped) => {
 					// If there was an issue creating the zip file notify the user.
-					if(prob) { eve.sender.send("exportZIPZippingFailure"); }
+					if(prob) {
+						log.error("There was an error in zipping up the library assets.");
+						eve.sender.send("exportZIPZippingFailure");
+					}
 					else {
+						log.info("The library assets have been successfully zipped up.");
 						// Define the zip file name.
 						let zipStr = "Trak-ZIP-Export-";
 						// Compress the zip file if requested.
@@ -434,8 +480,14 @@ exports.exportDataZIP = (fs, path, zipper, eve, dir, exportLocation, records, co
 						let deletePromise = new Promise((resolve, reject) => {
 							if(fs.existsSync(path.join(exportLocation, zipStr))) {
 								fs.unlink(path.join(exportLocation, zipStr), delErr => {
-									if(delErr) { eve.sender.send("exportZIPFileDeleteFailure"); }
-									else { resolve(); }
+									if(delErr) {
+										log.error("There was an error in deleting the zip file associated to a previous export today.");
+										eve.sender.send("exportZIPFileDeleteFailure");
+									}
+									else {
+										log.info("The zip file associated to a previous export today has been successfully deleted.");
+										resolve();
+									}
 								});
 							}
 							else { resolve(); }
@@ -443,10 +495,16 @@ exports.exportDataZIP = (fs, path, zipper, eve, dir, exportLocation, records, co
 						// Save the zip file, empty the exportTemp folder, and notify the user that the export process has finished.
 						deletePromise.then(() => {
 							zipped.save(path.join(exportLocation, zipStr), zipErr => {
-								if(zipErr) { eve.sender.send("exportZIPFileFailure"); }
+								if(zipErr) {
+									log.error("There was an error in creating the zip file for the library records assets export.");
+									eve.sender.send("exportZIPFileFailure");
+								}
 								else {
-									fs.emptyDirSync(path.join(dir, "Trak", "exportTemp"));
+									log.info("Emptying the exportTemp folder.");
+									fs.emptyDirSync(exportTempFolder);
+									log.info("The library records have been exported to " + exportLocation + ".");
 									eve.sender.send("exportSuccess", exportLocation);
+									log.info("The ZIP export process has ended.");
 								}
 							});
 						});
@@ -476,28 +534,36 @@ Finishes the application import process by checking whether the new records alre
 	- configFir is a string representing the base directory corresponding to the location of the configuration file.
 	- dataDir is the directory where the user library records are stored.
 	- impFile is the zip file to be imported.
+	- mode is a string corresponding to which import process is being utilized.
 
 */ 
-exports.importCompare = (fs, path, ipc, appWin, winEvent, promiseResolver, configDir, dataDir, impFile) => {
+exports.importCompare = (fs, path, log, ipc, appWin, winEvent, promiseResolver, configDir, dataDir, impFile, mode) => {
 	// Compare the list of records in the zip file and compare them to the current library records to see which reference the same record.
 	let list = fs.readdirSync(path.join(configDir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(configDir, "Trak", "importTemp"), file)).isDirectory()),
 		listFilterDoExist = list.filter(elem => fs.existsSync(path.join(dataDir, elem))),
 		listFilterDoNotExist = list.filter(elem => !fs.existsSync(path.join(dataDir, elem)));
 	// If there are records being imported which do not exist in the current library records simply copy them over.
 	if(listFilterDoNotExist.length > 0) {
+		log.info("The " + mode + " import process is copying over import records which do not currently exist in the library records.");
 		listFilterDoNotExist.forEach(elem => { fs.moveSync(path.join(configDir, "Trak", "importTemp", elem), path.join(dataDir, elem)); });
 	}
 	// If there are no records being imported which do exist in the current library records then empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
 	if(listFilterDoExist.length == 0) {
+		log.info("Emptying the importTemp folder.");
 		fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
 		appWin.reload();
-		setTimeout(() => { promiseResolver(); appWin.webContents.send("importFileSuccess", impFile); }, 1000);
+		setTimeout(() => {
+			promiseResolver();
+			appWin.webContents.send("importFileSuccess", impFile);
+			log.info("The " + mode + " import process has ended.");
+		}, 1000);
 	}
 	else {
 		// If there are records being imported which do exist in the current library records notify the user.
 		winEvent.sender.send("importRecordExists", listFilterDoExist);
 		// Once the user chooses which records to overwrite proceed by copying them from the importTemp folder.
 		ipc.once("importOveride", (event, overwriteList) => {
+			log.info("The " + mode + " import process is copying over import records which currently exist in the library records.")
 			let savePromise = new Promise((resolve, reject) => {
 			    overwriteList.forEach((elem, index, arr) => {
 					if(elem.overwrite == true) {
@@ -508,9 +574,14 @@ exports.importCompare = (fs, path, ipc, appWin, winEvent, promiseResolver, confi
 			});
 			// Once the desired records have been overwritten empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
 			savePromise.then(() => {
+				log.info("Emptying the importTemp folder.");
 				fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
 				appWin.reload();
-				setTimeout(() => { promiseResolver(); appWin.webContents.send("importFileSuccess", impFile); }, 1000);
+				setTimeout(() => {
+					promiseResolver();
+					appWin.webContents.send("importFileSuccess", impFile);
+					log.info("The " + mode + " import process has ended.");
+				}, 1000);
 			});
 		});
 	}
@@ -523,6 +594,7 @@ exports.importCompare = (fs, path, ipc, appWin, winEvent, promiseResolver, confi
 Reads a xlsx file and adds its content to the library records.
 
 	- fs and path provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
 	- ipc provides the means to operate the Electron app.
 	- zipper is a library object which can create zip files.
 	- ExcelJS provides the means to export/import xlsx files.
@@ -533,39 +605,50 @@ Reads a xlsx file and adds its content to the library records.
 	- full is a boolean representing whether the xlsx file should contain only basic details or everything.
 
 */ 
-exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, xlsxFile, full) => {
+exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, dir, xlsxFile, full) => {
+	log.info("The XLSX import process has started.");
 	// Define the file extensions which will correspond to an image.
 	const imgExtArr = [".jpg", ".jpeg", ".png"];
 	// Define an array to act as a holder in reformatting dates.
 	let relDateArr = [];
 	return new Promise((res, rej) => {
 		// If the exportTemp folder does not exist, then create it.
-		if(!fs.existsSync(path.join(dir, "Trak", "importTemp"))) {
-			fs.mkdirSync(path.join(dir, "Trak", "importTemp"));
+		const importTempFolder = path.join(dir, "Trak", "importTemp");
+		if(!fs.existsSync(importTempFolder)) {
+			log.info("Creating the importTemp folder. To be located at " + importTempFolder);
+			fs.mkdirSync(importTempFolder);
 		}
 		// Otherwise empty the directory just in case.
 		else {
-			fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
+			log.info("Emptying the importTemp folder.");
+			fs.emptyDirSync(importTempFolder);
 		}
 		// Read the settings configuration file.
 		fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
 			// If there was an issue reading the settings configuration file notify the user.
-			if(err) { eve.sender.send("configurationFileOpeningFailure");  }
+			if(err) {
+				log.error("There was an error in reading the settings configuration file.");
+				eve.sender.send("configurationFileOpeningFailure");
+			}
 			else {
+				log.info("The settings configuration file has been successfully read.");
 				// Define the configuration file data, associated library records path, and a workbook which will be written to in order to produce a xlsx file.
 				const fileData = JSON.parse(fileContent).current != undefined ? JSON.parse(fileContent).current.path : JSON.parse(fileContent).original.path,
 					workbook = new ExcelJS.Workbook();
 				// Unzip the assets zip file if it exists and copy the content over to the temporary import folder.
 				if(fs.existsSync(xlsxFile.replace(".xlsx", ".zip"))) {
+					log.info("The assets in the zip file associated to the XLSX import have been unzipped into the importTemp folder.");
 					zipper.sync.unzip(xlsxFile.replace(".xlsx", ".zip")).save(path.join(dir, "Trak", "importTemp"));
 				}
 				// Read the xlsx file the user wants to import.
 				workbook.xlsx.readFile(xlsxFile).then(wb => {
+					log.info("The XLSX file " + xlsxFile + " has been successfully read.");
 					const workbookPromise = new Promise((resolve, reject) => {
 						// Iterate through all workbook worksheets.
 						wb.worksheets.forEach(elem => {
 							// Handle the import of simple anime records.
 							if(elem.name == "Category-Anime") {
+								log.info("Importing the anime records.");
 								// Get the list of anime genres.
 								let genreLst = exports.animeGenreList();
 								// Iterate through all the rows of the anime worksheet.
@@ -683,8 +766,10 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 									}
 									let fldrName = animeObj.name.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
 									// Check the assets that were imported from the associated zip file and add the images to the anime record object.
-									if(fs.existsSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "assets"))) {
-										fs.readdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "assets")).forEach(asset => {
+									let assetsFolder = path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "assets");
+									if(fs.existsSync(assetsFolder)) {
+										log.info("Copying over the record assets.")
+										fs.readdirSync(assetsFolder).forEach(asset => {
 											if(imgExtArr.includes(path.extname(asset))) {
 												animeObj.img.push(path.join(fileData, "Anime-" + fldrName, "assets", asset));
 											}
@@ -692,9 +777,11 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 									}
 									// Otherwise if no assets were found then create the assets folder.
 									else {
+										log.info("Creating the record assets folder associated to the " + animeObj.category.toLowerCase() + " " + animeObj.name);
 										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "assets"), { "recursive": true });
 									}
 									// Write data.json file associated to the anime record.
+									log.info("Writing the data file associated to the " + animeObj.category.toLowerCase() + " " + animeObj.name);
 									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "data.json"), JSON.stringify(animeObj), "UTF8");
 									if(q == elem.rowCount) { resolve(); }
 								}
@@ -702,7 +789,7 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 						});
 					});
 					// Once all records have been imported into the temporary folder check them against the current ones to see which ones will be kept.
-					workbookPromise.then(() => { exports.importCompare(fs, path, ipc, win, eve, res, dir, fileData, xlsxFile); });
+					workbookPromise.then(() => { exports.importCompare(fs, path, log, ipc, win, eve, res, dir, fileData, xlsxFile, "XLSX"); });
 				});
 			}
 		});
@@ -716,6 +803,7 @@ exports.importDataXLSX = async (fs, path, ipc, zipper, ExcelJS, win, eve, dir, x
 Iterates through the list of xlsx files to be imported by waiting for each one to finish prior to proceeding to the next one.
 
 	- fs and path provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
 	- ipc provides the means to operate the Electron app.
 	- zipper is a library object which can create zip files.
 	- ExcelJS provides the means to export/import xlsx files.
@@ -726,9 +814,9 @@ Iterates through the list of xlsx files to be imported by waiting for each one t
 	- detailed is a boolean representing whether the xlsx file should contain only basic details or everything.
 
 */ 
-exports.importDriverXLSX = async (fs, path, ipc, zipper, ExcelJS, mainWin, ogPath, evnt, lst, detailed = false) => {
+exports.importDriverXLSX = async (fs, path, log, ipc, zipper, ExcelJS, mainWin, ogPath, evnt, lst, detailed = false) => {
   	for(let i = 0; i < lst.length; i++) {
-    	await exports.importDataXLSX(fs, path, ipc, zipper, ExcelJS, mainWin, evnt, ogPath, lst[i], detailed);
+    	await exports.importDataXLSX(fs, path, log, ipc, zipper, ExcelJS, mainWin, evnt, ogPath, lst[i], detailed);
   	}
 };
 
@@ -739,6 +827,7 @@ exports.importDriverXLSX = async (fs, path, ipc, zipper, ExcelJS, mainWin, ogPat
 Reads a zip file and adds its content to the library records.
 
 	- fs and path provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
 	- ipc provides the means to operate the Electron app.
 	- zipper is a library object which can create zip files.
 	- win is an object referencing the primary window of the Electron app.
@@ -747,34 +836,49 @@ Reads a zip file and adds its content to the library records.
 	- zipFile is the zip file to be imported.
 
 */ 
-exports.importDataZIP = async (fs, path, ipc, zipper, win, eve, dir, zipFile) => {
+exports.importDataZIP = async (fs, path, log, ipc, zipper, win, eve, dir, zipFile) => {
+	log.info("The ZIP import process has started.");
 	return new Promise((res, rej) => {
-		// If the exportTemp folder does not exist, then create it.
-		if(!fs.existsSync(path.join(dir, "Trak", "importTemp"))) {
-			fs.mkdirSync(path.join(dir, "Trak", "importTemp"));
+		// If the importTemp folder does not exist, then create it.
+		const importTempFolder = path.join(dir, "Trak", "importTemp");
+		if(!fs.existsSync(importTempFolder)) {
+			log.info("Creating the importTemp folder. To be located at " + importTempFolder);
+			fs.mkdirSync(importTempFolder);
 		}
-		// Otherwise empty the directory just in case.
+		// Otherwise empty it.
 		else {
-			fs.emptyDirSync(path.join(dir, "Trak", "importTemp"));
+			log.info("Emptying the importTemp folder.");
+			fs.emptyDirSync(importTempFolder);
 		}
 		// Read the settings configuration file.
 		fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
 			// If there was an issue reading the settings configuration file notify the user.
-			if(err) { eve.sender.send("configurationFileOpeningFailure");  }
+			if(err) {
+				log.error("There was an error in reading the settings configuration file.");
+				eve.sender.send("configurationFileOpeningFailure");
+			}
 			else {
+				log.info("The settings configuration file has been successfully read.");
 				// Define the configuration file data and associated library records path.
 				const fileData = JSON.parse(fileContent).current != undefined ? JSON.parse(fileContent).current.path : JSON.parse(fileContent).original.path;
 				// Unzip the zip file.
 				zipper.unzip(zipFile, (er, unzipped) => {
 					// If there was an issue unzipping the zip file notify the user.
-					if(er) { eve.sender.send("importUnzippingFailure", zipFile); }
+					if(er) {
+						log.error("There was an error in unzipping the import file " + zipFile + ".")
+						eve.sender.send("importUnzippingFailure", zipFile);
+					}
 					else {
+						log.info("The import file " + zipFile + " has been successfully unzipped.");
 						// Save the contents of the zip file to the importTemp folder.
 						unzipped.save(path.join(dir, "Trak", "importTemp"), issue => {
 							// If there was an issue saving the contents of the zip file notify the user.
-							if(issue) { eve.sender.send("importZipFileFailure", zipFile); }
+							if(issue) {
+								log.error("There was an error in saving the contents of the import file " + zipFile + ".")
+								eve.sender.send("importZipFileFailure", zipFile);
+							}
 							// Once all records have been imported into the temporary folder check them against the current ones to see which ones will be kept.
-							else { exports.importCompare(fs, path, ipc, win, eve, res, dir, fileData, zipFile); }
+							else { exports.importCompare(fs, path, log, ipc, win, eve, res, dir, fileData, zipFile); }
 						});
 					}
 				});
@@ -790,6 +894,7 @@ exports.importDataZIP = async (fs, path, ipc, zipper, win, eve, dir, zipFile) =>
 Iterates through the list of zip files to be imported by waiting for each one to finish prior to proceeding to the next one.
 
 	- fs and path provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
 	- ipc provides the means to operate the Electron app.
 	- zipper is a library object which can create zip files.
 	- mainWin is an object referencing the primary window of the Electron app.
@@ -798,9 +903,9 @@ Iterates through the list of zip files to be imported by waiting for each one to
 	- lst is the list of zip files to be imported.
 
 */ 
-exports.importDriverZIP = async (fs, path, ipc, zipper, mainWin, ogPath, evnt, lst) => {
+exports.importDriverZIP = async (fs, path, log, ipc, zipper, mainWin, ogPath, evnt, lst) => {
   	for(let i = 0; i < lst.length; i++) {
-    	await exports.importDataZIP(fs, path, ipc, zipper, mainWin, evnt, ogPath, lst[i]);
+    	await exports.importDataZIP(fs, path, log, ipc, zipper, mainWin, evnt, ogPath, lst[i]);
   	}
 };
 
@@ -841,12 +946,14 @@ Executes the creation of the primary window with all necessary parameters.
 	- extension refers to the html file name.
 	- dir is the directory containing the display pages.
 	- BrowserWindow provides the means to create a new app window.
+	- path provides the means to work with file paths.
+	- log provides the means to create application logs to keep track of what is going on.
 	- width and height are the physical parameters for describing the created window size.
 	- fullscreen is a boolean representing whether the window should be maximized on launch.
 	- resizable is a boolean representing whether a window should be allowed to rescale.
 
 */
-exports.createWindow = (extension, dir, BrowserWindow, path, width = 1000, height = 800, fullscreen = false, resizable = true) => {
+exports.createWindow = (extension, dir, BrowserWindow, path, log, width = 1000, height = 800, fullscreen = false, resizable = true) => {
   	let win = new BrowserWindow({
 		"width": width,
     	"height": height,
@@ -861,6 +968,7 @@ exports.createWindow = (extension, dir, BrowserWindow, path, width = 1000, heigh
 	});
 	win.loadFile(path.join(dir, "Trak", "localPages", extension + ".html"));
 	if(fullscreen == true) { win.maximize(); }
+	log.info("The " + extension + ".html page is now loading.");
   	return win;
 };
 

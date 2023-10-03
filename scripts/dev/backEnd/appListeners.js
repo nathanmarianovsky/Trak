@@ -560,9 +560,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRe
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
-   		let win = tools.createWindow("index", originalPath, BrowserWindow, path, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
+   		let win = tools.createWindow("index", originalPath, BrowserWindow, path, log, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
    		win.webContents.on("did-finish-load", () => {
-   			log.info("The index.html page is now loading.");
   				win.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
   				tools.tutorialLoad(fs, path, log, primaryWindow, originalPath);
   				tools.checkForUpdate(os, semver, https, fs, path, originalPath, win);
@@ -585,7 +584,6 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRe
   	ipc.on("home", event => {
   		mainWindow.loadFile(path.join(originalPath, "Trak", "localPages", "index.html"));
   		mainWindow.webContents.on("did-finish-load", () => {
-  			log.info("The index.html page is now loading.");
   			mainWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
   			tools.tutorialLoad(fs, path, log, primaryWindow, originalPath);
   			tools.checkForUpdate(os, semver, https, fs, path, originalPath, mainWindow);
@@ -654,7 +652,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRe
 
   	// Handles the load of the addRecord.html page for the creation of a record.
   	ipc.on("addLoad", (event, scenario) => {
-  		let addWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  		let addWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		addWindow.webContents.on("did-finish-load", () => {
   			if(scenario == true) {
   				log.info("Loading the application tutorial for the addRecord.html page.");
@@ -672,7 +670,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRe
 
   	// Handles the load of the addRecord.html page for the update of a record.
   	ipc.on("updateRecord", (event, fldrName) => {
-  		let recordUpdateWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  		let recordUpdateWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		recordUpdateWindow.webContents.on("did-finish-load", () => {
   			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
   			ipc.once("performSave", (event, submission) => {
@@ -704,20 +702,20 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRe
 	// Handles the export of the chosen library records into a single zip file, possibly compressed, or a xlsx file containing the details along with a zip, possibly compressed, for the assets.
 	ipc.on("databaseExport", (event, submission) => {
 		if(submission[2] == "XLSX") {
-			tools.exportDataXLSX(fs, path, zipper, ExcelJS, event, originalPath, submission[0], submission[1], submission[3], submission[4]);
+			tools.exportDataXLSX(fs, path, log, zipper, ExcelJS, event, originalPath, submission[0], submission[1], submission[3], submission[4]);
 		}
 		else if(submission[2] == "ZIP") {
-			tools.exportDataZIP(fs, path, zipper, event, originalPath, submission[0], submission[1], submission[4]);
+			tools.exportDataZIP(fs, path, log, zipper, event, originalPath, submission[0], submission[1], submission[4]);
 		}
 	});
 
 	// Handles the import of chosen zip xlsx files containing records into the library. Duplicate records are checked for.
 	ipc.on("databaseImport", (event, submission) => {
 		if(submission[1] == "XLSX") {
-			tools.importDriverXLSX(fs, path, ipc, zipper, ExcelJS, mainWindow, originalPath, event, submission[0], submission[2]);
+			tools.importDriverXLSX(fs, path, log, ipc, zipper, ExcelJS, mainWindow, originalPath, event, submission[0], submission[2]);
 		}
 		else if(submission[1] == "ZIP") {
-			tools.importDriverZIP(fs, path, ipc, zipper, mainWindow, originalPath, event, submission[0]);
+			tools.importDriverZIP(fs, path, log, ipc, zipper, mainWindow, originalPath, event, submission[0]);
 		}
 	});
 

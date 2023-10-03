@@ -210,9 +210,8 @@ app.whenReady().then(() => {
 														else {
 															log.info("The styles.css file has been successfully rewritten to the localStyles folder.");
 															// Create the primary window.
-														  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, path, primWinWidth, primWinHeight, primWinFullscreen);
+														  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, path, log, primWinWidth, primWinHeight, primWinFullscreen);
 															primaryWindow.webContents.on("did-finish-load", () => {
-																log.info("The index.html page is now loading.");
 																primaryWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
 																tools.tutorialLoad(fs, path, log, primaryWindow, basePath);
 																tools.checkForUpdate(os, semver, https, fs, path, basePath, primaryWindow);
