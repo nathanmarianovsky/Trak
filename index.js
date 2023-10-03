@@ -35,7 +35,6 @@ const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
 	malScraper = require("mal-scraper"),
 	os = require("os"),
 	spawn = require("child_process").spawn,
-	// checkInternetConnected = require("check-internet-connected"),
 	downloadRelease = require("download-github-release"),
 	semver = require("semver"),
 	ExcelJS = require("exceljs"),
@@ -94,8 +93,8 @@ app.whenReady().then(() => {
 	});
 
 	// Create the configuration file if it does not exist.
-	log.info("Creating the configuration file if it does not exist. To be located at " + path.join(basePath, "Trak", "config", "configuration.json"));
 	if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
+		log.info("Creating the default configuration file. To be located at " + path.join(basePath, "Trak", "config", "configuration.json"));
 		fs.mkdirSync(path.join(basePath, "Trak", "config"), { "recursive": true });
 		const writeData = { "original": {
 				"path": path.join(basePath, "Trak", "data"),
@@ -135,16 +134,6 @@ app.whenReady().then(() => {
 	if(!fs.existsSync(path.join(basePath, "Trak", "data"))) {
 		log.info("Creating the data folder. To be located at " + path.join(basePath, "Trak", "data"));
 		fs.mkdirSync(path.join(basePath, "Trak", "data"), { "recursive": true });
-	}
-
-	// Create the TrakDownloads folder if it does not exist. If it does exist then empty it on load.
-	if(!fs.existsSync(path.join(os.homedir(), "TrakDownloads"))) {
-		log.info("Creating the TrakDownloads folder. To be located at " + path.join(os.homedir(), "TrakDownloads"));
-		fs.mkdirSync(path.join(os.homedir(), "TrakDownloads"));
-	}
-	else {
-		log.info("Emptying the TrakDownloads folder");
-		fs.emptyDirSync(path.join(os.homedir(), "TrakDownloads"));
 	}
 
 	// Load the user's preferred window sizes if they exist.

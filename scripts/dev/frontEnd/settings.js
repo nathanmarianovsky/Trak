@@ -63,6 +63,13 @@ ipcRenderer.once("dataDeleteFailure", event => {
 
 
 
+// Display a notification if there was an issue in copying the library records.
+ipcRenderer.once("dataCopyFailure", event => {
+    M.toast({"html": "There was an error in copying the original data associated to the records.", "classes": "rounded"});
+});
+
+
+
 // Display the modal to be used in asking the user whether the original data folder should be deleted.
 ipcRenderer.once("dataOriginalDeleteAsk", (event, response) => {
     // Define the deletion modal.

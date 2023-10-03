@@ -79,7 +79,7 @@ ipcRenderer.on("importSampleDetailedXLSXSuccess", event => {
 
 // Display a notification if there was an error in the update of the tutorial configuration file.
 ipcRenderer.on("introductionFileSaveFailure", event => {
-    M.toast({"html": "There was an error in saving the tutorial configuration file.", "classes": "rounded"});
+    M.toast({"html": "There was an error in updating the tutorial configuration file.", "classes": "rounded"});
 });
 
 

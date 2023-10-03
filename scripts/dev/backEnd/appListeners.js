@@ -257,7 +257,7 @@ exports.removeRecords = (log, primaryWin, userPath, fs, path, data) => {
 	}
 	// Refresh the primary window and notify the user that all checked contacts have been removed.
 	if(j == data.length) {
-		log.info("The data records associated to the " + data.map(elem => elem.split("-")[0].toLowerCase() + " " + elem.substring(elem.split("-")[0].length + 1)).join(", ") + (data.length > 1 ? "have" : "has") + " been deleted.");
+		log.info("The data records associated to the folders " + data.join(", ") + (data.length > 1 ? "have" : "has") + " been deleted.");
 		primaryWin.reload();
 		setTimeout(() => { primaryWin.webContents.send("recordsRemovalSuccess"); }, 500);
 	}
@@ -270,13 +270,14 @@ exports.removeRecords = (log, primaryWin, userPath, fs, path, data) => {
 Handles the update of all settings files.
 
 	- path and fs provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
 	- app and ipc provide the means to operate the Electron app.
 	- dataArr is the array submitted from the front-end to update the settings options.
 	- appDirectory is the path to the local user data.
 	- evnt provides the means to interact with the front-end of the Electron app.
 
 */
-exports.updateSettings = (fs, path, ipc, app, dataArr, appDirectory, evnt) => {
+exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, evnt) => {
 	// Define the new data to be saved for the settings configuration file.
 	const writeData = {
 		"path": dataArr[0],
@@ -292,22 +293,34 @@ exports.updateSettings = (fs, path, ipc, app, dataArr, appDirectory, evnt) => {
 	// Read the settings tutorial.json file.
 	fs.readFile(path.join(appDirectory, "Trak", "config", "tutorial.json"), "UTF8", (er, tutorialFile) => {
 		// If there was an issue reading the tutorial.json file notify the user.
-		if(er) { evnt.sender.send("introductionFileReadFailure"); }
+		if(er) {
+			log.error("There was an error in reading the tutorial configuration file.");
+			evnt.sender.send("introductionFileReadFailure");
+		}
 		else {
+			log.info("The tutorial configuration file has been successfully read.");
 			// Define the tutorial boolean.
 			const origIntro = JSON.parse(tutorialFile).introduction;
 			// Write the tutorial.json file with the submitted data.
 			fs.writeFile(path.join(appDirectory, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": dataArr[9] }), "UTF8", error => {
 				// If there was an issue writing the tutorial.json file notify the user.
-				if(error) { evnt.sender.send("introductionFileSaveFailure"); }
+				if(error) {
+					log.error("There was an error in updating the tutorial configuration file.");
+					evnt.sender.send("introductionFileSaveFailure");
+				}
 				else {
+					log.info("The tutorial configuration file has been successfully rewritten.");
 					// If the tutorial data was changed notify the user that the file was successfully updated.
 					if(origIntro != dataArr[9]) { evnt.sender.send("introductionFileSaveSuccess"); }
 					// Read the settings configuration.json file.
 					fs.readFile(path.join(appDirectory, "Trak", "config", "configuration.json"), (err, file) => {
 						// If there was an issue in reading the configuration.json file notify the user.
-				        if(err) { evnt.sender.send("configurationFileOpeningFailure"); }
+				        if(err) {
+				        	log.error("There was an error in reading the settings configuration file.");
+				        	evnt.sender.send("configurationFileOpeningFailure");
+				    	}
 				        else {
+				        	log.info("The settings configuration file has been successfully read.");
 				        	// Define the settings configuration data.
 				        	const configurationData = JSON.parse(file);
 				        	// Delete the user records located in the previous location if requested.
@@ -317,8 +330,12 @@ exports.updateSettings = (fs, path, ipc, app, dataArr, appDirectory, evnt) => {
 					  				// Remove the directory and all content in it.
 					  				fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, er => {
 					  					// If there was an issue in removing the directory notify the user.
-					  					if(er) { eve.sender.send("dataDeleteFailure"); }
+					  					if(er) {
+					  						log.error("There was an error in deleting the original data associated to the records.");
+					  						eve.sender.send("dataDeleteFailure");
+					  					}
 					  					else {
+					  						log.info("The original data associated to the records has been successfully deleted.");
 					  						// Properly define the previous primary and secondary colors.
 					  						if(resp[1] == true) {
 					  							writeData.previousPrimaryColor = configurationData.current.primaryColor;
@@ -332,8 +349,12 @@ exports.updateSettings = (fs, path, ipc, app, dataArr, appDirectory, evnt) => {
 					  						// Write the configuration.json file with the submitted data.
 											fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
 												// If there was an issue in writing the configuration.json notify the user.
-												if(err) { eve.sender.send("configurationFileWritingFailure"); }
+												if(err) {
+													log.error("There was an error writing the configuration file associated to the application settings.");
+													eve.sender.send("configurationFileWritingFailure");
+												}
 												else {
+													log.info("The application settings have been updated. The application will now restart.");
 													// Notify the user that the configuration.json was successfully updated and restart the application.
 													eve.sender.send("configurationFileWritingSuccess");
 													setTimeout(() => {
@@ -359,8 +380,12 @@ exports.updateSettings = (fs, path, ipc, app, dataArr, appDirectory, evnt) => {
 			  						// Write the configuration.json file with the submitted data.
 									fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
 										// If there was an issue in writing the configuration.json notify the user.
-										if(err) { eve.sender.send("configurationFileWritingFailure"); }
+										if(err) {
+											log.error("There was an error writing the configuration file associated to the application settings.");
+											eve.sender.send("configurationFileWritingFailure");
+										}
 										else {
+											log.info("The application settings have been updated. The application will now restart.");
 											// Notify the user that the configuration.json was successfully updated and restart the application.
 											eve.sender.send("configurationFileWritingSuccess");
 											setTimeout(() => {
@@ -382,9 +407,15 @@ exports.updateSettings = (fs, path, ipc, app, dataArr, appDirectory, evnt) => {
 				        			writeData.previousPrimaryColor = configurationData.original.primaryColor;
 					        		writeData.previousSecondaryColor = configurationData.original.secondaryColor;
 					        		configurationData.current = writeData;
+					        		// Write the configuration.json file with the submitted data.
 									fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-										if(err) { evnt.sender.send("configurationFileWritingFailure"); }
+										// If there was an issue in writing the configuration.json notify the user.
+										if(err) {
+											log.error("There was an error writing the configuration file associated to the application settings.");
+											evnt.sender.send("configurationFileWritingFailure");
+										}
 										else {
+											log.info("The application settings have been updated.");
 											evnt.sender.send("configurationFileWritingSuccessSimple");
 										}
 									});
@@ -396,9 +427,16 @@ exports.updateSettings = (fs, path, ipc, app, dataArr, appDirectory, evnt) => {
 						        		writeData.previousPrimaryColor = configurationData.original.primaryColor;
 						        		writeData.previousSecondaryColor = configurationData.original.secondaryColor;
 						        		configurationData.current = writeData;
+						        		// Write the configuration.json file with the submitted data.
 										fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-											if(err) { evnt.sender.send("configurationFileWritingFailure"); }
+											// If there was an issue in writing the configuration.json notify the user.
+											if(err) {
+												log.error("There was an error writing the configuration file associated to the application settings.");
+												evnt.sender.send("configurationFileWritingFailure");
+											}
 											else {
+												log.info("The application settings have been updated. The application will now restart.");
+												// Notify the user that the configuration.json was successfully updated and restart the application.
 												evnt.sender.send("configurationFileWritingSuccess");
 												setTimeout(() => {
 													app.relaunch();
@@ -410,8 +448,14 @@ exports.updateSettings = (fs, path, ipc, app, dataArr, appDirectory, evnt) => {
 					        		// If the provided data path is different than the original path then proceed by copying the user records and asking if they would like to remove the original directory.
 					        		else {
 					        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
-										  	if(err) { event.sender.send("dataCopyFailure"); }
-										  	else { event.sender.send("dataOriginalDeleteAsk", false); }
+										  	if(err) {
+										  		log.error("There was an error in copying the original data associated to the records.");
+										  		event.sender.send("dataCopyFailure");
+										  	}
+										  	else {
+										  		log.info("The user is being asked on whether they would like to delete the library records data in the previous save location.");
+										  		event.sender.send("dataOriginalDeleteAsk", false);
+										 	}
 										});
 					        		}
 				        		}
@@ -427,9 +471,15 @@ exports.updateSettings = (fs, path, ipc, app, dataArr, appDirectory, evnt) => {
 				        			writeData.previousPrimaryColor = configurationData.current.primaryColor;
 					        		writeData.previousSecondaryColor = configurationData.current.secondaryColor;
 					        		configurationData.current = writeData;
+					        		// Write the configuration.json file with the submitted data.
 									fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-										if(err) { evnt.sender.send("configurationFileWritingFailure"); }
+										// If there was an issue in writing the configuration.json notify the user.
+										if(err) {
+											log.error("There was an error writing the configuration file associated to the application settings.");
+											evnt.sender.send("configurationFileWritingFailure");
+										}
 										else {
+											log.info("The application settings have been updated.");
 											evnt.sender.send("configurationFileWritingSuccessSimple");
 										}
 									});
@@ -440,9 +490,16 @@ exports.updateSettings = (fs, path, ipc, app, dataArr, appDirectory, evnt) => {
 					        			writeData.previousPrimaryColor = configurationData.current.primaryColor;
 					        			writeData.previousSecondaryColor = configurationData.current.secondaryColor;
 					        			configurationData.current = writeData;
+					        			// Write the configuration.json file with the submitted data.
 										fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
-											if(err) { evnt.sender.send("configurationFileWritingFailure"); }
+											// If there was an issue in writing the configuration.json notify the user.
+											if(err) {
+												log.error("There was an error writing the configuration file associated to the application settings.");
+												evnt.sender.send("configurationFileWritingFailure");
+											}
 											else {
+												log.info("The application settings have been updated. The application will now restart.");
+												// Notify the user that the configuration.json was successfully updated and restart the application.
 												evnt.sender.send("configurationFileWritingSuccess")
 												setTimeout(() => {
 													app.relaunch();
@@ -454,8 +511,14 @@ exports.updateSettings = (fs, path, ipc, app, dataArr, appDirectory, evnt) => {
 					        		// If the provided data path is different than the current path then proceed by copying the user records and asking if they would like to remove the current directory.
 					        		else {
 					        			fs.copy(configurationData.current.path, path.join(writeData.path), err => {
-										  	if(err) { evnt.sender.send("dataCopyFailure"); }
-										  	else { evnt.sender.send("dataOriginalDeleteAsk", true); }
+										  	if(err) {
+										  		log.error("There was an error in copying the original data associated to the records.");
+										  		evnt.sender.send("dataCopyFailure");
+										  	}
+										  	else {
+										  		log.info("The user is being asked on whether they would like to delete the library records data in the previous save location.");
+										  		evnt.sender.send("dataOriginalDeleteAsk", true);
+										  	}
 										});
 					        		}
 				        		}
@@ -629,12 +692,13 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRe
   	// Handles the opening of a record's assets folder.
 	ipc.on("recordFiles", (event, params) => {
 		exec(tools.startCommandLineFolder() + " " + path.join(dataPath, "Trak", "data", params[0], "assets"));
+		log.info("The application successfully opened the folder directory " + path.join(dataPath, "Trak", "data", params[0], "assets") + ".");
 		event.sender.send("recordFilesSuccess", params[1]);
 	});
 
 	// Handles the saving of all options in the user settings.
 	ipc.on("settingsSave", (event, submissionArr) => {
-		exports.updateSettings(fs, path, ipc, app, submissionArr, originalPath, event);
+		exports.updateSettings(fs, path, log, ipc, app, submissionArr, originalPath, event);
 	});
 
 	// Handles the export of the chosen library records into a single zip file, possibly compressed, or a xlsx file containing the details along with a zip, possibly compressed, for the assets.
@@ -661,17 +725,28 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRe
 	ipc.on("appUpdate", (event, appUpdateData) => {
 		// Define the path where the updated installer will download.
 		const outputdir = path.join(os.homedir(), "TrakDownloads");
+		// Create the TrakDownloads folder if it does not exist. If it does exist then empty it on load.
+		if(!fs.existsSync(outputdir)) {
+			log.info("Creating the TrakDownloads folder. To be located at " + outputdir);
+			fs.mkdirSync(outputdir);
+		}
+		else {
+			log.info("Emptying the TrakDownloads folder");
+			fs.emptyDirSync(outputdir);
+		}
 		// Fetch the required asset from github.
 		downloadRelease("nathanmarianovsky", "Trak", outputdir, release => release.prerelease === false, asset => asset.name == appUpdateData[1], false).then(() => {
 		    // Notify the user that the app will close to proceed with the update.
+		    log.info("The newest release of the application has finished downloading.");
 		    event.sender.send("updateDownloadComplete");
 		    // After a five second delay launch the updated installer and close the app.
 		    setTimeout(() => {
-				var child = spawn("cmd", ["/S /C " + appUpdateData[1]], {
+				let child = spawn("cmd", ["/S /C " + appUpdateData[1]], {
 					"detached": true,
 					"cwd": outputdir,
 					"env": process.env
 				});
+				log.info("The application is quitting and launching the updated release installer.");
 				app.quit();
 		    }, 5000);
 		});
@@ -681,6 +756,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRe
 	ipc.on("animeSearch", (event, search) => {
 		// Use the MAL scraper to fetch anime listings possibly matching what the user is looking for.
 		malScraper.getResultsFromSearch(search[1], "anime").then(data => {
+			log.info("MyAnimeList-Scraper has finished getting the search results for the query " + search[1] + ".");
 			// Send the attained data to the front-end.
 			event.sender.send("animeSearchResults", [search[0], search[1], data.map(elem => [elem.name, elem.image_url, elem.url])]);
 		});
@@ -723,6 +799,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, downloadRe
 				});
 			});
 			// Send the attained data to the front-end.
+			log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + name + ".");
 			event.sender.send("animeFetchDetailsResult", [
 				animeData.englishTitle, animeData.japaneseTitle, animeData.picture, startDate, endDate,
 				animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
