@@ -202,15 +202,15 @@ var recordChoicesButtons = () => {
                 jnameInput.classList.add("valid");
                 jnameInput.nextElementSibling.classList.add("active");
             }
-            if(newResponse[2] != "") {
+            if(newResponse[2][1].length > 0) {
                 const animeImg = document.getElementById("addRecordAnimeImg");
-                if(!animeImg.getAttribute("list").includes(newResponse[2])) {
-                    if(updateDetector == true) {
-                        animeImg.getAttribute("list") == "" ? animeImg.setAttribute("list", newResponse[2]) : animeImg.setAttribute("list", animeImg.getAttribute("list") + "," + newResponse[2]);
+                animeImg.setAttribute("list", "");
+                for(let t = 0; t < newResponse[2][1].length; t++) {
+                    if(!animeImg.getAttribute("list").includes(newResponse[2][1][t])) {
+                        animeImg.getAttribute("list") == "" ? animeImg.setAttribute("list", newResponse[2][1][t]) : animeImg.setAttribute("list", animeImg.getAttribute("list") + "," + newResponse[2][1][t]);
                     }
-                    else { animeImg.setAttribute("list", newResponse[2]); }
-                    animeImg.setAttribute("src", newResponse[2]);
                 }
+                animeImg.setAttribute("src", newResponse[2][0]);
             }
             // Update the anime studios if available.
             if(newResponse[8] != "" && newResponse[8] != "None found, add some") {

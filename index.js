@@ -6,10 +6,10 @@ Declare all of the necessary variables.
 	- fs and path provide the means to work with local files.
 	- https provides the means to download files.
 	- log provides the means to create application logs to keep track of what is going on.
-	- tools provides a collection of local functions meant to help with writing files.
 	- os provides the means to get information on the user operating system.
 	- exec provides the means to open files and folders.
 	- spawn provides the means to launch an update via an installer.
+	- tools provides a collection of local functions meant to help with writing files.
 	- basePath is the path to the local settings data.
 	- localPath is the path to the local user data.
 
@@ -20,10 +20,9 @@ const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
 	fs = require("fs-extra"),
 	https = require("https"),
 	log = require("electron-log"),
-	tools = require("./scripts/dist/backEnd/tools"),
 	os = require("os"),
-	exec = require("child_process").exec,
-	spawn = require("child_process").spawn,
+	{ exec, spawn } = require("child_process"),
+	tools = require("./scripts/dist/backEnd/tools"),
 	basePath = localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
 if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
 	var localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");

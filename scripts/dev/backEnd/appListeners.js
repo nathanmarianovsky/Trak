@@ -791,13 +791,16 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 					}
 				});
 			});
-			// Send the attained data to the front-end.
-			log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + name + ".");
-			event.sender.send("animeFetchDetailsResult", [
-				animeData.englishTitle, animeData.japaneseTitle, animeData.picture, startDate, endDate,
-				animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
-				animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
-			]);
+			// Fetch all possible images associated to the anime record.
+			malScraper.getPictures({ "name": animeData.title, "id": animeData.id }).then(malImgArr => {
+				// Send the attained data to the front-end.
+				log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + name + ".");
+				event.sender.send("animeFetchDetailsResult", [
+					animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, malImgArr.map(pic => pic.imageLink)], startDate, endDate,
+					animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
+					animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
+				]);
+			});
 		});
 	});
 
