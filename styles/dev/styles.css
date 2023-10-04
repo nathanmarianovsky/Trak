@@ -692,6 +692,19 @@ footer {
 	left: 50%;
 }
 
+#animeFavoriteImageLink {
+	color: white;
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    visibility: hidden;
+    cursor: initial;
+}
+
+#animeFavoriteImageLink i {
+	font-size: 30px;
+}
+
 .addRecordAnimeImgBtnContainer {
 	width: 20%;
 	display: inline-block;

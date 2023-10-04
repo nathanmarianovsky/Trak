@@ -53,7 +53,20 @@ var recordChoicesButtons = () => {
             animeAddImgInput = document.getElementById("animeAddImgInput"),
             animeRemoveImgBtn = document.getElementById("animeRemoveImgBtn"),
             animeNextImgBtn = document.getElementById("animeNextImgBtn"),
-            addRecordAnimeImg = document.getElementById("addRecordAnimeImg");
+            addRecordAnimeImg = document.getElementById("addRecordAnimeImg"),
+            animeFavoriteImageLink = document.getElementById("animeFavoriteImageLink");
+        // Define the color which will be applied to the favorite image icon.
+        const btnColor = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor;
+        animeFavoriteImageLink.addEventListener("click", e => {
+            if(animeFavoriteImageLink.style.color == "white") {
+                let imgArr = addRecordAnimeImg.getAttribute("list").split(","),
+                    imgArrIndex = imgArr.indexOf(addRecordAnimeImg.getAttribute("src"));
+                arrayMove(imgArr, imgArrIndex, 0);
+                addRecordAnimeImg.setAttribute("list", imgArr.join(","));
+                animeFavoriteImageLink.style.color = btnColor;
+                animeFavoriteImageLink.style.cursor = "initial";
+            }
+        });
         // Listen for a click event on the previous image button.
         animePreviousImgBtn.addEventListener("click", e => {
             let curListArr = addRecordAnimeImg.getAttribute("list").split(","),
@@ -61,6 +74,14 @@ var recordChoicesButtons = () => {
             // Change the image source to the previous one in the list, wrapping around if necessary.
             if(curListArr.length > 1) {
                 addRecordAnimeImg.setAttribute("src", index == 0 ? curListArr[curListArr.length - 1] : curListArr[index - 1]);
+                if(curListArr[0] == (index == 0 ? curListArr[curListArr.length - 1] : curListArr[index - 1])) {
+                    animeFavoriteImageLink.style.color = btnColor;
+                    animeFavoriteImageLink.style.cursor = "initial";
+                }
+                else {
+                    animeFavoriteImageLink.style.color = "white";
+                    animeFavoriteImageLink.style.cursor = "pointer";
+                }
             }
         });
         // Listen for a click event on the add image button.
@@ -100,6 +121,14 @@ var recordChoicesButtons = () => {
                 // Remove the image from the list.
                 curListArr.splice(index, 1);
                 addRecordAnimeImg.setAttribute("list", curListArr.join(","));
+                if(curListArr[0] == addRecordAnimeImg.getAttribute("src")) {
+                    animeFavoriteImageLink.style.color = btnColor;
+                    animeFavoriteImageLink.style.cursor = "initial";
+                }
+                else {
+                    animeFavoriteImageLink.style.color = "white";
+                    animeFavoriteImageLink.style.cursor = "pointer";
+                }
             }
         });
         // Listen for a click event on the next image button.
@@ -109,6 +138,14 @@ var recordChoicesButtons = () => {
             // Change the image source to the previous one in the list, wrapping around if necessary.
             if(curListArr.length > 1) {
                 addRecordAnimeImg.setAttribute("src", index == curListArr.length - 1 ? curListArr[0] : curListArr[index + 1]);
+                if(curListArr[0] == (index == curListArr.length - 1 ? curListArr[0] : curListArr[index + 1])) {
+                    animeFavoriteImageLink.style.color = btnColor;
+                    animeFavoriteImageLink.style.cursor = "initial";
+                }
+                else {
+                    animeFavoriteImageLink.style.color = "white";
+                    animeFavoriteImageLink.style.cursor = "pointer";
+                }
             }
         });
         // Define the portions of the page associated to the autocomplete 
@@ -203,7 +240,8 @@ var recordChoicesButtons = () => {
                 jnameInput.nextElementSibling.classList.add("active");
             }
             if(newResponse[2][1].length > 0) {
-                const animeImg = document.getElementById("addRecordAnimeImg");
+                const animeImg = document.getElementById("addRecordAnimeImg"),
+                    favImgLink = document.getElementById("animeFavoriteImageLink");
                 animeImg.setAttribute("list", "");
                 for(let t = 0; t < newResponse[2][1].length; t++) {
                     if(!animeImg.getAttribute("list").includes(newResponse[2][1][t])) {
@@ -211,6 +249,8 @@ var recordChoicesButtons = () => {
                     }
                 }
                 animeImg.setAttribute("src", newResponse[2][0]);
+                favImgLink.style.visibility = "visible";
+                favImgLink.style.color = btnColor;
             }
             // Update the anime studios if available.
             if(newResponse[8] != "" && newResponse[8] != "None found, add some") {

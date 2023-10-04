@@ -2,6 +2,7 @@
 
 BASIC DETAILS: This file serves as the collection of tools utilized by the various back-end requests.
 
+   - arrayMove: Moves an element in an array.
    - animeGenreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
    - calculateReleaseDate: Calculate the earliest release date of an anime record based on the related content information.
    - calculateGlobalRating: Calculate the average rating of an anime record based on the related content information.
@@ -28,6 +29,23 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
 
 
 var exports = {};
+
+
+
+/*
+
+Moves an element in an array.
+
+    - arr is the array in which the desired element will be moved.
+    - fromIndex is the current position of the element which will be moved.
+    - toIndex is the final position to which the element will be moved.
+
+*/
+exports.arrayMove = (arr, fromIndex, toIndex) => {
+    const element = arr[fromIndex];
+    arr.splice(fromIndex, 1);
+    arr.splice(toIndex, 0, element);
+};
 
 
 
@@ -514,11 +532,6 @@ exports.exportDataZIP = (fs, path, log, zipper, eve, dir, exportLocation, record
 		}
 	});
 };
-
-
-
-
-
 
 
 

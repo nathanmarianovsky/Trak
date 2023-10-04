@@ -795,8 +795,10 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 			malScraper.getPictures({ "name": animeData.title, "id": animeData.id }).then(malImgArr => {
 				// Send the attained data to the front-end.
 				log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + name + ".");
+				let allImgArr = malImgArr.map(pic => pic.imageLink);
+				tools.arrayMove(allImgArr, allImgArr.indexOf(animeData.picture), 0);
 				event.sender.send("animeFetchDetailsResult", [
-					animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, malImgArr.map(pic => pic.imageLink)], startDate, endDate,
+					animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, allImgArr], startDate, endDate,
 					animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
 					animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
 				]);

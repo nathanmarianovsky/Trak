@@ -229,6 +229,9 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 animeImg.setAttribute("list", recordData.img.join(","));
                 animeImg.setAttribute("previous", recordData.img.join(","));
                 animeImg.setAttribute("src", recordData.img.length > 0 && recordData.img[0] != "" ? recordData.img[0] : animeImg.getAttribute("default"));
+                const favImgLink = document.getElementById("animeFavoriteImageLink");
+                favImgLink.style.visibility = "visible";
+                favImgLink.style.color = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor;
                 for(let v = 0; v < recordData.genres[0].length; v++) {
                     document.getElementById("animeGenre" + recordData.genres[0][v]).checked = recordData.genres[1][v];
                 }

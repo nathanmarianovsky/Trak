@@ -13,6 +13,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - initAnimeReviewObserver: Initialize the observer for style mutations on the anime review.
     - initAnimeSynopsisObserver: Initialize the observer for style mutations on the anime synopsis.
     - toastParse: Handles the parsing of a record folder name to display to the user.
+    - arrayMove: Moves an element in an array.
     - filterGenreList: Provides the list of all genres/tags that can be selected from the index.page filter.
 
 */
@@ -206,6 +207,23 @@ Handles the parsing of a record folder name to display to the user.
 var toastParse = folder => {
     let hldr = folder.split("-")[0];
     return nameStr = hldr.toLowerCase() + " " + folder.substring(hldr.length + 1);
+};
+
+
+
+/*
+
+Moves an element in an array.
+
+    - arr is the array in which the desired element will be moved.
+    - fromIndex is the current position of the element which will be moved.
+    - toIndex is the final position to which the element will be moved.
+
+*/
+var arrayMove = (arr, fromIndex, toIndex) => {
+    const element = arr[fromIndex];
+    arr.splice(fromIndex, 1);
+    arr.splice(toIndex, 0, element);
 };
 
 
