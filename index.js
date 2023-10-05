@@ -199,7 +199,7 @@ app.whenReady().then(() => {
 															primaryWindow.webContents.on("did-finish-load", () => {
 																primaryWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
 																tools.tutorialLoad(fs, path, log, primaryWindow, basePath);
-																tools.checkForUpdate(os, https, fs, path, basePath, primaryWindow);
+																tools.checkForUpdate(os, https, fs, path, log, basePath, primaryWindow);
 															});
 														  	// Create the system tray icon and menu. 
 														  	log.info("The application is creating the tray menu.");

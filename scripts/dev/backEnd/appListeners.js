@@ -559,7 +559,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
    		win.webContents.on("did-finish-load", () => {
   				win.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
   				tools.tutorialLoad(fs, path, log, primaryWindow, originalPath);
-  				tools.checkForUpdate(os, https, fs, path, originalPath, win);
+  				tools.checkForUpdate(os, https, fs, path, log, originalPath, win);
   			});
     	}
   	});
@@ -581,7 +581,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
   		mainWindow.webContents.on("did-finish-load", () => {
   			mainWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
   			tools.tutorialLoad(fs, path, log, primaryWindow, originalPath);
-  			tools.checkForUpdate(os, https, fs, path, originalPath, mainWindow);
+  			tools.checkForUpdate(os, https, fs, path, log, originalPath, mainWindow);
   		});
   	});
 
@@ -803,6 +803,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 					animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
 				]);
 			});
+
 		});
 	});
 

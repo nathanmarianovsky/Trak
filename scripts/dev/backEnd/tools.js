@@ -1065,11 +1065,13 @@ Checks against the most recent release on github to determine if an update is av
 	- os provides the means to get information on the user operating system.
     - https provides the means to download files.
     - fs and path provide the means to work with local files.
+    - log provides the means to create application logs to keep track of what is going on.
     - dir is the directory containing the configuration files.
     - win is an object that represents the primary window of the Electron app.
 
 */
-exports.checkForUpdate = (os, https, fs, path, dir, win) => {
+exports.checkForUpdate = (os, https, fs, path, log, dir, win) => {
+	log.info("The application is checking for any available update.");
 	// Check that the application is connected to the internet prior to checking for an available update.
 	require("check-internet-connected")({ "timeout": 500, "retries": 5, "domain": "https://google.com" }).then(() => {
 		// Define the options associated to the GET request for github releases.
@@ -1089,9 +1091,13 @@ exports.checkForUpdate = (os, https, fs, path, dir, win) => {
 			    	// Define the current version of the app.
 			    	const curVer = JSON.parse(fs.readFileSync(path.join(JSON.parse(fl).appLocation, "package.json"), "UTF8")).version;
 			    	// If there was an issue reading the location.json file notify the user.
-	                if(resp) { win.webContents.send("locationFileIssue"); }
+	                if(resp) {
+	                	log.error("There was an issue reading the location.json file.");
+	                	win.webContents.send("locationFileIssue");
+	                }
 	                // Compare the current version against the latest version on github to determine whether an update is available.
 	                else if(require("semver").gt(githubData.tag_name.substring(1), curVer)) {
+	                	log.info("The application has found a newer version available as a release on Github corresponding to version " + githubData.tag_name.substring(1) + ".");
 	                	let fileName = "Trak-",
 	                		ending = ""
 	                		downloadURL = "";
@@ -1115,7 +1121,7 @@ exports.checkForUpdate = (os, https, fs, path, dir, win) => {
 		// End the HTTPS request.
 		request.end();
 	}).catch(err => {
-		console.log("The app failed to check for an update because it could not connect to the internet. More specifically, connecting to https://google.com failed at the address " + err.address + ":" + err.port + " with exit code " + err.code + ".");
+		log.warn("The app failed to check for an update because it could not connect to the internet. More specifically, connecting to https://google.com failed at the address " + err.address + ":" + err.port + " with exit code " + err.code + ".");
 	});
 };
 

@@ -56,14 +56,15 @@ var recordChoicesButtons = () => {
             addRecordAnimeImg = document.getElementById("addRecordAnimeImg"),
             animeFavoriteImageLink = document.getElementById("animeFavoriteImageLink");
         // Define the color which will be applied to the favorite image icon.
-        const btnColor = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor;
+        const btnColorFavorite = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor,
+            btnColorDefault = newSwitchBackground = "#" + addAlpha(rgba2hex(getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor).substring(1), 0.4);
         animeFavoriteImageLink.addEventListener("click", e => {
-            if(animeFavoriteImageLink.style.color == "white") {
+            if(rgba2hex(animeFavoriteImageLink.style.color) == btnColorDefault) {
                 let imgArr = addRecordAnimeImg.getAttribute("list").split(","),
                     imgArrIndex = imgArr.indexOf(addRecordAnimeImg.getAttribute("src"));
                 arrayMove(imgArr, imgArrIndex, 0);
                 addRecordAnimeImg.setAttribute("list", imgArr.join(","));
-                animeFavoriteImageLink.style.color = btnColor;
+                animeFavoriteImageLink.style.color = btnColorFavorite;
                 animeFavoriteImageLink.style.cursor = "initial";
             }
         });
@@ -75,11 +76,11 @@ var recordChoicesButtons = () => {
             if(curListArr.length > 1) {
                 addRecordAnimeImg.setAttribute("src", index == 0 ? curListArr[curListArr.length - 1] : curListArr[index - 1]);
                 if(curListArr[0] == (index == 0 ? curListArr[curListArr.length - 1] : curListArr[index - 1])) {
-                    animeFavoriteImageLink.style.color = btnColor;
+                    animeFavoriteImageLink.style.color = btnColorFavorite;
                     animeFavoriteImageLink.style.cursor = "initial";
                 }
                 else {
-                    animeFavoriteImageLink.style.color = "white";
+                    animeFavoriteImageLink.style.color = btnColorDefault;
                     animeFavoriteImageLink.style.cursor = "pointer";
                 }
             }
@@ -122,11 +123,11 @@ var recordChoicesButtons = () => {
                 curListArr.splice(index, 1);
                 addRecordAnimeImg.setAttribute("list", curListArr.join(","));
                 if(curListArr[0] == addRecordAnimeImg.getAttribute("src")) {
-                    animeFavoriteImageLink.style.color = btnColor;
+                    animeFavoriteImageLink.style.color = btnColorFavorite;
                     animeFavoriteImageLink.style.cursor = "initial";
                 }
                 else {
-                    animeFavoriteImageLink.style.color = "white";
+                    animeFavoriteImageLink.style.color = btnColorDefault;
                     animeFavoriteImageLink.style.cursor = "pointer";
                 }
             }
@@ -139,11 +140,11 @@ var recordChoicesButtons = () => {
             if(curListArr.length > 1) {
                 addRecordAnimeImg.setAttribute("src", index == curListArr.length - 1 ? curListArr[0] : curListArr[index + 1]);
                 if(curListArr[0] == (index == curListArr.length - 1 ? curListArr[0] : curListArr[index + 1])) {
-                    animeFavoriteImageLink.style.color = btnColor;
+                    animeFavoriteImageLink.style.color = btnColorFavorite;
                     animeFavoriteImageLink.style.cursor = "initial";
                 }
                 else {
-                    animeFavoriteImageLink.style.color = "white";
+                    animeFavoriteImageLink.style.color = btnColorDefault;
                     animeFavoriteImageLink.style.cursor = "pointer";
                 }
             }
@@ -250,7 +251,7 @@ var recordChoicesButtons = () => {
                 }
                 animeImg.setAttribute("src", newResponse[2][0]);
                 favImgLink.style.visibility = "visible";
-                favImgLink.style.color = btnColor;
+                favImgLink.style.color = btnColorFavorite;
             }
             // Update the anime studios if available.
             if(newResponse[8] != "" && newResponse[8] != "None found, add some") {
@@ -322,6 +323,7 @@ var recordChoicesButtons = () => {
             }
             const listNum = document.getElementById("animeList").children.length + 1;
             // If the anime type is a season then add a season to the related content.
+            console.log(newResponse[6][1]);
             if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
                 // Attach a season.
                 seasonAddition();
@@ -371,7 +373,7 @@ var recordChoicesButtons = () => {
                         + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
                 }
                 // Provide a default film/ona/ova name.
-                singleName.value = "Single";
+                singleName.value = "Item 1";
                 singleName.classList.add("valid");
                 singleName.nextElementSibling.classList.add("active");
                 // Set the type for the item.
