@@ -338,6 +338,7 @@ ipcRenderer.on("introduction", (event, response) => {
 });
 
 
+
 // Load all of the contacts as rows in the table once the page has loaded.
 ipcRenderer.on("loadRows", (event, tableDiff) => {
     // Define the path for all items and get a list of all available records.
@@ -651,3 +652,29 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         searchBar.value = "";
     }});
 });
+
+
+
+ipcRenderer.on("animeFetchSeasonResult", (event, seasonArr) => {
+    console.log(seasonArr);
+    const container = document.getElementById("animeSeasonSearchDiv");
+    for(let n = 0; n < seasonArr.length; n++) {
+        let itemImg = document.createElement("img"),
+            itemContainer = document.createElement("div"),
+            itemText = document.createElement("div");
+        itemImg.classList.add("seasonItemImage");
+        itemContainer.classList.add("seasonItemContainer");
+        itemText.classList.add("seasonItemText", "tooltipped");
+        itemText.setAttribute("data-position", "bottom");
+        itemText.setAttribute("data-tooltip", seasonArr[n][0]);
+        itemImg.setAttribute("src", seasonArr[n][1]);
+        itemText.textContent = seasonArr[n][0];
+        itemContainer.append(itemImg, itemText);
+        container.append(itemContainer);
+    }
+    document.body.style.overflowY = "auto";
+    initTooltips();
+});
+
+
+ // tooltipped" data-position="bottom" data-tooltip="Export/Import"

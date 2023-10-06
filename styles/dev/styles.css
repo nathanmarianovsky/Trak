@@ -147,12 +147,23 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	width: 95%;
 }
 
+#animeSeasonSearchDiv {
+	position: relative;
+	margin: 3% 0 auto 5%;
+	width: 90%;
+	display: none;
+}
+
+#animeSeasonSearchDiv .select-dropdown span {
+	text-align: left;
+}
+
 #table, #headersTable {
 	width: 95%;
 	margin-left: 50px;
 }
 
-#add {
+#add, #animeSeasonSearchSubmission {
 	position: fixed;
   	bottom: 23px;
   	right: 23px;
@@ -234,6 +245,14 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	list-style-type: disc;
 }
 
+#indexHome {
+	display: none;
+}
+
+#animeSeasonSearchYearDiv ul {
+	height: 250px;
+}
+
 .spinner-layer {
 	border-color: #2A2A8E !important;
 }
@@ -307,6 +326,25 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
     cursor: pointer;
 }
 
+.seasonItemImage {
+	width: 100%;
+	height: auto;
+	border: 2px solid black;
+}
+
+.seasonItemContainer {
+	display: inline-block;
+    width: 15%;
+    height: auto; 
+    margin-bottom: 5%;
+    margin-right: 5%;
+}
+
+.seasonItemText {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/
@@ -334,6 +372,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 /*---------------------------------------------------------------------------------------------------------------------*/
 
 /* Styling applicable for the database modal. */
+
 
 
 #databaseModal {
@@ -436,6 +475,8 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 /*---------------------------------------------------------------------------------------------------------------------*/
 
 /* Styling applicable for the import modal. */
+
+
 
 #importModal {
 	top: 20% !important;

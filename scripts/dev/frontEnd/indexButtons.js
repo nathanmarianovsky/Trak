@@ -60,14 +60,53 @@ window.addEventListener("load", () => {
         XLSXTypeSwitch = document.getElementById("XLSXTypeSwitch"),
         importSampleZIP = document.getElementById("importSampleZIP"),
         importSampleSimpleXLSX = document.getElementById("importSampleSimpleXLSX"),
-        importSampleDetailedXLSX = document.getElementById("importSampleDetailedXLSX");
+        importSampleDetailedXLSX = document.getElementById("importSampleDetailedXLSX"),
+        animeSeasonSearch = document.getElementById("animeSeasonSearch"),
+        indexHome = document.getElementById("indexHome"),
+        animeSeasonSearchSubmission = document.getElementById("animeSeasonSearchSubmission");
     // Define all page components which will be utilized.
     const tableBody = document.getElementById("tableBody"),
         XLSXTypeSwitchDiv = document.getElementById("XLSXTypeSwitchDiv"),
         importXLSXContentSimple = document.getElementById("importXLSXContentSimple"),
         importXLSXContentDetailed = document.getElementById("importXLSXContentDetailed"),
         databaseExportContainer = document.getElementById("databaseExportContainer"),
-        databaseImportContainer = document.getElementById("databaseImportContainer");
+        databaseImportContainer = document.getElementById("databaseImportContainer"),
+        outerLayer = document.getElementById("outerLayer"),
+        animeSeasonSearchDiv = document.getElementById("animeSeasonSearchDiv"),
+        animeSeasonSearchYear = document.getElementById("animeSeasonSearchYear"),
+        animeSeasonSearchSeason = document.getElementById("animeSeasonSearchSeason"),
+        animeSeasonSearchType = document.getElementById("animeSeasonSearchType");
+    
+
+    animeSeasonSearch.addEventListener("click", e => {
+        outerLayer.style.display = "none";
+        animeSeasonSearch.style.display = "none";
+        indexHome.style.display = "inline-block";
+        animeSeasonSearchDiv.style.display = "block";
+    });
+
+    indexHome.addEventListener("click", e => {
+        outerLayer.style.display = "block";
+        animeSeasonSearch.style.display = "inline-block";
+        indexHome.style.display = "none";
+        animeSeasonSearchDiv.style.display = "none";
+    })
+
+    animeSeasonSearchSubmission.addEventListener("click", e => {
+        let curYear = animeSeasonSearchYear.value,
+            curSeason = animeSeasonSearchSeason.value;
+        if(curYear == "") {
+            M.toast({"html": "A year must be selected in order to search for anime.", "classes": "rounded"});
+        }
+        else if(curSeason == "") {
+            M.toast({"html": "A season must be selected in order to search for anime.", "classes": "rounded"});
+        }
+        else {
+            ipcRenderer.send("animeFetchSeason", [curYear, curSeason, Array.from(animeSeasonSearchType.selectedOptions).map(({ value }) => value)]);
+        }
+    });
+    
+
     // Listen for a click event on the add button in order to open a window whose inputs will generate a new record.
     add.addEventListener("click", e => {
         e.preventDefault();
@@ -228,14 +267,7 @@ window.addEventListener("load", () => {
         databaseImportContainer.style.display = "none";
         databaseExportBtn.style.display = "inline-block";
         databaseImportBtn.style.display = "none";
-        if(typeSwitch.checked == true) {
-            databaseCheckLabel.style.display = "none";
-            XLSXTypeSwitchDiv.style.display = "initial";
-        }
-        else {
-            databaseCheckLabel.style.display = "initial";
-            XLSXTypeSwitchDiv.style.display = "none";
-        }
+        typeSwitch.checked == true ? XLSXTypeSwitchDiv.style.display = "initial" : XLSXTypeSwitchDiv.style.display = "none";
     });
     // Listen for a click event on the database import tab in order to update the database modal view.
     databaseImport.addEventListener("click", e => {
@@ -343,6 +375,7 @@ window.addEventListener("load", () => {
             }
         }
     });
+    // Listen for a change in the xlsx import type to change the directions accordingly.
     XLSXTypeSwitch.addEventListener("change", e => {
         if(e.target.checked == true) {
             document.querySelector("#XLSXTypeSwitchDiv label input[type=checkbox]:checked+.lever").style.backgroundColor = newSwitchBackground;
@@ -355,4 +388,12 @@ window.addEventListener("load", () => {
             importXLSXContentDetailed.style.display = "none";
         }
     });
+    const maxYear = new Date().getFullYear() + 1;
+    for(let curYear = maxYear; curYear >= 1917; curYear--) {
+        let curYearOption = document.createElement("option");
+        curYearOption.value = curYear;
+        curYearOption.textContent = curYear;
+        animeSeasonSearchYear.append(curYearOption);
+    }
+    initSelect();
 });

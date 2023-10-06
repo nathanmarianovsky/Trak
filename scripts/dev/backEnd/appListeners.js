@@ -557,8 +557,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
     	if(BrowserWindow.getAllWindows().length === 0) {
    		let win = tools.createWindow("index", originalPath, BrowserWindow, path, log, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
    		win.webContents.on("did-finish-load", () => {
-  				win.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
-  				tools.tutorialLoad(fs, path, log, primaryWindow, originalPath);
+  				win.webContents.send("loadRows", win.getContentSize()[1] - 800);
+  				tools.tutorialLoad(fs, path, log, win, originalPath);
   				tools.checkForUpdate(os, https, fs, path, log, originalPath, win);
   			});
     	}
@@ -579,9 +579,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
   	ipc.on("home", event => {
   		mainWindow.loadFile(path.join(originalPath, "Trak", "localPages", "index.html"));
   		mainWindow.webContents.on("did-finish-load", () => {
-  			mainWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
-  			tools.tutorialLoad(fs, path, log, primaryWindow, originalPath);
-  			tools.checkForUpdate(os, https, fs, path, log, originalPath, mainWindow);
+  			mainWindow.webContents.send("loadRows", mainWindow.getContentSize()[1] - 800);
+  			tools.tutorialLoad(fs, path, log, mainWindow, originalPath);
   		});
   	});
 
@@ -810,6 +809,24 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 	// Handles the fetching of the primary window's current height in order to provide the necessary difference for the index page table height to be updated.
 	ipc.on("getAppHeight", event => {
 		event.sender.send("appHeight", mainWindow.getBounds().height - 800);
+	});
+
+	ipc.on("animeFetchSeason", (event, seasonInfo) => {
+		malScraper.getSeason(seasonInfo[0], seasonInfo[1]).then(data => {
+			let seasonContent = [];
+			if(seasonInfo[2].length == 0) {
+				const attributes = ["TV", "OVAs", "ONAs", "Movies", "Specials"];
+				for(let a = 0; a < attributes.length; a++) {
+					seasonContent = seasonContent.concat(data[attributes[a]]);
+				}
+			}
+			else {
+				for(let a = 0; a < seasonInfo[2].length; a++) {
+					seasonContent = seasonContent.concat(data[seasonInfo[2][a]]);
+				}
+			}
+			event.sender.send("animeFetchSeasonResult", seasonContent.map(elem => [elem.title, elem.picture, elem.link]));
+		});
 	});
 };
 
