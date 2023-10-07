@@ -825,7 +825,14 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 					seasonContent = seasonContent.concat(data[seasonInfo[2][a]]);
 				}
 			}
-			event.sender.send("animeFetchSeasonResult", seasonContent.map(elem => [elem.title, elem.picture, elem.link]));
+			event.sender.send("animeFetchSeasonResult", seasonContent.map(elem => [elem.title, elem.picture, elem.link, elem.score]));
+		});
+	});
+
+	ipc.on("animeSynopsisFetch", (event, link) => {
+		console.log(link);
+		malScraper.getInfoFromURL(link).then(data => {
+			event.sender.send("animeSynopsisFetchResult", data.synopsis);
 		});
 	});
 };

@@ -656,12 +656,18 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
 
 
 ipcRenderer.on("animeFetchSeasonResult", (event, seasonArr) => {
-    console.log(seasonArr);
-    const container = document.getElementById("animeSeasonSearchDiv");
+    const container = document.getElementById("animeSeasonSearchContainer"),
+        preloaderIcon = document.getElementById("synopsisPreloader"),
+        synopsisContent = document.getElementById("synopsisModalContent");
+    document.getElementById("preloader").style.setProperty("display", "none", "important");
+    container.innerHTML = "";
     for(let n = 0; n < seasonArr.length; n++) {
         let itemImg = document.createElement("img"),
             itemContainer = document.createElement("div"),
-            itemText = document.createElement("div");
+            itemText = document.createElement("div"),
+            itemInfo = document.createElement("div"),
+            itemInfoLink = document.createElement("a"),
+            itemInfoIcon = document.createElement("i");
         itemImg.classList.add("seasonItemImage");
         itemContainer.classList.add("seasonItemContainer");
         itemText.classList.add("seasonItemText", "tooltipped");
@@ -669,12 +675,31 @@ ipcRenderer.on("animeFetchSeasonResult", (event, seasonArr) => {
         itemText.setAttribute("data-tooltip", seasonArr[n][0]);
         itemImg.setAttribute("src", seasonArr[n][1]);
         itemText.textContent = seasonArr[n][0];
-        itemContainer.append(itemImg, itemText);
+        itemInfo.textContent = seasonArr[n][3] + "/10.00";
+        itemInfoLink.setAttribute("href", "#synopsisModal");
+        itemInfoLink.classList.add("modal-trigger");
+        itemInfoIcon.setAttribute("link", seasonArr[n][2]);
+        itemInfoIcon.classList.add("material-icons", "synopsisInfoIcon", "animeSearchInfoIcon");
+        itemInfoIcon.textContent = "info";
+        itemInfoLink.append(itemInfoIcon);
+        itemInfo.append(itemInfoLink);
+        itemContainer.append(itemImg, itemText, itemInfo);
         container.append(itemContainer);
+        itemInfoIcon.addEventListener("click", e => {
+            synopsisContent.innerHTML = "";
+            preloaderIcon.style.display = "block";
+            ipcRenderer.send("animeSynopsisFetch", e.target.getAttribute("link"));
+            ipcRenderer.on("animeSynopsisFetchResult", (eve, synopsis) => {
+                console.log(synopsis);
+                console.log(synopsis.split(""));
+                preloaderIcon.style.display = "none";
+                synopsisContent.innerHTML = synopsis.split("").map(elem => elem == "\n" ? "<br>" : elem).join("").replace("[Written by MAL Rewrite]", "").trim();
+            });
+        });
     }
     document.body.style.overflowY = "auto";
     initTooltips();
 });
 
 
- // tooltipped" data-position="bottom" data-tooltip="Export/Import"
+// <a href="#synopsisModal" path="C:\Users\asus\AppData\Roaming\Trak\data\Anime-SuzumeNoTojimari\data.json" class="modal-trigger"><i class="material-icons synopsisInfoIcon">info</i></a>

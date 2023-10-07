@@ -14,45 +14,47 @@
         <script type="text/javascript" src="../../scripts/dist/frontEnd/settings.js" async></script>
     </head>
     <body id="indexBody">
-        <nav class="z-depth-2">
-            <div class="nav-wrapper">
-                <span class="brand-logo center">Trak</span>
-                <ul class="left">
-                    <li>
-                        <a id="setFilter" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Filter Records" href="#filterModal"><i class="material-icons">filter_list</i></a>
-                        <div id="introductionTargetFilter" class="tap-target" data-target="setFilter">
-                            <div class="tap-target-content">
-                                <p>Use the filter to restrict the records shown.</p>
-                            </div>
-                        </div>
-                    </li>
-                    <li><a id="clearFilter" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Clear Filter"><i class="material-icons">clear_all</i></a></li>
-                    <li><a id="animeSeasonSearch" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Search Anime by Season"><i class="material-icons">animation</i></a></li>
-                    <li><a id="indexHome" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Home"><i class="material-icons">home</i></a></li>
-                </ul>
-                <ul class="right">
-                    <li><a id="updateAvailable" class="waves-effect waves-light modal-trigger tooltipped pulse" data-position="bottom" data-tooltip="Update Available" href="#updateModal"><i class="material-icons">update</i></a></li>
-                    <li>
-                        <div class="topNavTapContainer">
-                            <a id="openDatabase" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Export/Import" href="#databaseModal"><i class="material-icons">library_books</i></a>
-                            <div id="introductionTargetDatabase" class="tap-target" data-target="openDatabase">
+        <div class="navbar-fixed">
+            <nav class="z-depth-2">
+                <div class="nav-wrapper">
+                    <span class="brand-logo center">Trak</span>
+                    <ul class="left">
+                        <li>
+                            <a id="setFilter" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Filter Records" href="#filterModal"><i class="material-icons">filter_list</i></a>
+                            <div id="introductionTargetFilter" class="tap-target" data-target="setFilter">
                                 <div class="tap-target-content">
-                                    <p>Export/Import records as desired via zip archives.</p>
+                                    <p>Use the filter to restrict the records shown.</p>
                                 </div>
                             </div>
-                        </div>
-                        <div class="topNavTapContainer">
-                            <a id="openSettings" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Settings" href="#settingsModal"><i class="material-icons">settings</i></a>
-                            <div id="introductionTargetSettings" class="tap-target" data-target="openSettings">
-                                <div class="tap-target-content">
-                                    <p>Use the settings to change application defaults.</p>
+                        </li>
+                        <li><a id="clearFilter" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Clear Filter"><i class="material-icons">clear_all</i></a></li>
+                        <li><a id="animeSeasonSearch" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Search Anime by Season"><i class="material-icons">animation</i></a></li>
+                        <li><a id="indexHome" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Home"><i class="material-icons">home</i></a></li>
+                    </ul>
+                    <ul class="right">
+                        <li><a id="updateAvailable" class="waves-effect waves-light modal-trigger tooltipped pulse" data-position="bottom" data-tooltip="Update Available" href="#updateModal"><i class="material-icons">update</i></a></li>
+                        <li>
+                            <div class="topNavTapContainer">
+                                <a id="openDatabase" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Export/Import" href="#databaseModal"><i class="material-icons">library_books</i></a>
+                                <div id="introductionTargetDatabase" class="tap-target" data-target="openDatabase">
+                                    <div class="tap-target-content">
+                                        <p>Export/Import records as desired via zip archives.</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+                            <div class="topNavTapContainer">
+                                <a id="openSettings" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Settings" href="#settingsModal"><i class="material-icons">settings</i></a>
+                                <div id="introductionTargetSettings" class="tap-target" data-target="openSettings">
+                                    <div class="tap-target-content">
+                                        <p>Use the settings to change application defaults.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
         <div id="outerLayer">
             <div id="searchBarDiv1" class="row">
                 <form class="col s12">
@@ -103,19 +105,6 @@
                     </colgroup>
                     <tbody id="tableBody"></tbody>
                 </table>
-            </div>
-            <div id="preloader" class="preloader-wrapper big active">
-                <div class="spinner-layer">
-                    <div class="circle-clipper left">
-                        <div class="circle"></div>
-                    </div>
-                    <div class="gap-patch">
-                        <div class="circle"></div>
-                    </div>
-                    <div class="circle-clipper right">
-                        <div class="circle"></div>
-                    </div>
-                </div>
             </div>
             <div id="filterModal" class="modal modal-fixed-footer">
                 <div class="modal-content">
@@ -183,7 +172,6 @@
             <a id="remove" class="btn-floating btn-large waves-effect waves-light modal-trigger tooltipped" data-position="right" data-tooltip="Remove Records" href="#removeModal"><i class="material-icons">remove</i></a>
         </div>
 
-
         <div id="animeSeasonSearchDiv">
             <div class="row">
                 <div class="col s12">
@@ -222,7 +210,20 @@
                 </div>
             </div>
             <a id="animeSeasonSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
-
+            <div id="animeSeasonSearchContainer"></div>
+        </div>
+        <div id="preloader" class="preloader-wrapper big active">
+            <div class="spinner-layer">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
         </div>
 
 

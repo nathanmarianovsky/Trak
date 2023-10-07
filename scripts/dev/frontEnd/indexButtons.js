@@ -75,7 +75,8 @@ window.addEventListener("load", () => {
         animeSeasonSearchDiv = document.getElementById("animeSeasonSearchDiv"),
         animeSeasonSearchYear = document.getElementById("animeSeasonSearchYear"),
         animeSeasonSearchSeason = document.getElementById("animeSeasonSearchSeason"),
-        animeSeasonSearchType = document.getElementById("animeSeasonSearchType");
+        animeSeasonSearchType = document.getElementById("animeSeasonSearchType"),
+        preloader = document.getElementById("preloader");
     
 
     animeSeasonSearch.addEventListener("click", e => {
@@ -83,6 +84,7 @@ window.addEventListener("load", () => {
         animeSeasonSearch.style.display = "none";
         indexHome.style.display = "inline-block";
         animeSeasonSearchDiv.style.display = "block";
+        document.body.style.overflowY = "auto";
     });
 
     indexHome.addEventListener("click", e => {
@@ -90,6 +92,7 @@ window.addEventListener("load", () => {
         animeSeasonSearch.style.display = "inline-block";
         indexHome.style.display = "none";
         animeSeasonSearchDiv.style.display = "none";
+        document.body.style.overflowY = "hidden";
     })
 
     animeSeasonSearchSubmission.addEventListener("click", e => {
@@ -102,6 +105,8 @@ window.addEventListener("load", () => {
             M.toast({"html": "A season must be selected in order to search for anime.", "classes": "rounded"});
         }
         else {
+            document.getElementById("animeSeasonSearchContainer").innerHTML = "";
+            preloader.style.display = "block";
             ipcRenderer.send("animeFetchSeason", [curYear, curSeason, Array.from(animeSeasonSearchType.selectedOptions).map(({ value }) => value)]);
         }
     });

@@ -199,9 +199,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 #preloader {
 	display: block !important;
-	position: relative !important;
+    position: fixed;
+    left: 47%;
+    top: 50%;
   	margin: 0 auto;
-  	bottom: 225px;
 }
 
 #synopsisModal {
@@ -251,6 +252,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 #animeSeasonSearchYearDiv ul {
 	height: 250px;
+}
+
+#animeSeasonSearchContainer {
+	resize: vertical;
 }
 
 .spinner-layer {
@@ -343,6 +348,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 .seasonItemText {
     white-space: nowrap;
     overflow: hidden;
+}
+
+.animeSearchInfoIcon {
+	margin-left: 5%;
 }
 
 
