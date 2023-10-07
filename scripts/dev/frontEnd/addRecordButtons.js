@@ -326,75 +326,77 @@ var recordChoicesButtons = () => {
                     document.getElementById("animeGenre" + genreIter).checked = true;
                 }
             });
-            // Reset the related content modal.
-            if(updateDetector == false) {
-                document.getElementById("animeList").innerHTML = "";
-            }
-            const listNum = document.getElementById("animeList").children.length + 1;
-            // If the anime type is a season then add a season to the related content.
-            if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
-                // Attach a season.
-                seasonAddition();
-                const seasonName = document.getElementById("li_" + listNum + "_Season_Name");
-                // If the start date is provided then set it as the value for the season start date input. 
-                if(newResponse[3] != "") {
-                    let dateStart = new Date(newResponse[3]);
-                    dateStart.setDate(dateStart.getDate() - 1);
-                    document.getElementById("li_" + listNum + "_Season_Start").value = dateStart.getFullYear() + "-"
-                        + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
-                        + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
+            setTimeout(() => {
+                // Reset the related content modal.
+                if(updateDetector == false) {
+                    document.getElementById("animeList").innerHTML = "";
                 }
-                // If the end date is provided then set it as the value for the season end date input. 
-                if(newResponse[4] != "") {
-                    let dateEnd = new Date(newResponse[4]);
-                    dateEnd.setDate(dateEnd.getDate() - 1);
-                    document.getElementById("li_" + listNum + "_Season_End").value = dateEnd.getFullYear() + "-"
-                        + (dateEnd.getMonth() + 1 > 9 ? dateEnd.getMonth() + 1 : "0" + (dateEnd.getMonth() + 1)) + "-"
-                        + (dateEnd.getDate() + 1 > 9 ? dateEnd.getDate() + 1 : "0" + (dateEnd.getDate() + 1));
+                const listNum = document.getElementById("animeList").children.length + 1;
+                // If the anime type is a season then add a season to the related content.
+                if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
+                    // Attach a season.
+                    seasonAddition();
+                    const seasonName = document.getElementById("li_" + listNum + "_Season_Name");
+                    // If the start date is provided then set it as the value for the season start date input. 
+                    if(newResponse[3] != "") {
+                        let dateStart = new Date(newResponse[3]);
+                        dateStart.setDate(dateStart.getDate() - 1);
+                        document.getElementById("li_" + listNum + "_Season_Start").value = dateStart.getFullYear() + "-"
+                            + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
+                            + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
+                    }
+                    // If the end date is provided then set it as the value for the season end date input. 
+                    if(newResponse[4] != "") {
+                        let dateEnd = new Date(newResponse[4]);
+                        dateEnd.setDate(dateEnd.getDate() - 1);
+                        document.getElementById("li_" + listNum + "_Season_End").value = dateEnd.getFullYear() + "-"
+                            + (dateEnd.getMonth() + 1 > 9 ? dateEnd.getMonth() + 1 : "0" + (dateEnd.getMonth() + 1)) + "-"
+                            + (dateEnd.getDate() + 1 > 9 ? dateEnd.getDate() + 1 : "0" + (dateEnd.getDate() + 1));
+                    }
+                    // Provide a default season name.
+                    seasonName.value = "Season";
+                    seasonName.classList.add("valid");
+                    seasonName.nextElementSibling.classList.add("active");
+                    // Add the appropriate number of episodes with a default episode name.
+                    for(let f = 0; f < parseInt(newResponse[6]); f++) {
+                        document.getElementById("li_" + listNum + "_Season_AddEpisode").click();
+                        let episodeName = document.getElementById("li_" + listNum + "_Episode_Name_" + (f + 1));
+                        episodeName.value = "Episode " + (f + 1);
+                        episodeName.classList.add("valid");
+                        episodeName.nextElementSibling.classList.add("active");
+                    }
+                    // Hide the episodes by default.
+                    document.getElementById("li_" + listNum + "_Season").children[0].click();
                 }
-                // Provide a default season name.
-                seasonName.value = "Season";
-                seasonName.classList.add("valid");
-                seasonName.nextElementSibling.classList.add("active");
-                // Add the appropriate number of episodes with a default episode name.
-                for(let f = 0; f < parseInt(newResponse[6]); f++) {
-                    document.getElementById("li_" + listNum + "_Season_AddEpisode").click();
-                    let episodeName = document.getElementById("li_" + listNum + "_Episode_Name_" + (f + 1));
-                    episodeName.value = "Episode " + (f + 1);
-                    episodeName.classList.add("valid");
-                    episodeName.nextElementSibling.classList.add("active");
+                else {
+                    // Attach a single film/ona/ova.
+                    singleAddition();
+                    const singleName = document.getElementById("li_" + listNum + "_Single_Name"),
+                        singleType = document.getElementById("li_" + listNum + "_Single_Type");
+                    // If the release date is provided then set it as the value for the single release date input. 
+                    if(newResponse[3] != "") {
+                        let dateStart = new Date(newResponse[3]);
+                        dateStart.setDate(dateStart.getDate() - 1);
+                        document.getElementById("li_" + listNum + "_Single_Release").value = dateStart.getFullYear() + "-"
+                            + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
+                            + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
+                    }
+                    // Provide a default film/ona/ova name.
+                    singleName.value = "Item 1";
+                    singleName.classList.add("valid");
+                    singleName.nextElementSibling.classList.add("active");
+                    // Set the type for the item.
+                    singleType.value = newResponse[5];
+                    // Initialize the select tags.
+                    initSelect();
                 }
-                // Hide the episodes by default.
-                document.getElementById("li_" + listNum + "_Season").children[0].click();
-            }
-            else {
-                // Attach a single film/ona/ova.
-                singleAddition();
-                const singleName = document.getElementById("li_" + listNum + "_Single_Name"),
-                    singleType = document.getElementById("li_" + listNum + "_Single_Type");
-                // If the release date is provided then set it as the value for the single release date input. 
-                if(newResponse[3] != "") {
-                    let dateStart = new Date(newResponse[3]);
-                    dateStart.setDate(dateStart.getDate() - 1);
-                    document.getElementById("li_" + listNum + "_Single_Release").value = dateStart.getFullYear() + "-"
-                        + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
-                        + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
-                }
-                // Provide a default film/ona/ova name.
-                singleName.value = "Item 1";
-                singleName.classList.add("valid");
-                singleName.nextElementSibling.classList.add("active");
-                // Set the type for the item.
-                singleType.value = newResponse[5];
-                // Initialize the select tags.
-                initSelect();
-            }
-            // Hide the preloader now that everything has been loaded and show the buttons if necessary.
-            animePreloader.style.visibility = "hidden";
-            animeMoreBtn.style.visibility = "visible";
-            animeFetchBtn.style.visibility = "visible";
-            animeSave.style.visibility = "visible";
-            animeOptions.style.visibility = "visible";
+                // Hide the preloader now that everything has been loaded and show the buttons if necessary.
+                animePreloader.style.visibility = "hidden";
+                animeMoreBtn.style.visibility = "visible";
+                animeFetchBtn.style.visibility = "visible";
+                animeSave.style.visibility = "visible";
+                animeOptions.style.visibility = "visible";
+            }, 500);
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         if(introHolder == true) {

@@ -662,6 +662,7 @@ ipcRenderer.on("animeFetchSeasonResult", (event, seasonArr) => {
         sortSelect = document.getElementById("animeSeasonSearchSort");
     document.getElementById("preloader").style.setProperty("display", "none", "important");
     container.innerHTML = "";
+    seasonArr = shuffle(seasonArr);
     for(let n = 0; n < seasonArr.length; n++) {
         let itemImg = document.createElement("img"),
             itemContainer = document.createElement("div"),
@@ -710,7 +711,6 @@ ipcRenderer.on("animeFetchSeasonResult", (event, seasonArr) => {
     document.body.style.overflowY = "auto";
     initTooltips();
     sortSelect.addEventListener("change", e => {
-        console.log(e.target.value);
         let sortedArr = [];
         if(e.target.value == "alphabetical") {
             sortedArr = Array.from(container.children).sort((a, b) => a.getAttribute("name").localeCompare(b.getAttribute("name")));
@@ -747,6 +747,3 @@ ipcRenderer.on("animeFetchSeasonResult", (event, seasonArr) => {
         }
     });
 });
-
-
-// <a href="#synopsisModal" path="C:\Users\asus\AppData\Roaming\Trak\data\Anime-SuzumeNoTojimari\data.json" class="modal-trigger"><i class="material-icons synopsisInfoIcon">info</i></a>

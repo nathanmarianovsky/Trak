@@ -872,13 +872,13 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 						}
 					});
 				});
+				animeRecordWindow.webContents.send("animeFetchDetailsResultName", animeData.title);
 				// Fetch all possible images associated to the anime record.
 				malScraper.getPictures({ "name": animeData.title, "id": animeData.id }).then(malImgArr => {
 					// Send the attained data to the front-end.
-					log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + animeData.title + ".");
+					log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + animeData.englishTitle + ".");
 					let allImgArr = malImgArr.map(pic => pic.imageLink);
 					tools.arrayMove(allImgArr, allImgArr.indexOf(animeData.picture), 0);
-					animeRecordWindow.webContents.send("animeFetchDetailsResultName", animeData.englishTitle);
 					animeRecordWindow.webContents.send("animeFetchDetailsResult", [
 						animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, allImgArr], startDate, endDate,
 						animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
