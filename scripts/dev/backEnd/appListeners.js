@@ -802,7 +802,6 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 					animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
 				]);
 			});
-
 		});
 	});
 
@@ -833,6 +832,67 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 		malScraper.getInfoFromURL(link).then(data => {
 			event.sender.send("animeSynopsisFetchResult", data.synopsis);
 		});
+	});
+
+	ipc.on("animeSeasonRecordRequest", (event, link) => {
+		let animeRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  		animeRecordWindow.webContents.on("did-finish-load", () => {
+  			animeRecordWindow.webContents.send("animeSeasonRecordStart");
+  			// Fetch anime details.
+			malScraper.getInfoFromURL(link).then(animeData => {
+				// Define the parameters which will be passed to the front-end based on the details received.
+				let startDate = "",
+					endDate = "";
+				const directorsArr = [],
+					producersArr = [],
+					writersArr = [],
+					musicArr = [];
+				// Properly define the start and end date of an anime listing on myanimelist.
+				if(animeData.aired != undefined) {
+					let splitArr = animeData.aired.split("to");
+					startDate = splitArr[0];
+					if(splitArr.length > 1) {
+						endDate = splitArr[1];
+					}
+				}
+				// Properly define the lists of directors, producers, writers, and music directors associated to the anime listing on myanimelist.
+				animeData.staff.forEach(person => {
+					person.role.split(", ").forEach(personRole => {
+						if(personRole.toLowerCase().includes("director") && !personRole.toLowerCase().includes("sound")) {
+							directorsArr.push(person.name.split(", ").reverse().join(" "));
+						}
+						if(personRole.toLowerCase().includes("producer")) {
+							producersArr.push(person.name.split(", ").reverse().join(" "));
+						}
+						if(personRole.toLowerCase().includes("storyboard")) {
+							writersArr.push(person.name.split(", ").reverse().join(" "));
+						}
+						if(personRole.toLowerCase().includes("sound") || person.role.toLowerCase().includes("music")) {
+							musicArr.push(person.name.split(", ").reverse().join(" "));
+						}
+					});
+				});
+				// Fetch all possible images associated to the anime record.
+				malScraper.getPictures({ "name": animeData.title, "id": animeData.id }).then(malImgArr => {
+					// Send the attained data to the front-end.
+					log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + animeData.title + ".");
+					let allImgArr = malImgArr.map(pic => pic.imageLink);
+					tools.arrayMove(allImgArr, allImgArr.indexOf(animeData.picture), 0);
+					animeRecordWindow.webContents.send("animeFetchDetailsResultName", animeData.englishTitle);
+					animeRecordWindow.webContents.send("animeFetchDetailsResult", [
+						animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, allImgArr], startDate, endDate,
+						animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
+						animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
+					]);
+		  			ipc.once("performSave", (event, submission) => {
+		  				// If the record is an anime then save the corresponding data.
+						if(submission[0] == "Anime") {
+		  					exports.animeSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
+		  				}
+		  			});
+				});
+			});
+  		});
 	});
 };
 

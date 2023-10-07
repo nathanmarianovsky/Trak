@@ -87,6 +87,36 @@ ipcRenderer.on("addRecordInitialMessage", event => {
 
 
 
+ipcRenderer.on("animeFetchDetailsResultName", (event, name) => {
+    document.getElementById("animeName").value = name;
+    document.getElementById("animeName").parentNode.children[2].classList.add("active");
+});
+
+
+
+ipcRenderer.on("animeSeasonRecordStart", event => {
+    // Hide the top nav of the addRecord page.
+    document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display = "none";
+    // Define the addRecord preloader and display it while the data is being fetched and page is populated with the associated data.
+    const animeSeasonRecordPreloader = document.getElementById("animePreloader"),
+        animeSeasonRecordSave = document.getElementById("animeSave"),
+        animeSeasonRecordOptions = document.getElementById("animeOptions"),
+        animeSeasonRecordMoreDetailsBtn = document.getElementById("animeMoreDetailsBtn"),
+        animeSeasonRecordFetchDetailsBtn = document.getElementById("animeFetchDetailsBtn");
+    // Hide the page buttons until all data has loaded in.
+    animeSeasonRecordPreloader.style.top = "-32px";
+    animeSeasonRecordPreloader.style.visibility = "visible";
+    animeSeasonRecordSave.style.visibility = "hidden";
+    animeSeasonRecordOptions.style.visibility = "hidden";
+    animeSeasonRecordMoreDetailsBtn.style.visibility = "hidden";
+    animeSeasonRecordFetchDetailsBtn.style.visibility = "hidden";
+    // Load the anime record portion of the addRecord page.
+    document.getElementById("categoryAnime").click();
+    document.getElementById("categoryAnimeDiv").children[0].style.marginTop = "3%";
+});
+
+
+
 // Handle the load of record information on the update page.
 ipcRenderer.on("recordUpdateInfo", (event, name) => {
     // Hide the top nav of the addRecord page.

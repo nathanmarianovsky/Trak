@@ -159,9 +159,13 @@ var recordChoicesButtons = () => {
                 }
             }),
             animeNameUL = animeName.nextElementSibling,
-            animePreloader = document.getElementById("animePreloader");
+            animePreloader = document.getElementById("animePreloader"),
+            animeMoreBtn = document.getElementById("animeMoreDetailsBtn"),
+            animeFetchBtn = document.getElementById("animeFetchDetailsBtn"),
+            animeSave = document.getElementById("animeSave"),
+            animeOptions = document.getElementById("animeOptions")
         // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
-        document.getElementById("animeFetchDetailsBtn").addEventListener("click", e => {
+        animeFetchBtn.addEventListener("click", e => {
             if(animeName.value.length > 2) {
                 animePreloader.style.visibility = "visible";
                 ipcRenderer.send("animeFetchDetails", animeName.value);
@@ -291,10 +295,11 @@ var recordChoicesButtons = () => {
             // Update the anime synopsis if available.
             if(newResponse[13] != "" && newResponse[13] != "None found, add some") {
                 const synopsisInput = document.getElementById("animeSynopsis");
-                let textHolder = newResponse[13].replace("[Written by MAL Rewrite]", "").trim();
+                let textHolder = newResponse[13].replace("[Written by MAL Rewrite]", "");
                 if(textHolder.includes("(Source:")) {
                     textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
                 }
+                textHolder = textHolder.trim();
                 synopsisInput.value = textHolder;
                 synopsisInput.classList.add("valid");
                 synopsisInput.nextElementSibling.classList.add("active");
@@ -327,7 +332,6 @@ var recordChoicesButtons = () => {
             }
             const listNum = document.getElementById("animeList").children.length + 1;
             // If the anime type is a season then add a season to the related content.
-            console.log(newResponse[6][1]);
             if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
                 // Attach a season.
                 seasonAddition();
@@ -385,8 +389,12 @@ var recordChoicesButtons = () => {
                 // Initialize the select tags.
                 initSelect();
             }
-            // Hide the preloader now that everything has been loaded.
+            // Hide the preloader now that everything has been loaded and show the buttons if necessary.
             animePreloader.style.visibility = "hidden";
+            animeMoreBtn.style.visibility = "visible";
+            animeFetchBtn.style.visibility = "visible";
+            animeSave.style.visibility = "visible";
+            animeOptions.style.visibility = "visible";
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         if(introHolder == true) {

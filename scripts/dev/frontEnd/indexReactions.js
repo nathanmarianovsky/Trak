@@ -669,14 +669,15 @@ ipcRenderer.on("animeFetchSeasonResult", (event, seasonArr) => {
             itemInfo = document.createElement("div"),
             itemInfoLink = document.createElement("a"),
             itemInfoIcon = document.createElement("i");
-        itemImg.classList.add("seasonItemImage");
         itemContainer.classList.add("seasonItemContainer");
         itemContainer.setAttribute("name", seasonArr[n][0]);
         itemContainer.setAttribute("rating", seasonArr[n][3]);
         itemText.classList.add("seasonItemText", "tooltipped");
         itemText.setAttribute("data-position", "bottom");
         itemText.setAttribute("data-tooltip", seasonArr[n][0]);
+        itemImg.classList.add("seasonItemImage");
         itemImg.setAttribute("src", seasonArr[n][1]);
+        itemImg.setAttribute("link", seasonArr[n][2]);
         itemText.textContent = seasonArr[n][0];
         itemInfo.textContent = seasonArr[n][3] + (seasonArr[n][3] != "N/A" ? "/10.00" : "");
         itemInfoLink.setAttribute("href", "#synopsisModal");
@@ -694,12 +695,16 @@ ipcRenderer.on("animeFetchSeasonResult", (event, seasonArr) => {
             ipcRenderer.send("animeSynopsisFetch", e.target.getAttribute("link"));
             ipcRenderer.on("animeSynopsisFetchResult", (eve, synopsis) => {
                 preloaderIcon.style.display = "none";
-                let textHolder = synopsis.split("").map(elem => elem == "\n" ? "<br>" : elem).join("").replace("[Written by MAL Rewrite]", "").trim();
+                let textHolder = synopsis.split("").map(elem => elem == "\n" ? "<br>" : elem).join("").replace("[Written by MAL Rewrite]", "");
                 if(textHolder.includes("(Source:")) {
                     textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
                 }
+                textHolder = textHolder.trim();
                 synopsisContent.innerHTML = textHolder;
             });
+        });
+        itemImg.addEventListener("click", e => {
+            ipcRenderer.send("animeSeasonRecordRequest", e.target.getAttribute("link"));
         });
     }
     document.body.style.overflowY = "auto";
