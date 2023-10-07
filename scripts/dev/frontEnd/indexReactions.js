@@ -658,7 +658,8 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
 ipcRenderer.on("animeFetchSeasonResult", (event, seasonArr) => {
     const container = document.getElementById("animeSeasonSearchContainer"),
         preloaderIcon = document.getElementById("synopsisPreloader"),
-        synopsisContent = document.getElementById("synopsisModalContent");
+        synopsisContent = document.getElementById("synopsisModalContent"),
+        sortSelect = document.getElementById("animeSeasonSearchSort");
     document.getElementById("preloader").style.setProperty("display", "none", "important");
     container.innerHTML = "";
     for(let n = 0; n < seasonArr.length; n++) {
@@ -670,12 +671,14 @@ ipcRenderer.on("animeFetchSeasonResult", (event, seasonArr) => {
             itemInfoIcon = document.createElement("i");
         itemImg.classList.add("seasonItemImage");
         itemContainer.classList.add("seasonItemContainer");
+        itemContainer.setAttribute("name", seasonArr[n][0]);
+        itemContainer.setAttribute("rating", seasonArr[n][3]);
         itemText.classList.add("seasonItemText", "tooltipped");
         itemText.setAttribute("data-position", "bottom");
         itemText.setAttribute("data-tooltip", seasonArr[n][0]);
         itemImg.setAttribute("src", seasonArr[n][1]);
         itemText.textContent = seasonArr[n][0];
-        itemInfo.textContent = seasonArr[n][3] + "/10.00";
+        itemInfo.textContent = seasonArr[n][3] + (seasonArr[n][3] != "N/A" ? "/10.00" : "");
         itemInfoLink.setAttribute("href", "#synopsisModal");
         itemInfoLink.classList.add("modal-trigger");
         itemInfoIcon.setAttribute("link", seasonArr[n][2]);
@@ -690,15 +693,54 @@ ipcRenderer.on("animeFetchSeasonResult", (event, seasonArr) => {
             preloaderIcon.style.display = "block";
             ipcRenderer.send("animeSynopsisFetch", e.target.getAttribute("link"));
             ipcRenderer.on("animeSynopsisFetchResult", (eve, synopsis) => {
-                console.log(synopsis);
-                console.log(synopsis.split(""));
                 preloaderIcon.style.display = "none";
-                synopsisContent.innerHTML = synopsis.split("").map(elem => elem == "\n" ? "<br>" : elem).join("").replace("[Written by MAL Rewrite]", "").trim();
+                let textHolder = synopsis.split("").map(elem => elem == "\n" ? "<br>" : elem).join("").replace("[Written by MAL Rewrite]", "").trim();
+                if(textHolder.includes("(Source:")) {
+                    textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
+                }
+                synopsisContent.innerHTML = textHolder;
             });
         });
     }
     document.body.style.overflowY = "auto";
     initTooltips();
+    sortSelect.addEventListener("change", e => {
+        console.log(e.target.value);
+        let sortedArr = [];
+        if(e.target.value == "alphabetical") {
+            sortedArr = Array.from(container.children).sort((a, b) => a.getAttribute("name").localeCompare(b.getAttribute("name")));
+        }
+        else if(e.target.value == "reverseAlphabetical") {
+            sortedArr = Array.from(container.children).sort((a, b) => b.getAttribute("name").localeCompare(a.getAttribute("name")));
+        }
+        else if(e.target.value == "rating") {
+            sortedArr = Array.from(container.children).sort((a, b) => {
+                if(a.getAttribute("rating") != "N/A" && b.getAttribute("rating") != "N/A") {
+                    return parseFloat(b.getAttribute("rating")) - parseFloat(a.getAttribute("rating"))
+                }
+                else if(a.getAttribute("rating") == "N/A") { return 1; }
+                else if(b.getAttribute("rating") == "N/A") { return -1; }
+            });
+        }
+        else if(e.target.value == "reverseRating") {
+            sortedArr = Array.from(container.children).sort((a, b) => {
+                if(a.getAttribute("rating") != "N/A" && b.getAttribute("rating") != "N/A") {
+                    return parseFloat(a.getAttribute("rating")) - parseFloat(b.getAttribute("rating"))
+                }
+                else if(a.getAttribute("rating") == "N/A") { return 1; }
+                else if(b.getAttribute("rating") == "N/A") { return -1; }
+            });
+        }
+        else if(e.target.value == "random") {
+            sortedArr = shuffle(Array.from(container.children));
+            sortSelect.value = "";
+            initSelect();
+        }
+        container.innerHTML = "";
+        for(let k = 0; k < sortedArr.length; k++) {
+            container.append(sortedArr[k]);
+        }
+    });
 });
 
 

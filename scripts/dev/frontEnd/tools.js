@@ -228,6 +228,19 @@ var arrayMove = (arr, fromIndex, toIndex) => {
 
 
 
+var shuffle = arr => {
+    let currentIndex = arr.length,
+        randomIndex = 0;
+    while(currentIndex > 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [arr[currentIndex], arr[randomIndex]] = [arr[randomIndex], arr[currentIndex]];
+    }
+    return arr;
+};
+
+
+
 /*
 
 Provides the list of all genres/tags that can be selected from the index.page filter.

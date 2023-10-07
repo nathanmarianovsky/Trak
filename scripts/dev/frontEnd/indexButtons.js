@@ -106,6 +106,8 @@ window.addEventListener("load", () => {
         }
         else {
             document.getElementById("animeSeasonSearchContainer").innerHTML = "";
+            document.getElementById("animeSeasonSearchSort").value = "";
+            initSelect();
             preloader.style.display = "block";
             ipcRenderer.send("animeFetchSeason", [curYear, curSeason, Array.from(animeSeasonSearchType.selectedOptions).map(({ value }) => value)]);
         }

@@ -830,7 +830,6 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 	});
 
 	ipc.on("animeSynopsisFetch", (event, link) => {
-		console.log(link);
 		malScraper.getInfoFromURL(link).then(data => {
 			event.sender.send("animeSynopsisFetchResult", data.synopsis);
 		});

@@ -291,7 +291,11 @@ var recordChoicesButtons = () => {
             // Update the anime synopsis if available.
             if(newResponse[13] != "" && newResponse[13] != "None found, add some") {
                 const synopsisInput = document.getElementById("animeSynopsis");
-                synopsisInput.value = newResponse[13].replace("[Written by MAL Rewrite]", "").replace("(Source: AniDB)", "").trim();
+                let textHolder = newResponse[13].replace("[Written by MAL Rewrite]", "").trim();
+                if(textHolder.includes("(Source:")) {
+                    textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
+                }
+                synopsisInput.value = textHolder;
                 synopsisInput.classList.add("valid");
                 synopsisInput.nextElementSibling.classList.add("active");
                 M.textareaAutoResize(synopsisInput);
