@@ -33,7 +33,9 @@ button {
 }
 
 #searchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
+#animeNameSearchInnerDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
 #searchBarDiv1 input.valid[type="text"]:not(.browser-default),
+#animeNameSearchInnerDiv1 input.valid[type="text"]:not(.browser-default),
 [type="text"]:not(.browser-default):focus:not([readonly]),
 input.valid[type="text"]:not(.browser-default),
 input[type="date"]:not(.browser-default):focus:not([readonly]),
@@ -45,6 +47,7 @@ textarea.materialize-textarea.valid {
 }
 
 #searchBarDiv1 .input-field .prefix.active,
+#animeNameSearchInnerDiv1 .input-field .prefix.active,
 input[type="text"]:not(.browser-default):focus:not([readonly])+label,
 input[type="date"]:not(.browser-default):focus:not([readonly])+label,
 textarea.materialize-textarea:focus:not([readonly])+label,
@@ -169,6 +172,12 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
   	right: 23px;
 }
 
+#animeSeasonSearchSwitch {
+	position: fixed;
+  	bottom: 92px;
+  	right: 23px;
+}
+
 #remove {
 	background-color: #2A2A8E;
 	position: fixed;
@@ -194,6 +203,14 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 }
 
 #searchBarDiv2 {
+	margin-bottom: 0;
+}
+
+#animeNameSearchInnerDiv1 {
+	display: none;
+}
+
+#animeNameSearchInnerDiv2 {
 	margin-bottom: 0;
 }
 
@@ -256,6 +273,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 #animeSeasonSearchContainer {
 	resize: vertical;
+}
+
+#animeNameSearchInnerDiv {
+	display: none;
 }
 
 .spinner-layer {

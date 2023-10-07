@@ -655,7 +655,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
 
 
 
-ipcRenderer.on("animeFetchSeasonResult", (event, seasonArr) => {
+ipcRenderer.on("animeFetchResult", (event, seasonArr) => {
     const container = document.getElementById("animeSeasonSearchContainer"),
         preloaderIcon = document.getElementById("synopsisPreloader"),
         synopsisContent = document.getElementById("synopsisModalContent"),

@@ -824,7 +824,24 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 					seasonContent = seasonContent.concat(data[seasonInfo[2][a]]);
 				}
 			}
-			event.sender.send("animeFetchSeasonResult", seasonContent.map(elem => [elem.title, elem.picture, elem.link, elem.score]));
+			event.sender.send("animeFetchResult", seasonContent.map(elem => [elem.title, elem.picture, elem.link, elem.score]));
+		});
+	});
+
+	ipc.on("animeFetchSearch", (event, query) => {
+		malScraper.search.search("anime", { "term": query, "maxResults": 100 }).then(results => {
+			const resultsArr = [];
+			const picPromise = new Promise((resolve, reject) => {
+				results.forEach((elem, placement) => {
+					malScraper.getInfoFromURL(elem.url).then(elemData => {
+						resultsArr.push([elem.title, elemData.picture, elem.url, elem.score]);
+						if(resultsArr.length == results.length) { resolve(); }
+					});
+				})
+			});
+			picPromise.then(() => {
+				event.sender.send("animeFetchResult", resultsArr);
+			});
 		});
 	});
 

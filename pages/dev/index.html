@@ -28,7 +28,7 @@
                             </div>
                         </li>
                         <li><a id="clearFilter" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Clear Filter"><i class="material-icons">clear_all</i></a></li>
-                        <li><a id="animeSeasonSearch" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Search Anime by Season"><i class="material-icons">animation</i></a></li>
+                        <li><a id="animeSeasonSearch" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Search Anime"><i class="material-icons">animation</i></a></li>
                         <li><a id="indexHome" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Home"><i class="material-icons">home</i></a></li>
                     </ul>
                     <ul class="right">
@@ -173,7 +173,18 @@
         </div>
 
         <div id="animeSeasonSearchDiv">
-            <div class="row">
+            <div id="animeNameSearchInnerDiv1" class="row">
+                <form class="col s12">
+                    <div id="animeNameSearchInnerDiv2" class="row">
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix">search</i>
+                            <input id="animeSearchBar" type="text" class="validate">
+                            <label for="animeSearchBar">Search for Anime:</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="animeSeasonSearchInnerDiv" class="row">
                 <div class="col s12">
                     <div class="row">
                         <div id="animeSeasonSearchYearDiv" class="input-field col s3">
@@ -220,6 +231,7 @@
                     </div>
                 </div>
             </div>
+            <a id="animeSeasonSearchSwitch" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search by Name"><i class="material-icons">toggle_off</i></a>
             <a id="animeSeasonSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
             <div id="animeSeasonSearchContainer"></div>
         </div>

@@ -63,7 +63,8 @@ window.addEventListener("load", () => {
         importSampleDetailedXLSX = document.getElementById("importSampleDetailedXLSX"),
         animeSeasonSearch = document.getElementById("animeSeasonSearch"),
         indexHome = document.getElementById("indexHome"),
-        animeSeasonSearchSubmission = document.getElementById("animeSeasonSearchSubmission");
+        animeSeasonSearchSubmission = document.getElementById("animeSeasonSearchSubmission"),
+        animeSeasonSearchSwitch = document.getElementById("animeSeasonSearchSwitch");
     // Define all page components which will be utilized.
     const tableBody = document.getElementById("tableBody"),
         XLSXTypeSwitchDiv = document.getElementById("XLSXTypeSwitchDiv"),
@@ -76,7 +77,9 @@ window.addEventListener("load", () => {
         animeSeasonSearchYear = document.getElementById("animeSeasonSearchYear"),
         animeSeasonSearchSeason = document.getElementById("animeSeasonSearchSeason"),
         animeSeasonSearchType = document.getElementById("animeSeasonSearchType"),
-        preloader = document.getElementById("preloader");
+        preloader = document.getElementById("preloader"),
+        animeNameSearchInnerDiv1 = document.getElementById("animeNameSearchInnerDiv1"),
+        animeSeasonSearchInnerDiv = document.getElementById("animeSeasonSearchInnerDiv");
     
 
     animeSeasonSearch.addEventListener("click", e => {
@@ -96,21 +99,52 @@ window.addEventListener("load", () => {
     })
 
     animeSeasonSearchSubmission.addEventListener("click", e => {
-        let curYear = animeSeasonSearchYear.value,
-            curSeason = animeSeasonSearchSeason.value;
-        if(curYear == "") {
-            M.toast({"html": "A year must be selected in order to search for anime.", "classes": "rounded"});
+        const searchCase = animeSeasonSearchSwitch.children[0].textContent,
+            resultsContainer = document.getElementById("animeSeasonSearchContainer");
+        if(searchCase == "toggle_off") {
+            let curYear = animeSeasonSearchYear.value,
+                curSeason = animeSeasonSearchSeason.value;
+            if(curYear == "") {
+                M.toast({"html": "A year must be selected in order to search for anime.", "classes": "rounded"});
+            }
+            else if(curSeason == "") {
+                M.toast({"html": "A season must be selected in order to search for anime.", "classes": "rounded"});
+            }
+            else {
+                resultsContainer.innerHTML = "";
+                document.getElementById("animeSeasonSearchSort").value = "";
+                initSelect();
+                preloader.style.display = "block";
+                ipcRenderer.send("animeFetchSeason", [curYear, curSeason, Array.from(animeSeasonSearchType.selectedOptions).map(({ value }) => value)]);
+            }
         }
-        else if(curSeason == "") {
-            M.toast({"html": "A season must be selected in order to search for anime.", "classes": "rounded"});
+        else if(searchCase == "toggle_on") {
+            if(animeSearchBar.value.length > 0) {
+                resultsContainer.innerHTML = "";
+                preloader.style.display = "block";
+                let animeSearchBar = document.getElementById("animeSearchBar");
+                ipcRenderer.send("animeFetchSearch", animeSearchBar.value);
+            }
+            else { M.toast({"html": "In order to search for anime based on a written query the query has to be of non-zero length.", "classes": "rounded"}); }
         }
-        else {
-            document.getElementById("animeSeasonSearchContainer").innerHTML = "";
-            document.getElementById("animeSeasonSearchSort").value = "";
-            initSelect();
-            preloader.style.display = "block";
-            ipcRenderer.send("animeFetchSeason", [curYear, curSeason, Array.from(animeSeasonSearchType.selectedOptions).map(({ value }) => value)]);
+    });
+
+    animeSeasonSearchSwitch.addEventListener("click", e => {
+        const chk = animeSeasonSearchSwitch.children[0].textContent;
+        if(chk == "toggle_off") {
+            animeSeasonSearchSwitch.children[0].textContent = "toggle_on";
+            animeSeasonSearchSwitch.setAttribute("data-tooltip", "Search by Season");
+            animeNameSearchInnerDiv1.style.display = "initial";
+            animeSeasonSearchInnerDiv.style.display = "none";
         }
+        else if(chk == "toggle_on") {
+            animeSeasonSearchSwitch.children[0].textContent = "toggle_off";
+            animeSeasonSearchSwitch.setAttribute("data-tooltip", "Search by Name");
+            animeNameSearchInnerDiv1.style.display = "none";
+            animeSeasonSearchInnerDiv.style.display = "initial";
+        }
+        clearTooltips();
+        initTooltips();
     });
     
 
