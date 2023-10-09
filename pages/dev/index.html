@@ -106,43 +106,6 @@
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <div id="filterModal" class="modal modal-fixed-footer">
-                <div class="modal-content">
-                    <h4 class="center">Filter Category</h4>
-                    <div class="row">
-                        <form class="col s12">
-                            <div class="genreRow">
-                                <label class="col s2">
-                                    <input type="checkbox" id="filterCategoryAnime" class="filled-in filterCheckbox"/>
-                                    <span class="checkboxText">Anime</span>
-                                </label>
-                                <label class="col s2">
-                                    <input type="checkbox" id="filterCategoryBook" class="filled-in filterCheckbox"/>
-                                    <span class="checkboxText">Book</span>
-                                </label>
-                                <label class="col s2">
-                                    <input type="checkbox" id="filterCategoryFilm" class="filled-in filterCheckbox"/>
-                                    <span class="checkboxText">Film</span>
-                                </label>
-                                <label class="col s2">
-                                    <input type="checkbox" id="filterCategoryManga" class="filled-in filterCheckbox"/>
-                                    <span class="checkboxText">Manga</span>
-                                </label>
-                                <label class="col s2">
-                                    <input type="checkbox" id="filterCategoryShow" class="filled-in filterCheckbox"/>
-                                    <span class="checkboxText">Show</span>
-                                </label>
-                            </div>
-                        </form>
-                    </div>
-                    <h4 id="filterModalGenreHeading" class="center">Filter Genres/Tags</h4>
-                    <div class="row"><form id="filterForm" class="col s12"></form></div>
-                </div>
-                <div class="modal-footer">
-                    <a id="filterModalClear" class="waves-effect waves-light btn-flat modalButtons left">Clear</a>
-                    <a id="filterApply" class="modal-close waves-effect waves-light btn-flat modalButtons">Apply</a>
-                </div>
-            </div>
             <div id="removeModal" class="modal infoModal">
                 <div class="modal-content">
                     <h4 class="center">Remove Records</h4>
@@ -174,7 +137,7 @@
 
         <div id="animeSeasonSearchDiv">
             <div id="animeNameSearchInnerDiv1" class="row">
-                <form class="col s12">
+                <form class="col s9">
                     <div id="animeNameSearchInnerDiv2" class="row">
                         <div class="input-field col s12">
                             <i class="material-icons prefix">search</i>
@@ -183,6 +146,17 @@
                         </div>
                     </div>
                 </form>
+                <div class="input-field col s3">
+                    <select id="animeNameSearchSort">
+                        <option value="" disabled selected>Sort by:</option>
+                        <option value="alphabetical">Alphabetical</option>
+                        <option value="reverseAlphabetical">Reverse Alphabetical</option>
+                        <option value="rating">Rating</option>
+                        <option value="reverseRating">Reverse Rating</option>
+                        <option value="random">Random</option>
+                    </select>
+                    <label>Sort:</label>
+                </div>
             </div>
             <div id="animeSeasonSearchInnerDiv" class="row">
                 <div class="col s12">
@@ -231,9 +205,9 @@
                     </div>
                 </div>
             </div>
-            <a id="animeSeasonSearchSwitch" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search by Name"><i class="material-icons">toggle_off</i></a>
+            <a id="animeSeasonSearchSwitch" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search by Query"><i class="material-icons">toggle_off</i></a>
             <a id="animeSeasonSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
-            <div id="animeSeasonSearchContainer"></div>
+            <div id="animeSearchContainer"></div>
         </div>
         <div id="preloader" class="preloader-wrapper big active">
             <div class="spinner-layer">
@@ -248,9 +222,44 @@
                 </div>
             </div>
         </div>
-
-
         <div id="settingsModal" class="modal modal-fixed-footer"></div>
+        <div id="filterModal" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h4 class="center">Filter Category</h4>
+                <div class="row">
+                    <form class="col s12">
+                        <div class="genreRow">
+                            <label class="col s2">
+                                <input type="checkbox" id="filterCategoryAnime" class="filled-in filterCheckbox"/>
+                                <span class="checkboxText">Anime</span>
+                            </label>
+                            <label class="col s2">
+                                <input type="checkbox" id="filterCategoryBook" class="filled-in filterCheckbox"/>
+                                <span class="checkboxText">Book</span>
+                            </label>
+                            <label class="col s2">
+                                <input type="checkbox" id="filterCategoryFilm" class="filled-in filterCheckbox"/>
+                                <span class="checkboxText">Film</span>
+                            </label>
+                            <label class="col s2">
+                                <input type="checkbox" id="filterCategoryManga" class="filled-in filterCheckbox"/>
+                                <span class="checkboxText">Manga</span>
+                            </label>
+                            <label class="col s2">
+                                <input type="checkbox" id="filterCategoryShow" class="filled-in filterCheckbox"/>
+                                <span class="checkboxText">Show</span>
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <h4 id="filterModalGenreHeading" class="center">Filter Genres/Tags</h4>
+                <div class="row"><form id="filterForm" class="col s12"></form></div>
+            </div>
+            <div class="modal-footer">
+                <a id="filterModalClear" class="waves-effect waves-light btn-flat modalButtons left">Clear</a>
+                <a id="filterApply" class="modal-close waves-effect waves-light btn-flat modalButtons">Apply</a>
+            </div>
+        </div>
         <div id="databaseModal" class="modal modal-fixed-footer">
             <div class="modal-content">
                 <div class="navbar">

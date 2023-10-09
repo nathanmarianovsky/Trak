@@ -810,47 +810,96 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 		event.sender.send("appHeight", mainWindow.getBounds().height - 800);
 	});
 
+	// Handles the fetching of anime releases based on the season.
 	ipc.on("animeFetchSeason", (event, seasonInfo) => {
+		// Fetch the season releases.
 		malScraper.getSeason(seasonInfo[0], seasonInfo[1]).then(data => {
 			let seasonContent = [];
+			// If a user does not choose a filter then show all types of releases by default.
 			if(seasonInfo[2].length == 0) {
 				const attributes = ["TV", "OVAs", "ONAs", "Movies", "Specials"];
 				for(let a = 0; a < attributes.length; a++) {
 					seasonContent = seasonContent.concat(data[attributes[a]]);
 				}
 			}
+			// Otherwise only add the releases which adhere to the filters set by the user.
 			else {
 				for(let a = 0; a < seasonInfo[2].length; a++) {
 					seasonContent = seasonContent.concat(data[seasonInfo[2][a]]);
 				}
 			}
-			event.sender.send("animeFetchResult", seasonContent.map(elem => [elem.title, elem.picture, elem.link, elem.score]));
+			seasonContent.forEach(item => {
+				item.genres = item.genres[0].split("\n").map(str => {
+					str = str.trim();
+					if(str == "Coming-of-Age") {
+	                    str = "ComingOfAge";
+	                }
+	                else if(str == "Post-Apocalyptic") {
+	                    str = "PostApocalyptic";
+	                }
+	                else if(str == "Sci-Fi") {
+	                    str = "SciFi";
+	                }
+	                else if(str == "Slice of Life") {
+	                    str = "SliceOfLife";
+	                }
+	                return str;
+				}).filter(str => str != "");
+			});
+			// Send the list of anime releases for the season to the front-end.
+			event.sender.send("animeFetchResult", [seasonContent.map(elem => [elem.title, elem.picture, elem.link, elem.score, elem.genres]), true]);
 		});
 	});
 
+	// Handles the fetching of anime releases based on a query search.
 	ipc.on("animeFetchSearch", (event, query) => {
+		// Fetch the search results.
 		malScraper.search.search("anime", { "term": query, "maxResults": 100 }).then(results => {
 			const resultsArr = [];
+			// Define a promise which will resolve only once a picture has been attained for each search result.
 			const picPromise = new Promise((resolve, reject) => {
+				// Iterate through the search results.
 				results.forEach((elem, placement) => {
+					// Fetch the anime details based on the URL.
 					malScraper.getInfoFromURL(elem.url).then(elemData => {
-						resultsArr.push([elem.title, elemData.picture, elem.url, elem.score]);
+						elemData.genres = elemData.genres.map(str => {
+							if(str == "Coming-of-Age") {
+			                    str = "ComingOfAge";
+			                }
+			                else if(str == "Post-Apocalyptic") {
+			                    str = "PostApocalyptic";
+			                }
+			                else if(str == "Sci-Fi") {
+			                    str = "SciFi";
+			                }
+			                else if(str == "Slice of Life") {
+			                    str = "SliceOfLife";
+			                }
+			                return str;
+						});
+						// Push the anime details into the overall collection.
+						resultsArr.push([elem.title, elemData.picture, elem.url, elem.score, elemData.genres]);
 						if(resultsArr.length == results.length) { resolve(); }
 					});
 				})
 			});
+			// Once all anime results have an associated picture send the list of anime releases to the front-end.
 			picPromise.then(() => {
-				event.sender.send("animeFetchResult", resultsArr);
+				event.sender.send("animeFetchResult", [resultsArr, false]);
 			});
 		});
 	});
 
+	// Handles the fetching of an anime synopsis.
 	ipc.on("animeSynopsisFetch", (event, link) => {
+		// Fetch the anime details based on the URL.
 		malScraper.getInfoFromURL(link).then(data => {
+			// Provide the anime synopsis to the front-end.
 			event.sender.send("animeSynopsisFetchResult", data.synopsis);
 		});
 	});
 
+	// Handles the opening of the addRecord.html page to load an anime record based on a season or query search.
 	ipc.on("animeSeasonRecordRequest", (event, link) => {
 		let animeRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		animeRecordWindow.webContents.on("did-finish-load", () => {

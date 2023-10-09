@@ -16,24 +16,25 @@ BASIC DETAILS: This file handles all buttons on the index.html page.
 
 Remove all active filters.
 
-   - bodyElem is the table body associated to the page records.
-
 */
-var cleanFilter = bodyElem => {
+var cleanFilter = () => {
+    const homeIcon = document.getElementById("indexHome");
     // Define the category and genre arrays along with the record rows.
-    const pageTable = Array.from(bodyElem.children);
+    const pageTable = homeIcon.style.display == "none" ? Array.from(document.getElementById("tableBody").children) : Array.from(document.getElementById("animeSearchContainer").children);
     // Iterate through the records rows.
-    for(let x = 0; x < pageTable.length; x++) {
+    for(let z = 0; z < pageTable.length; z++) {
         // Show all record rows.
-        pageTable[x].style.display = "table-row";
+        pageTable[z].style.display = homeIcon.style.display == "none" ? "table-row" : "inline-block";
     }
-    // Upon the submission of a filter clear the search bar.
-    searchBar.parentNode.children[0].classList.remove("active");
-    searchBar.parentNode.children[2].classList.remove("active");
-    searchBar.classList.remove("valid");
-    searchBar.value = "";
     // Clear the filter modal checkboxes.
     Array.from(document.getElementsByClassName("filterCheckbox")).forEach(elem => elem.checked = false);
+    if(homeIcon.style.display == "none") {
+        // Upon the submission of a filter clear the search bar.
+        searchBar.parentNode.children[0].classList.remove("active");
+        searchBar.parentNode.children[2].classList.remove("active");
+        searchBar.classList.remove("valid");
+        searchBar.value = "";
+    }
 };
 
 
@@ -79,7 +80,9 @@ window.addEventListener("load", () => {
         animeSeasonSearchType = document.getElementById("animeSeasonSearchType"),
         preloader = document.getElementById("preloader"),
         animeNameSearchInnerDiv1 = document.getElementById("animeNameSearchInnerDiv1"),
-        animeSeasonSearchInnerDiv = document.getElementById("animeSeasonSearchInnerDiv");
+        animeSeasonSearchInnerDiv = document.getElementById("animeSeasonSearchInnerDiv"),
+        filterModalGenreHeading = document.getElementById("filterModalGenreHeading"),
+        filterModalGenreHeadingSiblings = filterModalGenreHeading.parentNode.children;
     
 
     animeSeasonSearch.addEventListener("click", e => {
@@ -87,7 +90,11 @@ window.addEventListener("load", () => {
         animeSeasonSearch.style.display = "none";
         indexHome.style.display = "inline-block";
         animeSeasonSearchDiv.style.display = "block";
+        clearFilter.click();
         document.body.style.overflowY = "auto";
+        filterModalGenreHeadingSiblings[0].style.display = "none";
+        filterModalGenreHeadingSiblings[1].style.display = "none";
+        filterModalGenreHeading.style.marginTop = "0px";
     });
 
     indexHome.addEventListener("click", e => {
@@ -95,12 +102,16 @@ window.addEventListener("load", () => {
         animeSeasonSearch.style.display = "inline-block";
         indexHome.style.display = "none";
         animeSeasonSearchDiv.style.display = "none";
+        clearFilter.click();
         document.body.style.overflowY = "hidden";
+        filterModalGenreHeadingSiblings[0].style.display = "block";
+        filterModalGenreHeadingSiblings[1].style.display = "block";
+        filterModalGenreHeading.style.marginTop = "25px";
     })
 
     animeSeasonSearchSubmission.addEventListener("click", e => {
         const searchCase = animeSeasonSearchSwitch.children[0].textContent,
-            resultsContainer = document.getElementById("animeSeasonSearchContainer");
+            resultsContainer = document.getElementById("animeSearchContainer");
         if(searchCase == "toggle_off") {
             let curYear = animeSeasonSearchYear.value,
                 curSeason = animeSeasonSearchSeason.value;
@@ -127,6 +138,8 @@ window.addEventListener("load", () => {
             }
             else { M.toast({"html": "In order to search for anime based on a written query the query has to be of non-zero length.", "classes": "rounded"}); }
         }
+        clearFilter.click();
+        animeSeasonSearchDiv.style.overflowY = "hidden";
     });
 
     animeSeasonSearchSwitch.addEventListener("click", e => {
@@ -139,7 +152,7 @@ window.addEventListener("load", () => {
         }
         else if(chk == "toggle_on") {
             animeSeasonSearchSwitch.children[0].textContent = "toggle_off";
-            animeSeasonSearchSwitch.setAttribute("data-tooltip", "Search by Name");
+            animeSeasonSearchSwitch.setAttribute("data-tooltip", "Search by Query");
             animeNameSearchInnerDiv1.style.display = "none";
             animeSeasonSearchInnerDiv.style.display = "initial";
         }
@@ -292,9 +305,9 @@ window.addEventListener("load", () => {
         }
     });
     // Listen for a click event on the clear filter button in order to remove all active filters.
-    clearFilter.addEventListener("click", e => { cleanFilter(tableBody); });
+    clearFilter.addEventListener("click", e => { cleanFilter(); });
     // Listen for a click event on the clear filter button in order to remove all active filters.
-    filterModalClear.addEventListener("click", e => { cleanFilter(tableBody); });
+    filterModalClear.addEventListener("click", e => { cleanFilter(); });
     // Listen for a click event on the database export tab in order to update the database modal view.
     databaseExport.addEventListener("click", e => {
         e.preventDefault();

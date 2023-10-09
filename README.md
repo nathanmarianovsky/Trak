@@ -19,7 +19,6 @@ The following is a list of features that are in the plans for future releases:
 	* Currently the search bar searches only by name. It would be nice to have a search bar that can perform a search based on other details associated to a record.
 * Design a notification system that can update the user on any record that has an upcoming release date.
 * Create application splash screen.
-* Create a separate page that will allow a user to search for anime by season.
 
 
 ## Application Files

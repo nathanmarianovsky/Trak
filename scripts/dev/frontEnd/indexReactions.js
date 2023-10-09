@@ -604,65 +604,85 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
     initModal();
     // Initialize the filter modal separately to add the functionality of filter application upon exit.
     M.Modal.init(document.getElementById("filterModal"), { "onCloseStart": () => {
-        // Define the category and genre arrays along with the record rows.
-        const categoryList = ["Anime", "Book", "Film", "Manga", "Show"],
-            genresList = filterGenreList(),
-            catCheck = [],
-            genreCheck = [],
-            pageTable = Array.from(document.getElementById("tableBody").children);
-        // Define the filtered categories collection.
-        for(let i = 0; i < categoryList.length; i++) {
-            if(document.getElementById("filterCategory" + categoryList[i]).checked == true) { catCheck.push(categoryList[i]); }
-        }
+        const genresList = filterGenreList(),
+            genreCheck = [];
         // Define the filtered genres collection.
         for(let j = 0; j < genresList.length; j++) {
             if(document.getElementById("filterGenre" + genresList[j]).checked == true) { genreCheck.push(genresList[j]); }
         }
-        // Iterate through the records rows to determine if they pass the filter.
-        for(let x = 0; x < pageTable.length; x++) {
-            // Filter based on both categories and genres.
-            if(catCheck.length > 0 && genreCheck.length > 0) {
-                let genreOverall = true,
-                    genreSplit = pageTable[x].getAttribute("genres").split(",");
-                for(let y = 0; y < genreCheck.length; y++) {
-                    if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
+        if(document.getElementById("animeSeasonSearch").style.display != "none") {
+            // Define the category and genre arrays along with the record rows.
+            const categoryList = ["Anime", "Book", "Film", "Manga", "Show"],
+                catCheck = [],
+                pageTable = Array.from(document.getElementById("tableBody").children);
+            // Define the filtered categories collection.
+            for(let i = 0; i < categoryList.length; i++) {
+                if(document.getElementById("filterCategory" + categoryList[i]).checked == true) { catCheck.push(categoryList[i]); }
+            }
+            // Iterate through the records rows to determine if they pass the filter.
+            for(let x = 0; x < pageTable.length; x++) {
+                // Filter based on both categories and genres.
+                if(catCheck.length > 0 && genreCheck.length > 0) {
+                    let genreOverall = true,
+                        genreSplit = pageTable[x].getAttribute("genres").split(",");
+                    for(let y = 0; y < genreCheck.length; y++) {
+                        if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
+                    }
+                    genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
                 }
-                genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
-            }
-            // Filter based only on categories.
-            else if(catCheck.length > 0 && genreCheck.length == 0) {
-                catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
-            }
-            // Filter based only genres.
-            else if(catCheck.length == 0 && genreCheck.length > 0) {
-                let genreOverall = true,
-                    genreSplit = pageTable[x].getAttribute("genres").split(",");
-                for(let y = 0; y < genreCheck.length; y++) {
-                    if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
+                // Filter based only on categories.
+                else if(catCheck.length > 0 && genreCheck.length == 0) {
+                    catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
                 }
-                genreOverall == true ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+                // Filter based only on genres.
+                else if(catCheck.length == 0 && genreCheck.length > 0) {
+                    let genreOverall = true,
+                        genreSplit = pageTable[x].getAttribute("genres").split(",");
+                    for(let y = 0; y < genreCheck.length; y++) {
+                        if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
+                    }
+                    genreOverall == true ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+                }
+                // If the empty filter is applied then show all record rows.
+                else { pageTable[x].style.display = "table-row"; }
             }
-            // If the empty filter is applied then show all record rows.
-            else { pageTable[x].style.display = "table-row"; }
+            // Upon the submission of a filter clear the search bar.
+            searchBar.parentNode.children[0].classList.remove("active");
+            searchBar.parentNode.children[2].classList.remove("active");
+            searchBar.classList.remove("valid");
+            searchBar.value = "";
         }
-        // Upon the submission of a filter clear the search bar.
-        searchBar.parentNode.children[0].classList.remove("active");
-        searchBar.parentNode.children[2].classList.remove("active");
-        searchBar.classList.remove("valid");
-        searchBar.value = "";
+        else if(document.getElementById("indexHome").style.display != "none") {
+            const pageContent = Array.from(document.getElementById("animeSearchContainer").children);
+            // Iterate through the search items to determine if they pass the filter.
+            for(let y = 0; y < pageContent.length; y++) {
+                if(genreCheck.length > 0) {
+                    let genreOverall = true,
+                        genreSplit = pageContent[y].getAttribute("genres").split(",");
+                    for(let y = 0; y < genreCheck.length; y++) {
+                        if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
+                    }
+                    genreOverall == true ? pageContent[y].style.display = "inline-block" : pageContent[y].style.display = "none";
+                }
+                // If the empty filter is applied then show all record rows.
+                else { pageContent[y].style.display = "inline-block"; }
+            }
+        }
     }});
 });
 
 
 
-ipcRenderer.on("animeFetchResult", (event, seasonArr) => {
-    const container = document.getElementById("animeSeasonSearchContainer"),
+ipcRenderer.on("animeFetchResult", (event, submissionArr) => {
+    const container = document.getElementById("animeSearchContainer"),
         preloaderIcon = document.getElementById("synopsisPreloader"),
         synopsisContent = document.getElementById("synopsisModalContent"),
-        sortSelect = document.getElementById("animeSeasonSearchSort");
+        sortSeasonSelect = document.getElementById("animeSeasonSearchSort"),
+        sortNameSelect = document.getElementById("animeNameSearchSort");
+    let seasonArr = [];
     document.getElementById("preloader").style.setProperty("display", "none", "important");
     container.innerHTML = "";
-    seasonArr = shuffle(seasonArr);
+    submissionArr[1] == true ? seasonArr = shuffle(submissionArr[0]) : seasonArr = submissionArr[0];
     for(let n = 0; n < seasonArr.length; n++) {
         let itemImg = document.createElement("img"),
             itemContainer = document.createElement("div"),
@@ -673,6 +693,7 @@ ipcRenderer.on("animeFetchResult", (event, seasonArr) => {
         itemContainer.classList.add("seasonItemContainer");
         itemContainer.setAttribute("name", seasonArr[n][0]);
         itemContainer.setAttribute("rating", seasonArr[n][3]);
+        itemContainer.setAttribute("genres", seasonArr[n][4].join(","));
         itemText.classList.add("seasonItemText", "tooltipped");
         itemText.setAttribute("data-position", "bottom");
         itemText.setAttribute("data-tooltip", seasonArr[n][0]);
@@ -710,16 +731,16 @@ ipcRenderer.on("animeFetchResult", (event, seasonArr) => {
     }
     document.body.style.overflowY = "auto";
     initTooltips();
-    sortSelect.addEventListener("change", e => {
-        let sortedArr = [];
+    let sortFunc = e => {
+        let sortedArr = Array.from(container.children);
         if(e.target.value == "alphabetical") {
-            sortedArr = Array.from(container.children).sort((a, b) => a.getAttribute("name").localeCompare(b.getAttribute("name")));
+            sortedArr = sortedArr.sort((a, b) => a.getAttribute("name").localeCompare(b.getAttribute("name")));
         }
         else if(e.target.value == "reverseAlphabetical") {
-            sortedArr = Array.from(container.children).sort((a, b) => b.getAttribute("name").localeCompare(a.getAttribute("name")));
+            sortedArr = sortedArr.sort((a, b) => b.getAttribute("name").localeCompare(a.getAttribute("name")));
         }
         else if(e.target.value == "rating") {
-            sortedArr = Array.from(container.children).sort((a, b) => {
+            sortedArr = sortedArr.sort((a, b) => {
                 if(a.getAttribute("rating") != "N/A" && b.getAttribute("rating") != "N/A") {
                     return parseFloat(b.getAttribute("rating")) - parseFloat(a.getAttribute("rating"))
                 }
@@ -728,7 +749,7 @@ ipcRenderer.on("animeFetchResult", (event, seasonArr) => {
             });
         }
         else if(e.target.value == "reverseRating") {
-            sortedArr = Array.from(container.children).sort((a, b) => {
+            sortedArr = sortedArr.sort((a, b) => {
                 if(a.getAttribute("rating") != "N/A" && b.getAttribute("rating") != "N/A") {
                     return parseFloat(a.getAttribute("rating")) - parseFloat(b.getAttribute("rating"))
                 }
@@ -737,13 +758,16 @@ ipcRenderer.on("animeFetchResult", (event, seasonArr) => {
             });
         }
         else if(e.target.value == "random") {
-            sortedArr = shuffle(Array.from(container.children));
-            sortSelect.value = "";
+            sortedArr = shuffle(sortedArr);
+            sortSeasonSelect.value = "";
+            sortNameSelect.value = "";
             initSelect();
         }
         container.innerHTML = "";
         for(let k = 0; k < sortedArr.length; k++) {
             container.append(sortedArr[k]);
         }
-    });
+    };
+    sortSeasonSelect.addEventListener("change", ev => sortFunc(ev));
+    sortNameSelect.addEventListener("change", ev => sortFunc(ev));
 });
