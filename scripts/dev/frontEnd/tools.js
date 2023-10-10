@@ -14,6 +14,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - initAnimeSynopsisObserver: Initialize the observer for style mutations on the anime synopsis.
     - toastParse: Handles the parsing of a record folder name to display to the user.
     - arrayMove: Moves an element in an array.
+    - shuffle: Perform a Fisher-Yates shuffle on an array of items.
     - filterGenreList: Provides the list of all genres/tags that can be selected from the index.page filter.
 
 */
@@ -228,14 +229,27 @@ var arrayMove = (arr, fromIndex, toIndex) => {
 
 
 
+/*
+
+Perform a Fisher-Yates shuffle on an array of items.
+
+    - arr is a collection of any items.
+
+*/
 var shuffle = arr => {
+    // Define the current index as the length of the given array and initialize the random index.
     let currentIndex = arr.length,
         randomIndex = 0;
+    // While the current index is non-zero continue the procedure.
     while(currentIndex > 0) {
+        // Define the random index on this iteration.
         randomIndex = Math.floor(Math.random() * currentIndex);
+        // Decrease the current index by one.
         currentIndex--;
+        // Perform the shuffle step.
         [arr[currentIndex], arr[randomIndex]] = [arr[randomIndex], arr[currentIndex]];
     }
+    // Return the shuffled array.
     return arr;
 };
 

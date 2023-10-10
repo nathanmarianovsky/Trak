@@ -166,13 +166,13 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	margin-left: 50px;
 }
 
-#add, #animeSeasonSearchSubmission {
+#add, #animeSearchSubmission {
 	position: fixed;
   	bottom: 23px;
   	right: 23px;
 }
 
-#animeSeasonSearchSwitch {
+#animeSearchSwitch {
 	position: fixed;
   	bottom: 92px;
   	right: 23px;
@@ -269,10 +269,6 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 #animeSeasonSearchYearDiv ul {
 	height: 250px;
-}
-
-#animeSeasonSearchContainer {
-	resize: vertical;
 }
 
 #animeNameSearchInnerDiv {

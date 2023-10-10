@@ -62,10 +62,10 @@ window.addEventListener("load", () => {
         importSampleZIP = document.getElementById("importSampleZIP"),
         importSampleSimpleXLSX = document.getElementById("importSampleSimpleXLSX"),
         importSampleDetailedXLSX = document.getElementById("importSampleDetailedXLSX"),
-        animeSeasonSearch = document.getElementById("animeSeasonSearch"),
+        animeSearch = document.getElementById("animeSearch"),
         indexHome = document.getElementById("indexHome"),
-        animeSeasonSearchSubmission = document.getElementById("animeSeasonSearchSubmission"),
-        animeSeasonSearchSwitch = document.getElementById("animeSeasonSearchSwitch");
+        animeSearchSubmission = document.getElementById("animeSearchSubmission"),
+        animeSearchSwitch = document.getElementById("animeSearchSwitch");
     // Define all page components which will be utilized.
     const tableBody = document.getElementById("tableBody"),
         XLSXTypeSwitchDiv = document.getElementById("XLSXTypeSwitchDiv"),
@@ -82,85 +82,126 @@ window.addEventListener("load", () => {
         animeNameSearchInnerDiv1 = document.getElementById("animeNameSearchInnerDiv1"),
         animeSeasonSearchInnerDiv = document.getElementById("animeSeasonSearchInnerDiv"),
         filterModalGenreHeading = document.getElementById("filterModalGenreHeading"),
-        filterModalGenreHeadingSiblings = filterModalGenreHeading.parentNode.children;
-    
-
-    animeSeasonSearch.addEventListener("click", e => {
+        filterModalGenreHeadingSiblings = filterModalGenreHeading.parentNode.children,
+        animeSearchBar = document.getElementById("animeSearchBar");
+    // Listen for a click event on the anime search button.
+    animeSearch.addEventListener("click", e => {
+        // Hide the local records table.
         outerLayer.style.display = "none";
-        animeSeasonSearch.style.display = "none";
+        // Hide the anime search button.
+        animeSearch.style.display = "none";
+        // Display the home button.
         indexHome.style.display = "inline-block";
+        // Display the anime search inputs.
         animeSeasonSearchDiv.style.display = "block";
+        // Reset the genres/tags filter.
         clearFilter.click();
+        // Show the body scroll if necessary.
         document.body.style.overflowY = "auto";
+        // Hide the categories portion of the filter.
         filterModalGenreHeadingSiblings[0].style.display = "none";
         filterModalGenreHeadingSiblings[1].style.display = "none";
         filterModalGenreHeading.style.marginTop = "0px";
     });
-
+    // Listen for a click event on the home button.
     indexHome.addEventListener("click", e => {
+        // Display the local records table.
         outerLayer.style.display = "block";
-        animeSeasonSearch.style.display = "inline-block";
+        // Display the anime search button.
+        animeSearch.style.display = "inline-block";
+        // Hide the home button.
         indexHome.style.display = "none";
+        // Hide the anime search inputs.
         animeSeasonSearchDiv.style.display = "none";
+        // Reset the genres/tags filter.
         clearFilter.click();
+        // Hide the body scroll.
         document.body.style.overflowY = "hidden";
+        // Display the categories portion of the filter.
         filterModalGenreHeadingSiblings[0].style.display = "block";
         filterModalGenreHeadingSiblings[1].style.display = "block";
         filterModalGenreHeading.style.marginTop = "25px";
     })
-
-    animeSeasonSearchSubmission.addEventListener("click", e => {
-        const searchCase = animeSeasonSearchSwitch.children[0].textContent,
+    // Listen for a click event on the anime search submission button.
+    animeSearchSubmission.addEventListener("click", e => {
+        // Define the anime search container and the search type.
+        const searchCase = animeSearchSwitch.children[0].textContent,
             resultsContainer = document.getElementById("animeSearchContainer");
+        // Proceed with the following if searching for content by season.
         if(searchCase == "toggle_off") {
+            // Define the anime season search parameters.
             let curYear = animeSeasonSearchYear.value,
                 curSeason = animeSeasonSearchSeason.value;
+            // If no year has been chosen notify the user.
             if(curYear == "") {
                 M.toast({"html": "A year must be selected in order to search for anime.", "classes": "rounded"});
             }
+            // If no season has been chosen notify the user.
             else if(curSeason == "") {
                 M.toast({"html": "A season must be selected in order to search for anime.", "classes": "rounded"});
             }
             else {
+                // Reset the anime search container.
                 resultsContainer.innerHTML = "";
+                // Reset the sort select tag.
                 document.getElementById("animeSeasonSearchSort").value = "";
                 initSelect();
+                // Display the preloader.
                 preloader.style.display = "block";
+                // Send a request to the back-end in order to fetch a season's anime releases.
                 ipcRenderer.send("animeFetchSeason", [curYear, curSeason, Array.from(animeSeasonSearchType.selectedOptions).map(({ value }) => value)]);
             }
         }
+        // Proceed with the following if searching for content by a query.
         else if(searchCase == "toggle_on") {
+            // Proceed only if the query is non-empty.
             if(animeSearchBar.value.length > 0) {
+                // Reset the anime search container.
                 resultsContainer.innerHTML = "";
+                // Reset the sort select tag.
+                document.getElementById("animeNameSearchSort").value = "";
+                initSelect();
+                // Display the preloader.
                 preloader.style.display = "block";
-                let animeSearchBar = document.getElementById("animeSearchBar");
+                // Send a request to the back-end in order to retrieve the search results for the provided query.
                 ipcRenderer.send("animeFetchSearch", animeSearchBar.value);
             }
+            // If no query has been provided notify the user.
             else { M.toast({"html": "In order to search for anime based on a written query the query has to be of non-zero length.", "classes": "rounded"}); }
         }
+        // Reset the genres/tags filter.
         clearFilter.click();
-        animeSeasonSearchDiv.style.overflowY = "hidden";
     });
-
-    animeSeasonSearchSwitch.addEventListener("click", e => {
-        const chk = animeSeasonSearchSwitch.children[0].textContent;
+    // Listen for a click event on the anime search switch button.
+    animeSearchSwitch.addEventListener("click", e => {
+        // Define the search type.
+        const chk = animeSearchSwitch.children[0].textContent;
+        // If the anime search is currently by query switch it to be by season.
         if(chk == "toggle_off") {
-            animeSeasonSearchSwitch.children[0].textContent = "toggle_on";
-            animeSeasonSearchSwitch.setAttribute("data-tooltip", "Search by Season");
+            // Update the switch button.
+            animeSearchSwitch.children[0].textContent = "toggle_on";
+            // Update the associated tooltip.
+            animeSearchSwitch.setAttribute("data-tooltip", "Search by Season");
+            // Display the anime search by query inputs.
             animeNameSearchInnerDiv1.style.display = "initial";
+            // Hide the anime search by season inputs.
             animeSeasonSearchInnerDiv.style.display = "none";
         }
+        // If the anime search is currently by season switch it to be by query.
         else if(chk == "toggle_on") {
-            animeSeasonSearchSwitch.children[0].textContent = "toggle_off";
-            animeSeasonSearchSwitch.setAttribute("data-tooltip", "Search by Query");
+            // Update the switch button.
+            animeSearchSwitch.children[0].textContent = "toggle_off";
+            // Update the associated tooltip.
+            animeSearchSwitch.setAttribute("data-tooltip", "Search by Query");
+            // Hide the anime search by query inputs.
             animeNameSearchInnerDiv1.style.display = "none";
+            // Display the anime search by season inputs.
             animeSeasonSearchInnerDiv.style.display = "initial";
         }
+        // Reset the page tooltips.
         clearTooltips();
         initTooltips();
     });
-    
-
     // Listen for a click event on the add button in order to open a window whose inputs will generate a new record.
     add.addEventListener("click", e => {
         e.preventDefault();

@@ -339,7 +339,7 @@ ipcRenderer.on("introduction", (event, response) => {
 
 
 
-// Load all of the contacts as rows in the table once the page has loaded.
+// Load all of the records as rows in the table once the page has loaded.
 ipcRenderer.on("loadRows", (event, tableDiff) => {
     // Define the path for all items and get a list of all available records.
     const pathDir = path.join(localPath, "Trak", "data");
@@ -604,13 +604,15 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
     initModal();
     // Initialize the filter modal separately to add the functionality of filter application upon exit.
     M.Modal.init(document.getElementById("filterModal"), { "onCloseStart": () => {
+        window.scrollTo(0,0);
         const genresList = filterGenreList(),
             genreCheck = [];
         // Define the filtered genres collection.
         for(let j = 0; j < genresList.length; j++) {
             if(document.getElementById("filterGenre" + genresList[j]).checked == true) { genreCheck.push(genresList[j]); }
         }
-        if(document.getElementById("animeSeasonSearch").style.display != "none") {
+        // Handle the filtering on the home page.
+        if(document.getElementById("animeSearch").style.display != "none") {
             // Define the category and genre arrays along with the record rows.
             const categoryList = ["Anime", "Book", "Film", "Manga", "Show"],
                 catCheck = [],
@@ -652,7 +654,9 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             searchBar.classList.remove("valid");
             searchBar.value = "";
         }
+        // Handle the filtering on the anime search page.
         else if(document.getElementById("indexHome").style.display != "none") {
+            // Define the anime search items.
             const pageContent = Array.from(document.getElementById("animeSearchContainer").children);
             // Iterate through the search items to determine if they pass the filter.
             for(let y = 0; y < pageContent.length; y++) {
@@ -664,26 +668,37 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     }
                     genreOverall == true ? pageContent[y].style.display = "inline-block" : pageContent[y].style.display = "none";
                 }
-                // If the empty filter is applied then show all record rows.
+                // If the empty filter is applied then show all anime search items.
                 else { pageContent[y].style.display = "inline-block"; }
             }
+            // Reset the tooltips in order to reset the page scroll height.
+            clearTooltips();
+            initTooltips();
         }
     }});
 });
 
 
 
+// Load the results of anime search.
 ipcRenderer.on("animeFetchResult", (event, submissionArr) => {
+    // Define the search content container and search inputs.
     const container = document.getElementById("animeSearchContainer"),
         preloaderIcon = document.getElementById("synopsisPreloader"),
         synopsisContent = document.getElementById("synopsisModalContent"),
         sortSeasonSelect = document.getElementById("animeSeasonSearchSort"),
         sortNameSelect = document.getElementById("animeNameSearchSort");
+    // Define the array which will contain the anime search content.
     let seasonArr = [];
+    // Hide the preloader.
     document.getElementById("preloader").style.setProperty("display", "none", "important");
+    // Reset the anime search container.
     container.innerHTML = "";
+    // Randomly shuffle the content only on an anime season search for the default display.
     submissionArr[1] == true ? seasonArr = shuffle(submissionArr[0]) : seasonArr = submissionArr[0];
+    // Iterate through the anime search results.
     for(let n = 0; n < seasonArr.length; n++) {
+        // Define the anime search item image, title, synopsis icon, and rating.
         let itemImg = document.createElement("img"),
             itemContainer = document.createElement("div"),
             itemText = document.createElement("div"),
@@ -711,34 +726,53 @@ ipcRenderer.on("animeFetchResult", (event, submissionArr) => {
         itemInfo.append(itemInfoLink);
         itemContainer.append(itemImg, itemText, itemInfo);
         container.append(itemContainer);
+        // Listen for a click event on the synopsis icon in order to load the associated synopsis content on the synopsisModal.
         itemInfoIcon.addEventListener("click", e => {
+            // Reset the synopsisModal content and show the preloader while the data is fetched.
             synopsisContent.innerHTML = "";
             preloaderIcon.style.display = "block";
+            // Fetch the associated synopsis to the anime.
             ipcRenderer.send("animeSynopsisFetch", e.target.getAttribute("link"));
+            // Wait for the back-end to provide the anime synopsis.
             ipcRenderer.on("animeSynopsisFetchResult", (eve, synopsis) => {
+                // Hide the preloader.
                 preloaderIcon.style.display = "none";
+                // Define the synopsis text.
                 let textHolder = synopsis.split("").map(elem => elem == "\n" ? "<br>" : elem).join("").replace("[Written by MAL Rewrite]", "");
+                // Clean the synopsis of any source information.
                 if(textHolder.includes("(Source:")) {
                     textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
                 }
+                // Trim the synopsis text to remove unnecessary whitespace.
                 textHolder = textHolder.trim();
+                // Attach the synopsis text to the modal content.
                 synopsisContent.innerHTML = textHolder;
             });
         });
+        // Listen for a click event on the anime search item image.
         itemImg.addEventListener("click", e => {
+            // Send a request to the back-end in order to load the addRecord page with all the anime details.
             ipcRenderer.send("animeSeasonRecordRequest", e.target.getAttribute("link"));
         });
     }
+    // Set the body scroll to auto appear if necessary.
     document.body.style.overflowY = "auto";
+    // Clear and initialize the page tooltips.
+    clearTooltips();
     initTooltips();
+    // Define the function which will handle the sorting of anime search content.
     let sortFunc = e => {
+        // Grab the items to sort.
         let sortedArr = Array.from(container.children);
+        // Sort the items by alphabetical order.
         if(e.target.value == "alphabetical") {
             sortedArr = sortedArr.sort((a, b) => a.getAttribute("name").localeCompare(b.getAttribute("name")));
         }
+        // Sort the items by reverse alphabetical order.
         else if(e.target.value == "reverseAlphabetical") {
             sortedArr = sortedArr.sort((a, b) => b.getAttribute("name").localeCompare(a.getAttribute("name")));
         }
+        // Sort the items from highest to lowest ratings.
         else if(e.target.value == "rating") {
             sortedArr = sortedArr.sort((a, b) => {
                 if(a.getAttribute("rating") != "N/A" && b.getAttribute("rating") != "N/A") {
@@ -748,6 +782,7 @@ ipcRenderer.on("animeFetchResult", (event, submissionArr) => {
                 else if(b.getAttribute("rating") == "N/A") { return -1; }
             });
         }
+        // Sort the items from lowest to highest ratings.
         else if(e.target.value == "reverseRating") {
             sortedArr = sortedArr.sort((a, b) => {
                 if(a.getAttribute("rating") != "N/A" && b.getAttribute("rating") != "N/A") {
@@ -757,17 +792,22 @@ ipcRenderer.on("animeFetchResult", (event, submissionArr) => {
                 else if(b.getAttribute("rating") == "N/A") { return -1; }
             });
         }
+        // Sort the items randomly.
         else if(e.target.value == "random") {
             sortedArr = shuffle(sortedArr);
+            // In the case of a random sort reset the select tags so that another random sort can be applied without having to choose a different sort first.
             sortSeasonSelect.value = "";
             sortNameSelect.value = "";
             initSelect();
         }
+        // Clear the container for anime search items.
         container.innerHTML = "";
+        // Reattach the anime search items now that they have been sorted.
         for(let k = 0; k < sortedArr.length; k++) {
             container.append(sortedArr[k]);
         }
     };
+    // Listen for a change in the value of the sorting select tags.
     sortSeasonSelect.addEventListener("change", ev => sortFunc(ev));
     sortNameSelect.addEventListener("change", ev => sortFunc(ev));
 });
