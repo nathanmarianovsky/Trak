@@ -272,50 +272,57 @@ ipcRenderer.on("introduction", (event, response) => {
                 // Define the tutorial step for the filter button on the index page.
                 const instancesTapFilter = M.TapTarget.init(document.getElementById("introductionTargetFilter"), { "onClose": () => {
                     setTimeout(() => {
-                        // Define the tutorial step for the export/import button on the index page.
-                        const instancesTapDatabase = M.TapTarget.init(document.getElementById("introductionTargetDatabase"), { "onClose": () => {
+                        // Define the tutorial step for the anime search button on the index page.
+                        const instancesTapAnimeSearch = M.TapTarget.init(document.getElementById("introductionTargetAnimeSearch"), { "onClose": () => {
                             setTimeout(() => {
-                                // Define the tutorial step for the settings button on the index page.
-                                const instancesTapSettings = M.TapTarget.init(document.getElementById("introductionTargetSettings"));
-                                document.getElementById("openSettings").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
-                                // Ensure that the tutorial step associated to the settings button opens only once no matter whether the database modal is opened or not.
-                                let cnt = 0;
-                                if(!document.getElementById("databaseModal").classList.contains("open")) {
-                                    // After a small delay open the tutorial step for the index page settings.
-                                    setTimeout(() => { instancesTapSettings.open(); }, 500);
-                                    cnt++;
-                                }
-                                let settingsObserver = new MutationObserver(mutations => {
-                                    if(cnt == 0) {
-                                        if(!mutations[0].target.classList.contains("open")) {
+                                // Define the tutorial step for the export/import button on the index page.
+                                const instancesTapDatabase = M.TapTarget.init(document.getElementById("introductionTargetDatabase"), { "onClose": () => {
+                                    setTimeout(() => {
+                                        // Define the tutorial step for the settings button on the index page.
+                                        const instancesTapSettings = M.TapTarget.init(document.getElementById("introductionTargetSettings"));
+                                        document.getElementById("openSettings").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
+                                        // Ensure that the tutorial step associated to the settings button opens only once no matter whether the database modal is opened or not.
+                                        let cnt = 0;
+                                        if(!document.getElementById("databaseModal").classList.contains("open")) {
+                                            // After a small delay open the tutorial step for the index page settings.
                                             setTimeout(() => { instancesTapSettings.open(); }, 500);
                                             cnt++;
                                         }
-                                    }
-                                });
-                                settingsObserver.observe(document.getElementById("databaseModal"), {
-                                    attributes: true,
-                                    attributeFilter: ["class"]
-                                });
+                                        let settingsObserver = new MutationObserver(mutations => {
+                                            if(cnt == 0) {
+                                                if(!mutations[0].target.classList.contains("open")) {
+                                                    setTimeout(() => { instancesTapSettings.open(); }, 500);
+                                                    cnt++;
+                                                }
+                                            }
+                                        });
+                                        settingsObserver.observe(document.getElementById("databaseModal"), {
+                                            attributes: true,
+                                            attributeFilter: ["class"]
+                                        });
+                                    }, 500);
+                                }});
+                                document.getElementById("openDatabase").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
+                                setTimeout(() => { instancesTapDatabase.open(); }, 500);
                             }, 500);
                         }});
-                        document.getElementById("openDatabase").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
-                        // Ensure that the tutorial step associated to the export/import button opens only once no matter whether the filter modal is opened or not.
+                        document.getElementById("animeSearch").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
+                        // Ensure that the tutorial step associated to the anime search button opens only once no matter whether the filter modal is opened or not.
                         let count = 0;
                         if(!document.getElementById("filterModal").classList.contains("open")) {
-                            // After a small delay open the tutorial step for the index page export/import.
-                            setTimeout(() => { instancesTapDatabase.open(); }, 500);
+                            // After a small delay open the tutorial step for the index page anime search.
+                            setTimeout(() => { instancesTapAnimeSearch.open(); }, 500);
                             count++;
                         }
-                        let databaseObserver = new MutationObserver(mutations => {
+                        let animeSearchObserver = new MutationObserver(mutations => {
                             if(count == 0) {
                                 if(!mutations[0].target.classList.contains("open")) {
-                                    setTimeout(() => { instancesTapDatabase.open(); }, 500);
+                                    setTimeout(() => { instancesTapAnimeSearch.open(); }, 500);
                                     count++;
                                 }
                             }
                         });
-                        databaseObserver.observe(document.getElementById("filterModal"), {
+                        animeSearchObserver.observe(document.getElementById("filterModal"), {
                             attributes: true,
                             attributeFilter: ["class"]
                         });
