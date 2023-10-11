@@ -419,8 +419,8 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 							});
 						}
 					});
-				});
-			});
+				}).catch(err => log.error("There was an issue in resolving the promise associated to the copying of all records which are to be exported."));
+			}).catch(err => log.error("There was an issue in writing the xlsx file " + path.join(xlsxExportFolder, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate + ".xlsx")));
 		}
 	});
 };
@@ -525,10 +525,10 @@ exports.exportDataZIP = (fs, path, log, zipper, eve, dir, exportLocation, record
 									log.info("The ZIP export process has ended.");
 								}
 							});
-						});
+						}).catch(err => log.error("There was an issue in resolving the promise associated to the deletion of a zip file in a previous export."));
 					}
 				});
-			});
+			}).catch(err => log.error("There was an issue in resolving the promise associated to the copying of all records which are to be exported."));
 		}
 	});
 };
@@ -598,7 +598,7 @@ exports.importCompare = (fs, path, log, ipc, appWin, winEvent, promiseResolver, 
 					appWin.webContents.send("importFileSuccess", impFile);
 					log.info("The " + mode + " import process has ended.");
 				}, 1000);
-			});
+			}).catch(err => log.error("There was an issue in resolving the promise associaed to the overwriting process of imported records."));
 		});
 	}
 };
@@ -807,8 +807,8 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 						});
 					});
 					// Once all records have been imported into the temporary folder check them against the current ones to see which ones will be kept.
-					workbookPromise.then(() => { exports.importCompare(fs, path, log, ipc, win, eve, res, dir, fileData, xlsxFile, "XLSX"); });
-				});
+					workbookPromise.then(() => exports.importCompare(fs, path, log, ipc, win, eve, res, dir, fileData, xlsxFile, "XLSX")).catch(err => log.error("There was an issue in resolving the promise associated to importing the xlsx file " + xlsxFile + "."));
+				}).catch(err => log.error("There was an issue in reading the xlsx file " + xlsxFile + "."));
 			}
 		});
 	});

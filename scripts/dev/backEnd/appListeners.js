@@ -741,7 +741,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 				log.info("The application is launching the updated release installer.");
 				app.quit();
 		    }, 5000);
-		});
+		}).catch(err => log.error("There was an issue in downloading the latest Github release of the application."));
 	});
 
 	// Handles the search of a string through all possible anime listings on myanimelist.
@@ -751,7 +751,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 			log.info("MyAnimeList-Scraper has finished getting the search results for the query " + search[1] + ".");
 			// Send the attained data to the front-end.
 			event.sender.send("animeSearchResults", [search[0], search[1], data.map(elem => [elem.name, elem.image_url])]);
-		});
+		}).catch(err => log.error("There was an issue in obtaining the anime search results for autocomplete options associated to the query " + search[1] + "."));
 	});
 
 	// Handles the fetching of details for a given anime via its name.
@@ -801,8 +801,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 					animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
 					animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
 				]);
-			});
-		});
+			}).catch(err => log.error("There was an issue in obtaining the pictures associated to the anime record " + name + "."));
+		}).catch(err => log.error("There was an issue in obtaining the details associated to the anime name " + name + "."));
 	});
 
 	// Handles the fetching of the primary window's current height in order to provide the necessary difference for the index page table height to be updated.
@@ -848,7 +848,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 			});
 			// Send the list of anime releases for the season to the front-end.
 			event.sender.send("animeFetchResult", [seasonContent.map(elem => [elem.title, elem.picture, elem.link, elem.score, elem.genres]), true]);
-		});
+		}).catch(err => log.error("There was an issue in obtaining the releases for the anime season " + seasonInfo[0] + " " + seasonInfo[1].charAt(0).toUpperCase() + seasonInfo[1].slice(1) + "."));
 	});
 
 	// Handles the fetching of anime releases based on a query search.
@@ -880,14 +880,14 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 						// Push the anime details into the overall collection.
 						resultsArr.push([elem.title, elemData.picture, elem.url, elem.score, elemData.genres]);
 						if(resultsArr.length == results.length) { resolve(); }
-					});
+					}).catch(err => log.error("There was an issue getting the anime details based on the url " + elem.url + "."));
 				})
 			});
 			// Once all anime results have an associated picture send the list of anime releases to the front-end.
 			picPromise.then(() => {
 				event.sender.send("animeFetchResult", [resultsArr, false]);
-			});
-		});
+			}).catch(err => log.error("There was an issue resolving the promise associated to grabbing anime release pictures based on the search query " + query + "."));
+		}).catch(err => log.error("There was an issue obtaining the anime releases based on the query " + query + "."));
 	});
 
 	// Handles the fetching of an anime synopsis.
@@ -896,7 +896,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 		malScraper.getInfoFromURL(link).then(data => {
 			// Provide the anime synopsis to the front-end.
 			event.sender.send("animeSynopsisFetchResult", data.synopsis);
-		});
+		}).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
 	});
 
 	// Handles the opening of the addRecord.html page to load an anime record based on a season or query search.
@@ -956,8 +956,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 		  					exports.animeSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
 		  				}
 		  			});
-				});
-			});
+				}).catch(err => log.error("There was an issue getting the pictures associated to the anime " + animeData.title + "."));
+			}).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
   		});
 	});
 };

@@ -221,7 +221,7 @@ app.whenReady().then(() => {
 		    });
 		}
 	});
-});
+}).catch(err => log.error("The application failed to start."));
 
 
 
