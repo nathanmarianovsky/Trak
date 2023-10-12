@@ -12,18 +12,18 @@ This application was motivated by the simple thought that there is no such dedic
 
 The following is a list of features that are in the plans for future releases:
 * Application Logo
+* Create application splash screen.
 * Addition/Export/Import/Removal/Update of Book, Film, Manga, and Show Records
 * Addition/Removal/Update of Record Associations
 	* A record association is meant to link two or more items across multiple categories. In example, an anime can typically be associated to light novels and manga. 
 * Update the index page search bar.
 	* Currently the search bar searches only by name. It would be nice to have a search bar that can perform a search based on other details associated to a record.
 * Design a notification system that can update the user on any record that has an upcoming release date.
-* Create application splash screen.
 
 
 ## Application Files
 
-There are six locations for files created by the use of the application. Depending on the operating system all (by default) will be in one of the following:
+There are eight locations for files created by the use of the application. Depending on the operating system most (by default) will be in one of the following:
 ```
 C:\Users\username\AppData\Roaming\Trak\
 /home/username/.local/share/Trak/
@@ -35,3 +35,10 @@ where 'username' has to be replaced.
 * Under the "localStyles" folder will be the application css file reproduced by the application on launch. In order to avoid having to ask for administrator privileges the application creates new css file locally after modifying it. The modifications occuring correspond to changing the primary and secondary color values.
 * Under the "exportTemp" folder files are generated and removed during an application library export.
 * Under the "importTemp" folder files are generated and removed during an application library import.
+* Under the "logs" folder log files are generated to maintain a record of the application's actions.
+The last folder will be located at:
+```
+C:\Users\username\TrakDownloads
+/home/username/TrakDownloads
+```
+corresponding to temporary downloads made by the application. This folder will remain empty for the most part as the application maintains it.
