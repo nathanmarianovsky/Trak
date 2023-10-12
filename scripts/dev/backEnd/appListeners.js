@@ -960,6 +960,38 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 			}).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
   		});
 	});
+
+	// Handles the request for getting the logs since the last application load.
+	ipc.on("logsRequest", event => {
+		// Read the logs file.
+        fs.readFile(path.join(originalPath, "Trak", "logs", "main.log"), "UTF8", (err, file) => {
+        	if(err) {
+        		log.error("There was an issue reading the logs file.");
+        		event.sender.send("logsFileReadFailure");
+        	}
+            else {
+            	log.info("The logs file was successfully read.");
+            	// Split the file contents by lines.
+	            let fileData = file.split("\n");
+	            // Remove the last element which is an empty string.
+	            fileData.pop();
+	            // Iterate through the lines to determine the last application load.
+	            let ind = fileData.length - 1;
+	            for(; ind >= 0; ind--) {
+	                if(fileData[ind].includes("The application is starting.")) { break; }
+	            }
+	            // Send the logs to the front-end.
+	            event.sender.send("logsRequestResult", fileData.slice(ind));
+            }
+        });
+	});
+
+	// Handles the opening of the logs file.
+  	ipc.on("logsFile", event => {
+  		exec(tools.startCommandLineFolder() + " " + path.join(originalPath, "Trak", "logs", "main.log"));
+  		log.info("The logs file has been opened.");
+		event.sender.send("logsFileSuccess");
+  	});
 };
 
 

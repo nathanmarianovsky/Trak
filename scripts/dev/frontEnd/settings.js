@@ -22,56 +22,71 @@ var { ipcRenderer } = require("electron");
 
 
 // Display a notification if there was an issue in reading the configuration.json file.
-ipcRenderer.once("configurationFileOpeningFailure", event => {
+ipcRenderer.on("configurationFileOpeningFailure", event => {
     M.toast({"html": "There was an error opening the configuration file associated to the application settings.", "classes": "rounded"});
 });
 
 
 
 // Display a notification if there was an issue in writing the configuration.json file.
-ipcRenderer.once("configurationFileWritingFailure", event => {
+ipcRenderer.on("configurationFileWritingFailure", event => {
     M.toast({"html": "There was an error writing the configuration file associated to the application settings.", "classes": "rounded"});
 });
 
 
 
 // Display a notification for the successful update of the configuration.json file and the requirement of an application restart.
-ipcRenderer.once("configurationFileWritingSuccess", event => {
+ipcRenderer.on("configurationFileWritingSuccess", event => {
     M.toast({"html": "The application settings have been updated. The application will now restart.", "classes": "rounded"});
 });
 
 
 
 // Display a notification for the successful update of the configuration.json file.
-ipcRenderer.once("configurationFileWritingSuccessSimple", event => {
+ipcRenderer.on("configurationFileWritingSuccessSimple", event => {
     M.toast({"html": "The application settings have been updated.", "classes": "rounded"});
 });
 
 
 
 // Display a notification if there was an issue in copying the data associated to all records.
-ipcRenderer.once("copyDataFailure", event => {
+ipcRenderer.on("copyDataFailure", event => {
     M.toast({"html": "There was an issue in copying the data associated to the records.", "classes": "rounded"});
 });
 
 
 
 // Display a notification if there was an issue in deleting the original data associated to all records.
-ipcRenderer.once("dataDeleteFailure", event => {
+ipcRenderer.on("dataDeleteFailure", event => {
     M.toast({"html": "There was an error in deleting the original data associated to the records.", "classes": "rounded"});
 });
 
 
 
 // Display a notification if there was an issue in copying the library records.
-ipcRenderer.once("dataCopyFailure", event => {
+ipcRenderer.on("dataCopyFailure", event => {
     M.toast({"html": "There was an error in copying the original data associated to the records.", "classes": "rounded"});
 });
 
 
 
+// Display a notification if there was an issue in reading the logs file.
+ipcRenderer.on("logsFileReadFailure", event => {
+    M.toast({"html": "There was an issue reading the logs file.", "classes": "rounded"});
+});
+
+
+
+// Display a notification for the successful opening of the logs file.
+ipcRenderer.on("logsFileSuccess", event => {
+    M.toast({"html": "The logs file has been opened.", "classes": "rounded"});
+    ipcRenderer.send("logsRequest");
+});
+
+
+
 // Display the modal to be used in asking the user whether the original data folder should be deleted.
-ipcRenderer.once("dataOriginalDeleteAsk", (event, response) => {
+ipcRenderer.on("dataOriginalDeleteAsk", (event, response) => {
     // Define the deletion modal.
 	const dataDeleteModalInstance = M.Modal.init(document.getElementById("dataDeleteModal"));
     // Open the deletion modal.
@@ -92,7 +107,8 @@ ipcRenderer.once("dataOriginalDeleteAsk", (event, response) => {
 window.addEventListener("load", () => {
 	// Define the buttons for all settings choices.
     const settingsOptions = document.getElementById("settingsOptions"),
-    	settingsAbout = document.getElementById("settingsAbout"),
+    	settingsLogs = document.getElementById("settingsLogs"),
+        settingsAbout = document.getElementById("settingsAbout"),
         settingsColorReset = document.getElementById("settingsColorReset"),
         settingsDataReset = document.getElementById("settingsDataReset"),
         settingsSizesReset = document.getElementById("settingsSizesReset"),
@@ -100,22 +116,63 @@ window.addEventListener("load", () => {
     	settingsApply = document.getElementById("settingsApply");
     // Define the relevant portions of the page that are in the settings rotation.
     const settingsOptionsContainer = document.getElementById("settingsOptionsContainer"),
-        settingsAboutContainer = document.getElementById("settingsAboutContainer");
+        settingsAboutContainer = document.getElementById("settingsAboutContainer"),
+        settingsContainers = Array.from(document.getElementsByClassName("settingsContainer")),
+        settingsSelectionItems = Array.from(document.getElementsByClassName("settingsSelectionItems")),
+        settingsButtons = Array.from(document.getElementsByClassName("settingsButtons")),
+        logsTerminal = document.getElementById("logsTerminal"),
+        logsFolder = document.getElementById("logsFolder");
+    logsFolder.addEventListener("click", e => {
+        ipcRenderer.send("logsFile");
+    });
     // Listen for a click event on the settingsOptions button on the top bar to display the settings options.
     settingsOptions.addEventListener("click", e => {
         e.preventDefault();
+        settingsContainers.forEach(cont => cont.style.display = "none");
+        settingsSelectionItems.forEach(item => item.parentNode.classList.remove("active"));
         settingsOptionsContainer.style.display = "initial";
         settingsOptions.parentNode.classList.add("active");
-        settingsAboutContainer.style.display = "none";
-        settingsAbout.parentNode.classList.remove("active");
+        settingsButtons.forEach(btn => btn.style.display = "inline-block");
+        logsFolder.style.display = "none";
+    });
+    // Listen for a click event on the settingsLogs button on the top bar to display the application logs.
+    settingsLogs.addEventListener("click", e => {
+        e.preventDefault();
+        settingsContainers.forEach(cont => cont.style.display = "none");
+        settingsSelectionItems.forEach(item => item.parentNode.classList.remove("active"));
+        settingsLogsContainer.style.display = "initial";
+        settingsLogs.parentNode.classList.add("active");
+        settingsButtons.forEach(btn => btn.style.display = "none");
+        logsFolder.style.display = "inline-block";
+        ipcRenderer.send("logsRequest");
+    });
+    ipcRenderer.on("logsRequestResult", (event, logsArr) => {
+        logsTerminal.innerHTML = "";
+        for(let c = 0; c < logsArr.length; c++) {
+            let logSpan = document.createElement("span");
+            if(logsArr[c].includes("[info]")) {
+                logSpan.textContent = logsArr[c].replace(" [info]", "");
+            }
+            else if(logsArr[c].includes("[error]")) {
+                logSpan.textContent = logsArr[c].replace(" [error]", "");
+                logSpan.style.color = "red";
+            }
+            else if(logsArr[c].includes("[warn]")) {
+                logSpan.textContent = logsArr[c].replace(" [warn]", "");
+                logSpan.style.color = "blue";
+            }
+            logsTerminal.append(logSpan, document.createElement("br"));
+        }
     });
     // Listen for a click event on the settingsAbout button on the top bar to display the about section of the app.
     settingsAbout.addEventListener("click", e => {
         e.preventDefault();
-        settingsOptionsContainer.style.display = "none";
-        settingsOptions.parentNode.classList.remove("active");
+        settingsContainers.forEach(cont => cont.style.display = "none");
+        settingsSelectionItems.forEach(item => item.parentNode.classList.remove("active"));
         settingsAboutContainer.style.display = "initial";
         settingsAbout.parentNode.classList.add("active");
+        settingsButtons.forEach(btn => btn.style.display = "none");
+        logsFolder.style.display = "none";
     });
     // Listen for a click event on the aboutGithub button in the about section in order to open the associated link in the default browser.
     aboutGithub.addEventListener("click", e => {
@@ -242,6 +299,7 @@ window.addEventListener("load", () => {
             }
         	// Reset the values in the settings modal upon an exit.
         	const settingsModalInstance = M.Modal.init(document.getElementById("settingsModal"), { "onCloseStart": () => {
+                    settingsOptions.click();
         			primaryColor.value = primaryColor.getAttribute("lastValue");
     	    		secondaryColor.value = secondaryColor.getAttribute("lastValue");
     	    		appPath.value = appPath.getAttribute("lastValue");

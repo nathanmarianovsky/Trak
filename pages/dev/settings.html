@@ -3,13 +3,14 @@
         <nav id="settingsNav" class="z-depth-2">
             <div class="nav-wrapper">
                 <ul id="settingsSelection">
-                    <li><a id="settingsOptions">Options</a></li>
-                    <li><a id="settingsAbout">About</a></li>
+                    <li><a id="settingsOptions" class="settingsSelectionItems">Options</a></li>
+                    <li><a id="settingsLogs" class="settingsSelectionItems">Logs</a></li>
+                    <li><a id="settingsAbout" class="settingsSelectionItems">About</a></li>
                 </ul>
             </div>
         </nav>
     </div>
-    <div id="settingsOptionsContainer" class="settingsOptions">
+    <div id="settingsOptionsContainer" class="settingsContainer">
         <h5 class="center settingsHeaders">Colors</h5>
         <div id="settingsColorDiv">
             <div id="primaryColorDiv" class="settingsColorContainers">
@@ -75,7 +76,10 @@
             </form>
         </div>
     </div>
-    <div id="settingsAboutContainer" class="settingsOptions">
+    <div id="settingsLogsContainer" class="settingsContainer">
+        <div id="logsTerminal"></div>
+    </div>
+    <div id="settingsAboutContainer" class="settingsContainer">
         <p>
             Trak is an application designed to be the one for all stop of personal content cataloging. Maintaining records on here provides a visual upgrade when compared to using sheets without all the hassle along with the advantage of having offline records which cannot be offered by a website service. This is still a work in progress that can be monitored on <a id="aboutGithub" class="hyperlink">Github</a>. 
         </p>
@@ -84,9 +88,10 @@
     </div>
 </div>
 <div class="modal-footer">
-    <a id="settingsColorReset" class="left waves-effect waves-light btn-flat modalButtons">Colors Reset</a>
-    <a id="settingsDataReset" class="left waves-effect waves-light btn-flat modalButtons">Data Reset</a>
-    <a id="settingsSizesReset" class="left waves-effect waves-light btn-flat modalButtons">Sizes Reset</a>
+    <a id="logsFolder" class="left waves-effect waves-light btn-flat modalButtons">Logs File</a>
+    <a id="settingsColorReset" class="left waves-effect waves-light btn-flat modalButtons settingsButtons">Colors Reset</a>
+    <a id="settingsDataReset" class="left waves-effect waves-light btn-flat modalButtons settingsButtons">Data Reset</a>
+    <a id="settingsSizesReset" class="left waves-effect waves-light btn-flat modalButtons settingsButtons">Sizes Reset</a>
     <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
-    <a id="settingsApply" class="waves-effect waves-light btn-flat modalButtons">Apply</a>
+    <a id="settingsApply" class="waves-effect waves-light btn-flat modalButtons settingsButtons">Apply</a>
 </div>

@@ -37,14 +37,14 @@ else {
 
 
 // Display a notification for the successful removal of multiple records.
-ipcRenderer.once("recordsRemovalSuccess", (event, response) => {
+ipcRenderer.on("recordsRemovalSuccess", (event, response) => {
     M.toast({"html": "The checked records have been removed.", "classes": "rounded"});
 });
 
 
 
 // Display a notification if there was an error in the removal of a record.
-ipcRenderer.once("recordRemovalFailure", (event, response) => {
+ipcRenderer.on("recordRemovalFailure", (event, response) => {
     M.toast({"html": "There was an error removing the record associated to the " + toastParse(response) + ".", "classes": "rounded"});
 });
 
