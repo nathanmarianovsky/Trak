@@ -17,6 +17,7 @@
     "electron-log": "^4.4.8",
     "exceljs": "^4.3.0",
     "fs-extra": "^11.1.1",
+    "goodreads-parser": "^1.2.6",
     "html-minifier": "^4.0.0",
     "mal-scraper": "^2.13.1",
     "node-minify": "^3.6.0",

@@ -21,15 +21,37 @@ Listen for click events on the record choices.
 */
 var recordChoicesButtons = () => {
     // Define the buttons for all record choices.
-    const categoryAnime = document.getElementById("categoryAnime");
+    const categoryAnime = document.getElementById("categoryAnime"),
+        categoryBook = document.getElementById("categoryBook");
     // Define the relevant portions of the page that are in the rotation of record forms.
     const directionsTitle = document.getElementById("directionsTitle"),
         directionsText = document.getElementById("directionsText"),
         categoryDivs = document.getElementsByClassName("categoryDiv"),
         categoryInitial = document.getElementById("categoryInitial"),
-        categoryAnimeDiv = document.getElementById("categoryAnimeDiv");
+        categoryAnimeDiv = document.getElementById("categoryAnimeDiv"),
+        categoryBookDiv = document.getElementById("categoryBookDiv");
     let introHolder = false;
-    ipcRenderer.on("addIntroduction", event => { introHolder = true; });
+    ipcRenderer.on("addIntroduction", event => introHolder = true);
+
+
+
+    categoryBook.addEventListener("click", e => {
+        e.preventDefault();
+        // Hide the default content.
+        if(categoryInitial.style.display != "none") {
+            categoryInitial.style.display = "none";
+        }
+        // Hide all page content by default if the anime content is not shown.
+        else if(!categoryAnime.parentNode.classList.contains("active")) {
+            categoryDivs.style.display = "none";
+        }
+        // Show the anime content and highlight the anime tab of the navbar.
+        categoryBookDiv.style.display = "initial";
+        categoryBook.parentNode.classList.add("active");
+    });
+
+
+
     // Listen for a click event on the categoryAnime button on the top bar to display the form corresponding to an anime record.
     categoryAnime.addEventListener("click", e => {
         e.preventDefault();

@@ -163,7 +163,7 @@
                     </div>
                 </div>
             </div>
-            <h2 id="genresTitle">Genres/Tags:</h2>
+            <h2 id="animeGenresTitle">Genres/Tags:</h2>
             <div class="row addRecordDiv">
                 <form id="categoryAnimeForm2" class="col s12"></form>
             </div>
@@ -205,5 +205,141 @@
                 </div>
             </div>
         </div>
+
+
+
+
+
+
+        <div id="categoryBookDiv" class="categoryDiv">
+            <div id="bookPreloader" class="preloader-wrapper active">
+                <div class="spinner-layer">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <h2>Directions:</h2>
+            <div class="text formInfo">
+                The only field required to add a record is the ISBN. All other fields are optional.
+            </div>
+            <div class="row addRecordDiv">
+                <div id="addRecordBookImageDiv" class="left">
+                    <a id="bookFavoriteImageLink"><i class="material-icons">favorite</i></a>
+                    <img id="addRecordBookImg" src="../../assets/animeDef.png" list="" default="../../assets/animeDef.png">
+                    <div id="addRecordBookImgBtnDiv">
+                        <div class="addRecordBookImgBtnContainer"><a id="bookPreviousImgBtn" class="addRecordBookImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_before</i></a></div>
+                        <div class="addRecordBookImgBtnContainer"><a id="bookAddImgBtn" class="addRecordBookImgBtn waves-effect waves-light btn"><i class="material-icons">add</i></a></div>
+                        <div class="addRecordBookImgBtnContainer"><a id="bookRemoveImgBtn" class="addRecordBookImgBtn waves-effect waves-light btn"><i class="material-icons">remove</i></a></div>
+                        <div class="addRecordBookImgBtnContainer"><a id="bookNextImgBtn" class="addRecordBookImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_next</i></a></div>
+                    </div>
+                    <input id="bookAddImgInput" type="file" multiple>
+                </div>
+                <form id="categoryBookForm1" class="col s8">
+                    <div class="row">
+                        <div class="input-field col s5">
+                            <input id="bookTitle" type="text" class="validate left autocomplete">
+                            <label for="bookTitle">Title:</label>
+                        </div>
+                        <div class="input-field col s4">
+                            <input id="bookAuthor" type="text" class="validate left">
+                            <label for="bookAuthor">Author(s):</label>
+                        </div>
+                        <div class="input-field col s3">
+                            <input id="bookPublisher" type="text" class="validate left">
+                            <label for="bookPublisher">ISBN:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input id="bookPublisher" type="text" class="validate left">
+                            <label for="bookPublisher">Published By:</label>
+                        </div>
+                        <div class="input-field col s3">
+                            <input id="bookPublicationDate" type="date" class="validate left">
+                            <label for="bookPublicationDate">Publication Date:</label>
+                        </div>
+                        <div class="input-field col s3">
+                            <select id="bookMediaType">
+                                <option value="" disabled selected>N/A</option>
+                                <option value="audiobook">Audiobook</option>
+                                <option value="hardcover">Hardcover</option>
+                                <option value="softcover">Softcover</option>
+                            </select>
+                            <label>Media Type:</label>
+                        </div>
+                    </div>
+                    <div id="bookAddRecordFilesOuterDiv" class="file-field input-field">
+                        <div id="bookAddRecordFilesDiv" class="btn addRecordFilesDiv">
+                            <span>
+                                File<i class="material-icons right">add</i>
+                            </span>
+                            <input id="bookAddRecordFiles" type="file" multiple>
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input id="bookAddRecordFilesText" class="file-path validate" type="text">
+                            <label for="bookAddRecordFilesText">Upload one or more files.</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s2">
+                            <select id="bookRating">
+                                <option value="" disabled selected>N/A</option>
+                                <option value="0">0/10</option>
+                                <option value="1">1/10</option>
+                                <option value="2">2/10</option>
+                                <option value="3">3/10</option>
+                                <option value="4">4/10</option>
+                                <option value="5">5/10</option>
+                                <option value="6">6/10</option>
+                                <option value="7">7/10</option>
+                                <option value="8">8/10</option>
+                                <option value="9">9/10</option>
+                                <option value="10">10/10</option>
+                            </select>
+                            <label>Rating:</label>
+                        </div>
+                        <div class="input-field col s10">
+                            <textarea id="bookReview" class="validate materialize-textarea" maxlength="1000"></textarea>
+                            <label for="bookReview">Comments/Review:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea id="bookSynopsis" class="validate materialize-textarea" maxlength="1000"></textarea>
+                            <label for="bookSynopsis">Description:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <a id="bookFetchDetailsBtn" class="waves-effect waves-light btn addRecordBtn"><i class="material-icons right">refresh</i>Fetch Details</a>
+                    </div>
+                </form>
+            </div>
+            <h2 id="bookGenresTitle">Genres/Tags:</h2>
+            <div class="row addRecordDiv">
+                <form id="categoryBookForm2" class="col s12"></form>
+            </div>
+            <a id="bookSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
+            <div id="introductionTargetBookSave" class="tap-target" data-target="bookSave">
+                <div class="tap-target-content">
+                    <p>Use this button to save the book record.</p>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
     </body>
 </html>
