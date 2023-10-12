@@ -36,6 +36,7 @@ where 'username' has to be replaced.
 * Under the "exportTemp" folder files are generated and removed during an application library export.
 * Under the "importTemp" folder files are generated and removed during an application library import.
 * Under the "logs" folder log files are generated to maintain a record of the application's actions.
+
 The last folder will be located at:
 ```
 C:\Users\username\TrakDownloads
