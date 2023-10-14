@@ -14,6 +14,23 @@ BASIC DETAILS: This file handles all buttons on the addRecord.html page.
 
 
 
+var navReset = (def, divs, links, choiceDiv, choiceLink) => {
+    // Hide the default content.
+    if(def.style.display != "none") {
+        def.style.display = "none";
+    }
+    // Hide all page content by default if the anime content is not shown.
+    else if(!choiceLink.parentNode.classList.contains("active")) {
+        Array.from(divs).forEach(div => div.style.display = "none");
+        Array.from(links).forEach(link => link.parentNode.classList.remove("active"));
+    }
+    // Show the desired content and highlight the associated tab on the navbar.
+    choiceLink.parentNode.classList.add("active");
+    choiceDiv.style.display = "initial";
+};
+
+
+
 /*
 
 Listen for click events on the record choices.
@@ -27,6 +44,7 @@ var recordChoicesButtons = () => {
     const directionsTitle = document.getElementById("directionsTitle"),
         directionsText = document.getElementById("directionsText"),
         categoryDivs = document.getElementsByClassName("categoryDiv"),
+        categoryLinks = document.getElementsByClassName("categoryLink"),
         categoryInitial = document.getElementById("categoryInitial"),
         categoryAnimeDiv = document.getElementById("categoryAnimeDiv"),
         categoryBookDiv = document.getElementById("categoryBookDiv");
@@ -37,17 +55,7 @@ var recordChoicesButtons = () => {
 
     categoryBook.addEventListener("click", e => {
         e.preventDefault();
-        // Hide the default content.
-        if(categoryInitial.style.display != "none") {
-            categoryInitial.style.display = "none";
-        }
-        // Hide all page content by default if the anime content is not shown.
-        else if(!categoryAnime.parentNode.classList.contains("active")) {
-            categoryDivs.style.display = "none";
-        }
-        // Show the anime content and highlight the anime tab of the navbar.
-        categoryBookDiv.style.display = "initial";
-        categoryBook.parentNode.classList.add("active");
+        navReset(categoryInitial, categoryDivs, categoryLinks, categoryBookDiv, categoryBook);
     });
 
 
@@ -55,17 +63,7 @@ var recordChoicesButtons = () => {
     // Listen for a click event on the categoryAnime button on the top bar to display the form corresponding to an anime record.
     categoryAnime.addEventListener("click", e => {
         e.preventDefault();
-        // Hide the default content.
-        if(categoryInitial.style.display != "none") {
-            categoryInitial.style.display = "none";
-        }
-        // Hide all page content by default if the anime content is not shown.
-        else if(!categoryAnime.parentNode.classList.contains("active")) {
-            categoryDivs.style.display = "none";
-        }
-        // Show the anime content and highlight the anime tab of the navbar.
-        categoryAnimeDiv.style.display = "initial";
-        categoryAnime.parentNode.classList.add("active");
+        navReset(categoryInitial, categoryDivs, categoryLinks, categoryAnimeDiv, categoryAnime);
         // Initialize the dragging of the related content.
         let drake = dragula({"containers": [document.querySelector('#animeList')]});
         drake.on("dragend", () => { animeListReorganize(); });
@@ -330,6 +328,7 @@ var recordChoicesButtons = () => {
             // Reset all anime genres to not be checked.
             Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
             // Iterate through the fetched list of genres and check them off on the page if available.
+            const extraGenres = document.getElementById("otherGenres");
             newResponse[7].forEach(genreItem => {
                 let genreIter = genreItem;
                 if(genreIter == "Coming-Of-Age") {
@@ -347,7 +346,11 @@ var recordChoicesButtons = () => {
                 if(document.getElementById("animeGenre" + genreIter) != undefined) {
                     document.getElementById("animeGenre" + genreIter).checked = true;
                 }
+                else {
+                    extraGenres.value == "" ? extraGenres.value = genreIter : extraGenres.value += ", " + genreIter;
+                }
             });
+            if(extraGenres.value != "") { extraGenres.nextElementSibling.classList.add("active"); }
             setTimeout(() => {
                 // Reset the related content modal.
                 if(updateDetector == false) {
@@ -485,6 +488,7 @@ var animeSave = () => {
             animeSynopsis = document.getElementById("animeSynopsis").value,
             animeImg = document.getElementById("addRecordAnimeImg").getAttribute("list").split(","),
             animeFiles = Array.from(document.getElementById("animeAddRecordFiles").files).map(elem => elem.path),
+            otherGenres = document.getElementById("otherGenres").value.split(","),
             genresLst = animeGenreList(),
             genres = [],
             content = [];
@@ -532,7 +536,7 @@ var animeSave = () => {
                 oldTitle = typeof(pageElement) != "undefined" && pageElement != null ? pageElement.title : "";
             // Send the request to the back-end portion of the app.
             const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers, animeWriters,
-                animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres], content, animeSynopsis,
+                animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres, otherGenres], content, animeSynopsis,
                 [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), animeImg], oldTitle];
             ipcRenderer.send("performSave", submissionMaterial);
         }

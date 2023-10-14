@@ -711,7 +711,13 @@ footer {
     text-align: center;
 }
 
-#animeSave, #bookSave {
+#animeSave {
+	position: fixed;
+	right: 23px;
+	bottom: 92px;
+}
+
+#bookSave {
 	position: fixed;
 	right: 23px;
 	bottom: 23px;
@@ -790,6 +796,11 @@ footer {
 	font-size: 30px;
 }
 
+#genresModal {
+	height: 35%;
+	width: 60%;
+}
+
 .addRecordAnimeImgBtnContainer, .addRecordBookImgBtnContainer {
 	width: 20%;
 	display: inline-block;
@@ -856,6 +867,10 @@ footer {
     top: 4px;
     left: 4px;
     cursor: pointer;
+}
+
+.genresIcon {
+	font-size: 22px !important;
 }
 
 .file-path {

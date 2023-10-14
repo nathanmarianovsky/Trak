@@ -265,6 +265,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 for(let v = 0; v < recordData.genres[0].length; v++) {
                     document.getElementById("animeGenre" + recordData.genres[0][v]).checked = recordData.genres[1][v];
                 }
+                document.getElementById("otherGenres").value = recordData.genres[2].join(",");
                 // Display a preloader to indicate that the page is still loading the anime related content. This can take a bit of time depending on the amount to be loaded.
                 const updateAnimePreloader = document.getElementById("animePreloader");
                 updateAnimePreloader.style.top = "-32px";
