@@ -282,6 +282,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 				            }
 						}
 					}
+					filterGenreStr == "" ? filterGenreStr = iterData.genres[2].join(", ") : filterGenreStr += ", " + iterData.genres[2].join(", ");
 					if(filterGenreStr == "") { filterGenreStr = "N/A"; }
 					animeWorksheet.getCell("M" + (x + 2)).value = filterGenreStr;
 					// If the user desires to export a detailed xlsx file then create a new worksheet for each anime record and populate it with the related content information.
@@ -683,27 +684,34 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 										"musicians": elem.getCell("I" + q).value != "N/A" ? elem.getCell("I" + q).value : "", 
 										"studio": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "", 
 										"license": elem.getCell("K" + q).value != "N/A" ? elem.getCell("K" + q).value : "", 
-										"genres": [genreLst, []],
+										"genres": [genreLst, new Array(genreLst.length).fill(false), []],
 										"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "", 
 										"img": [],
 										"content": [{ "scenario": "Single", "name": "Item 1", "type": "", "release": "", "watched": "", "rating": "", "review": "" }]
 									};
 									// Update the genres of the anime record object.
-									for(let p = 0; p < genreLst.length; p++) {
-										let compare = genreLst[p];
-										if(compare == "ComingOfAge") {
-						                    compare = "Coming-Of-Age";
-						                }
-						                else if(compare == "PostApocalyptic") {
-						                    compare = "Post-Apocalyptic";
-						                }
-						                else if(compare == "SciFi") {
-						                    compare = "Sci-Fi";
-						                }
-						                else if(compare == "SliceOfLife") {
-						                    compare = "Slice of Life";
-						                }
-						                elem.getCell("M" + q).value.includes(compare) ? animeObj.genres[1].push(true) : animeObj.genres[1].push(false);
+									let genresCellList = elem.getCell("M" + q).value.split(",").map(elem => elem.trim());
+									for(let p = 0; p < genresCellList.length; p++) {
+										let compare = genresCellList[p];
+										if(compare == "Coming-of-Age") {
+											compare = "ComingOfAge";
+										}
+										else if(compare == "Post-Apocalyptic") {
+											compare = "PostApocalyptic";
+										}
+										else if(compare == "Sci-Fi") {
+											compare = "SciFi";
+										}
+										else if(compare == "Slice of Life") {
+											compare = "SliceOfLife";
+										}
+										let genreIndex = genreLst.indexOf(compare);
+										if(genreIndex == -1) {
+											animeObj.genres[2].push(compare);
+										}
+										else {
+											animeObj.genres[1][genreIndex] = true;
+										}
 									}
 									// Update the release date of the anime record object.
 									if(elem.getCell("L" + q).value != "" && elem.getCell("L" + q).value != "N/A") {
