@@ -40,6 +40,18 @@ var animeGenreList = () => {
 
 /*
 
+Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
+
+*/
+var bookGenreList = () => {
+    return ["Action", "Adventure", "Comedy", "Crime", "Dystopian", "Fantasy", "Fiction", "Historical", "Horror", "Mystery",
+            "Mythology", "Nonfiction", "Romance", "Satire", "Sci-Fi", "Thriller", "Tragedy", "Western"];
+};
+
+
+
+/*
+
 Calculates the average rating for an anime based on the available ratings for all films, ONAs, OVAs, and seasons.
 
 */

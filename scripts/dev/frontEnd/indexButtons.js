@@ -105,6 +105,7 @@ window.addEventListener("load", () => {
     });
     // Listen for a click event on the home button.
     indexHome.addEventListener("click", e => {
+        window.scrollTo(0,0);
         // Display the local records table.
         outerLayer.style.display = "block";
         // Display the anime search button.

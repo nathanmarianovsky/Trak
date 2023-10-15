@@ -801,6 +801,10 @@ footer {
 	width: 60%;
 }
 
+#bookFetchDetailsBtn {
+	margin-top: 3%;
+}
+
 .addRecordAnimeImgBtnContainer, .addRecordBookImgBtnContainer {
 	width: 20%;
 	display: inline-block;

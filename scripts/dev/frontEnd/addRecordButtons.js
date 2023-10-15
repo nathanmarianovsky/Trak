@@ -2,6 +2,7 @@
 
 BASIC DETAILS: This file handles all buttons on the addRecord.html page.
 
+    - navReset: Resets the top nav to correspond to the clicked category.
     - recordChoicesButtons: Listen for click events on the record choices.
     - animeModalButtons: Listen for click events on the related content anime modal buttons.
     - animeSave: Processes the information required to save an anime record.
@@ -14,6 +15,17 @@ BASIC DETAILS: This file handles all buttons on the addRecord.html page.
 
 
 
+/*
+
+Resets the top nav to correspond to the clicked category.
+
+   - def is the div corresponding to the default message shown prior to any record category being chosen.
+   - divs is the collection of page divs corresponding to the different category content.
+   - links is the collection of page links corresponding to the different categories.
+   - choiceDiv is the content div which should be shown for the desired category.
+   - choiceLink is the link on the top nav corresponding to which category should be shown.
+
+*/
 var navReset = (def, divs, links, choiceDiv, choiceLink) => {
     // Hide the default content.
     if(def.style.display != "none") {
@@ -55,7 +67,29 @@ var recordChoicesButtons = () => {
 
     categoryBook.addEventListener("click", e => {
         e.preventDefault();
+        // Reset the top nav accordingly.
         navReset(categoryInitial, categoryDivs, categoryLinks, categoryBookDiv, categoryBook);
+        // Define all image buttons.
+        const bookPreviousImgBtn = document.getElementById("bookPreviousImgBtn"),
+            bookAddImgBtn = document.getElementById("bookAddImgBtn"),
+            bookAddImgInput = document.getElementById("bookAddImgInput"),
+            bookRemoveImgBtn = document.getElementById("bookRemoveImgBtn"),
+            bookNextImgBtn = document.getElementById("bookNextImgBtn"),
+            addRecordBookImg = document.getElementById("addRecordBookImg"),
+            bookFavoriteImageLink = document.getElementById("bookFavoriteImageLink");
+        // // Define the color which will be applied to the favorite image icon.
+        // const btnColorFavorite = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor,
+        //     btnColorDefault = newSwitchBackground = "#" + addAlpha(rgba2hex(getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor).substring(1), 0.4);
+        // animeFavoriteImageLink.addEventListener("click", e => {
+        //     if(rgba2hex(animeFavoriteImageLink.style.color) == btnColorDefault) {
+        //         let imgArr = addRecordAnimeImg.getAttribute("list").split(","),
+        //             imgArrIndex = imgArr.indexOf(addRecordAnimeImg.getAttribute("src"));
+        //         arrayMove(imgArr, imgArrIndex, 0);
+        //         addRecordAnimeImg.setAttribute("list", imgArr.join(","));
+        //         animeFavoriteImageLink.style.color = btnColorFavorite;
+        //         animeFavoriteImageLink.style.cursor = "initial";
+        //     }
+        // });
     });
 
 
@@ -63,6 +97,7 @@ var recordChoicesButtons = () => {
     // Listen for a click event on the categoryAnime button on the top bar to display the form corresponding to an anime record.
     categoryAnime.addEventListener("click", e => {
         e.preventDefault();
+        // Reset the top nav accordingly.
         navReset(categoryInitial, categoryDivs, categoryLinks, categoryAnimeDiv, categoryAnime);
         // Initialize the dragging of the related content.
         let drake = dragula({"containers": [document.querySelector('#animeList')]});
@@ -488,7 +523,7 @@ var animeSave = () => {
             animeSynopsis = document.getElementById("animeSynopsis").value,
             animeImg = document.getElementById("addRecordAnimeImg").getAttribute("list").split(","),
             animeFiles = Array.from(document.getElementById("animeAddRecordFiles").files).map(elem => elem.path),
-            otherGenres = document.getElementById("otherGenres").value.split(","),
+            otherGenres = document.getElementById("otherGenres").value.split(",").map(elem => elem.trim()),
             genresLst = animeGenreList(),
             genres = [],
             content = [];

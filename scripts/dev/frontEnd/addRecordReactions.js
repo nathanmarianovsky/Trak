@@ -2,7 +2,7 @@
 
 BASIC DETAILS: This file handles all reactions on the addRecord.html page.
 
-   - animeGenreListLoad: Appends all genre options as checkboxes when adding/updating an anime record.
+   - genreListLoad: Appends all genre options as checkboxes when adding/updating a record.
 
 */
 
@@ -265,7 +265,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 for(let v = 0; v < recordData.genres[0].length; v++) {
                     document.getElementById("animeGenre" + recordData.genres[0][v]).checked = recordData.genres[1][v];
                 }
-                document.getElementById("otherGenres").value = recordData.genres[2].join(",");
+                document.getElementById("otherGenres").value = recordData.genres[2].join(", ");
                 // Display a preloader to indicate that the page is still loading the anime related content. This can take a bit of time depending on the amount to be loaded.
                 const updateAnimePreloader = document.getElementById("animePreloader");
                 updateAnimePreloader.style.top = "-32px";
@@ -373,13 +373,13 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
 
 /*
 
-Appends all genre options as checkboxes when adding/updating an anime record.
+Appends all genre options as checkboxes when adding/updating a record.
 
 */
-var animeGenreListLoad = () => {
+var genreListLoad = (type, listCallback) => {
     // Define the genres form, list of genres, and number of columns and rows.
-    const genresForm = document.getElementById("categoryAnimeForm2"),
-        genresLst = animeGenreList(),
+    const genresForm = document.getElementById("category" + type + "Form2"),
+        genresLst = listCallback(),
         columns = 6,
         rows = Math.ceil(genresLst.length / columns);
     // Iterate through all rows needed.
@@ -435,7 +435,9 @@ var animeGenreListLoad = () => {
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
     // Fill the anime record page with the associated genre options.
-    animeGenreListLoad();
+    genreListLoad("Anime", animeGenreList);
+    // Fill the book record page with the associated genre options.
+    genreListLoad("Book", bookGenreList);
     // Initialize the select tags on the page.
     initSelect();
     // Initialize the floating action button on the page.
