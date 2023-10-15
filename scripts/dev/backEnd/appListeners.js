@@ -544,6 +544,7 @@ Driver function for adding all app listeners.
 	- https provides the means to download files.
 	- tools provides a collection of local functions.
 	- malScraper provides the means to attain anime and manga records from myanimelist.
+	- updateCondition is a boolean used to ensure that a check for an update occurs only once per application load.
 	- exec and shell provide the means to open files, folders, and links.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the current path to the local user data.
@@ -551,7 +552,7 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exec, shell, ipc, tools, malScraper, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exec, shell, ipc, tools, malScraper, updateCondition, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -559,7 +560,10 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
    		win.webContents.on("did-finish-load", () => {
   				win.webContents.send("loadRows", win.getContentSize()[1] - 800);
   				tools.tutorialLoad(fs, path, log, win, originalPath);
-  				tools.checkForUpdate(os, https, fs, path, log, originalPath, win);
+  				if(updateCondition == false) {
+  					tools.checkForUpdate(os, https, fs, path, log, originalPath, win);
+  					updateCondition = true;
+  				}
   			});
     	}
   	});
@@ -714,7 +718,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 	});
 
 	// Handles the download of an updated installer and launching it.
-	ipc.on("appUpdate", (event, appUpdateData) => {
+	ipc.once("appUpdate", (event, appUpdateData) => {
 		// Define the path where the updated installer will download.
 		const outputdir = path.join(os.homedir(), "TrakDownloads");
 		// Create the TrakDownloads folder if it does not exist. If it does exist then empty it on load.

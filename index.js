@@ -22,6 +22,7 @@ const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
 	log = require("electron-log"),
 	os = require("os"),
 	{ exec, spawn } = require("child_process"),
+	// GoodReadsParser = require("goodreads-parser"),
 	tools = require("./scripts/dist/backEnd/tools"),
 	basePath = localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
 if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
@@ -34,7 +35,12 @@ else {
 		: configObj.original.path.substring(0, configObj.original.path.length - 10);
 }
 
+// console.log(GoodReadsParser);
 
+
+// GoodReadsParser.getBook({ "isbn": "9780387940878" }).then(result => console.log(result));
+// GoodReadsParser.getBook({ "isbn": "9781646091911" }).then(result => console.log(result));
+// GoodReadsParser.searchBooks({ "q": "Fibre Bundles" }).then(result => console.log(result.books));
 
 // Make an entry in the logs to indicate that the application is starting up.
 log.info("The application is starting.");
@@ -76,7 +82,6 @@ app.whenReady().then(() => {
 		"showSearchWithGoogle": true,
 		"showSelectAll": true
 	});
-
 	// Create the configuration file if it does not exist.
 	if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
 		log.info("Creating the default configuration file. To be located at " + path.join(basePath, "Trak", "config", "configuration.json"));
@@ -95,32 +100,28 @@ app.whenReady().then(() => {
 		};
 		fs.writeFileSync(path.join(basePath, "Trak", "config", "configuration.json"), JSON.stringify(writeData), "UTF8");
 	}
-
 	// Create the location file if it does not exist.
 	if(!fs.existsSync(path.join(basePath, "Trak", "config", "location.json"))) {
 		log.info("Creating the location.json file. To be located at " + path.join(basePath, "Trak", "config", "location.json"));
 		const writeLocation = { "appLocation": __dirname };
 		fs.writeFileSync(path.join(basePath, "Trak", "config", "location.json"), JSON.stringify(writeLocation), "UTF8");
 	}
-
 	// Create the localPages folder if it does not exist.
 	if(!fs.existsSync(path.join(basePath, "Trak", "localPages"))) {
 		log.info("Creating the localPages folder. To be located at " + path.join(basePath, "Trak", "localPages"));
 		fs.mkdirSync(path.join(basePath, "Trak", "localPages"));
 	}
-
 	// Create the localStyles folder if it does not exist.
 	if(!fs.existsSync(path.join(basePath, "Trak", "localStyles"))) {
 		log.info("Creating the localStyles folder. To be located at " + path.join(basePath, "Trak", "localStyles"));
 		fs.mkdirSync(path.join(basePath, "Trak", "localStyles"));
 	}
-
 	// If the data folder does not exist, then create it.
 	if(!fs.existsSync(path.join(basePath, "Trak", "data"))) {
 		log.info("Creating the data folder. To be located at " + path.join(basePath, "Trak", "data"));
 		fs.mkdirSync(path.join(basePath, "Trak", "data"), { "recursive": true });
 	}
-
+	let updateCheck = false;
 	// Load the user's preferred window sizes if they exist.
 	fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
 		// If there was an issue reading the configuration.json file display a notification on the console.
@@ -199,14 +200,17 @@ app.whenReady().then(() => {
 															primaryWindow.webContents.on("did-finish-load", () => {
 																primaryWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
 																tools.tutorialLoad(fs, path, log, primaryWindow, basePath);
-																tools.checkForUpdate(os, https, fs, path, log, basePath, primaryWindow);
+																if(updateCheck == false) {
+																	tools.checkForUpdate(os, https, fs, path, log, basePath, primaryWindow);
+																	updateCheck = true;
+																}
 															});
 														  	// Create the system tray icon and menu. 
 														  	log.info("The application is creating the tray menu.");
 														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 															tools.createTrayMenu("h", primaryWindow, tray, Menu);
 															// Add all of the back-end listeners.
-															require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, os, spawn, https, exec, shell, ipc, tools, require("mal-scraper"), primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, os, spawn, https, exec, shell, ipc, tools, require("mal-scraper"), updateCheck, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 														}
 													});
 												}
