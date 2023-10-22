@@ -454,8 +454,11 @@ window.addEventListener("load", () => {
     animeSave();
     // Add the listeners corresponding to the anime related content options.
     animeModalButtons();
-    // Initialize the observer for the anime review.
-    initAnimeReviewObserver();
-    // Initialize the observer for the anime synopsis.
-    initAnimeSynopsisObserver();
+    const categories = ["anime", "book"];
+    categories.forEach(category => {
+        // Initialize the observer for the review.
+        initReviewObserver(document.getElementById(category + "Review"));
+        // Initialize the observer for the synopsis.
+        initSynopsisObserver(document.getElementById(category + "Synopsis"));
+    });
 });

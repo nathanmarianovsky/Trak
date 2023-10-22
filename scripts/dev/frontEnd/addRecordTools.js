@@ -3,6 +3,7 @@
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page.
 
     - animeGenreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
+    - bookGenreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for a book record.
     - calculateAnimeRating: Calculates the average rating for an anime based on the available ratings for all films, ONAs, OVAs, and seasons.
     - animeListReorganize: Reorganize the list items in the associated anime modal.
     - animeSeasonContentButtons: Listen for change and click events on the related content anime episode table items.
@@ -40,7 +41,7 @@ var animeGenreList = () => {
 
 /*
 
-Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
+Provides the list of all genres/tags that can be selected on the addRecord.html page for a book record.
 
 */
 var bookGenreList = () => {

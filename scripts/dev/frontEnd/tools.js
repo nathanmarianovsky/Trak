@@ -10,8 +10,8 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - initSelect: Initialize all select tags on the page.
     - initModal: Initialize all modals on the page.
     - initSelectObservers: Initialize the observers for style mutations on related content select tags.
-    - initAnimeReviewObserver: Initialize the observer for style mutations on the anime review.
-    - initAnimeSynopsisObserver: Initialize the observer for style mutations on the anime synopsis.
+    - initReviewObserver: Initialize the observer for style mutations on the appropriate review.
+    - initSynopsisObserver: Initialize the observer for style mutations on the appropriate synopsis.
     - toastParse: Handles the parsing of a record folder name to display to the user.
     - arrayMove: Moves an element in an array.
     - shuffle: Perform a Fisher-Yates shuffle on an array of items.
@@ -158,10 +158,12 @@ var initSelectObservers = () => {
 
 /*
 
-Initialize the observer for style mutations on the anime review.
+Initialize the observer for style mutations on the appropriate review.
+
+   - review is the input corresponding to the appropriate review.
 
 */
-var initAnimeReviewObserver = () => {
+var initReviewObserver = review => {
     // Define the select tags observer.
     let observer = new MutationObserver(mutations => {
         // Define the item target on the page.
@@ -169,20 +171,20 @@ var initAnimeReviewObserver = () => {
         // If the height of the textarea is extended then display the vertical scroll bar.
         trgt.style.height == "45px" ? document.body.style.overflowY = "hidden" : document.body.style.overflowY = "visible";
     });
-    // Define the anime review input.
-    let animeReview = document.getElementById("animeReview");
     // Tell the observer to watch for changes.
-    observer.observe(animeReview, { "attributes": true, "attributeFilter": ["style"] });
+    observer.observe(review, { "attributes": true, "attributeFilter": ["style"] });
 };
 
 
 
 /*
 
-Initialize the observer for style mutations on the anime synopsis.
+Initialize the observer for style mutations on the appropriate synopsis.
+
+   - synopsis is the input corresponding to the appropriate synopsis.
 
 */
-var initAnimeSynopsisObserver = () => {
+var initSynopsisObserver = synopsis => {
     // Define the select tags observer.
     let observer = new MutationObserver(mutations => {
         // Define the item target on the page.
@@ -190,10 +192,8 @@ var initAnimeSynopsisObserver = () => {
         // If the height of the textarea is extended then display the vertical scroll bar.
         trgt.style.height == "45px" ? document.body.style.overflowY = "hidden" : document.body.style.overflowY = "visible";
     });
-    // Define the anime review input.
-    let animeSynopsis = document.getElementById("animeSynopsis");
     // Tell the observer to watch for changes.
-    observer.observe(animeSynopsis, { "attributes": true, "attributeFilter": ["style"] });
+    observer.observe(synopsis, { "attributes": true, "attributeFilter": ["style"] });
 };
 
 

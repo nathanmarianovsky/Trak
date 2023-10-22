@@ -544,6 +544,7 @@ Driver function for adding all app listeners.
 	- https provides the means to download files.
 	- tools provides a collection of local functions.
 	- malScraper provides the means to attain anime and manga records from myanimelist.
+	- GoodReadsScraper provides the means to attain book records from goodreads.
 	- updateCondition is a boolean used to ensure that a check for an update occurs only once per application load.
 	- exec and shell provide the means to open files, folders, and links.
 	- mainWindow is an object referencing the primary window of the Electron app.
@@ -552,7 +553,7 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exec, shell, ipc, tools, malScraper, updateCondition, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exec, shell, ipc, tools, malScraper, GoodReadsScraper, updateCondition, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -758,6 +759,16 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 		}).catch(err => log.error("There was an issue in obtaining the anime search results for autocomplete options associated to the query " + search[1] + "."));
 	});
 
+	// Handles the search of a string through all possible book listings on goodreads.
+	ipc.on("bookSearch", (event, search) => {
+		// Use the goodreads scraper to fetch book listings possibly matching what the user is looking for.
+		GoodReadsScraper.searchBooks({ "q": search[1] }).then(data => {
+			log.info("GoodReadsScraper has finished getting the search results for the query " + search[1] + ".");
+			// Send the attained data to the front-end.
+			event.sender.send("bookSearchResults", [search[0], search[1], data.books.map(elem => [elem.title, elem.coverLarge])]);
+		}).catch(err => log.error("There was an issue in obtaining the book search results for autocomplete options associated to the query " + search[1] + "."));
+	});
+
 	// Handles the fetching of details for a given anime via its name.
 	ipc.on("animeFetchDetails", (event, name) => {
 		// Fetch anime details.
@@ -807,6 +818,24 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 				]);
 			}).catch(err => log.error("There was an issue in obtaining the pictures associated to the anime record " + name + "."));
 		}).catch(err => log.error("There was an issue in obtaining the details associated to the anime name " + name + "."));
+	});
+
+	// Handles the fetching of details for a given book via its name.
+	ipc.on("bookFetchDetailsByName", (event, name) => {
+		// Fetch book search results.
+		GoodReadsScraper.searchBooks({ "q": name }).then(bookSearchData => {
+			// Define the item in the search results matching the name provided.
+			let bookLst = bookSearchData.books.map(elem => elem.title),
+				bookLstItem = bookSearchData.books[bookLst.indexOf(name)];
+			// Fetch book details.
+			GoodReadsScraper.getBook({ "url": "https://www.goodreads.com/en/book/show/" + bookLstItem.id }).then(bookData => {
+				console.log(bookLstItem);
+				console.log(bookData);
+				event.sender.send("bookFetchDetailsByNameResult", [bookData.title, bookData.originalTitle, bookData.coverLarge,
+					(bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
+					bookData.publicationYear, bookData.pages, bookData.media, bookData.description, bookData.genres]);
+			}).catch(err => log.error("There was an issue in obtaining the details associated to the book title " + name + " via the url " + bookLstItem.url + "."));
+		}).catch(err => log.error("There was an issue in obtaining the details associated to the book title " + name + "."));
 	});
 
 	// Handles the fetching of the primary window's current height in order to provide the necessary difference for the index page table height to be updated.
