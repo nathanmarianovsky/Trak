@@ -773,7 +773,7 @@ footer {
 
 #animeReview, #animeSynopsis,
 #bookReview, #bookSynopsis {
-	max-height: 400px
+	max-height: 400px;
 }
 
 #updateRecordPreloader {

@@ -707,3 +707,21 @@ var seasonAddition = () => {
     // Initialize the observers for all relevant select tags.
     initSelectObservers();
 };
+
+
+
+/*
+
+Formats a string into a proper ISBN by adding hyphens.
+
+   - inp is the document input corresponding to the book ISBN.
+
+*/
+var formatISBN = inp => {
+    let curVal = inp.value.replace(/\D/g,"");
+    if(curVal.length < 4) { inp.value = curVal; }
+    else if(curVal.length == 4) { inp.value = curVal.slice(0, 3) + "-" + curVal.slice(3); }
+    else if(curVal.length < 10) { inp.value = curVal.slice(0, 3) + "-" + curVal.slice(3, 4) + "-" + curVal.slice(4); }
+    else if(curVal.length < 13) { inp.value = curVal.slice(0, 3) + "-" + curVal.slice(3, 4) + "-" + curVal.slice(4, 9) + "-" + curVal.slice(9); }
+    else { inp.value = curVal.slice(0, 3) + "-" + curVal.slice(3, 4) + "-" + curVal.slice(4, 9) + "-" + curVal.slice(9, 12) + "-" + curVal.slice(12, 13); }
+};

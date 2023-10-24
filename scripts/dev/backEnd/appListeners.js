@@ -829,13 +829,21 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 				bookLstItem = bookSearchData.books[bookLst.indexOf(name)];
 			// Fetch book details.
 			GoodReadsScraper.getBook({ "url": "https://www.goodreads.com/en/book/show/" + bookLstItem.id }).then(bookData => {
-				console.log(bookLstItem);
-				console.log(bookData);
-				event.sender.send("bookFetchDetailsByNameResult", [bookData.title, bookData.originalTitle, bookData.coverLarge,
+				event.sender.send("bookFetchDetailsResult", [bookData.title, bookData.originalTitle, bookData.coverLarge,
 					(bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
-					bookData.publicationYear, bookData.pages, bookData.media, bookData.description, bookData.genres]);
+					bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres]);
 			}).catch(err => log.error("There was an issue in obtaining the details associated to the book title " + name + " via the url " + bookLstItem.url + "."));
 		}).catch(err => log.error("There was an issue in obtaining the details associated to the book title " + name + "."));
+	});
+
+	// Handles the fetching of details for a given book via its ISBN.
+	ipc.on("bookFetchDetailsByISBN", (event, isbn) => {
+		// Fetch book details.
+		GoodReadsScraper.getBook({ "isbn": isbn }).then(bookData => {
+			event.sender.send("bookFetchDetailsResult", [bookData.title, bookData.originalTitle, bookData.coverLarge,
+				(bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
+				bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres]);
+		}).catch(err => log.error("There was an issue in obtaining the details associated to the book whose ISBN is " + isbn + "."));
 	});
 
 	// Handles the fetching of the primary window's current height in order to provide the necessary difference for the index page table height to be updated.

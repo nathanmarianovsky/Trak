@@ -87,6 +87,7 @@ ipcRenderer.on("addRecordInitialMessage", event => {
 
 
 
+// On an anime details fetch from myanimelist update the name accordingly if the addRecord page opened from an index page anime search.
 ipcRenderer.on("animeFetchDetailsResultName", (event, name) => {
     document.getElementById("animeName").value = name;
     document.getElementById("animeName").parentNode.children[2].classList.add("active");
@@ -94,6 +95,7 @@ ipcRenderer.on("animeFetchDetailsResultName", (event, name) => {
 
 
 
+// On an anime details fetch from myanimelist update the page accordingly if the addRecord page opened from an index page anime search.
 ipcRenderer.on("animeSeasonRecordStart", event => {
     // Hide the top nav of the addRecord page.
     document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display = "none";
@@ -354,13 +356,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     // Hide the anime preloader to indicate that the related content has finished loading.
                     updateAnimePreloader.style.visibility = "hidden";
                 }, 500)
+                animeName.setAttribute("oldName", recordData.name != "" ? recordData.name : recordData.jname);
             }
-            // Create a div on the page which will house the name of the record as is currently saved in the associated file.
-            const oldInfo = document.createElement("div");
-            oldInfo.setAttribute("id", "infoDiv");
-            oldInfo.setAttribute("title", recordData.name != "" ? recordData.name : recordData.jname);
-            oldInfo.style.display = "none";
-            document.body.append(oldInfo);
         }
         // Hide the addRecord preloader once the file data has been added.
         updateRecordPreloader.style.display = "none";
@@ -417,7 +414,7 @@ var genreListLoad = (type, listCallback) => {
             // Modify the page elements.
             genreCheckLabel.classList.add("col", "s2");
             genereCheckInput.setAttribute("type", "checkbox");
-            filterGenreStr != "" ? genereCheckInput.setAttribute("id", "animeGenre" + genresLst[(s * rows) + r]) : genreCheckLabel.style.visibility = "hidden";
+            filterGenreStr != "" ? genereCheckInput.setAttribute("id", type.toLowerCase() + "Genre" + genresLst[(s * rows) + r]) : genreCheckLabel.style.visibility = "hidden";
             genereCheckInput.classList.add("filled-in");
             genereCheckSpan.textContent = filterGenreStr;
             genereCheckSpan.classList.add("checkboxText");
@@ -452,6 +449,8 @@ window.addEventListener("load", () => {
     recordChoicesButtons();
     // Add the listeners corresponding to the anime record save.
     animeSave();
+    // Add the listeners corresponding to the book record save.
+    bookSave();
     // Add the listeners corresponding to the anime related content options.
     animeModalButtons();
     const categories = ["anime", "book"];

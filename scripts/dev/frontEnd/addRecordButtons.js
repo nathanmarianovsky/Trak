@@ -107,6 +107,8 @@ var imgButtons = (favLink, prevBtn, addBtn, addInput, remBtn, nextBtn, recordImg
             }
         });
         recordImg.setAttribute("list", newStr);
+        favLink.style.visibility = "visible";
+        favLink.click();
     });
     // Listen for a click event on the remove image button.
     remBtn.addEventListener("click", e => {
@@ -122,7 +124,10 @@ var imgButtons = (favLink, prevBtn, addBtn, addInput, remBtn, nextBtn, recordImg
                 recordImg.setAttribute("src", next);
             }
             // If the list of images only has the image about to be deleted then set the current image to the default one.
-            else { recordImg.setAttribute("src", recordImg.getAttribute("default")); }
+            else {
+                recordImg.setAttribute("src", recordImg.getAttribute("default"));
+                favLink.style.visibility = "hidden";
+            }
             // Remove the image from the list.
             curListArr.splice(index, 1);
             recordImg.setAttribute("list", curListArr.join(","));
@@ -251,8 +256,8 @@ var animeSave = () => {
                 // Push the table item information into the array holding all related content details.
                 content.push(curContent);
             }
-            const pageElement = document.getElementById("infoDiv"),
-                oldTitle = typeof(pageElement) != "undefined" && pageElement != null ? pageElement.title : "";
+            const ogName = document.getElementById("animeName").getAttribute("oldName"),
+                oldTitle = ogName !== null ? ogName : "";
             // Send the request to the back-end portion of the app.
             const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers, animeWriters,
                 animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres, otherGenres], content, animeSynopsis,
@@ -261,6 +266,54 @@ var animeSave = () => {
         }
         // If no name has been provided then notify the user.
         else { M.toast({"html": "An anime record requires that either an English or Japanese name is provided.", "classes": "rounded"}); }
+    });
+};
+
+
+
+/*
+
+Processes the information required to save a book record.
+
+*/
+var bookSave = () => {
+    // Define the page save button.
+    const bookSaveBtn = document.getElementById("bookSave");
+    // Listen for a click on the save button.
+    bookSaveBtn.addEventListener("click", e => {
+        e.preventDefault();
+        // Define the page components which will contain all associated details.
+        const bookTitle = document.getElementById("bookTitle").value,
+            bookOriginalTitle = document.getElementById("bookOriginalTitle").value,
+            bookISBN = document.getElementById("bookISBN").value.replace(/\D/g,""),
+            bookAuthor = document.getElementById("bookAuthor").value,
+            bookPublisher = document.getElementById("bookPublisher").value,
+            bookPublicationYear = document.getElementById("bookPublicationYear").value,
+            bookPages = document.getElementById("bookPages").value,
+            bookLastRead = document.getElementById("bookLastRead").value,
+            bookMediaType = document.getElementById("bookMediaType").value,
+            bookSynopsis = document.getElementById("bookSynopsis").value,
+            bookImg = document.getElementById("addRecordBookImg").getAttribute("list").split(","),
+            bookFiles = Array.from(document.getElementById("bookAddRecordFiles").files).map(elem => elem.path),
+            otherGenres = document.getElementById("otherGenres").value.split(",").map(elem => elem.trim()),
+            genresLst = bookGenreList(),
+            genres = [];
+        // Check to see that a proper ISBN was provided.
+        if(bookISBN.length == 13) {
+            // Save all information about the genres.
+            for(let p = 0; p < genresLst.length; p++) {
+                genres.push(document.getElementById("bookGenre" + genresLst[p]).checked);
+            }
+            const ogName = document.getElementById("bookTitle").getAttribute("oldName"),
+                oldTitle = ogName !== null ? ogName : "";
+            // Send the request to the back-end portion of the app.
+            const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers, animeWriters,
+                animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres, otherGenres], content, animeSynopsis,
+                [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), animeImg], oldTitle];
+            ipcRenderer.send("performSave", submissionMaterial);
+        }
+        // If no ISBN has been provided then notify the user.
+        else { M.toast({"html": "A book record requires that a ISBN be provided.", "classes": "rounded"}); }
     });
 };
 
@@ -285,8 +338,12 @@ var recordChoicesButtons = () => {
         categoryBookDiv = document.getElementById("categoryBookDiv");
     // Define the color which will be applied to the favorite image icon.
     const btnColorFavorite = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor;
-    let introHolder = false;
-    ipcRenderer.on("addIntroduction", event => introHolder = true);
+    let introAnimeHolder = false,
+        introBookHolder = false;
+    ipcRenderer.on("addIntroduction", event => {
+        introAnimeHolder = true;
+        introBookHolder = true;
+    });
 
 
 
@@ -308,7 +365,9 @@ var recordChoicesButtons = () => {
             bookRemoveImgBtn = document.getElementById("bookRemoveImgBtn"),
             bookNextImgBtn = document.getElementById("bookNextImgBtn"),
             addRecordBookImg = document.getElementById("addRecordBookImg"),
-            bookFavoriteImageLink = document.getElementById("bookFavoriteImageLink");
+            bookFavoriteImageLink = document.getElementById("bookFavoriteImageLink"),
+            bookSynopsis = document.getElementById("bookSynopsis"),
+            bookReview = document.getElementById("bookReview");
         imgButtons(bookFavoriteImageLink, bookPreviousImgBtn, bookAddImgBtn, bookAddImgInput, bookRemoveImgBtn, bookNextImgBtn, addRecordBookImg, btnColorFavorite);
         // Define the portions of the page associated to the autocomplete.
         const bookTitle = document.getElementById("bookTitle"),
@@ -324,14 +383,25 @@ var recordChoicesButtons = () => {
             bookPreloader = document.getElementById("bookPreloader"),
             bookFetchBtn = document.getElementById("bookFetchDetailsBtn"),
             bookSave = document.getElementById("bookSave");
+        // Listen for changes in the book ISBN in order to format it properly.
+        bookISBN.addEventListener("input", e => formatISBN(bookISBN));
+        // Listen for changes in the book description in order to hide/show a vertical scroll.
+        bookSynopsis.addEventListener("input", e => {
+            parseInt(bookSynopsis.style.height) > parseInt(getComputedStyle(bookSynopsis).maxHeight) ? bookSynopsis.style.overflowY = "scroll" : bookSynopsis.style.overflowY = "hidden";
+        });
+        // Listen for changes in the book comments/review in order to hide/show a vertical scroll.
+        bookReview.addEventListener("input", e => {
+            parseInt(bookReview.style.height) > parseInt(getComputedStyle(bookReview).maxHeight) ? bookReview.style.overflowY = "scroll" : bookReview.style.overflowY = "hidden";
+        });
         // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
         bookFetchBtn.addEventListener("click", e => {
-            if(bookISBN.value.length == 13) {
+            const submissionISBN = bookISBN.value.replace(/\D/g,"");
+            if(submissionISBN.length == 13) {
                 bookPreloader.style.visibility = "visible";
-                ipcRenderer.send("bookFetchDetails", bookISBN.value);
+                ipcRenderer.send("bookFetchDetailsByISBN", submissionISBN);
             }
             else {
-                M.toast({"html": "The provided ISBN is not valid to fetch details from GoodReads", "classes": "rounded"});
+                M.toast({"html": "The provided ISBN is not valid to fetch details from GoodReads.", "classes": "rounded"});
             }
         });
         // Define the autocomplete previous input and character max count for display purposes.
@@ -394,8 +464,32 @@ var recordChoicesButtons = () => {
             else { bookTitleAutocomplete.updateData({}); }
         });
         // Update the page accordingly based on the fetched book details.
-        ipcRenderer.on("bookFetchDetailsByNameResult", (newEve, newResponse) => {
-            console.log(newResponse);
+        ipcRenderer.on("bookFetchDetailsResult", (newEve, newResponse) => {
+            if(newResponse[0] != "") {
+                const bookTitle = document.getElementById("bookTitle");
+                bookTitle.value = newResponse[0];
+                if(newResponse[0] != "") {
+                    bookTitle.classList.add("valid");
+                    bookTitle.nextElementSibling.nextElementSibling.classList.add("active");
+                }
+                else {
+                    bookTitle.classList.remove("valid");
+                    bookTitle.nextElementSibling.nextElementSibling.classList.remove("active");
+                }
+            }
+            else {
+                bookTitle.value = "";
+                bookTitle.classList.remove("valid");
+            }
+            if(newResponse[1] !== null) {
+                const bookOriginalTitle = document.getElementById("bookOriginalTitle");
+                bookOriginalTitle.value = newResponse[1];
+                newResponse[1] != "" ? bookOriginalTitle.classList.add("valid") : bookOriginalTitle.classList.remove("valid");
+            }
+            else {
+                bookOriginalTitle.value = "";
+                bookOriginalTitle.classList.remove("valid");
+            }
             if(newResponse[2] !== null) {
                 const bookImg = document.getElementById("addRecordBookImg"),
                     bookFavImgLink = document.getElementById("bookFavoriteImageLink");
@@ -415,6 +509,7 @@ var recordChoicesButtons = () => {
                     bookISBN.classList.remove("valid");
                     bookISBN.nextElementSibling.classList.remove("active");
                 }
+                formatISBN(bookISBN);
             }
             else {
                 bookISBN.value = "";
@@ -455,22 +550,14 @@ var recordChoicesButtons = () => {
                 bookAuthor.classList.remove("valid");
                 bookAuthor.nextElementSibling.classList.remove("active");
             }
-            if(newResponse[6] !== null) {
-                const bookPublicationYear = document.getElementById("bookPublicationYear");
-                bookPublicationYear.value = newResponse[6];
-                if(newResponse[6] != "") {
-                    bookPublicationYear.classList.add("valid");
-                    bookPublicationYear.nextElementSibling.classList.add("active");
-                }
-                else {
-                    bookPublicationYear.classList.remove("valid");
-                    bookPublicationYear.nextElementSibling.classList.remove("active");
-                }
+            if(newResponse[6] !== null && newResponse[6] != "") {
+                const bookPublicationDate = document.getElementById("bookPublicationDate");
+                bookPublicationDate.value = new Date(newResponse[6]).toISOString().split("T")[0];
+                bookPublicationDate.classList.add("valid");
             }
             else {
-                bookPublicationYear.value = "";
-                bookPublicationYear.classList.remove("valid");
-                bookPublicationYear.nextElementSibling.classList.remove("active");
+                bookPublicationDate.value = "";
+                bookPublicationDate.classList.remove("valid");
             }
             if(newResponse[7] !== null) {
                 const bookPages = document.getElementById("bookPages");
@@ -490,19 +577,22 @@ var recordChoicesButtons = () => {
                 bookPages.nextElementSibling.classList.remove("active");
             }
             if(newResponse[8] !== null) {
-                const bookMediaType = document.getElementById("bookMediaType");
-                if(newResponse[8].includes("Hardcover")) {
+                const bookMediaType = document.getElementById("bookMediaType"),
+                    checkVal = newResponse[8].toLowerCase();
+                if(checkVal.includes("hardcover")) {
                     bookMediaType.value = "hardcover";
                 }
-                else if(newResponse[8].includes("Softcover")) {
+                else if(checkVal.includes("softcover") || checkVal.includes("paperback")) {
                     bookMediaType.value = "softcover";
+                }
+                else if(checkVal.includes("ebook") || checkVal.includes("kindle")) {
+                    bookMediaType.value = "ebook";
                 }
                 else {
                     bookMediaType.value = "audiobook";
                 }
             }
             if(newResponse[9] !== null) {
-                const bookSynopsis = document.getElementById("bookSynopsis");
                 bookSynopsis.value = newResponse[9];
                 if(newResponse[9] != "") {
                     bookSynopsis.classList.add("valid");
@@ -512,13 +602,14 @@ var recordChoicesButtons = () => {
                     bookSynopsis.classList.remove("valid");
                     bookSynopsis.nextElementSibling.classList.remove("active");
                 }
-                M.textareaAutoResize(bookSynopsis);
             }
             else {
                 bookSynopsis.value = "";
                 bookSynopsis.classList.remove("valid");
                 bookSynopsis.nextElementSibling.classList.remove("active");
             }
+            M.textareaAutoResize(bookSynopsis);
+            parseInt(bookSynopsis.style.height) > parseInt(getComputedStyle(bookSynopsis).maxHeight) ? bookSynopsis.style.overflowY = "scroll" : bookSynopsis.style.overflowY = "hidden";
             if(newResponse[10] !== null) {
                 // Reset all anime genres to not be checked.
                 const extraGenres = document.getElementById("otherGenres");
@@ -531,14 +622,21 @@ var recordChoicesButtons = () => {
                     if(genreIter == "Sci-Fi") {
                         genreIter = "SciFi";
                     }
-                    if(document.getElementById("animeGenre" + genreIter) != undefined) {
-                        document.getElementById("animeGenre" + genreIter).checked = true;
+                    if(document.getElementById("bookGenre" + genreIter) != undefined) {
+                        document.getElementById("bookGenre" + genreIter).checked = true;
                     }
                     else {
                         extraGenres.value == "" ? extraGenres.value = genreIter : extraGenres.value += ", " + genreIter;
                     }
                 });
-                extraGenres.value != "" ? extraGenres.nextElementSibling.classList.add("active") : extraGenres.nextElementSibling.classList.remove("active");
+                if(extraGenres.value != "") {
+                    extraGenres.classList.add("valid");
+                    extraGenres.nextElementSibling.classList.add("active");
+                }
+                else {
+                    extraGenres.classList.remove("valid");
+                    extraGenres.nextElementSibling.classList.remove("active");
+                }
             }
             // Hide the preloader now that everything has been loaded and show the buttons if necessary.
             bookPreloader.style.visibility = "hidden";
@@ -546,6 +644,14 @@ var recordChoicesButtons = () => {
             bookSave.style.visibility = "visible";
             initSelect();
         });
+        // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
+        if(introBookHolder == true) {
+            const instancesTapBookSave = M.TapTarget.init(document.getElementById("introductionTargetBookSave"));
+            setTimeout(() => {
+                instancesTapBookSave.open();
+                introBookHolder = false;
+            }, 500);
+        }
     });
 
 
@@ -588,7 +694,17 @@ var recordChoicesButtons = () => {
             animeMoreBtn = document.getElementById("animeMoreDetailsBtn"),
             animeFetchBtn = document.getElementById("animeFetchDetailsBtn"),
             animeSave = document.getElementById("animeSave"),
-            animeOptions = document.getElementById("animeOptions");
+            animeOptions = document.getElementById("animeOptions"),
+            synopsisInput = document.getElementById("animeSynopsis"),
+            reviewInput = document.getElementById("animeReview");
+        // Listen for changes in the book description in order to hide/show a vertical scroll.
+        synopsisInput.addEventListener("input", e => {
+            parseInt(synopsisInput.style.height) > parseInt(getComputedStyle(synopsisInput).maxHeight) ? synopsisInput.style.overflowY = "scroll" : synopsisInput.style.overflowY = "hidden";
+        });
+        // Listen for changes in the book comments/review in order to hide/show a vertical scroll.
+        reviewInput.addEventListener("input", e => {
+            parseInt(reviewInput.style.height) > parseInt(getComputedStyle(reviewInput).maxHeight) ? reviewInput.style.overflowY = "scroll" : reviewInput.style.overflowY = "hidden";
+        });
         // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
         animeFetchBtn.addEventListener("click", e => {
             if(animeName.value.length > 2) {
@@ -720,7 +836,6 @@ var recordChoicesButtons = () => {
             }
             // Update the anime synopsis if available.
             if(newResponse[13] != "" && newResponse[13] != "None found, add some") {
-                const synopsisInput = document.getElementById("animeSynopsis");
                 let textHolder = newResponse[13].replace("[Written by MAL Rewrite]", "");
                 if(textHolder.includes("(Source:")) {
                     textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
@@ -756,7 +871,14 @@ var recordChoicesButtons = () => {
                     extraGenres.value == "" ? extraGenres.value = genreIter : extraGenres.value += ", " + genreIter;
                 }
             });
-            if(extraGenres.value != "") { extraGenres.nextElementSibling.classList.add("active"); }
+            if(extraGenres.value != "") {
+                extraGenres.classList.add("valid");
+                extraGenres.nextElementSibling.classList.add("active");
+            }
+            else {
+                extraGenres.classList.remove("valid");
+                extraGenres.nextElementSibling.classList.remove("active");
+            }
             setTimeout(() => {
                 // Reset the related content modal.
                 if(updateDetector == false) {
@@ -830,11 +952,14 @@ var recordChoicesButtons = () => {
             }, 500);
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
-        if(introHolder == true) {
+        if(introAnimeHolder == true) {
             const instancesTapAnimeSave = M.TapTarget.init(document.getElementById("introductionTargetAnimeSave"), { "onClose": () => {
                 setTimeout(() => {
                     const instancesTapAnimeOptions = M.TapTarget.init(document.getElementById("introductionTargetAnimeOptions"));
-                    setTimeout(() => { instancesTapAnimeOptions.open(); }, 500);
+                    setTimeout(() => {
+                        instancesTapAnimeOptions.open();
+                        introAnimeHolder = false;
+                    }, 500);
                 }, 500);
             }});
             setTimeout(() => { instancesTapAnimeSave.open(); }, 500);

@@ -249,7 +249,7 @@
                         </div>
                         <div class="input-field col s3">
                             <input id="bookISBN" type="text" class="validate left">
-                            <label for="bookISBN">ISBN:</label>
+                            <label for="bookISBN">ASIN/ISBN:</label>
                         </div>
                     </div>
                     <div class="row">
@@ -262,8 +262,8 @@
                             <label for="bookPublisher">Published By:</label>
                         </div>
                         <div class="input-field col s3">
-                            <input id="bookPublicationYear" type="text" class="validate left">
-                            <label for="bookPublicationYear">Publication Year:</label>
+                            <input id="bookPublicationDate" type="date" class="validate left">
+                            <label for="bookPublicationDate">Publication Date:</label>
                         </div>
                     </div>
                     <div class="row">
@@ -279,6 +279,7 @@
                             <select id="bookMediaType">
                                 <option value="" disabled selected>N/A</option>
                                 <option value="audiobook">Audiobook</option>
+                                <option value="ebook">eBook</option>
                                 <option value="hardcover">Hardcover</option>
                                 <option value="softcover">Softcover</option>
                             </select>
@@ -327,7 +328,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <a id="bookFetchDetailsBtn" class="waves-effect waves-light btn addRecordBtn"><i class="material-icons right">refresh</i>Fetch Details</a>
+                        <a id="bookFetchDetailsBtn" class="waves-effect waves-light btn addRecordBtn" data-position="right" data-tooltip="Fetch details from GoodReads."><i class="material-icons right">refresh</i>Fetch Details</a>
                     </div>
                 </form>
             </div>
@@ -344,7 +345,14 @@
             <div id="originalTitleModal" class="modal infoModal">
                 <div class="modal-content">
                     <h4 class="center">Original Title</h4>
-                    <p id="bookOriginalTitle"></p>
+                    <p>Provide an alternate name for the book, if available:</p>
+                    <form class="col s10">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="bookOriginalTitle" type="text" class="validate left autocomplete">
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
