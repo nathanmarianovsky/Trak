@@ -15,6 +15,8 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - toastParse: Handles the parsing of a record folder name to display to the user.
     - arrayMove: Moves an element in an array.
     - shuffle: Perform a Fisher-Yates shuffle on an array of items.
+    - formatISBNString: Formats a string into a proper ISBN by adding hyphens.
+    - formatISBN: Driver function for formatting an ISBN input.
     - filterGenreList: Provides the list of all genres/tags that can be selected from the index.page filter.
 
 */
@@ -252,6 +254,36 @@ var shuffle = arr => {
     // Return the shuffled array.
     return arr;
 };
+
+
+
+/*
+
+Formats a string into a proper ISBN by adding hyphens.
+
+   - val is the string to be formatted.
+
+*/
+var formatISBNString = val => {
+    let curVal = "";
+    if(val.length < 4) { curVal = val; }
+    else if(val.length == 4) { curVal = val.slice(0, 3) + "-" + val.slice(3); }
+    else if(val.length < 10) { curVal = val.slice(0, 3) + "-" + val.slice(3, 4) + "-" + val.slice(4); }
+    else if(val.length < 13) { curVal = val.slice(0, 3) + "-" + val.slice(3, 4) + "-" + val.slice(4, 9) + "-" + val.slice(9); }
+    else { curVal = val.slice(0, 3) + "-" + val.slice(3, 4) + "-" + val.slice(4, 9) + "-" + val.slice(9, 12) + "-" + val.slice(12, 13); }
+    return curVal;
+};
+
+
+
+/*
+
+Driver function for formatting an ISBN input.
+
+   - inp is the document input corresponding to the book ISBN.
+
+*/
+var formatISBN = inp => inp.value = formatISBNString(inp.value.replace(/\D/g,""));
 
 
 

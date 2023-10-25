@@ -124,28 +124,28 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
     // Hide the top nav of the addRecord page.
     document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display = "none";
     // Define the addRecord preloader and display it while the data file is read and page is populated with the associated data.
-    const updateRecordPreloader = document.getElementById("updateRecordPreloader"),
-        animeSave = document.getElementById("animeSave"),
-        animeOptions = document.getElementById("animeOptions"),
-        animeMoreDetailsBtn = document.getElementById("animeMoreDetailsBtn"),
-        animeFetchDetailsBtn = document.getElementById("animeFetchDetailsBtn");
-    // Hide the page buttons until all data has loaded in.
+    const updateRecordPreloader = document.getElementById("updateRecordPreloader");
     updateRecordPreloader.style.display = "block";
-    animeSave.style.visibility = "hidden";
-    animeOptions.style.visibility = "hidden";
-    animeMoreDetailsBtn.style.visibility = "hidden";
-    animeFetchDetailsBtn.style.visibility = "hidden";
     // Attempt to read a record's data file.
     fs.readFile(path.join(localPath, "Trak", "data", name, "data.json"), (err, file) => {
         // Display a notification if there was an error in reading the data file.
         if(err) {
             M.toast({"html": "There was an error opening the data file associated to the " + toastParse(name) + ".", "classes": "rounded"});
         }
-        // If the file loaded without issues populate the page with a contact's information.
+        // If the file loaded without issues populate the page with a record's information.
         else {
             const recordData = JSON.parse(file);
             // If the record is of category type anime then proceed.
             if(recordData.category == "Anime") {
+                const animeSave = document.getElementById("animeSave"),
+                    animeOptions = document.getElementById("animeOptions"),
+                    animeMoreDetailsBtn = document.getElementById("animeMoreDetailsBtn"),
+                    animeFetchDetailsBtn = document.getElementById("animeFetchDetailsBtn");
+                // Hide the page buttons until all data has loaded in.
+                animeSave.style.visibility = "hidden";
+                animeOptions.style.visibility = "hidden";
+                animeMoreDetailsBtn.style.visibility = "hidden";
+                animeFetchDetailsBtn.style.visibility = "hidden";
                 // Define the relevant anime record inputs.
                 const animeName = document.getElementById("animeName"),
                     animeJapaneseName = document.getElementById("animeJapaneseName"),
@@ -261,9 +261,11 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 animeImg.setAttribute("list", recordData.img.join(","));
                 animeImg.setAttribute("previous", recordData.img.join(","));
                 animeImg.setAttribute("src", recordData.img.length > 0 && recordData.img[0] != "" ? recordData.img[0] : animeImg.getAttribute("default"));
-                const favImgLink = document.getElementById("animeFavoriteImageLink");
-                favImgLink.style.visibility = "visible";
-                favImgLink.style.color = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor;
+                const animeFavImgLink = document.getElementById("animeFavoriteImageLink");
+                if(!animeImg.getAttribute("src").includes("imgDef.png")) {
+                    animeFavImgLink.style.visibility = "visible";
+                }
+                animeFavImgLink.style.color = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor;
                 for(let v = 0; v < recordData.genres[0].length; v++) {
                     document.getElementById("animeGenre" + recordData.genres[0][v]).checked = recordData.genres[1][v];
                 }
@@ -357,6 +359,147 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     updateAnimePreloader.style.visibility = "hidden";
                 }, 500)
                 animeName.setAttribute("oldName", recordData.name != "" ? recordData.name : recordData.jname);
+            }
+            // If a record is of category type book then proceed.
+            else if(recordData.category == "Book") {
+                // Define the relevant book record inputs.
+                const bookTitle = document.getElementById("bookTitle"),
+                    bookOriginalTitle = document.getElementById("bookOriginalTitle"),
+                    bookISBN = document.getElementById("bookISBN"),
+                    bookAuthor = document.getElementById("bookAuthor"),
+                    bookPublisher = document.getElementById("bookPublisher"),
+                    bookPublicationDate = document.getElementById("bookPublicationDate"),
+                    bookPages = document.getElementById("bookPages"),
+                    bookMediaType = document.getElementById("bookMediaType"),
+                    bookLastRead = document.getElementById("bookLastRead"),
+                    bookSynopsis = document.getElementById("bookSynopsis"),
+                    bookRating = document.getElementById("bookRating"),
+                    bookReview = document.getElementById("bookReview"),
+                    bookImg = document.getElementById("addRecordBookImg");
+                // Load the book record portion of the addRecord page.
+                document.getElementById("categoryBook").click();
+                document.getElementById("categoryBookDiv").children[0].style.marginTop = "3%";
+                // Populate the book record page with the saved data.
+                bookTitle.value = recordData.name;
+                bookTitle.setAttribute("lastValue", recordData.name);
+                if(recordData.name != "") { bookTitle.parentNode.children[2].classList.add("active"); }
+                bookTitle.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookTitle.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookOriginalTitle.value = recordData.originalName;
+                bookOriginalTitle.setAttribute("lastValue", recordData.originalName);
+                // if(recordData.originalName != "") { bookOriginalTitle.parentNode.children[1].classList.add("active"); }
+                bookOriginalTitle.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookOriginalTitle.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookReview.value = recordData.review;
+                bookReview.setAttribute("lastValue", recordData.review);
+                if(recordData.review != "") {
+                    bookReview.parentNode.children[1].classList.add("active");
+                    M.textareaAutoResize(bookReview);
+                }
+                bookReview.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookReview.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookSynopsis.value = recordData.synopsis;
+                bookSynopsis.setAttribute("lastValue", recordData.synopsis);
+                if(recordData.synopsis != "") {
+                    bookSynopsis.parentNode.children[1].classList.add("active");
+                    M.textareaAutoResize(bookSynopsis);
+                }
+                bookSynopsis.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookSynopsis.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookISBN.value = recordData.isbn;
+                bookISBN.setAttribute("lastValue", recordData.isbn);
+                if(recordData.isbn != "") { bookISBN.parentNode.children[1].classList.add("active"); }
+                formatISBN(bookISBN);
+                bookISBN.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookISBN.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookAuthor.value = recordData.authors;
+                bookAuthor.setAttribute("lastValue", recordData.authors);
+                if(recordData.authors != "") { bookAuthor.parentNode.children[1].classList.add("active"); }
+                bookAuthor.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookAuthor.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookPublisher.value = recordData.publisher;
+                bookPublisher.setAttribute("lastValue", recordData.publisher);
+                if(recordData.publisher != "") { bookPublisher.parentNode.children[1].classList.add("active"); }
+                bookPublisher.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookPublisher.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookPublicationDate.value = recordData.publicationDate;
+                bookPublicationDate.setAttribute("lastValue", recordData.publicationDate);
+                if(recordData.publicationDate != "") { bookPublicationDate.parentNode.children[1].classList.add("active"); }
+                bookPublicationDate.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookPublicationDate.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookPages.value = recordData.pages;
+                bookPages.setAttribute("lastValue", recordData.pages);
+                if(recordData.pages != "") { bookPages.parentNode.children[1].classList.add("active"); }
+                bookPages.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookPages.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookLastRead.value = recordData.lastRead;
+                bookLastRead.setAttribute("lastValue", recordData.lastRead);
+                if(recordData.lastRead != "") { bookLastRead.parentNode.children[1].classList.add("active"); }
+                bookLastRead.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookLastRead.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookMediaType.value = recordData.media;
+                bookMediaType.setAttribute("lastValue", recordData.media);
+                // if(recordData.media != "") { bookMediaType.parentNode.children[1].classList.add("active"); }
+                bookMediaType.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookMediaType.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                bookImg.setAttribute("list", recordData.img.join(","));
+                bookImg.setAttribute("previous", recordData.img.join(","));
+                bookImg.setAttribute("src", recordData.img.length > 0 && recordData.img[0] != "" ? recordData.img[0] : bookImg.getAttribute("default"));
+                const bookFavImgLink = document.getElementById("bookFavoriteImageLink");
+                if(!bookImg.getAttribute("src").includes("imgDef.png")) {
+                    bookFavImgLink.style.visibility = "visible";
+                }
+                bookFavImgLink.style.color = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor;
+                for(let v = 0; v < recordData.genres[0].length; v++) {
+                    document.getElementById("bookGenre" + recordData.genres[0][v]).checked = recordData.genres[1][v];
+                }
+                document.getElementById("otherGenres").value = recordData.genres[2].join(", ");
+                bookTitle.setAttribute("oldISBN", recordData.isbn);
+                bookTitle.setAttribute("oldName", recordData.name);
             }
         }
         // Hide the addRecord preloader once the file data has been added.

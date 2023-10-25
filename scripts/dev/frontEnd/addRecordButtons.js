@@ -257,7 +257,7 @@ var animeSave = () => {
                 content.push(curContent);
             }
             const ogName = document.getElementById("animeName").getAttribute("oldName"),
-                oldTitle = ogName !== null ? ogName : "";
+                oldTitle = ogName !== null ? ogName : animeName;
             // Send the request to the back-end portion of the app.
             const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers, animeWriters,
                 animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres, otherGenres], content, animeSynopsis,
@@ -286,13 +286,15 @@ var bookSave = () => {
         const bookTitle = document.getElementById("bookTitle").value,
             bookOriginalTitle = document.getElementById("bookOriginalTitle").value,
             bookISBN = document.getElementById("bookISBN").value.replace(/\D/g,""),
-            bookAuthor = document.getElementById("bookAuthor").value,
+            bookAuthors = document.getElementById("bookAuthor").value,
             bookPublisher = document.getElementById("bookPublisher").value,
-            bookPublicationYear = document.getElementById("bookPublicationYear").value,
+            bookPublicationDate = document.getElementById("bookPublicationDate").value,
             bookPages = document.getElementById("bookPages").value,
             bookLastRead = document.getElementById("bookLastRead").value,
             bookMediaType = document.getElementById("bookMediaType").value,
             bookSynopsis = document.getElementById("bookSynopsis").value,
+            bookRating = document.getElementById("bookRating").value,
+            bookReview = document.getElementById("bookReview").value,
             bookImg = document.getElementById("addRecordBookImg").getAttribute("list").split(","),
             bookFiles = Array.from(document.getElementById("bookAddRecordFiles").files).map(elem => elem.path),
             otherGenres = document.getElementById("otherGenres").value.split(",").map(elem => elem.trim()),
@@ -305,15 +307,17 @@ var bookSave = () => {
                 genres.push(document.getElementById("bookGenre" + genresLst[p]).checked);
             }
             const ogName = document.getElementById("bookTitle").getAttribute("oldName"),
-                oldTitle = ogName !== null ? ogName : "";
+                ogISBN = document.getElementById("bookTitle").getAttribute("oldISBN"),
+                oldTitle = ogName !== null ? ogName : bookTitle,
+                oldISBN = ogISBN !== null ? ogISBN : bookISBN;
             // Send the request to the back-end portion of the app.
-            const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers, animeWriters,
-                animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres, otherGenres], content, animeSynopsis,
-                [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), animeImg], oldTitle];
+            const submissionMaterial = ["Book", bookTitle, bookOriginalTitle, bookISBN, bookAuthors, bookPublisher, bookPublicationDate,
+                bookPages, bookLastRead, bookMediaType, bookFiles, bookSynopsis, bookRating, bookReview, [genresLst, genres, otherGenres],
+                [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), bookImg], [oldISBN, oldTitle]];
             ipcRenderer.send("performSave", submissionMaterial);
         }
         // If no ISBN has been provided then notify the user.
-        else { M.toast({"html": "A book record requires that a ISBN be provided.", "classes": "rounded"}); }
+        else { M.toast({"html": "A book record requires that an ISBN be provided.", "classes": "rounded"}); }
     });
 };
 

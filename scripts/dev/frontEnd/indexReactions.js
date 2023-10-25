@@ -372,6 +372,21 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
     document.getElementById("preloader").style.setProperty("display", "none", "important");
     // Hide the vertical scroll bar.
     document.body.style.overflowY = "hidden";
+    // Sort the records alphabetically by default.
+    list.sort((a, b) => {
+        let nameFunc = str => {
+            let cat = str.split("-")[0],
+                name = "";
+            if(cat == "Anime") {
+                name = str.split("-").slice(1).join("-");
+            }
+            else if(cat == "Book") {
+                name = str.split("-").slice(2).join("-");
+            }
+            return name;
+        };
+        return nameFunc(a).localeCompare(nameFunc(b));
+    });
     // Iterate through each saved record and add a row for each one containing the name, category, and genres of the record.
     for(let n = 0; n < list.length; n++) {
         // Define the items needed to construct the row.
@@ -394,7 +409,12 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             tdCheck = document.createElement("td"),
             recordData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", list[n], "data.json")));
         // Modify the name portion.
-        tdNameDiv.textContent = recordData.name != "" ? recordData.name : recordData.jname;
+        if(recordData.category == "Anime") {
+            tdNameDiv.textContent = recordData.name != "" ? recordData.name : recordData.jname;
+        }
+        else if(recordData.category == "Book") {
+            tdNameDiv.textContent = recordData.name != "" ? recordData.name : formatISBNString(recordData.isbn);
+        }
         tdNameDiv.classList.add("recordsNameRowDiv");
         tdName.classList.add("left");
         tdNameOuterDiv.classList.add("recordsNameContainer");
@@ -419,7 +439,15 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             tdNameIcon.addEventListener("click", e => {
                 synopsisPreloader.style.display = "block";
                 fs.readFile(e.target.parentNode.getAttribute("path"), "UTF8", (err, synopsisFile) => {
-                    if(err) { M.toast({"html": "There was an issue reading the data file associated to the " + toastParse(e.parentNode.parentNode.parentNode.id) + ".", "classes": "rounded"}); }
+                    if(err) {
+                        if(recordData.category == "Anime") {
+                            M.toast({"html": "There was an issue reading the data file associated to the anime " + e.parentNode.parentNode.parentNode.getAttribute("name") + ".", "classes": "rounded"});
+                        }
+                        else if(recordData.category == "Book") {
+                            M.toast({"html": "There was an issue reading the data file associated to the book " +
+                                (e.parentNode.parentNode.parentNode.getAttribute("name") != "" ? e.parentNode.parentNode.parentNode.getAttribute("name") : e.parentNode.parentNode.parentNode.getAttribute("isbn")) + ".", "classes": "rounded"});
+                        }
+                    }
                     else {
                         synopsisPreloader.style.display = "none";
                         synopsisModalContent.innerHTML = JSON.parse(synopsisFile).synopsis.split("").map(elem => elem == "\n" ? "<br>" : elem).join("");
@@ -433,67 +461,78 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         tdCategoryDiv.classList.add("recordsRowDiv", "left");
         tdCategory.append(tdCategoryDiv);
         // Modify the rating portion.
-        let displayRating = "N/A",
-            displayRatingArr = [];
-        for(let a = 0; a < recordData.content.length; a++) {
-            if(recordData.content[a].scenario == "Single") {
-                if(recordData.content[a].rating != "") {
-                    displayRatingArr.push(parseInt(recordData.content[a].rating));
-                }
-            }
-            else if(recordData.content[a].scenario == "Season") {
-                let ratingHolder = 0,
-                    ratingHolderArr = [];
-                for(let b = 0; b < recordData.content[a].episodes.length; b++) {
-                    if(recordData.content[a].episodes[b].rating != "") {
-                        ratingHolderArr.push(parseInt(recordData.content[a].episodes[b].rating));
+        if(recordData.category == "Anime") {
+            let displayRating = "N/A",
+                displayRatingArr = [];
+            for(let a = 0; a < recordData.content.length; a++) {
+                if(recordData.content[a].scenario == "Single") {
+                    if(recordData.content[a].rating != "") {
+                        displayRatingArr.push(parseInt(recordData.content[a].rating));
                     }
                 }
-                if(ratingHolderArr.length > 0) {
-                    ratingHolder = (ratingHolderArr.reduce((accum, cur) => accum + cur, 0) / ratingHolderArr.length).toFixed(2);
-                    displayRatingArr.push(ratingHolder);
+                else if(recordData.content[a].scenario == "Season") {
+                    let ratingHolder = 0,
+                        ratingHolderArr = [];
+                    for(let b = 0; b < recordData.content[a].episodes.length; b++) {
+                        if(recordData.content[a].episodes[b].rating != "") {
+                            ratingHolderArr.push(parseInt(recordData.content[a].episodes[b].rating));
+                        }
+                    }
+                    if(ratingHolderArr.length > 0) {
+                        ratingHolder = (ratingHolderArr.reduce((accum, cur) => accum + cur, 0) / ratingHolderArr.length).toFixed(2);
+                        displayRatingArr.push(ratingHolder);
+                    }
                 }
             }
+            if(displayRatingArr.length > 0) { displayRating = (displayRatingArr.reduce((accum, cur) => accum + cur, 0) / displayRatingArr.length).toFixed(2); }
+            tdRatingDiv.textContent = displayRating;
         }
-        if(displayRatingArr.length > 0) { displayRating = (displayRatingArr.reduce((accum, cur) => accum + cur, 0) / displayRatingArr.length).toFixed(2); }
-        tdRatingDiv.textContent = displayRating;
+        else if(recordData.category == "Book") {
+            tdRatingDiv.textContent = recordData.rating != "" ? parseInt(recordData.rating).toFixed(2) : "N/A";
+        }
         tdRatingDiv.classList.add("recordsRowDiv", "left");
         tdRating.append(tdRatingDiv);
         // Modify the genres portion.
         let count = 0,
-            rowGenreStr = "",
+            rowGenreStrArr = [],
             rowGenreInfo = "";
         for(let y = 0; y < recordData.genres[0].length; y++) {
             if(recordData.genres[1][y] == true) {
                 rowGenreInfo.length == 0 ? rowGenreInfo = recordData.genres[0][y] : rowGenreInfo += "," + recordData.genres[0][y];
                 if(count <= 3) {
-                    if(rowGenreStr.length > 0) { rowGenreStr += ", "; }
-                    if(count == 3) { rowGenreStr += "..."; }
+                    if(recordData.genres[0][y] == "CGDCT") {
+                        rowGenreStrArr.push("CGDCT");
+                    }
+                    else if(recordData.genres[0][y] == "ComingOfAge") {
+                        rowGenreStrArr.push("Coming-of-Age");
+                    }
+                    else if(recordData.genres[0][y] == "PostApocalyptic") {
+                        rowGenreStrArr.push("Post-Apocalyptic");
+                    }
+                    else if(recordData.genres[0][y] == "SciFi") {
+                        rowGenreStrArr.push("Sci-Fi");
+                    }
+                    else if(recordData.genres[0][y] == "SliceOfLife") {
+                        rowGenreStrArr.push("Slice of Life");
+                    }
                     else {
-                        if(recordData.genres[0][y] == "CGDCT") {
-                            rowGenreStr += "CGDCT";
-                        }
-                        else if(recordData.genres[0][y] == "ComingOfAge") {
-                            rowGenreStr += "Coming-of-Age";
-                        }
-                        else if(recordData.genres[0][y] == "PostApocalyptic") {
-                            rowGenreStr += "Post-Apocalyptic";
-                        }
-                        else if(recordData.genres[0][y] == "SciFi") {
-                            rowGenreStr += "Sci-Fi";
-                        }
-                        else if(recordData.genres[0][y] == "SliceOfLife") {
-                            rowGenreStr += "Slice of Life";
-                        }
-                        else {
-                            rowGenreStr += recordData.genres[0][y].split(/(?=[A-Z])/).join(" ");
-                        }
+                        rowGenreStrArr.push(recordData.genres[0][y].split(/(?=[A-Z])/).join(" "));
                     }
                     count++;
                 }
             }
         }
-        tdGenresDiv.textContent = rowGenreStr;
+        if(count < 3) {
+            for(let z = 0; z < recordData.genres[2].length; z++) {
+                if(count <= 3) {
+                    rowGenreStrArr.push(recordData.genres[2][z].split(/(?=[A-Z])/).join(" "));
+                    count++;
+                }
+            }
+        }
+        rowGenreStrArr = rowGenreStrArr.filter(elem => elem != "");
+        rowGenreStrArr.sort((a, b) => a.localeCompare(b));
+        tdGenresDiv.textContent = count > 3 ? rowGenreStrArr.slice(0, 3).join(", ") + ", ..." : rowGenreStrArr.join(", ");
         tdGenresDiv.classList.add("recordsRowDiv", "left");
         tdGenres.append(tdGenresDiv);
         // Modify the files button to be used for opening the assets folder of a record.
@@ -517,15 +556,27 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         // Append all portions of the row.
         tr.setAttribute("id", list[n]);
         tr.setAttribute("category", recordData.category);
-        tr.setAttribute("directors", recordData.directors);
-        tr.setAttribute("genres", rowGenreInfo);
-        tr.setAttribute("jname", recordData.jname);
-        tr.setAttribute("license", recordData.license);
-        tr.setAttribute("musicians", recordData.musicians);
         tr.setAttribute("name", recordData.name);
-        tr.setAttribute("producers", recordData.producers);
-        tr.setAttribute("studio", recordData.studio);
-        tr.setAttribute("writers", recordData.writers);
+        tr.setAttribute("genres", rowGenreInfo);
+        tr.setAttribute("directors", recordData.directors);
+        if(recordData.category == "Anime") {
+            tr.setAttribute("jname", recordData.jname);
+            tr.setAttribute("license", recordData.license);
+            tr.setAttribute("musicians", recordData.musicians);
+            tr.setAttribute("producers", recordData.producers);
+            tr.setAttribute("studio", recordData.studio);
+            tr.setAttribute("writers", recordData.writers);
+        }
+        else if(recordData.category == "Book") {
+            tr.setAttribute("originalName", recordData.originalName);
+            tr.setAttribute("isbn", recordData.isbn);
+            tr.setAttribute("authors", recordData.authors);
+            tr.setAttribute("publisher", recordData.publisher);
+            tr.setAttribute("publicationDate", recordData.publicationDate);
+            tr.setAttribute("pages", recordData.pages);
+            tr.setAttribute("media", recordData.media);
+            tr.setAttribute("lastRead", recordData.lastRead);
+        }
         tr.append(tdCheck, tdName, tdCategory, tdRating, tdGenres, tdFiles);
         tableBody.append(tr);
         // Reset the width of the headers table. 
