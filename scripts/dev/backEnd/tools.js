@@ -71,6 +71,18 @@ exports.animeGenreList = () => {
 
 /*
 
+Provides the list of all genres/tags that can be selected on the addRecord.html page for a book record.
+
+*/
+exports.bookGenreList = () => {
+    return ["Action", "Adventure", "Comedy", "Crime", "Dystopian", "Fantasy", "Fiction", "Historical", "Horror", "Mystery",
+            "Mythology", "Nonfiction", "Romance", "Satire", "Sci-Fi", "Thriller", "Tragedy", "Western"];
+};
+
+
+
+/*
+
 Calculate the earliest release date of an anime record based on the related content information.
 
 	- contentArr is an array containing the related content details for a library record.
@@ -918,7 +930,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 									// Check the assets that were imported from the associated zip file and add the images to the anime record object.
 									let assetsFolder = path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "assets");
 									if(fs.existsSync(assetsFolder)) {
-										log.info("Copying over the record assets.")
+										log.info("Copying over the record assets for " + animeObj.name + ".");
 										fs.readdirSync(assetsFolder).forEach(asset => {
 											if(imgExtArr.includes(path.extname(asset))) {
 												animeObj.img.push(path.join(fileData, "Anime-" + fldrName, "assets", asset));
@@ -927,12 +939,84 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 									}
 									// Otherwise if no assets were found then create the assets folder.
 									else {
-										log.info("Creating the record assets folder associated to the " + animeObj.category.toLowerCase() + " " + animeObj.name);
-										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "assets"), { "recursive": true });
+										log.info("Creating the record assets folder associated to the anime " + (animeObj.name != "" ? animeObj.name : animeObj.jname));
+										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "assets"), { "recursive": true });
 									}
 									// Write data.json file associated to the anime record.
-									log.info("Writing the data file associated to the " + animeObj.category.toLowerCase() + " " + animeObj.name);
-									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "data.json"), JSON.stringify(animeObj), "UTF8");
+									log.info("Writing the data file associated to the anime " + animeObj.name);
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "data.json"), JSON.stringify(animeObj), "UTF8");
+									if(q == elem.rowCount) { resolve(); }
+								}
+							}
+							// Handle the import of book records.
+							else if(elem.name == "Category-Book") {
+								log.info("Importing the book records.");
+								// Get the list of book genres.
+								let genreLst = exports.bookGenreList();
+								// Iterate through all the rows of the book worksheet.
+								for(let q = 2; q < elem.rowCount + 1; q++) {
+									// Define the object which will correspond to a book record.
+									let bookObj = {
+										"category": "Book",
+										"name": elem.getCell("A" + q).value,
+										"originalName": elem.getCell("B" + q).value != "N/A" ? elem.getCell("B" + q).value : "", 
+										"rating": elem.getCell("C" + q).value != "N/A" && elem.getCell("C" + q).value != "" ? parseInt(elem.getCell("C" + q).value) : "",
+										"review": elem.getCell("D" + q).value != "N/A" ? elem.getCell("D" + q).value : "",
+										"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "",
+										"isbn": elem.getCell("F" + q).value != "N/A" ? elem.getCell("F" + q).value.replace(/-/g, "") : "",
+										"authors": elem.getCell("G" + q).value != "N/A" ? elem.getCell("G" + q).value : "",
+										"publisher": elem.getCell("H" + q).value != "N/A" ? elem.getCell("H" + q).value : "",
+										"publicationDate": "",
+										"pages": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "",
+										"media": elem.getCell("K" + q).value != "N/A" ? elem.getCell("K" + q).value : "",
+										"lastRead": "",
+										"genres": [genreLst, new Array(genreLst.length).fill(false), []],
+										"img": []
+									};
+									// Update the publication date of the book record object.
+									if(elem.getCell("I" + q).value != "" && elem.getCell("I" + q).value != "N/A") {
+										relDateArr = elem.getCell("I" + q).value.split("-");
+										bookObj.publicationDate = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+									}
+									// Update the last read date of the book record object.
+									if(elem.getCell("L" + q).value != "" && elem.getCell("L" + q).value != "N/A") {
+										relDateArr = elem.getCell("L" + q).value.split("-");
+										bookObj.lastRead = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+									}
+									// Update the genres of the anime record object.
+									let genresCellList = elem.getCell("M" + q).value.split(",").map(elem => elem.trim());
+									for(let p = 0; p < genresCellList.length; p++) {
+										let compare = genresCellList[p];
+										if(compare == "Sci-Fi") {
+											compare = "SciFi";
+										}
+										let genreIndex = genreLst.indexOf(compare);
+										if(genreIndex == -1) {
+											bookObj.genres[2].push(compare);
+										}
+										else {
+											bookObj.genres[1][genreIndex] = true;
+										}
+									}
+									let fldrName = bookObj.isbn + "-" + bookObj.name.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
+									// Check the assets that were imported from the associated zip file and add the images to the book record object.
+									let assetsFolder = path.join(dir, "Trak", "importTemp", "Book-" + fldrName, "assets");
+									if(fs.existsSync(assetsFolder)) {
+										log.info("Copying over the record assets for " + (bookObj.name != "" ? bookObj.name : bookObj.isbn) + ".");
+										fs.readdirSync(assetsFolder).forEach(asset => {
+											if(imgExtArr.includes(path.extname(asset))) {
+												bookObj.img.push(path.join(fileData, "Book-" + fldrName, "assets", asset));
+											}
+										});
+									}
+									// Otherwise if no assets were found then create the assets folder.
+									else {
+										log.info("Creating the record assets folder associated to the book " + (bookObj.name != "" ? bookObj.name : bookObj.isbn));
+										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Book-" + fldrName, "assets"), { "recursive": true });
+									}
+									// Write data.json file associated to the book record.
+									log.info("Writing the data file associated to the book " + (bookObj.name != "" ? bookObj.name : bookObj.isbn));
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Book-" + fldrName, "data.json"), JSON.stringify(bookObj), "UTF8");
 									if(q == elem.rowCount) { resolve(); }
 								}
 							}

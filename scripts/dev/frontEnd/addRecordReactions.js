@@ -479,7 +479,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 });
                 bookMediaType.value = recordData.media;
                 bookMediaType.setAttribute("lastValue", recordData.media);
-                // if(recordData.media != "") { bookMediaType.parentNode.children[1].classList.add("active"); }
+                // if(recordData.media != "") { bookMediaType.nextElementSibling.classList.add("active"); }
                 bookMediaType.addEventListener("change", e => {
                     e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
                 });
@@ -497,7 +497,16 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 for(let v = 0; v < recordData.genres[0].length; v++) {
                     document.getElementById("bookGenre" + recordData.genres[0][v]).checked = recordData.genres[1][v];
                 }
-                document.getElementById("otherGenres").value = recordData.genres[2].join(", ");
+                const otherGenres = document.getElementById("otherGenres");
+                otherGenres.value = recordData.genres[2].join(", ");
+                if(recordData.genres[2].length > 0) { otherGenres.nextElementSibling.classList.add("active"); }
+                otherGenres.setAttribute("lastValue", recordData.genres[2].join(", "));
+                otherGenres.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                otherGenres.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
                 bookTitle.setAttribute("oldISBN", recordData.isbn);
                 bookTitle.setAttribute("oldName", recordData.name);
             }
