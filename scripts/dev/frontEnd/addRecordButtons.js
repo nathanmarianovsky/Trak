@@ -285,7 +285,7 @@ var bookSave = () => {
         // Define the page components which will contain all associated details.
         const bookTitle = document.getElementById("bookTitle").value,
             bookOriginalTitle = document.getElementById("bookOriginalTitle").value,
-            bookISBN = document.getElementById("bookISBN").value.replace(/\D/g,""),
+            bookISBN = document.getElementById("bookISBN").value.replace(/\W/g,""),
             bookAuthors = document.getElementById("bookAuthor").value,
             bookPublisher = document.getElementById("bookPublisher").value,
             bookPublicationDate = document.getElementById("bookPublicationDate").value,
@@ -399,7 +399,7 @@ var recordChoicesButtons = () => {
         });
         // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
         bookFetchBtn.addEventListener("click", e => {
-            const submissionISBN = bookISBN.value.replace(/\D/g,"");
+            const submissionISBN = bookISBN.value.replace(/\W/g,"");
             if(submissionISBN.length == 13) {
                 bookPreloader.style.visibility = "visible";
                 ipcRenderer.send("bookFetchDetailsByISBN", submissionISBN);

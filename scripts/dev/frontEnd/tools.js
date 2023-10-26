@@ -266,11 +266,15 @@ Formats a string into a proper ISBN by adding hyphens.
 */
 var formatISBNString = val => {
     let curVal = "";
-    if(val.length < 4) { curVal = val; }
-    else if(val.length == 4) { curVal = val.slice(0, 3) + "-" + val.slice(3); }
-    else if(val.length < 10) { curVal = val.slice(0, 3) + "-" + val.slice(3, 4) + "-" + val.slice(4); }
-    else if(val.length < 13) { curVal = val.slice(0, 3) + "-" + val.slice(3, 4) + "-" + val.slice(4, 9) + "-" + val.slice(9); }
-    else { curVal = val.slice(0, 3) + "-" + val.slice(3, 4) + "-" + val.slice(4, 9) + "-" + val.slice(9, 12) + "-" + val.slice(12, 13); }
+    if(/^[0-9]+$/.test(val)) {
+        if(val.length < 4) { curVal = val; }
+        else if(val.length == 4) { curVal = val.slice(0, 3) + "-" + val.slice(3); }
+        else if(val.length < 10) { curVal = val.slice(0, 3) + "-" + val.slice(3, 4) + "-" + val.slice(4); }
+        else if(val.length == 10) { curVal = val.slice(0, 1) + "-" + val.slice(1, 6) + "-" + val.slice(6, 9) + "-" + val.slice(9, 10); }
+        else if(val.length < 13) { curVal = val.slice(0, 3) + "-" + val.slice(3, 4) + "-" + val.slice(4, 9) + "-" + val.slice(9); }
+        else { curVal = val.slice(0, 3) + "-" + val.slice(3, 4) + "-" + val.slice(4, 9) + "-" + val.slice(9, 12) + "-" + val.slice(12, 13); }
+    }
+    else { curVal = val.slice(0, 10); }
     return curVal;
 };
 
@@ -283,7 +287,7 @@ Driver function for formatting an ISBN input.
    - inp is the document input corresponding to the book ISBN.
 
 */
-var formatISBN = inp => inp.value = formatISBNString(inp.value.replace(/\D/g,""));
+var formatISBN = inp => inp.value = formatISBNString(inp.value.replace(/\W/g,""));
 
 
 
