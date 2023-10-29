@@ -213,7 +213,7 @@ var animeSave = () => {
             animeImg = document.getElementById("addRecordAnimeImg").getAttribute("list").split(","),
             animeFiles = Array.from(document.getElementById("animeAddRecordFiles").files).map(elem => elem.path),
             otherGenres = document.getElementById("otherGenres").value.split(",").map(elem => elem.trim()),
-            genresLst = animeGenreList(),
+            genresLst = genreList("Anime"),
             genres = [],
             content = [];
         // Check to see that at least one name was provided.

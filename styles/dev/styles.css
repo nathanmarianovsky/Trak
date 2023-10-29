@@ -48,6 +48,7 @@ textarea.materialize-textarea.valid {
 
 #searchBarDiv1 .input-field .prefix.active,
 #animeNameSearchInnerDiv1 .input-field .prefix.active,
+#bookNameSearchInnerDiv1 .input-field .prefix.active,
 input[type="text"]:not(.browser-default):focus:not([readonly])+label,
 input[type="date"]:not(.browser-default):focus:not([readonly])+label,
 textarea.materialize-textarea:focus:not([readonly])+label,
@@ -136,6 +137,11 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	border-bottom-color: #2A2A8E !important;
 }
 
+.invisibleGenreCheck {
+	visibility: hidden;
+	height: 25px;
+}
+
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/
@@ -150,14 +156,33 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	width: 95%;
 }
 
-#animeSeasonSearchDiv {
-	position: relative;
-	margin: 3% 0 auto 5%;
-	width: 90%;
+#contentSearchDiv {
 	display: none;
 }
 
-#animeSeasonSearchDiv .select-dropdown span {
+.tabDiv {
+	position: relative;
+	margin: 3% 0 auto 5%;
+	width: 90%;
+}
+
+.indicator {
+	background-color: white !important;
+}
+
+.tabDiv {
+	display: none;
+}
+
+.tabSearchLink {
+	color: white !important;
+}
+
+.tabs .tab a:focus.active {
+	background-color: rgba(0,0,0,0.1) !important;
+}
+
+#contentSearchDiv .select-dropdown span {
 	text-align: left;
 }
 
@@ -166,7 +191,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	margin-left: 50px;
 }
 
-#add, #animeSearchSubmission {
+#add, #animeSearchSubmission, #bookSearchSubmission {
 	position: fixed;
   	bottom: 23px;
   	right: 23px;
@@ -210,7 +235,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	display: none;
 }
 
-#animeNameSearchInnerDiv2 {
+#animeNameSearchInnerDiv2, #bookNameSearchInnerDiv2 {
 	margin-bottom: 0;
 }
 
@@ -355,7 +380,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	cursor: pointer;
 }
 
-.seasonItemContainer {
+.searchItemContainer {
 	display: inline-block;
     width: 15%;
     height: auto; 
@@ -368,7 +393,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
     overflow: hidden;
 }
 
-.animeSearchInfoIcon {
+.searchInfoIcon {
 	margin-left: 5%;
 }
 

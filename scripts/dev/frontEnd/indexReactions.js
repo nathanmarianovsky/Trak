@@ -273,7 +273,7 @@ ipcRenderer.on("introduction", (event, response) => {
                 const instancesTapFilter = M.TapTarget.init(document.getElementById("introductionTargetFilter"), { "onClose": () => {
                     setTimeout(() => {
                         // Define the tutorial step for the anime search button on the index page.
-                        const instancesTapAnimeSearch = M.TapTarget.init(document.getElementById("introductionTargetAnimeSearch"), { "onClose": () => {
+                        const instancesTapContentSearch = M.TapTarget.init(document.getElementById("introductionTargetContentSearch"), { "onClose": () => {
                             setTimeout(() => {
                                 // Define the tutorial step for the export/import button on the index page.
                                 const instancesTapDatabase = M.TapTarget.init(document.getElementById("introductionTargetDatabase"), { "onClose": () => {
@@ -306,18 +306,18 @@ ipcRenderer.on("introduction", (event, response) => {
                                 setTimeout(() => { instancesTapDatabase.open(); }, 500);
                             }, 500);
                         }});
-                        document.getElementById("animeSearch").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
+                        document.getElementById("contentSearch").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
                         // Ensure that the tutorial step associated to the anime search button opens only once no matter whether the filter modal is opened or not.
                         let count = 0;
                         if(!document.getElementById("filterModal").classList.contains("open")) {
                             // After a small delay open the tutorial step for the index page anime search.
-                            setTimeout(() => { instancesTapAnimeSearch.open(); }, 500);
+                            setTimeout(() => { instancesTapContentSearch.open(); }, 500);
                             count++;
                         }
                         let animeSearchObserver = new MutationObserver(mutations => {
                             if(count == 0) {
                                 if(!mutations[0].target.classList.contains("open")) {
-                                    setTimeout(() => { instancesTapAnimeSearch.open(); }, 500);
+                                    setTimeout(() => { instancesTapContentSearch.open(); }, 500);
                                     count++;
                                 }
                             }
@@ -607,70 +607,72 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
     }
     // Initialize the tooltips.
     initTooltips();
-    // Define the filter form, list of genres, and number of columns and rows.
-    const filterForm = document.getElementById("filterForm"),
-        genresLst = filterGenreList(),
-        columns = 5,
-        rows = Math.ceil(genresLst.length / columns);
-    // Iterate through all rows needed.
-    for(let r = 0; r < rows; r++) {
-        // Construct a div to contain the row.
-        let rowDiv = document.createElement("div");
-        rowDiv.classList.add("genreRow");
-        // Iterate through all columnds needed.
-        for(let s = 0; s < columns; s++) {
-            // Define the text associated to the genre.
-            let filterGenreStr = "";
-            if(genresLst[(s * rows) + r] == "CGDCT") {
-                filterGenreStr = "CGDCT";
-            }
-            else if(genresLst[(s * rows) + r] == "ComingOfAge") {
-                filterGenreStr = "Coming-of-Age";
-            }
-            else if(genresLst[(s * rows) + r] == "PostApocalyptic") {
-                filterGenreStr = "Post-Apocalyptic";
-            }
-            else if(genresLst[(s * rows) + r] == "SciFi") {
-                filterGenreStr = "Sci-Fi";
-            }
-            else if(genresLst[(s * rows) + r] == "SliceOfLife") {
-                filterGenreStr = "Slice of Life";
-            }
-            else if(genresLst[(s * rows) + r] != undefined) {
-                filterGenreStr = genresLst[(s * rows) + r].split(/(?=[A-Z])/).join(" ");
-            }
-            else { filterGenreStr = ""; }
-            // Define the checkbox, label, and span associated to the genre.
-            let genreCheckLabel = document.createElement("label"),
-                genereCheckInput = document.createElement("input"),
-                genereCheckSpan = document.createElement("span");
-            // Modify the page elements.
-            genreCheckLabel.classList.add("col", "s2");
-            genereCheckInput.setAttribute("type", "checkbox");
-            filterGenreStr != "" ? genereCheckInput.setAttribute("id", "filterGenre" + genresLst[(s * rows) + r]) : genreCheckLabel.style.visibility = "hidden";
-            genereCheckInput.classList.add("filled-in", "filterCheckbox");
-            genereCheckSpan.textContent = filterGenreStr;
-            genereCheckSpan.classList.add("checkboxText");
-            // Append the checkbox and text to the row.
-            genreCheckLabel.append(genereCheckInput, genereCheckSpan);
-            rowDiv.append(genreCheckLabel);
-        }
-        // Append the row to the filter form.
-        filterForm.append(rowDiv);
-    }
+    genreListLoad("All", 5, true);
+    // // Define the filter form, list of genres, and number of columns and rows.
+    // const filterForm = document.getElementById("filterForm"),
+    //     genresLst = genreList(),
+    //     columns = 5,
+    //     rows = Math.ceil(genresLst.length / columns);
+    // // Iterate through all rows needed.
+    // for(let r = 0; r < rows; r++) {
+    //     // Construct a div to contain the row.
+    //     let rowDiv = document.createElement("div");
+    //     rowDiv.classList.add("genreRow");
+    //     // Iterate through all columnds needed.
+    //     for(let s = 0; s < columns; s++) {
+    //         // Define the text associated to the genre.
+    //         let filterGenreStr = "";
+    //         if(genresLst[(s * rows) + r] == "CGDCT") {
+    //             filterGenreStr = "CGDCT";
+    //         }
+    //         else if(genresLst[(s * rows) + r] == "ComingOfAge") {
+    //             filterGenreStr = "Coming-of-Age";
+    //         }
+    //         else if(genresLst[(s * rows) + r] == "PostApocalyptic") {
+    //             filterGenreStr = "Post-Apocalyptic";
+    //         }
+    //         else if(genresLst[(s * rows) + r] == "SciFi") {
+    //             filterGenreStr = "Sci-Fi";
+    //         }
+    //         else if(genresLst[(s * rows) + r] == "SliceOfLife") {
+    //             filterGenreStr = "Slice of Life";
+    //         }
+    //         else if(genresLst[(s * rows) + r] != undefined) {
+    //             filterGenreStr = genresLst[(s * rows) + r].split(/(?=[A-Z])/).join(" ");
+    //         }
+    //         else { filterGenreStr = ""; }
+    //         // Define the checkbox, label, and span associated to the genre.
+    //         let genreCheckLabel = document.createElement("label"),
+    //             genereCheckInput = document.createElement("input"),
+    //             genereCheckSpan = document.createElement("span");
+    //         // Modify the page elements.
+    //         genreCheckLabel.classList.add("col", "s2");
+    //         genereCheckInput.setAttribute("type", "checkbox");
+    //         // filterGenreStr != "" ? genereCheckInput.setAttribute("id", "filterGenre" + genresLst[(s * rows) + r]) : genreCheckLabel.style.visibility = "hidden";
+    //         filterGenreStr != "" ? genereCheckInput.setAttribute("id", "filterGenre" + genresLst[(s * rows) + r]) : genreCheckLabel.classList.add("invisibleGenreCheck");
+    //         genereCheckInput.classList.add("filled-in", "filterCheckbox");
+    //         genereCheckSpan.textContent = filterGenreStr;
+    //         genereCheckSpan.classList.add("checkboxText");
+    //         // Append the checkbox and text to the row.
+    //         genreCheckLabel.append(genereCheckInput, genereCheckSpan);
+    //         rowDiv.append(genreCheckLabel);
+    //     }
+    //     // Append the row to the filter form.
+    //     filterForm.append(rowDiv);
+    // }
     // Initialize the page modals.
     initModal();
     // Initialize the filter modal separately to add the functionality of filter application upon exit.
     M.Modal.init(document.getElementById("filterModal"), { "onCloseStart": () => {
         window.scrollTo(0,0);
-        const genresList = filterGenreList(),
+        const genresList = genreList(),
             genreCheck = [];
         // Define the filtered genres collection.
         for(let j = 0; j < genresList.length; j++) {
             if(document.getElementById("filterGenre" + genresList[j]).checked == true) { genreCheck.push(genresList[j]); }
         }
         // Handle the filtering on the home page.
-        if(document.getElementById("animeSearch").style.display != "none") {
+        if(document.getElementById("contentSearch").style.display != "none") {
             // Define the category and genre arrays along with the record rows.
             const categoryList = ["Anime", "Book", "Film", "Manga", "Show"],
                 catCheck = [],
@@ -738,24 +740,32 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
 
 
 
-// Load the results of anime search.
-ipcRenderer.on("animeFetchResult", (event, submissionArr) => {
+// Load the results of a content search.
+ipcRenderer.on("fetchResult", (event, submissionArr) => {
+    console.log(submissionArr);
     // Define the search content container and search inputs.
-    const container = document.getElementById("animeSearchContainer"),
+    const animeContainer = document.getElementById("animeSearchContainer"),
+        bookContainer = document.getElementById("bookSearchContainer"),
         preloaderIcon = document.getElementById("synopsisPreloader"),
         synopsisContent = document.getElementById("synopsisModalContent"),
-        sortSeasonSelect = document.getElementById("animeSeasonSearchSort"),
-        sortNameSelect = document.getElementById("animeNameSearchSort");
-    // Define the array which will contain the anime search content.
-    let seasonArr = [];
+        animeSortSeasonSelect = document.getElementById("animeSeasonSearchSort"),
+        animeSortNameSelect = document.getElementById("animeNameSearchSort"),
+        bookSortNameSelect = document.getElementById("bookNameSearchSort");
+    // Define the array which will contain the search content results.
+    let contentArr = [];
     // Hide the preloader.
     document.getElementById("preloader").style.setProperty("display", "none", "important");
-    // Reset the anime search container.
-    container.innerHTML = "";
+    // Reset the appropriate search container.
+    if(submissionArr[2] == "Anime") {
+        animeContainer.innerHTML = "";
+    }
+    else if(submissionArr[2] == "Book") {
+        bookContainer.innerHTML = "";
+    }
     // Randomly shuffle the content only on an anime season search for the default display.
-    submissionArr[1] == true ? seasonArr = shuffle(submissionArr[0]) : seasonArr = submissionArr[0];
+    submissionArr[1] == true ? contentArr = shuffle(submissionArr[0]) : contentArr = submissionArr[0];
     // Iterate through the anime search results.
-    for(let n = 0; n < seasonArr.length; n++) {
+    for(let n = 0; n < contentArr.length; n++) {
         // Define the anime search item image, title, synopsis icon, and rating.
         let itemImg = document.createElement("img"),
             itemContainer = document.createElement("div"),
@@ -763,27 +773,32 @@ ipcRenderer.on("animeFetchResult", (event, submissionArr) => {
             itemInfo = document.createElement("div"),
             itemInfoLink = document.createElement("a"),
             itemInfoIcon = document.createElement("i");
-        itemContainer.classList.add("seasonItemContainer");
-        itemContainer.setAttribute("name", seasonArr[n][0]);
-        itemContainer.setAttribute("rating", seasonArr[n][3]);
-        itemContainer.setAttribute("genres", seasonArr[n][4].join(","));
+        itemContainer.classList.add("searchItemContainer");
+        itemContainer.setAttribute("name", contentArr[n][0]);
+        itemContainer.setAttribute("rating", contentArr[n][3]);
+        itemContainer.setAttribute("genres", contentArr[n][4].join(","));
         itemText.classList.add("seasonItemText", "tooltipped");
         itemText.setAttribute("data-position", "bottom");
-        itemText.setAttribute("data-tooltip", seasonArr[n][0]);
+        itemText.setAttribute("data-tooltip", contentArr[n][0]);
         itemImg.classList.add("seasonItemImage");
-        itemImg.setAttribute("src", seasonArr[n][1]);
-        itemImg.setAttribute("link", seasonArr[n][2]);
-        itemText.textContent = seasonArr[n][0];
-        itemInfo.textContent = seasonArr[n][3] + (seasonArr[n][3] != "N/A" ? "/10.00" : "");
+        itemImg.setAttribute("src", contentArr[n][1]);
+        itemImg.setAttribute("link", contentArr[n][2]);
+        itemText.textContent = contentArr[n][0];
+        itemInfo.textContent = contentArr[n][3] + (contentArr[n][3] != "N/A" ? "/10.00" : "");
         itemInfoLink.setAttribute("href", "#synopsisModal");
         itemInfoLink.classList.add("modal-trigger");
-        itemInfoIcon.setAttribute("link", seasonArr[n][2]);
-        itemInfoIcon.classList.add("material-icons", "synopsisInfoIcon", "animeSearchInfoIcon");
+        itemInfoIcon.setAttribute("link", contentArr[n][2]);
+        itemInfoIcon.classList.add("material-icons", "synopsisInfoIcon", "searchInfoIcon");
         itemInfoIcon.textContent = "info";
         itemInfoLink.append(itemInfoIcon);
         itemInfo.append(itemInfoLink);
         itemContainer.append(itemImg, itemText, itemInfo);
-        container.append(itemContainer);
+        if(submissionArr[2] == "Anime") {
+            animeContainer.append(itemContainer);
+        }
+        else if(submissionArr[2] == "Book") {
+            bookContainer.append(itemContainer);
+        }
         // Listen for a click event on the synopsis icon in order to load the associated synopsis content on the synopsisModal.
         itemInfoIcon.addEventListener("click", e => {
             // Reset the synopsisModal content and show the preloader while the data is fetched.
@@ -821,7 +836,13 @@ ipcRenderer.on("animeFetchResult", (event, submissionArr) => {
     // Define the function which will handle the sorting of anime search content.
     let sortFunc = e => {
         // Grab the items to sort.
-        let sortedArr = Array.from(container.children);
+        let sortedArr = [];
+        if(submissionArr[2] == "Anime") {
+            sortedArr = Array.from(animeContainer.children);
+        }
+        else if(submissionArr[2] == "Book") {
+            sortedArr = Array.from(bookContainer.children);
+        }
         // Sort the items by alphabetical order.
         if(e.target.value == "alphabetical") {
             sortedArr = sortedArr.sort((a, b) => a.getAttribute("name").localeCompare(b.getAttribute("name")));
@@ -854,18 +875,38 @@ ipcRenderer.on("animeFetchResult", (event, submissionArr) => {
         else if(e.target.value == "random") {
             sortedArr = shuffle(sortedArr);
             // In the case of a random sort reset the select tags so that another random sort can be applied without having to choose a different sort first.
-            sortSeasonSelect.value = "";
-            sortNameSelect.value = "";
+            if(submissionArr[2] == "Anime") {
+                animeSortSeasonSelect.value = "";
+                animeSortNameSelect.value = "";
+            }
+            else if(submissionArr[2] == "Book") {
+                bookSortNameSelect.value = "";
+            }
             initSelect();
         }
-        // Clear the container for anime search items.
-        container.innerHTML = "";
-        // Reattach the anime search items now that they have been sorted.
+        // Clear the container for the content search items.
+        if(submissionArr[2] == "Anime") {
+            animeContainer.innerHTML = "";
+        }
+        else if(submissionArr[2] == "Book") {
+            bookContainer.innerHTML = "";
+        }
+        // Reattach the content search items now that they have been sorted.
         for(let k = 0; k < sortedArr.length; k++) {
-            container.append(sortedArr[k]);
+            if(submissionArr[2] == "Anime") {
+                animeContainer.append(sortedArr[k]);
+            }
+            else if(submissionArr[2] == "Book") {
+                bookContainer.append(sortedArr[k]);
+            }
         }
     };
     // Listen for a change in the value of the sorting select tags.
-    sortSeasonSelect.addEventListener("change", ev => sortFunc(ev));
-    sortNameSelect.addEventListener("change", ev => sortFunc(ev));
+    if(submissionArr[2] == "Anime") {
+        animeSortSeasonSelect.addEventListener("change", ev => sortFunc(ev));
+        animeSortNameSelect.addEventListener("change", ev => sortFunc(ev));
+    }
+    else if(submissionArr[2] == "Book") {
+        bookSortNameSelect.addEventListener("change", ev => sortFunc(ev));
+    }
 });

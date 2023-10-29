@@ -4,6 +4,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
 
     - rgba2hex: Convert a RGBA color to hex.
     - clearTooltips: Remove all tooltips on the page.
+    - initTabs: Initialize the tabs on the page.
     - initFAB: Initialize the floating action button on the page.
     - initCollapsible: Initialize the collapsible divs on the page.
     - initTooltips: Initialize all tooltips on the page.
@@ -17,7 +18,8 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - shuffle: Perform a Fisher-Yates shuffle on an array of items.
     - formatISBNString: Formats a string into a proper ISBN by adding hyphens.
     - formatISBN: Driver function for formatting an ISBN input.
-    - filterGenreList: Provides the list of all genres/tags that can be selected from the index.page filter.
+    - genreList: Provides the list of all genres/tags that can be selected from depending on the case.
+    - genreListLoad: Appends all genre options as checkboxes.
 
 */
 
@@ -48,8 +50,6 @@ Provides a hex representing a color with a certain opacity of the given hex colo
 
 */
 var addAlpha = (color, opacity) => color + Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255).toString(16).toUpperCase();
-    // var _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
-    // return color + _opacity.toString(16).toUpperCase();
 
 
 
@@ -64,6 +64,23 @@ var clearTooltips = () => {
         instancesTooltips = M.Tooltip.init(elemsTooltips);
     // Destroy each tooltip.
     for(let j = 0; j < instancesTooltips.length; j++) { instancesTooltips[j].destroy(); }
+};
+
+
+
+/*
+
+Initialize the tabs on the page.
+
+*/
+var initTabs = () => {
+    // Define the instances of the tabs on the page.
+    const elemsTabs = document.querySelector(".tabs"),
+        instanceTabs = M.Tabs.init(elemsTabs, { "onShow": () => {
+            document.querySelector(".indicator").style.display = "list-item";
+            clearTooltips();
+            initTooltips();
+        }});
 };
 
 
@@ -293,11 +310,15 @@ var formatISBN = inp => inp.value = formatISBNString(inp.value.replace(/\W/g,"")
 
 /*
 
-Provides the list of all genres/tags that can be selected from the index.page filter.
+Provides the list of all genres/tags that can be selected from depending on the case.
+
+   - type is a string that corresponds to the different cases 'All', 'Anime', 'Book', 'Film', 'Manga', and 'Show'.
 
 */
-var filterGenreList = () => {
-    return ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
+var genreList = (type = "All") => {
+    let genArr = [];
+    if(type == "Anime") {
+        genArr = ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
             "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
             "Hentai", "Historical", "Horror", "Isekai", "Josei", "Kids", "Medical", "Mystery", "Magic",
             "MagicalSexShift", "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police",
@@ -305,4 +326,77 @@ var filterGenreList = () => {
             "School", "SciFi", "Seinen", "Shoujo", "Shounen", "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame",
             "SuperPower", "Supernatural", "Survival", "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy",
             "Vampire", "VideoGame", "War", "Western", "Workplace", "Yaoi", "Yuri"];
+    }
+    else if(type == "Book") {
+        genArr = ["Action", "Adventure", "Comedy", "Crime", "Dystopian", "Fantasy", "Fiction", "Historical", "Horror", "Mystery",
+            "Mythology", "Nonfiction", "Romance", "Satire", "Sci-Fi", "Thriller", "Tragedy", "Western"];
+    }
+    else if(type == "All") {
+        genArr = [...new Set([].concat.apply([], [genreList("Anime"), genreList("Book"), genreList("Film"), genreList("Manga"), genreList("Show")]))];
+        genArr.sort((a, b) => a.localeCompare(b));
+    }
+    // console.log(genArr);
+    return genArr;
+};
+
+
+
+/*
+
+Appends all genre options as checkboxes.
+
+*/
+var genreListLoad = (type, cols, filterLoad = false) => {
+    // Define the genres form, list of genres, and number of columns and rows.
+    const genresForm = filterLoad == false ? document.getElementById("category" + type + "Form2") : document.getElementById("filterForm"),
+        genresLst = genreList(type),
+        rows = Math.ceil(genresLst.length / cols);
+    // Iterate through all rows needed.
+    for(let r = 0; r < rows; r++) {
+        // Construct a div to contain the row.
+        let rowDiv = document.createElement("div");
+        rowDiv.classList.add("genreRow");
+        // Iterate through all columnds needed.
+        for(let s = 0; s < cols; s++) {
+            // Define the text associated to the genre.
+            let filterGenreStr = "";
+            if(genresLst[(s * rows) + r] == "CGDCT") {
+                filterGenreStr = "CGDCT";
+            }
+            else if(genresLst[(s * rows) + r] == "ComingOfAge") {
+                filterGenreStr = "Coming-of-Age";
+            }
+            else if(genresLst[(s * rows) + r] == "PostApocalyptic") {
+                filterGenreStr = "Post-Apocalyptic";
+            }
+            else if(genresLst[(s * rows) + r] == "SciFi") {
+                filterGenreStr = "Sci-Fi";
+            }
+            else if(genresLst[(s * rows) + r] == "SliceOfLife") {
+                filterGenreStr = "Slice of Life";
+            }
+            else if(genresLst[(s * rows) + r] != undefined) {
+                filterGenreStr = genresLst[(s * rows) + r].split(/(?=[A-Z])/).join(" ");
+            }
+            else { filterGenreStr = ""; }
+            // Define the checkbox, label, and span associated to the genre.
+            let genreCheckLabel = document.createElement("label"),
+                genereCheckInput = document.createElement("input"),
+                genereCheckSpan = document.createElement("span");
+            // Modify the page elements.
+            genreCheckLabel.classList.add("col", "s2");
+            genereCheckInput.setAttribute("type", "checkbox");
+            filterGenreStr != ""
+                ? (filterLoad == false ? genereCheckInput.setAttribute("id", type.toLowerCase() + "Genre" + genresLst[(s * rows) + r]) : genereCheckInput.setAttribute("id", "filterGenre" + genresLst[(s * rows) + r]))
+                : genreCheckLabel.classList.add("invisibleGenreCheck");
+            genereCheckInput.classList.add("filled-in");
+            genereCheckSpan.textContent = filterGenreStr;
+            genereCheckSpan.classList.add("checkboxText");
+            // Append the checkbox and text to the row.
+            genreCheckLabel.append(genereCheckInput, genereCheckSpan);
+            rowDiv.append(genreCheckLabel);
+        }
+        // Append the row to the filter form.
+        genresForm.append(rowDiv);
+    }
 };

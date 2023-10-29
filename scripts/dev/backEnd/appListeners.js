@@ -1044,7 +1044,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 				}).filter(str => str != "");
 			});
 			// Send the list of anime releases for the season to the front-end.
-			event.sender.send("animeFetchResult", [seasonContent.map(elem => [elem.title, elem.picture, elem.link, elem.score, elem.genres]), true]);
+			event.sender.send("fetchResult", [seasonContent.map(elem => [elem.title, elem.picture, elem.link, elem.score, elem.genres]), true, "Anime"]);
 		}).catch(err => log.error("There was an issue in obtaining the releases for the anime season " + seasonInfo[0] + " " + seasonInfo[1].charAt(0).toUpperCase() + seasonInfo[1].slice(1) + "."));
 	});
 
@@ -1056,23 +1056,23 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 			// Define a promise which will resolve only once a picture has been attained for each search result.
 			const picPromise = new Promise((resolve, reject) => {
 				// Iterate through the search results.
-				results.forEach((elem, placement) => {
+				results.forEach(elem => {
 					// Fetch the anime details based on the URL.
 					malScraper.getInfoFromURL(elem.url).then(elemData => {
 						elemData.genres = elemData.genres.map(str => {
 							if(str == "Coming-of-Age") {
-			                    str = "ComingOfAge";
-			                }
-			                else if(str == "Post-Apocalyptic") {
-			                    str = "PostApocalyptic";
-			                }
-			                else if(str == "Sci-Fi") {
-			                    str = "SciFi";
-			                }
-			                else if(str == "Slice of Life") {
-			                    str = "SliceOfLife";
-			                }
-			                return str;
+		                    str = "ComingOfAge";
+		                }
+		                else if(str == "Post-Apocalyptic") {
+		                    str = "PostApocalyptic";
+		                }
+		                else if(str == "Sci-Fi") {
+		                    str = "SciFi";
+		                }
+		                else if(str == "Slice of Life") {
+		                    str = "SliceOfLife";
+		                }
+		                return str;
 						});
 						// Push the anime details into the overall collection.
 						resultsArr.push([elem.title, elemData.picture, elem.url, elem.score, elemData.genres]);
@@ -1082,7 +1082,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 			});
 			// Once all anime results have an associated picture send the list of anime releases to the front-end.
 			picPromise.then(() => {
-				event.sender.send("animeFetchResult", [resultsArr, false]);
+				event.sender.send("fetchResult", [resultsArr, false, "Anime"]);
 			}).catch(err => log.error("There was an issue resolving the promise associated to grabbing anime release pictures based on the search query " + query + "."));
 		}).catch(err => log.error("There was an issue obtaining the anime releases based on the query " + query + "."));
 	});
@@ -1156,6 +1156,49 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 				}).catch(err => log.error("There was an issue getting the pictures associated to the anime " + animeData.title + "."));
 			}).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
   		});
+	});
+
+	// Handles the fetching of books based on a query search.
+	ipc.on("bookFetchSearch", (event, query) => {
+		// Define the overall search results array and a counter to maintain the amount of search results attained.
+		let resultsArr = [],
+			counter = 0;
+		// Define a promise to handle fetching the results for multiple pages.
+		const pagesPromise = new Promise((res, rej) => {
+			// Iterate through desired amount of pages.
+			for(let k = 1; k < 3; k++) {
+				// Define the array holding the search results for each page.
+				let iterArr = [];
+				// Fetch the search results.
+				GoodReadsScraper.searchBooks({ "q": query, "page": k }).then(results => {
+					counter += results.books.length;
+					// Define a promise which will resolve only once all details have been attained for each search result.
+					const itemPromise = new Promise((resolve, reject) => {
+						// Iterate through the search results.
+						results.books.forEach(elem => {
+							// Fetch the anime details based on the URL.
+							GoodReadsScraper.getBook({ "url": "https://www.goodreads.com/en/book/show/" + elem.id }).then(elemData => {
+								elemData.genres = elemData.genres.map(str => str == "Sci-Fi" ? "SciFi" : str);
+								// Push the book details into the overall collection.
+								iterArr.push([elemData.title, elemData.coverLarge, elemData.url, (elemData.rating * 2).toFixed(2), elemData.genres]);
+								if(iterArr.length == results.books.length) { resolve(); }
+							}).catch(err => log.error("There was an issue getting the book details based on the url " + elem.url + "."));
+						})
+					});
+					// Once all book results have the necessary details fetched add them to the overall collection and resolve the pagesPromise if necessary.
+					itemPromise.then(() => {
+						// Add all the search results for each page into the overall collection.
+						resultsArr = resultsArr.concat(iterArr);
+						// Resolve the pagesPromise if all search results are accounted for on all pages.
+						if(counter == resultsArr.length) { res(); }
+					}).catch(err => log.error("There was an issue resolving the promise associated to grabbing book details based on the search query " + query + "."));
+				}).catch(err => log.error("There was an issue obtaining the books based on the query " + query + "."));
+			}
+		});
+		// Send the list of books to the front-end.
+		pagesPromise.then(() => {
+			event.sender.send("fetchResult", [resultsArr, false, "Book"]);
+		});
 	});
 
 	// Handles the request for getting the logs since the last application load.

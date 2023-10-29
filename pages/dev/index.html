@@ -29,10 +29,10 @@
                         </li>
                         <li><a id="clearFilter" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Clear Filter"><i class="material-icons">clear_all</i></a></li>
                         <li>
-                            <a id="animeSearch" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Search Anime"><i class="material-icons">animation</i></a>
-                            <div id="introductionTargetAnimeSearch" class="tap-target" data-target="animeSearch">
+                            <a id="contentSearch" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Search Content"><i class="material-icons">library_books</i></a>
+                            <div id="introductionTargetContentSearch" class="tap-target" data-target="contentSearch">
                                 <div class="tap-target-content">
-                                    <p>Search for anime releases by season or query.</p>
+                                    <p>Search through online databases for records.</p>
                                 </div>
                             </div>
                         </li>
@@ -42,7 +42,7 @@
                         <li><a id="updateAvailable" class="waves-effect waves-light modal-trigger tooltipped pulse" data-position="bottom" data-tooltip="Update Available" href="#updateModal"><i class="material-icons">update</i></a></li>
                         <li>
                             <div class="topNavTapContainer">
-                                <a id="openDatabase" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Export/Import" href="#databaseModal"><i class="material-icons">library_books</i></a>
+                                <a id="openDatabase" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Export/Import" href="#databaseModal"><i class="material-icons">storage</i></a>
                                 <div id="introductionTargetDatabase" class="tap-target" data-target="openDatabase">
                                     <div class="tap-target-content">
                                         <p>Export/Import records via xlsx or zip archives.</p>
@@ -141,80 +141,120 @@
             </div>
             <a id="remove" class="btn-floating btn-large waves-effect waves-light modal-trigger tooltipped" data-position="right" data-tooltip="Remove Records" href="#removeModal"><i class="material-icons">remove</i></a>
         </div>
-
-        <div id="animeSeasonSearchDiv">
-            <div id="animeNameSearchInnerDiv1" class="row">
-                <form class="col s9">
-                    <div id="animeNameSearchInnerDiv2" class="row">
-                        <div class="input-field col s12">
-                            <i class="material-icons prefix">search</i>
-                            <input id="animeSearchBar" type="text" class="validate">
-                            <label for="animeSearchBar">Search for Anime:</label>
-                        </div>
-                    </div>
-                </form>
-                <div class="input-field col s3">
-                    <select id="animeNameSearchSort">
-                        <option value="" disabled selected>Sort by:</option>
-                        <option value="alphabetical">Alphabetical</option>
-                        <option value="reverseAlphabetical">Reverse Alphabetical</option>
-                        <option value="rating">Rating</option>
-                        <option value="reverseRating">Reverse Rating</option>
-                        <option value="random">Random</option>
-                    </select>
-                    <label>Sort:</label>
+        <div id="contentSearchDiv">
+            <ul class="tabs tabs-fixed-width tab-demo z-depth-1">
+                <li class="tab"><a class="tabSearchLink" href="#animeSearchDiv">Anime</a></li>
+                <li class="tab"><a class="tabSearchLink" href="#bookSearchDiv">Book</a></li>
+                <li class="tab disabled"><a class="tabSearchLink" href="#filmSearchDiv">Film</a></li>
+                <li class="tab disabled"><a class="tabSearchLink" href="#mangaSearchDiv">Manga</a></li>
+                <li class="tab disabled"><a class="tabSearchLink" href="#showSearchDiv">Show</a></li>
+            </ul>
+            <div id="defaultSearchDiv">
+                <h2 id="defaultTitle">Directions:</h2>
+                <div class="text formInfo" id="defaultText">
+                    Select the type of record you would like to search by clicking on the options available in the tabs above.
                 </div>
             </div>
-            <div id="animeSeasonSearchInnerDiv" class="row">
-                <div class="col s12">
-                    <div class="row">
-                        <div id="animeSeasonSearchYearDiv" class="input-field col s3">
-                            <select id="animeSeasonSearchYear">
-                                <option value="" disabled selected>Choose the Year:</option>
-                            </select>
-                            <label>Year:</label>
+            <div id="animeSearchDiv" class="tabDiv">
+                <div id="animeNameSearchInnerDiv1" class="row">
+                    <form class="col s9">
+                        <div id="animeNameSearchInnerDiv2" class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">search</i>
+                                <input id="animeSearchBar" type="text" class="validate">
+                                <label for="animeSearchBar">Search for Anime:</label>
+                            </div>
                         </div>
-                        <div class="input-field col s3">
-                            <select id="animeSeasonSearchSeason">
-                                <option value="" disabled selected>Choose the Season:</option>
-                                <option value="winter">Winter</option>
-                                <option value="spring">Spring</option>
-                                <option value="summer">Summer</option>
-                                <option value="fall">Fall</option>
-                            </select>
-                            <label>Season:</label>
-                        </div>
-                        <div class="input-field col s3">
-                            <select multiple id="animeSeasonSearchType">
-                                <option value="" disabled>Filter the Releases:</option>
-                                <optgroup label="TV">
-                                    <option value="TVNew">TV New</option>
-                                    <option value="TVCon"> TV Continued</option>
-                                </optgroup>
-                                <option value="OVAs">OVAs</option>
-                                <option value="ONAs">ONAs</option>
-                                <option value="Movies">Movies</option>
-                                <option value="Specials">Specials</option>
-                            </select>
-                            <label>Release Types:</label>
-                        </div>
-                        <div id="animeSeasonSearchSortDiv" class="input-field col s3">
-                            <select id="animeSeasonSearchSort">
-                                <option value="" disabled selected>Sort by:</option>
-                                <option value="alphabetical">Alphabetical</option>
-                                <option value="reverseAlphabetical">Reverse Alphabetical</option>
-                                <option value="rating">Rating</option>
-                                <option value="reverseRating">Reverse Rating</option>
-                                <option value="random">Random</option>
-                            </select>
-                            <label>Sort:</label>
+                    </form>
+                    <div class="input-field col s3">
+                        <select id="animeNameSearchSort">
+                            <option value="" disabled selected>Sort by:</option>
+                            <option value="alphabetical">Alphabetical</option>
+                            <option value="reverseAlphabetical">Reverse Alphabetical</option>
+                            <option value="rating">Rating</option>
+                            <option value="reverseRating">Reverse Rating</option>
+                            <option value="random">Random</option>
+                        </select>
+                        <label>Sort:</label>
+                    </div>
+                </div>
+                <div id="animeSeasonSearchInnerDiv" class="row">
+                    <div class="col s12">
+                        <div class="row">
+                            <div id="animeSeasonSearchYearDiv" class="input-field col s3">
+                                <select id="animeSeasonSearchYear">
+                                    <option value="" disabled selected>Choose the Year:</option>
+                                </select>
+                                <label>Year:</label>
+                            </div>
+                            <div class="input-field col s3">
+                                <select id="animeSeasonSearchSeason">
+                                    <option value="" disabled selected>Choose the Season:</option>
+                                    <option value="winter">Winter</option>
+                                    <option value="spring">Spring</option>
+                                    <option value="summer">Summer</option>
+                                    <option value="fall">Fall</option>
+                                </select>
+                                <label>Season:</label>
+                            </div>
+                            <div class="input-field col s3">
+                                <select multiple id="animeSeasonSearchType">
+                                    <option value="" disabled>Filter the Releases:</option>
+                                    <optgroup label="TV">
+                                        <option value="TVNew">TV New</option>
+                                        <option value="TVCon"> TV Continued</option>
+                                    </optgroup>
+                                    <option value="OVAs">OVAs</option>
+                                    <option value="ONAs">ONAs</option>
+                                    <option value="Movies">Movies</option>
+                                    <option value="Specials">Specials</option>
+                                </select>
+                                <label>Release Types:</label>
+                            </div>
+                            <div id="animeSeasonSearchSortDiv" class="input-field col s3">
+                                <select id="animeSeasonSearchSort">
+                                    <option value="" disabled selected>Sort by:</option>
+                                    <option value="alphabetical">Alphabetical</option>
+                                    <option value="reverseAlphabetical">Reverse Alphabetical</option>
+                                    <option value="rating">Rating</option>
+                                    <option value="reverseRating">Reverse Rating</option>
+                                    <option value="random">Random</option>
+                                </select>
+                                <label>Sort:</label>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <a id="animeSearchSwitch" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search by Query"><i class="material-icons">toggle_off</i></a>
+                <a id="animeSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
+                <div id="animeSearchContainer"></div>
             </div>
-            <a id="animeSearchSwitch" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search by Query"><i class="material-icons">toggle_off</i></a>
-            <a id="animeSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
-            <div id="animeSearchContainer"></div>
+            <div id="bookSearchDiv" class="tabDiv">
+                <div id="bookNameSearchInnerDiv1" class="row">
+                    <form class="col s9">
+                        <div id="bookNameSearchInnerDiv2" class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">search</i>
+                                <input id="bookSearchBar" type="text" class="validate">
+                                <label for="bookSearchBar">Search for Books:</label>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="input-field col s3">
+                        <select id="bookNameSearchSort">
+                            <option value="" disabled selected>Sort by:</option>
+                            <option value="alphabetical">Alphabetical</option>
+                            <option value="reverseAlphabetical">Reverse Alphabetical</option>
+                            <option value="rating">Rating</option>
+                            <option value="reverseRating">Reverse Rating</option>
+                            <option value="random">Random</option>
+                        </select>
+                        <label>Sort:</label>
+                    </div>
+                </div>
+                <a id="bookSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
+                <div id="bookSearchContainer"></div>
+            </div>
         </div>
         <div id="preloader" class="preloader-wrapper big active">
             <div class="spinner-layer">

@@ -62,10 +62,12 @@ window.addEventListener("load", () => {
         importSampleZIP = document.getElementById("importSampleZIP"),
         importSampleSimpleXLSX = document.getElementById("importSampleSimpleXLSX"),
         importSampleDetailedXLSX = document.getElementById("importSampleDetailedXLSX"),
-        animeSearch = document.getElementById("animeSearch"),
+        contentSearch = document.getElementById("contentSearch"),
         indexHome = document.getElementById("indexHome"),
         animeSearchSubmission = document.getElementById("animeSearchSubmission"),
-        animeSearchSwitch = document.getElementById("animeSearchSwitch");
+        animeSearchSwitch = document.getElementById("animeSearchSwitch"),
+        tabSearchLinks = Array.from(document.getElementsByClassName("tabSearchLink")),
+        bookSearchSubmission = document.getElementById("bookSearchSubmission");
     // Define all page components which will be utilized.
     const tableBody = document.getElementById("tableBody"),
         XLSXTypeSwitchDiv = document.getElementById("XLSXTypeSwitchDiv"),
@@ -74,7 +76,7 @@ window.addEventListener("load", () => {
         databaseExportContainer = document.getElementById("databaseExportContainer"),
         databaseImportContainer = document.getElementById("databaseImportContainer"),
         outerLayer = document.getElementById("outerLayer"),
-        animeSeasonSearchDiv = document.getElementById("animeSeasonSearchDiv"),
+        contentSearchDiv = document.getElementById("contentSearchDiv"),
         animeSeasonSearchYear = document.getElementById("animeSeasonSearchYear"),
         animeSeasonSearchSeason = document.getElementById("animeSeasonSearchSeason"),
         animeSeasonSearchType = document.getElementById("animeSeasonSearchType"),
@@ -83,17 +85,30 @@ window.addEventListener("load", () => {
         animeSeasonSearchInnerDiv = document.getElementById("animeSeasonSearchInnerDiv"),
         filterModalGenreHeading = document.getElementById("filterModalGenreHeading"),
         filterModalGenreHeadingSiblings = filterModalGenreHeading.parentNode.children,
-        animeSearchBar = document.getElementById("animeSearchBar");
+        animeSearchBar = document.getElementById("animeSearchBar"),
+        defaultSearchDiv = document.getElementById("defaultSearchDiv"),
+        tabDivs = Array.from(document.getElementsByClassName("tabDiv")),
+        bookSearchBar = document.getElementById("bookSearchBar");
+    // Listen for a click on any search tab in order to hide the default search div.
+    tabSearchLinks.forEach(tab => tab.addEventListener("click", e => defaultSearchDiv.style.display = "none"));
     // Listen for a click event on the anime search button.
-    animeSearch.addEventListener("click", e => {
+    contentSearch.addEventListener("click", e => {
         // Hide the local records table.
         outerLayer.style.display = "none";
-        // Hide the anime search button.
-        animeSearch.style.display = "none";
+        // Hide the content search button.
+        contentSearch.style.display = "none";
         // Display the home button.
         indexHome.style.display = "inline-block";
-        // Display the anime search inputs.
-        animeSeasonSearchDiv.style.display = "block";
+        // Display the content search inputs.
+        contentSearchDiv.style.display = "block";
+        tabDivs.forEach(div => div.style.display = "none");
+        defaultSearchDiv.style.display = "block";
+        initTabs();
+        let tabIndicator = document.querySelector(".indicator"),
+            tabs = document.querySelector(".tabs");
+        tabs.style.backgroundColor = "#" + addAlpha(rgba2hex(getComputedStyle(databaseImportBtn).backgroundColor).substring(1), 0.6);
+        tabIndicator.style.display = "none";
+        tabSearchLinks.forEach(tab => tab.classList.remove("active"));
         // Reset the genres/tags filter.
         clearFilter.click();
         // Show the body scroll if necessary.
@@ -108,12 +123,12 @@ window.addEventListener("load", () => {
         window.scrollTo(0,0);
         // Display the local records table.
         outerLayer.style.display = "block";
-        // Display the anime search button.
-        animeSearch.style.display = "inline-block";
+        // Display the content search button.
+        contentSearch.style.display = "inline-block";
         // Hide the home button.
         indexHome.style.display = "none";
-        // Hide the anime search inputs.
-        animeSeasonSearchDiv.style.display = "none";
+        // Hide the content search inputs.
+        contentSearchDiv.style.display = "none";
         // Reset the genres/tags filter.
         clearFilter.click();
         // Hide the body scroll.
@@ -127,7 +142,7 @@ window.addEventListener("load", () => {
     animeSearchSubmission.addEventListener("click", e => {
         // Define the anime search container and the search type.
         const searchCase = animeSearchSwitch.children[0].textContent,
-            resultsContainer = document.getElementById("animeSearchContainer");
+            animeResultsContainer = document.getElementById("animeSearchContainer");
         // Proceed with the following if searching for content by season.
         if(searchCase == "toggle_off") {
             // Define the anime season search parameters.
@@ -143,7 +158,7 @@ window.addEventListener("load", () => {
             }
             else {
                 // Reset the anime search container.
-                resultsContainer.innerHTML = "";
+                animeResultsContainer.innerHTML = "";
                 // Reset the sort select tag.
                 document.getElementById("animeSeasonSearchSort").value = "";
                 initSelect();
@@ -158,7 +173,7 @@ window.addEventListener("load", () => {
             // Proceed only if the query is non-empty.
             if(animeSearchBar.value.length > 0) {
                 // Reset the anime search container.
-                resultsContainer.innerHTML = "";
+                animeResultsContainer.innerHTML = "";
                 // Reset the sort select tag.
                 document.getElementById("animeNameSearchSort").value = "";
                 initSelect();
@@ -202,6 +217,27 @@ window.addEventListener("load", () => {
         // Reset the page tooltips.
         clearTooltips();
         initTooltips();
+    });
+    // Listen for a click event on the book search submission button.
+    bookSearchSubmission.addEventListener("click", e => {
+        // Define the book search container.
+        const bookResultsContainer = document.getElementById("bookSearchContainer");
+        // Proceed only if the query is non-empty.
+        if(bookSearchBar.value.length > 0) {
+            // Reset the book search container.
+            bookResultsContainer.innerHTML = "";
+            // Reset the sort select tag.
+            document.getElementById("bookNameSearchSort").value = "";
+            initSelect();
+            // Display the preloader.
+            preloader.style.display = "block";
+            // Send a request to the back-end in order to retrieve the search results for the provided query.
+            ipcRenderer.send("bookFetchSearch", bookSearchBar.value);
+        }
+        // If no query has been provided notify the user.
+        else { M.toast({"html": "In order to search for books based on a written query the query has to be of non-zero length.", "classes": "rounded"}); }
+        // Reset the genres/tags filter.
+        clearFilter.click();
     });
     // Listen for a click event on the add button in order to open a window whose inputs will generate a new record.
     add.addEventListener("click", e => {
