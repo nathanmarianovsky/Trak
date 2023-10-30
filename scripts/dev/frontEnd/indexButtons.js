@@ -130,7 +130,7 @@ window.addEventListener("load", () => {
         // Hide the content search inputs.
         contentSearchDiv.style.display = "none";
         // Reset the genres/tags filter.
-        clearFilter.click();
+        genreListLoad("All", 5, true);
         // Hide the body scroll.
         document.body.style.overflowY = "hidden";
         // Display the categories portion of the filter.

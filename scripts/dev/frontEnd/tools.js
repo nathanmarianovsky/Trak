@@ -75,12 +75,15 @@ Initialize the tabs on the page.
 */
 var initTabs = () => {
     // Define the instances of the tabs on the page.
-    const elemsTabs = document.querySelector(".tabs"),
-        instanceTabs = M.Tabs.init(elemsTabs, { "onShow": () => {
-            document.querySelector(".indicator").style.display = "list-item";
-            clearTooltips();
-            initTooltips();
-        }});
+    const elemsTabs = document.querySelector(".tabs");
+    const instanceTabs = M.Tabs.init(elemsTabs, { "onShow": pageTab => {
+        let tabTypeStr = pageTab.getAttribute("id").split("Search")[0],
+            tabType = tabTypeStr.charAt(0).toUpperCase() + tabTypeStr.slice(1);
+        genreListLoad(tabType, 5, true);
+        document.querySelector(".indicator").style.display = "list-item";
+        clearTooltips();
+        initTooltips();
+    }});
 };
 
 
@@ -351,6 +354,7 @@ var genreListLoad = (type, cols, filterLoad = false) => {
     const genresForm = filterLoad == false ? document.getElementById("category" + type + "Form2") : document.getElementById("filterForm"),
         genresLst = genreList(type),
         rows = Math.ceil(genresLst.length / cols);
+    genresForm.innerHTML = "";
     // Iterate through all rows needed.
     for(let r = 0; r < rows; r++) {
         // Construct a div to contain the row.

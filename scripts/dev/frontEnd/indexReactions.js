@@ -665,7 +665,8 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
     // Initialize the filter modal separately to add the functionality of filter application upon exit.
     M.Modal.init(document.getElementById("filterModal"), { "onCloseStart": () => {
         window.scrollTo(0,0);
-        const genresList = genreList(),
+        const listHolder = Array.from(document.getElementsByClassName("tabSearchLink")).filter(elem => elem.classList.contains("active")),
+            genresList = listHolder.length == 0 || document.getElementById("contentSearch").style.display != "none" ? genreList() : genreList(listHolder[0].textContent),
             genreCheck = [];
         // Define the filtered genres collection.
         for(let j = 0; j < genresList.length; j++) {
