@@ -607,59 +607,8 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
     }
     // Initialize the tooltips.
     initTooltips();
+    // Initialize the filter genres/tags list.
     genreListLoad("All", 5, true);
-    // // Define the filter form, list of genres, and number of columns and rows.
-    // const filterForm = document.getElementById("filterForm"),
-    //     genresLst = genreList(),
-    //     columns = 5,
-    //     rows = Math.ceil(genresLst.length / columns);
-    // // Iterate through all rows needed.
-    // for(let r = 0; r < rows; r++) {
-    //     // Construct a div to contain the row.
-    //     let rowDiv = document.createElement("div");
-    //     rowDiv.classList.add("genreRow");
-    //     // Iterate through all columnds needed.
-    //     for(let s = 0; s < columns; s++) {
-    //         // Define the text associated to the genre.
-    //         let filterGenreStr = "";
-    //         if(genresLst[(s * rows) + r] == "CGDCT") {
-    //             filterGenreStr = "CGDCT";
-    //         }
-    //         else if(genresLst[(s * rows) + r] == "ComingOfAge") {
-    //             filterGenreStr = "Coming-of-Age";
-    //         }
-    //         else if(genresLst[(s * rows) + r] == "PostApocalyptic") {
-    //             filterGenreStr = "Post-Apocalyptic";
-    //         }
-    //         else if(genresLst[(s * rows) + r] == "SciFi") {
-    //             filterGenreStr = "Sci-Fi";
-    //         }
-    //         else if(genresLst[(s * rows) + r] == "SliceOfLife") {
-    //             filterGenreStr = "Slice of Life";
-    //         }
-    //         else if(genresLst[(s * rows) + r] != undefined) {
-    //             filterGenreStr = genresLst[(s * rows) + r].split(/(?=[A-Z])/).join(" ");
-    //         }
-    //         else { filterGenreStr = ""; }
-    //         // Define the checkbox, label, and span associated to the genre.
-    //         let genreCheckLabel = document.createElement("label"),
-    //             genereCheckInput = document.createElement("input"),
-    //             genereCheckSpan = document.createElement("span");
-    //         // Modify the page elements.
-    //         genreCheckLabel.classList.add("col", "s2");
-    //         genereCheckInput.setAttribute("type", "checkbox");
-    //         // filterGenreStr != "" ? genereCheckInput.setAttribute("id", "filterGenre" + genresLst[(s * rows) + r]) : genreCheckLabel.style.visibility = "hidden";
-    //         filterGenreStr != "" ? genereCheckInput.setAttribute("id", "filterGenre" + genresLst[(s * rows) + r]) : genreCheckLabel.classList.add("invisibleGenreCheck");
-    //         genereCheckInput.classList.add("filled-in", "filterCheckbox");
-    //         genereCheckSpan.textContent = filterGenreStr;
-    //         genereCheckSpan.classList.add("checkboxText");
-    //         // Append the checkbox and text to the row.
-    //         genreCheckLabel.append(genereCheckInput, genereCheckSpan);
-    //         rowDiv.append(genreCheckLabel);
-    //     }
-    //     // Append the row to the filter form.
-    //     filterForm.append(rowDiv);
-    // }
     // Initialize the page modals.
     initModal();
     // Initialize the filter modal separately to add the functionality of filter application upon exit.
@@ -743,7 +692,6 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
 
 // Load the results of a content search.
 ipcRenderer.on("fetchResult", (event, submissionArr) => {
-    console.log(submissionArr);
     // Define the search content container and search inputs.
     const animeContainer = document.getElementById("animeSearchContainer"),
         bookContainer = document.getElementById("bookSearchContainer"),
@@ -756,11 +704,19 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
     let contentArr = [];
     // Hide the preloader.
     document.getElementById("preloader").style.setProperty("display", "none", "important");
+    const chunkPreloader = document.getElementById("chunkPreloader"),
+        chunkCheck = document.getElementById("chunkCheck");
+    chunkPreloader.style.display = "none";
+    if(submissionArr[0].length == 0) {
+        chunkPreloader.setAttribute(submissionArr[2].toLowerCase() + "Check", "1");
+        chunkCheck.style.display = "block";
+        setTimeout(() => fadeOut(chunkCheck), 1000);
+    }
     // Reset the appropriate search container.
-    if(submissionArr[2] == "Anime") {
+    if(submissionArr[2] == "Anime" && submissionArr[3] == true) {
         animeContainer.innerHTML = "";
     }
-    else if(submissionArr[2] == "Book") {
+    else if(submissionArr[2] == "Book" && submissionArr[3] == true) {
         bookContainer.innerHTML = "";
     }
     // Randomly shuffle the content only on an anime season search for the default display.
@@ -784,12 +740,14 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
         itemImg.classList.add("seasonItemImage");
         itemImg.setAttribute("src", contentArr[n][1]);
         itemImg.setAttribute("link", contentArr[n][2]);
+        itemImg.setAttribute("type", submissionArr[2]);
         itemText.textContent = contentArr[n][0];
         itemInfo.textContent = contentArr[n][3] + (contentArr[n][3] != "N/A" ? "/10.00" : "");
         itemInfoLink.setAttribute("href", "#synopsisModal");
         itemInfoLink.classList.add("modal-trigger");
         itemInfoIcon.setAttribute("link", contentArr[n][2]);
         itemInfoIcon.classList.add("material-icons", "synopsisInfoIcon", "searchInfoIcon");
+        itemInfoIcon.setAttribute("type", submissionArr[2]);
         itemInfoIcon.textContent = "info";
         itemInfoLink.append(itemInfoIcon);
         itemInfo.append(itemInfoLink);
@@ -805,10 +763,10 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
             // Reset the synopsisModal content and show the preloader while the data is fetched.
             synopsisContent.innerHTML = "";
             preloaderIcon.style.display = "block";
-            // Fetch the associated synopsis to the anime.
-            ipcRenderer.send("animeSynopsisFetch", e.target.getAttribute("link"));
-            // Wait for the back-end to provide the anime synopsis.
-            ipcRenderer.on("animeSynopsisFetchResult", (eve, synopsis) => {
+            // Fetch the associated synopsis.
+            ipcRenderer.send(e.target.getAttribute("type").toLowerCase() + "SynopsisFetch", e.target.getAttribute("link"));
+            // Wait for the back-end to provide the synopsis.
+            ipcRenderer.on(e.target.getAttribute("type").toLowerCase() + "SynopsisFetchResult", (eve, synopsis) => {
                 // Hide the preloader.
                 preloaderIcon.style.display = "none";
                 // Define the synopsis text.
@@ -823,10 +781,10 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
                 synopsisContent.innerHTML = textHolder;
             });
         });
-        // Listen for a click event on the anime search item image.
+        // Listen for a click event on the search item image.
         itemImg.addEventListener("click", e => {
-            // Send a request to the back-end in order to load the addRecord page with all the anime details.
-            ipcRenderer.send("animeSeasonRecordRequest", e.target.getAttribute("link"));
+            // Send a request to the back-end in order to load the addRecord page with all the associated details.
+            ipcRenderer.send(e.target.getAttribute("type").toLowerCase() + "SeasonRecordRequest", e.target.getAttribute("link"));
         });
     }
     // Set the body scroll to auto appear if necessary.

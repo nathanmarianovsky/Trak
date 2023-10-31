@@ -20,6 +20,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - formatISBN: Driver function for formatting an ISBN input.
     - genreList: Provides the list of all genres/tags that can be selected from depending on the case.
     - genreListLoad: Appends all genre options as checkboxes.
+    - fadeOut: Fades out an element on a page.
 
 */
 
@@ -338,7 +339,6 @@ var genreList = (type = "All") => {
         genArr = [...new Set([].concat.apply([], [genreList("Anime"), genreList("Book"), genreList("Film"), genreList("Manga"), genreList("Show")]))];
         genArr.sort((a, b) => a.localeCompare(b));
     }
-    // console.log(genArr);
     return genArr;
 };
 
@@ -347,6 +347,10 @@ var genreList = (type = "All") => {
 /*
 
 Appends all genre options as checkboxes.
+
+   - type is a string that corresponds to the different cases 'All', 'Anime', 'Book', 'Film', 'Manga', and 'Show'.
+   - cols is a number representing the number of columns for the genres/tags table.
+   - filterLoad is a boolean representing whether the genres/tags are being appended to the index page filter.
 
 */
 var genreListLoad = (type, cols, filterLoad = false) => {
@@ -403,4 +407,24 @@ var genreListLoad = (type, cols, filterLoad = false) => {
         // Append the row to the filter form.
         genresForm.append(rowDiv);
     }
+};
+
+
+
+/*
+
+Fades out an element on a page.
+
+   - el is the page element desired to fade out and eventually disappear.
+
+*/
+var fadeOut = el => {
+    el.style.opacity = 1;
+    const fade = () => {
+        if((el.style.opacity -= .005) < 0) {
+            el.style.display = "none";
+        }
+        else { requestAnimationFrame(fade); }
+    }
+    fade();
 };

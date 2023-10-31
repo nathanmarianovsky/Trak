@@ -39,6 +39,33 @@ var cleanFilter = () => {
 
 
 
+var bottomScrollRequest = (animeSearch, bookSearch) => {
+    window.addEventListener("scroll", ev => {
+        if((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight) {
+            let tabs = Array.from(document.getElementsByClassName("tabSearchLink")).filter(elem => elem.classList.contains("active")),
+                chunkPreloader = document.getElementById("chunkPreloader");
+            if(tabs.length > 0 && chunkPreloader.style.display == "none") {
+                let type = tabs[0].textContent;
+                if(chunkPreloader.getAttribute(type.toLowerCase() + "Check") == "0") {
+                    chunkPreloader.style.display = "block";
+                    window.scrollTo(0, document.body.scrollHeight);
+                    if(type == "Anime" && chunkPreloader.getAttribute("animeCheck") == "0") {
+                        ipcRenderer.send("animeFetchSearch", [animeSearch.value, Math.floor(document.getElementById("animeSearchContainer").children.length / 50) + 1]);
+                    }
+                    else if(type == "Book" && chunkPreloader.getAttribute("bookCheck") == "0") {
+                        ipcRenderer.send("bookFetchSearch", [bookSearch.value, Math.floor(document.getElementById("bookSearchContainer").children.length / 20) + 1]);
+                    }
+                }
+
+
+
+            }
+        }
+    });
+};
+
+
+
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
     // Define the buttons for all actions.
@@ -180,7 +207,7 @@ window.addEventListener("load", () => {
                 // Display the preloader.
                 preloader.style.display = "block";
                 // Send a request to the back-end in order to retrieve the search results for the provided query.
-                ipcRenderer.send("animeFetchSearch", animeSearchBar.value);
+                ipcRenderer.send("animeFetchSearch", [animeSearchBar.value, 1]);
             }
             // If no query has been provided notify the user.
             else { M.toast({"html": "In order to search for anime based on a written query the query has to be of non-zero length.", "classes": "rounded"}); }
@@ -232,7 +259,7 @@ window.addEventListener("load", () => {
             // Display the preloader.
             preloader.style.display = "block";
             // Send a request to the back-end in order to retrieve the search results for the provided query.
-            ipcRenderer.send("bookFetchSearch", bookSearchBar.value);
+            ipcRenderer.send("bookFetchSearch", [bookSearchBar.value, 1]);
         }
         // If no query has been provided notify the user.
         else { M.toast({"html": "In order to search for books based on a written query the query has to be of non-zero length.", "classes": "rounded"}); }
@@ -528,4 +555,5 @@ window.addEventListener("load", () => {
         animeSeasonSearchYear.append(curYearOption);
     }
     initSelect();
+    bottomScrollRequest(animeSearchBar, bookSearchBar);
 });

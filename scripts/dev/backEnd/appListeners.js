@@ -1049,9 +1049,9 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 	});
 
 	// Handles the fetching of anime releases based on a query search.
-	ipc.on("animeFetchSearch", (event, query) => {
+	ipc.on("animeFetchSearch", (event, submission) => {
 		// Fetch the search results.
-		malScraper.search.search("anime", { "term": query, "maxResults": 100 }).then(results => {
+		malScraper.search.search("anime", { "term": submission[0], "has": (submission[1] - 1) * 50 }).then(results => {
 			const resultsArr = [];
 			// Define a promise which will resolve only once a picture has been attained for each search result.
 			const picPromise = new Promise((resolve, reject) => {
@@ -1082,9 +1082,12 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 			});
 			// Once all anime results have an associated picture send the list of anime releases to the front-end.
 			picPromise.then(() => {
-				event.sender.send("fetchResult", [resultsArr, false, "Anime"]);
-			}).catch(err => log.error("There was an issue resolving the promise associated to grabbing anime release pictures based on the search query " + query + "."));
-		}).catch(err => log.error("There was an issue obtaining the anime releases based on the query " + query + "."));
+				event.sender.send("fetchResult", [resultsArr, false, "Anime", submission[1] == 1]);
+			}).catch(err => log.error("There was an issue resolving the promise associated to grabbing anime release pictures based on the search query " + submission[0] + "."));
+		}).catch(err => {
+			log.warn("There was an issue obtaining the anime releases based on the query " + submission[0] + ". Returning an empty collection.");
+			event.sender.send("fetchResult", [[], false, "Anime", submission[1] == 1]);
+		});
 	});
 
 	// Handles the fetching of an anime synopsis.
@@ -1159,46 +1162,40 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 	});
 
 	// Handles the fetching of books based on a query search.
-	ipc.on("bookFetchSearch", (event, query) => {
-		// Define the overall search results array and a counter to maintain the amount of search results attained.
-		let resultsArr = [],
-			counter = 0;
-		// Define a promise to handle fetching the results for multiple pages.
-		const pagesPromise = new Promise((res, rej) => {
-			// Iterate through desired amount of pages.
-			for(let k = 1; k < 3; k++) {
-				// Define the array holding the search results for each page.
-				let iterArr = [];
-				// Fetch the search results.
-				GoodReadsScraper.searchBooks({ "q": query, "page": k }).then(results => {
-					counter += results.books.length;
-					// Define a promise which will resolve only once all details have been attained for each search result.
-					const itemPromise = new Promise((resolve, reject) => {
-						// Iterate through the search results.
-						results.books.forEach(elem => {
-							// Fetch the anime details based on the URL.
-							GoodReadsScraper.getBook({ "url": "https://www.goodreads.com/en/book/show/" + elem.id }).then(elemData => {
-								elemData.genres = elemData.genres.map(str => str == "Sci-Fi" ? "SciFi" : str);
-								// Push the book details into the overall collection.
-								iterArr.push([elemData.title, elemData.coverLarge, elemData.url, (elemData.rating * 2).toFixed(2), elemData.genres]);
-								if(iterArr.length == results.books.length) { resolve(); }
-							}).catch(err => log.error("There was an issue getting the book details based on the url " + elem.url + "."));
-						})
-					});
-					// Once all book results have the necessary details fetched add them to the overall collection and resolve the pagesPromise if necessary.
-					itemPromise.then(() => {
-						// Add all the search results for each page into the overall collection.
-						resultsArr = resultsArr.concat(iterArr);
-						// Resolve the pagesPromise if all search results are accounted for on all pages.
-						if(counter == resultsArr.length) { res(); }
-					}).catch(err => log.error("There was an issue resolving the promise associated to grabbing book details based on the search query " + query + "."));
-				}).catch(err => log.error("There was an issue obtaining the books based on the query " + query + "."));
-			}
+	ipc.on("bookFetchSearch", (event, submission) => {
+		// Fetch the search results.
+		GoodReadsScraper.searchBooks({ "q": submission[0], "page": submission[1] }).then(results => {
+			const resultsArr = [];
+			// Define a promise which will resolve only once a picture has been attained for each search result.
+			const itemPromise = new Promise((resolve, reject) => {
+				// Iterate through the search results.
+				results.books.forEach(elem => {
+					// Fetch the anime details based on the URL.
+					GoodReadsScraper.getBook({ "url": "https://www.goodreads.com/en/book/show/" + elem.id }).then(elemData => {
+						elemData.genres = elemData.genres.map(str => str == "Sci-Fi" ? "SciFi" : str);
+						// Push the book details into the overall collection.
+						resultsArr.push([elemData.title, elemData.coverLarge, elemData.url, (elemData.rating * 2).toFixed(2), elemData.genres]);
+						if(resultsArr.length == results.books.length) { resolve(); }
+					}).catch(err => log.error("There was an issue getting the book details based on the url " + elem.url + "."));
+				});
+			});
+			// Once all book results have the necessary details send the list of books to the front-end.
+			itemPromise.then(() => {
+				event.sender.send("fetchResult", [resultsArr, false, "Book", submission[1] == 1]);
+			}).catch(err => log.error("There was an issue resolving the promise associated to grabbing book details based on the search query " + submission[0] + "."));
+		}).catch(err => {
+			log.warn("There was an issue obtaining the books based on the query " + submission[0] + ". Returning an empty collection.");
+			event.sender.send("fetchResult", [[], false, "Book", submission[1] == 1]);
 		});
-		// Send the list of books to the front-end.
-		pagesPromise.then(() => {
-			event.sender.send("fetchResult", [resultsArr, false, "Book"]);
-		});
+	});
+
+	// Handles the fetching of a book synopsis.
+	ipc.on("bookSynopsisFetch", (event, link) => {
+		// Fetch the book details based on the URL.
+		GoodReadsScraper.getBook({ "url": link }).then(data => {
+			// Provide the book synopsis to the front-end.
+			event.sender.send("bookSynopsisFetchResult", data.description);
+		}).catch(err => log.error("There was an issue getting the book details based on the url " + link + "."));
 	});
 
 	// Handles the request for getting the logs since the last application load.

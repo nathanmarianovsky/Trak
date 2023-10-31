@@ -247,6 +247,21 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
   	margin: 0 auto;
 }
 
+#chunkPreloader {
+	display: none;
+    margin: 1% auto 5% auto;
+}
+
+#chunkCheck {
+	text-align: center;
+	display: none;
+}
+
+#chunkCheck i {
+	font-size: 90px;
+	color: #2A2A8E;
+}
+
 #synopsisModal {
 	width: 75%;
     height: 60%;
