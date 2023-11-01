@@ -93,26 +93,41 @@ ipcRenderer.on("animeFetchDetailsResultName", (event, name) => {
 
 
 
-// On an anime details fetch from myanimelist update the page accordingly if the addRecord page opened from an index page anime search.
-ipcRenderer.on("animeSeasonRecordStart", event => {
+// On a record details fetch update the page accordingly if the addRecord page opened from the index page content search.
+ipcRenderer.on("searchRecordStart", (event, type) => {
     // Hide the top nav of the addRecord page.
     document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display = "none";
     // Define the addRecord preloader and display it while the data is being fetched and page is populated with the associated data.
-    const animeSeasonRecordPreloader = document.getElementById("animePreloader"),
-        animeSeasonRecordSave = document.getElementById("animeSave"),
-        animeSeasonRecordOptions = document.getElementById("animeOptions"),
-        animeSeasonRecordMoreDetailsBtn = document.getElementById("animeMoreDetailsBtn"),
-        animeSeasonRecordFetchDetailsBtn = document.getElementById("animeFetchDetailsBtn");
-    // Hide the page buttons until all data has loaded in.
-    animeSeasonRecordPreloader.style.top = "-32px";
-    animeSeasonRecordPreloader.style.visibility = "visible";
-    animeSeasonRecordSave.style.visibility = "hidden";
-    animeSeasonRecordOptions.style.visibility = "hidden";
-    animeSeasonRecordMoreDetailsBtn.style.visibility = "hidden";
-    animeSeasonRecordFetchDetailsBtn.style.visibility = "hidden";
-    // Load the anime record portion of the addRecord page.
-    document.getElementById("categoryAnime").click();
-    document.getElementById("categoryAnimeDiv").children[0].style.marginTop = "3%";
+    const animeRecordPreloader = document.getElementById("animePreloader"),
+        bookRecordPreloader = document.getElementById("bookPreloader"),
+        animeRecordSave = document.getElementById("animeSave"),
+        bookRecordSave = document.getElementById("bookSave"),
+        animeRecordOptions = document.getElementById("animeOptions"),
+        animeRecordMoreDetailsBtn = document.getElementById("animeMoreDetailsBtn"),
+        animeRecordFetchDetailsBtn = document.getElementById("animeFetchDetailsBtn"),
+        bookRecordFetchDetailsBtn = document.getElementById("bookFetchDetailsBtn");
+    if(type == "Anime") {
+        // Hide the page buttons until all data has loaded in.
+        animeRecordPreloader.style.top = "-32px";
+        animeRecordPreloader.style.visibility = "visible";
+        animeRecordSave.style.visibility = "hidden";
+        animeRecordOptions.style.visibility = "hidden";
+        animeRecordMoreDetailsBtn.style.visibility = "hidden";
+        animeRecordFetchDetailsBtn.style.visibility = "hidden";
+        // Load the anime record portion of the addRecord page.
+        document.getElementById("categoryAnime").click();
+        document.getElementById("categoryAnimeDiv").children[0].style.marginTop = "3%";
+    }
+    else if(type == "Book") {
+        // Hide the page buttons until all data has loaded in.
+        bookRecordPreloader.style.top = "-32px";
+        bookRecordPreloader.style.visibility = "visible";
+        bookRecordSave.style.visibility = "hidden";
+        bookRecordFetchDetailsBtn.style.visibility = "hidden";
+        // Load the book record portion of the addRecord page.
+        document.getElementById("categoryBook").click();
+        document.getElementById("categoryBookDiv").children[0].style.marginTop = "3%";
+    }
 });
 
 

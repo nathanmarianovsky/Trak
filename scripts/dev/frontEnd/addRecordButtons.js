@@ -348,325 +348,6 @@ var recordChoicesButtons = () => {
         introAnimeHolder = true;
         introBookHolder = true;
     });
-
-
-
-
-
-
-
-
-
-
-    categoryBook.addEventListener("click", e => {
-        e.preventDefault();
-        // Reset the top nav accordingly.
-        navReset(categoryInitial, categoryDivs, categoryLinks, categoryBookDiv, categoryBook);
-        // Define all image buttons.
-        const bookPreviousImgBtn = document.getElementById("bookPreviousImgBtn"),
-            bookAddImgBtn = document.getElementById("bookAddImgBtn"),
-            bookAddImgInput = document.getElementById("bookAddImgInput"),
-            bookRemoveImgBtn = document.getElementById("bookRemoveImgBtn"),
-            bookNextImgBtn = document.getElementById("bookNextImgBtn"),
-            addRecordBookImg = document.getElementById("addRecordBookImg"),
-            bookFavoriteImageLink = document.getElementById("bookFavoriteImageLink"),
-            bookSynopsis = document.getElementById("bookSynopsis"),
-            bookReview = document.getElementById("bookReview");
-        imgButtons(bookFavoriteImageLink, bookPreviousImgBtn, bookAddImgBtn, bookAddImgInput, bookRemoveImgBtn, bookNextImgBtn, addRecordBookImg, btnColorFavorite);
-        // Define the portions of the page associated to the autocomplete.
-        const bookTitle = document.getElementById("bookTitle"),
-            bookISBN = document.getElementById("bookISBN"),
-            bookTitleAutocomplete = M.Autocomplete.init(bookTitle, {
-                "sortFunction": (a, b) => a.localeCompare(b),
-                "onAutocomplete": txt => {
-                    bookPreloader.style.visibility = "visible";
-                    ipcRenderer.send("bookFetchDetailsByName", txt);
-                }
-            }),
-            bookTitleUL = bookTitle.nextElementSibling,
-            bookPreloader = document.getElementById("bookPreloader"),
-            bookFetchBtn = document.getElementById("bookFetchDetailsBtn"),
-            bookSave = document.getElementById("bookSave");
-        // Listen for changes in the book ISBN in order to format it properly.
-        bookISBN.addEventListener("input", e => formatISBN(bookISBN));
-        // Listen for changes in the book description in order to hide/show a vertical scroll.
-        bookSynopsis.addEventListener("input", e => {
-            parseInt(bookSynopsis.style.height) > parseInt(getComputedStyle(bookSynopsis).maxHeight) ? bookSynopsis.style.overflowY = "scroll" : bookSynopsis.style.overflowY = "hidden";
-        });
-        // Listen for changes in the book comments/review in order to hide/show a vertical scroll.
-        bookReview.addEventListener("input", e => {
-            parseInt(bookReview.style.height) > parseInt(getComputedStyle(bookReview).maxHeight) ? bookReview.style.overflowY = "scroll" : bookReview.style.overflowY = "hidden";
-        });
-        // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
-        bookFetchBtn.addEventListener("click", e => {
-            const submissionISBN = bookISBN.value.replace(/\W/g,"");
-            if(submissionISBN.length == 13) {
-                bookPreloader.style.visibility = "visible";
-                ipcRenderer.send("bookFetchDetailsByISBN", submissionISBN);
-            }
-            else {
-                M.toast({"html": "The provided ISBN is not valid to fetch details from GoodReads.", "classes": "rounded"});
-            }
-        });
-        // Define the autocomplete previous input and character max count for display purposes.
-        let previousName = "",
-            maxCharCount = 0;
-        // Listen for an input change in the book title in order to fetch autocomplete options from goodreads.
-        bookTitle.addEventListener("input", e => {
-            // Only fetch goodreads options if the book title is of at least three characters.
-            if(e.target.value.length > 2) {
-                ipcRenderer.send("bookSearch", [previousName, e.target.value]);
-            }
-            else { bookTitleAutocomplete.updateData({}); }
-            // Set the previous search value to the current one.
-            previousName = e.target.value;
-        });
-        // Listen for a click event on the book title in order to trigger a fetch of autocomplete options from goodreads.
-        bookTitle.addEventListener("click", e => {
-            // Only fetch goodreads options if the book title is of at least three characters.
-            if(e.target.value.length > 2) {
-                ipcRenderer.send("bookSearch", [previousName, e.target.value]);
-            }
-            else { bookTitleAutocomplete.updateData({}); }
-        });
-        // Once the autocomplete options have been attained update the page accordingly.
-        ipcRenderer.on("bookSearchResults", (event, response) => {
-            // Proceed only if there are options available for autocomplete.
-            if(response[2].length > 0) {
-                // Define the object which will be used to update the autocomplete options.
-                let autoObj = {};
-                // Set the max character count based on the width of the page book title input.
-                maxCharCount = Math.floor(((20/190) * (bookTitle.getBoundingClientRect().width - 467)) + 38);
-                // Iterate through all attained autocomplete options.
-                for(let t = 0; t < response[2].length; t++) {
-                    // Add each option to the autocomplete object.
-                    autoObj[response[2][t][0]] = response[2][t][1];
-                }
-                // Update the page autocomplete options.
-                bookTitleAutocomplete.updateData(autoObj);
-                // In the case where the user is going from two to three characters, a refocus is necessary to make the unordered list for the autocomplete options to function properly.
-                if(response[0].length == 2 && response[1].length == 3) {
-                    bookTitleUL.style.display = "none";
-                    bookTitle.click();
-                    setTimeout(() => { bookTitle.click(); bookTitleUL.style.display = "block"; }, 100);
-                }
-                // After a delay the list items for autocomplete options are provided the associated information in order to attain details upon a click.
-                setTimeout(() => {
-                    // Iterate through all page autocomplete options.
-                    for(let u = 0; u < bookTitleUL.children.length; u++) {
-                        // Attach the book title for each list item of the autocomplete options.
-                        let curChild = bookTitleUL.children[u];
-                        for(let v = 0; v < response[2].length; v++) {
-                            if(curChild.children[0].getAttribute("src") == response[2][v][1]) {
-                                curChild.setAttribute("name", response[2][v][0]);
-                            }
-                        }
-                    }
-                }, 500);
-            }
-            // If the book title is not long enough then update the page autocomplete options to be empty.
-            else { bookTitleAutocomplete.updateData({}); }
-        });
-        // Update the page accordingly based on the fetched book details.
-        ipcRenderer.on("bookFetchDetailsResult", (newEve, newResponse) => {
-            if(newResponse[0] != "") {
-                const bookTitle = document.getElementById("bookTitle");
-                bookTitle.value = newResponse[0];
-                if(newResponse[0] != "") {
-                    bookTitle.classList.add("valid");
-                    bookTitle.nextElementSibling.nextElementSibling.classList.add("active");
-                }
-                else {
-                    bookTitle.classList.remove("valid");
-                    bookTitle.nextElementSibling.nextElementSibling.classList.remove("active");
-                }
-            }
-            else {
-                bookTitle.value = "";
-                bookTitle.classList.remove("valid");
-            }
-            if(newResponse[1] !== null) {
-                const bookOriginalTitle = document.getElementById("bookOriginalTitle");
-                bookOriginalTitle.value = newResponse[1];
-                newResponse[1] != "" ? bookOriginalTitle.classList.add("valid") : bookOriginalTitle.classList.remove("valid");
-            }
-            else {
-                bookOriginalTitle.value = "";
-                bookOriginalTitle.classList.remove("valid");
-            }
-            if(newResponse[2] !== null) {
-                const bookImg = document.getElementById("addRecordBookImg"),
-                    bookFavImgLink = document.getElementById("bookFavoriteImageLink");
-                bookImg.setAttribute("list", newResponse[2]);
-                bookImg.setAttribute("src", newResponse[2]);
-                bookFavImgLink.style.visibility = "visible";
-                bookFavImgLink.style.color = btnColorFavorite;
-            }
-            if(newResponse[3] !== null) {
-                const bookISBN = document.getElementById("bookISBN");
-                bookISBN.value = newResponse[3];
-                if(newResponse[3] != "") {
-                    bookISBN.classList.add("valid");
-                    bookISBN.nextElementSibling.classList.add("active");
-                }
-                else {
-                    bookISBN.classList.remove("valid");
-                    bookISBN.nextElementSibling.classList.remove("active");
-                }
-                formatISBN(bookISBN);
-            }
-            else {
-                bookISBN.value = "";
-                bookISBN.classList.remove("valid");
-                bookISBN.nextElementSibling.classList.remove("active");
-            }
-            if(newResponse[4] !== null) {
-                const bookAuthor = document.getElementById("bookAuthor");
-                bookAuthor.value = newResponse[4];
-                if(newResponse[4] != "") {
-                    bookAuthor.classList.add("valid");
-                    bookAuthor.nextElementSibling.classList.add("active");
-                }
-                else {
-                    bookAuthor.classList.remove("valid");
-                    bookAuthor.nextElementSibling.classList.remove("active");
-                }
-            }
-            else {
-                bookAuthor.value = "";
-                bookAuthor.classList.remove("valid");
-                bookAuthor.nextElementSibling.classList.remove("active");
-            }
-            if(newResponse[5] !== null) {
-                const bookPublisher = document.getElementById("bookPublisher");
-                bookPublisher.value = newResponse[5];
-                if(newResponse[5] != "") {
-                    bookPublisher.classList.add("valid");
-                    bookPublisher.nextElementSibling.classList.add("active");
-                }
-                else {
-                    bookPublisher.classList.remove("valid");
-                    bookPublisher.nextElementSibling.classList.remove("active");
-                }
-            }
-            else {
-                bookAuthor.value = "";
-                bookAuthor.classList.remove("valid");
-                bookAuthor.nextElementSibling.classList.remove("active");
-            }
-            if(newResponse[6] !== null && newResponse[6] != "") {
-                const bookPublicationDate = document.getElementById("bookPublicationDate");
-                bookPublicationDate.value = new Date(newResponse[6]).toISOString().split("T")[0];
-                bookPublicationDate.classList.add("valid");
-            }
-            else {
-                bookPublicationDate.value = "";
-                bookPublicationDate.classList.remove("valid");
-            }
-            if(newResponse[7] !== null) {
-                const bookPages = document.getElementById("bookPages");
-                bookPages.value = newResponse[7];
-                if(newResponse[7] != "") {
-                    bookPages.classList.add("valid");
-                    bookPages.nextElementSibling.classList.add("active");
-                }
-                else {
-                    bookPages.classList.remove("valid");
-                    bookPages.nextElementSibling.classList.remove("active");
-                }
-            }
-            else {
-                bookPages.value = "";
-                bookPages.classList.remove("valid");
-                bookPages.nextElementSibling.classList.remove("active");
-            }
-            if(newResponse[8] !== null) {
-                const bookMediaType = document.getElementById("bookMediaType"),
-                    checkVal = newResponse[8].toLowerCase();
-                if(checkVal.includes("hardcover")) {
-                    bookMediaType.value = "hardcover";
-                }
-                else if(checkVal.includes("softcover") || checkVal.includes("paperback")) {
-                    bookMediaType.value = "softcover";
-                }
-                else if(checkVal.includes("ebook") || checkVal.includes("kindle")) {
-                    bookMediaType.value = "ebook";
-                }
-                else {
-                    bookMediaType.value = "audiobook";
-                }
-            }
-            if(newResponse[9] !== null) {
-                bookSynopsis.value = newResponse[9];
-                if(newResponse[9] != "") {
-                    bookSynopsis.classList.add("valid");
-                    bookSynopsis.nextElementSibling.classList.add("active");
-                }
-                else {
-                    bookSynopsis.classList.remove("valid");
-                    bookSynopsis.nextElementSibling.classList.remove("active");
-                }
-            }
-            else {
-                bookSynopsis.value = "";
-                bookSynopsis.classList.remove("valid");
-                bookSynopsis.nextElementSibling.classList.remove("active");
-            }
-            M.textareaAutoResize(bookSynopsis);
-            parseInt(bookSynopsis.style.height) > parseInt(getComputedStyle(bookSynopsis).maxHeight) ? bookSynopsis.style.overflowY = "scroll" : bookSynopsis.style.overflowY = "hidden";
-            if(newResponse[10] !== null) {
-                // Reset all anime genres to not be checked.
-                const extraGenres = document.getElementById("otherGenres");
-                extraGenres.value = "";
-                Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
-                // Iterate through the fetched list of genres and check them off on the page if available.
-                newResponse[10].sort((a, b) => a.localeCompare(b));
-                newResponse[10].forEach(genreItem => {
-                    let genreIter = genreItem;
-                    if(genreIter == "Sci-Fi") {
-                        genreIter = "SciFi";
-                    }
-                    if(document.getElementById("bookGenre" + genreIter) != undefined) {
-                        document.getElementById("bookGenre" + genreIter).checked = true;
-                    }
-                    else {
-                        extraGenres.value == "" ? extraGenres.value = genreIter : extraGenres.value += ", " + genreIter;
-                    }
-                });
-                if(extraGenres.value != "") {
-                    extraGenres.classList.add("valid");
-                    extraGenres.nextElementSibling.classList.add("active");
-                }
-                else {
-                    extraGenres.classList.remove("valid");
-                    extraGenres.nextElementSibling.classList.remove("active");
-                }
-            }
-            // Hide the preloader now that everything has been loaded and show the buttons if necessary.
-            bookPreloader.style.visibility = "hidden";
-            bookFetchBtn.style.visibility = "visible";
-            bookSave.style.visibility = "visible";
-            initSelect();
-        });
-        // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
-        if(introBookHolder == true) {
-            const instancesTapBookSave = M.TapTarget.init(document.getElementById("introductionTargetBookSave"));
-            setTimeout(() => {
-                instancesTapBookSave.open();
-                introBookHolder = false;
-            }, 500);
-        }
-    });
-
-
-
-
-
-
-
-
-
-
     // Listen for a click event on the categoryAnime button on the top bar to display the form corresponding to an anime record.
     categoryAnime.addEventListener("click", e => {
         e.preventDefault();
@@ -967,6 +648,310 @@ var recordChoicesButtons = () => {
                 }, 500);
             }});
             setTimeout(() => { instancesTapAnimeSave.open(); }, 500);
+        }
+    });
+    // Listen for a click event on the categoryBook button on the top bar to display the form corresponding to a book record.
+    categoryBook.addEventListener("click", e => {
+        e.preventDefault();
+        // Reset the top nav accordingly.
+        navReset(categoryInitial, categoryDivs, categoryLinks, categoryBookDiv, categoryBook);
+        // Define all image buttons.
+        const bookPreviousImgBtn = document.getElementById("bookPreviousImgBtn"),
+            bookAddImgBtn = document.getElementById("bookAddImgBtn"),
+            bookAddImgInput = document.getElementById("bookAddImgInput"),
+            bookRemoveImgBtn = document.getElementById("bookRemoveImgBtn"),
+            bookNextImgBtn = document.getElementById("bookNextImgBtn"),
+            addRecordBookImg = document.getElementById("addRecordBookImg"),
+            bookFavoriteImageLink = document.getElementById("bookFavoriteImageLink"),
+            bookSynopsis = document.getElementById("bookSynopsis"),
+            bookReview = document.getElementById("bookReview");
+        imgButtons(bookFavoriteImageLink, bookPreviousImgBtn, bookAddImgBtn, bookAddImgInput, bookRemoveImgBtn, bookNextImgBtn, addRecordBookImg, btnColorFavorite);
+        // Define the portions of the page associated to the autocomplete.
+        const bookTitle = document.getElementById("bookTitle"),
+            bookISBN = document.getElementById("bookISBN"),
+            bookTitleAutocomplete = M.Autocomplete.init(bookTitle, {
+                "sortFunction": (a, b) => a.localeCompare(b),
+                "onAutocomplete": txt => {
+                    bookPreloader.style.visibility = "visible";
+                    ipcRenderer.send("bookFetchDetailsByName", txt);
+                }
+            }),
+            bookTitleUL = bookTitle.nextElementSibling,
+            bookPreloader = document.getElementById("bookPreloader"),
+            bookFetchBtn = document.getElementById("bookFetchDetailsBtn"),
+            bookSave = document.getElementById("bookSave");
+        // Listen for changes in the book ISBN in order to format it properly.
+        bookISBN.addEventListener("input", e => formatISBN(bookISBN));
+        // Listen for changes in the book description in order to hide/show a vertical scroll.
+        bookSynopsis.addEventListener("input", e => {
+            parseInt(bookSynopsis.style.height) > parseInt(getComputedStyle(bookSynopsis).maxHeight) ? bookSynopsis.style.overflowY = "scroll" : bookSynopsis.style.overflowY = "hidden";
+        });
+        // Listen for changes in the book comments/review in order to hide/show a vertical scroll.
+        bookReview.addEventListener("input", e => {
+            parseInt(bookReview.style.height) > parseInt(getComputedStyle(bookReview).maxHeight) ? bookReview.style.overflowY = "scroll" : bookReview.style.overflowY = "hidden";
+        });
+        // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
+        bookFetchBtn.addEventListener("click", e => {
+            const submissionISBN = bookISBN.value.replace(/\W/g,"");
+            if(submissionISBN.length == 10) {
+                bookPreloader.style.visibility = "visible";
+                ipcRenderer.send("bookFetchDetailsByASIN", submissionISBN);
+            }
+            else if(submissionISBN.length == 13) {
+                bookPreloader.style.visibility = "visible";
+                ipcRenderer.send("bookFetchDetailsByISBN", submissionISBN);
+            }
+            else {
+                M.toast({"html": "The provided ISBN is not valid to fetch details from GoodReads.", "classes": "rounded"});
+            }
+        });
+        // Define the autocomplete previous input and character max count for display purposes.
+        let previousName = "",
+            maxCharCount = 0;
+        // Listen for an input change in the book title in order to fetch autocomplete options from goodreads.
+        bookTitle.addEventListener("input", e => {
+            // Only fetch goodreads options if the book title is of at least three characters.
+            if(e.target.value.length > 2) {
+                ipcRenderer.send("bookSearch", [previousName, e.target.value]);
+            }
+            else { bookTitleAutocomplete.updateData({}); }
+            // Set the previous search value to the current one.
+            previousName = e.target.value;
+        });
+        // Listen for a click event on the book title in order to trigger a fetch of autocomplete options from goodreads.
+        bookTitle.addEventListener("click", e => {
+            // Only fetch goodreads options if the book title is of at least three characters.
+            if(e.target.value.length > 2) {
+                ipcRenderer.send("bookSearch", [previousName, e.target.value]);
+            }
+            else { bookTitleAutocomplete.updateData({}); }
+        });
+        // Once the autocomplete options have been attained update the page accordingly.
+        ipcRenderer.on("bookSearchResults", (event, response) => {
+            // Proceed only if there are options available for autocomplete.
+            if(response[2].length > 0) {
+                // Define the object which will be used to update the autocomplete options.
+                let autoObj = {};
+                // Set the max character count based on the width of the page book title input.
+                maxCharCount = Math.floor(((20/190) * (bookTitle.getBoundingClientRect().width - 467)) + 38);
+                // Iterate through all attained autocomplete options.
+                for(let t = 0; t < response[2].length; t++) {
+                    // Add each option to the autocomplete object.
+                    autoObj[response[2][t][0]] = response[2][t][1];
+                }
+                // Update the page autocomplete options.
+                bookTitleAutocomplete.updateData(autoObj);
+                // In the case where the user is going from two to three characters, a refocus is necessary to make the unordered list for the autocomplete options to function properly.
+                if(response[0].length == 2 && response[1].length == 3) {
+                    bookTitleUL.style.display = "none";
+                    bookTitle.click();
+                    setTimeout(() => { bookTitle.click(); bookTitleUL.style.display = "block"; }, 100);
+                }
+                // After a delay the list items for autocomplete options are provided the associated information in order to attain details upon a click.
+                setTimeout(() => {
+                    // Iterate through all page autocomplete options.
+                    for(let u = 0; u < bookTitleUL.children.length; u++) {
+                        // Attach the book title for each list item of the autocomplete options.
+                        let curChild = bookTitleUL.children[u];
+                        for(let v = 0; v < response[2].length; v++) {
+                            if(curChild.children[0].getAttribute("src") == response[2][v][1]) {
+                                curChild.setAttribute("name", response[2][v][0]);
+                            }
+                        }
+                    }
+                }, 500);
+            }
+            // If the book title is not long enough then update the page autocomplete options to be empty.
+            else { bookTitleAutocomplete.updateData({}); }
+        });
+        // Update the page accordingly based on the fetched book details.
+        ipcRenderer.on("bookFetchDetailsResult", (newEve, newResponse) => {
+            if(newResponse[0] != "") {
+                const bookTitle = document.getElementById("bookTitle");
+                bookTitle.value = newResponse[0];
+                if(newResponse[0] != "") {
+                    bookTitle.classList.add("valid");
+                    bookTitle.nextElementSibling.nextElementSibling.classList.add("active");
+                }
+                else {
+                    bookTitle.classList.remove("valid");
+                    bookTitle.nextElementSibling.nextElementSibling.classList.remove("active");
+                }
+            }
+            else {
+                bookTitle.value = "";
+                bookTitle.classList.remove("valid");
+            }
+            if(newResponse[1] !== null) {
+                const bookOriginalTitle = document.getElementById("bookOriginalTitle");
+                bookOriginalTitle.value = newResponse[1];
+                newResponse[1] != "" ? bookOriginalTitle.classList.add("valid") : bookOriginalTitle.classList.remove("valid");
+            }
+            else {
+                bookOriginalTitle.value = "";
+                bookOriginalTitle.classList.remove("valid");
+            }
+            if(newResponse[2] !== null) {
+                const bookImg = document.getElementById("addRecordBookImg"),
+                    bookFavImgLink = document.getElementById("bookFavoriteImageLink");
+                bookImg.setAttribute("list", newResponse[2]);
+                bookImg.setAttribute("src", newResponse[2]);
+                bookFavImgLink.style.visibility = "visible";
+                bookFavImgLink.style.color = btnColorFavorite;
+            }
+            if(newResponse[3] !== null) {
+                const bookISBN = document.getElementById("bookISBN");
+                bookISBN.value = newResponse[3];
+                if(newResponse[3] != "") {
+                    bookISBN.classList.add("valid");
+                    bookISBN.nextElementSibling.classList.add("active");
+                }
+                else {
+                    bookISBN.classList.remove("valid");
+                    bookISBN.nextElementSibling.classList.remove("active");
+                }
+                formatISBN(bookISBN);
+            }
+            else {
+                bookISBN.value = "";
+                bookISBN.classList.remove("valid");
+                bookISBN.nextElementSibling.classList.remove("active");
+            }
+            if(newResponse[4] !== null) {
+                const bookAuthor = document.getElementById("bookAuthor");
+                bookAuthor.value = newResponse[4];
+                if(newResponse[4] != "") {
+                    bookAuthor.classList.add("valid");
+                    bookAuthor.nextElementSibling.classList.add("active");
+                }
+                else {
+                    bookAuthor.classList.remove("valid");
+                    bookAuthor.nextElementSibling.classList.remove("active");
+                }
+            }
+            else {
+                bookAuthor.value = "";
+                bookAuthor.classList.remove("valid");
+                bookAuthor.nextElementSibling.classList.remove("active");
+            }
+            if(newResponse[5] !== null) {
+                const bookPublisher = document.getElementById("bookPublisher");
+                bookPublisher.value = newResponse[5];
+                if(newResponse[5] != "") {
+                    bookPublisher.classList.add("valid");
+                    bookPublisher.nextElementSibling.classList.add("active");
+                }
+                else {
+                    bookPublisher.classList.remove("valid");
+                    bookPublisher.nextElementSibling.classList.remove("active");
+                }
+            }
+            else {
+                bookAuthor.value = "";
+                bookAuthor.classList.remove("valid");
+                bookAuthor.nextElementSibling.classList.remove("active");
+            }
+            if(newResponse[6] !== null && newResponse[6] != "") {
+                const bookPublicationDate = document.getElementById("bookPublicationDate");
+                bookPublicationDate.value = new Date(newResponse[6]).toISOString().split("T")[0];
+                bookPublicationDate.classList.add("valid");
+            }
+            else {
+                bookPublicationDate.value = "";
+                bookPublicationDate.classList.remove("valid");
+            }
+            if(newResponse[7] !== null) {
+                const bookPages = document.getElementById("bookPages");
+                bookPages.value = newResponse[7];
+                if(newResponse[7] != "") {
+                    bookPages.classList.add("valid");
+                    bookPages.nextElementSibling.classList.add("active");
+                }
+                else {
+                    bookPages.classList.remove("valid");
+                    bookPages.nextElementSibling.classList.remove("active");
+                }
+            }
+            else {
+                bookPages.value = "";
+                bookPages.classList.remove("valid");
+                bookPages.nextElementSibling.classList.remove("active");
+            }
+            if(newResponse[8] !== null) {
+                const bookMediaType = document.getElementById("bookMediaType"),
+                    checkVal = newResponse[8].toLowerCase();
+                if(checkVal.includes("hardcover")) {
+                    bookMediaType.value = "hardcover";
+                }
+                else if(checkVal.includes("softcover") || checkVal.includes("paperback")) {
+                    bookMediaType.value = "softcover";
+                }
+                else if(checkVal.includes("ebook") || checkVal.includes("kindle")) {
+                    bookMediaType.value = "ebook";
+                }
+                else {
+                    bookMediaType.value = "audiobook";
+                }
+            }
+            if(newResponse[9] !== null) {
+                bookSynopsis.value = newResponse[9];
+                if(newResponse[9] != "") {
+                    bookSynopsis.classList.add("valid");
+                    bookSynopsis.nextElementSibling.classList.add("active");
+                }
+                else {
+                    bookSynopsis.classList.remove("valid");
+                    bookSynopsis.nextElementSibling.classList.remove("active");
+                }
+            }
+            else {
+                bookSynopsis.value = "";
+                bookSynopsis.classList.remove("valid");
+                bookSynopsis.nextElementSibling.classList.remove("active");
+            }
+            M.textareaAutoResize(bookSynopsis);
+            parseInt(bookSynopsis.style.height) > parseInt(getComputedStyle(bookSynopsis).maxHeight) ? bookSynopsis.style.overflowY = "scroll" : bookSynopsis.style.overflowY = "hidden";
+            if(newResponse[10] !== null) {
+                // Reset all anime genres to not be checked.
+                const extraGenres = document.getElementById("otherGenres");
+                extraGenres.value = "";
+                Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
+                // Iterate through the fetched list of genres and check them off on the page if available.
+                newResponse[10].sort((a, b) => a.localeCompare(b));
+                newResponse[10].forEach(genreItem => {
+                    let genreIter = genreItem;
+                    if(genreIter == "Sci-Fi") {
+                        genreIter = "SciFi";
+                    }
+                    if(document.getElementById("bookGenre" + genreIter) != undefined) {
+                        document.getElementById("bookGenre" + genreIter).checked = true;
+                    }
+                    else {
+                        extraGenres.value == "" ? extraGenres.value = genreIter : extraGenres.value += ", " + genreIter;
+                    }
+                });
+                if(extraGenres.value != "") {
+                    extraGenres.classList.add("valid");
+                    extraGenres.nextElementSibling.classList.add("active");
+                }
+                else {
+                    extraGenres.classList.remove("valid");
+                    extraGenres.nextElementSibling.classList.remove("active");
+                }
+            }
+            // Hide the preloader now that everything has been loaded and show the buttons if necessary.
+            bookPreloader.style.visibility = "hidden";
+            bookFetchBtn.style.visibility = "visible";
+            bookSave.style.visibility = "visible";
+            initSelect();
+        });
+        // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
+        if(introBookHolder == true) {
+            const instancesTapBookSave = M.TapTarget.init(document.getElementById("introductionTargetBookSave"));
+            setTimeout(() => {
+                instancesTapBookSave.open();
+                introBookHolder = false;
+            }, 500);
         }
     });
 };
