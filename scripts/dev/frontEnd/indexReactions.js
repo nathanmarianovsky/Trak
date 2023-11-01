@@ -784,7 +784,7 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
         // Listen for a click event on the search item image.
         itemImg.addEventListener("click", e => {
             // Send a request to the back-end in order to load the addRecord page with all the associated details.
-            ipcRenderer.send(e.target.getAttribute("type").toLowerCase() + "SeasonRecordRequest", e.target.getAttribute("link"));
+            ipcRenderer.send(e.target.getAttribute("type").toLowerCase() + "RecordRequest", e.target.getAttribute("link"));
         });
     }
     // Set the body scroll to auto appear if necessary.

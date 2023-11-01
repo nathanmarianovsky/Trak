@@ -19,6 +19,7 @@
     "fs-extra": "^11.1.1",
     "goodreads-scraper": "^1.4.4",
     "html-minifier": "^4.0.0",
+    "is-valid-path": "^0.1.1",
     "mal-scraper": "^2.13.1",
     "node-minify": "^3.6.0",
     "semver": "^7.5.4",

@@ -992,6 +992,22 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 		}).catch(err => log.error("There was an issue in obtaining the details associated to the book title " + name + "."));
 	});
 
+	// Handles the fetching of details for a given book via its ASIN.
+	ipc.on("bookFetchDetailsByASIN", (event, asin) => {
+		// Fetch book search results.
+		GoodReadsScraper.searchBooks({ "q": asin }).then(bookSearchData => {
+			// Define the item in the search results matching the name provided.
+			let bookLst = bookSearchData.books.map(elem => elem.title),
+				bookLstItem = bookSearchData.books[0];
+			// Fetch book details.
+			GoodReadsScraper.getBook({ "url": "https://www.goodreads.com/en/book/show/" + bookLstItem.id }).then(bookData => {
+				event.sender.send("bookFetchDetailsResult", [bookData.title, bookData.originalTitle, bookData.coverLarge,
+					(bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
+					bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres]);
+			}).catch(err => log.error("There was an issue in obtaining the details associated to the book ASIN " + asin + " via the url " + bookLstItem.url + "."));
+		}).catch(err => log.error("There was an issue in obtaining the details associated to the book ASIN " + asin + "."));
+	});
+
 	// Handles the fetching of details for a given book via its ISBN.
 	ipc.on("bookFetchDetailsByISBN", (event, isbn) => {
 		// Fetch book details.
@@ -1100,10 +1116,10 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 	});
 
 	// Handles the opening of the addRecord.html page to load an anime record based on a season or query search.
-	ipc.on("animeSeasonRecordRequest", (event, link) => {
+	ipc.on("animeRecordRequest", (event, link) => {
 		let animeRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		animeRecordWindow.webContents.on("did-finish-load", () => {
-  			animeRecordWindow.webContents.send("animeSeasonRecordStart");
+  			animeRecordWindow.webContents.send("searchRecordStart", "Anime");
   			// Fetch anime details.
 			malScraper.getInfoFromURL(link).then(animeData => {
 				// Define the parameters which will be passed to the front-end based on the details received.
@@ -1151,10 +1167,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 						animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
 					]);
 		  			ipc.once("performSave", (event, submission) => {
-		  				// If the record is an anime then save the corresponding data.
-						if(submission[0] == "Anime") {
-		  					exports.animeSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
-		  				}
+		  				// Save the corresponding data.
+	  					exports.animeSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
 		  			});
 				}).catch(err => log.error("There was an issue getting the pictures associated to the anime " + animeData.title + "."));
 			}).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
@@ -1198,6 +1212,28 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 		}).catch(err => log.error("There was an issue getting the book details based on the url " + link + "."));
 	});
 
+	// Handles the opening of the addRecord.html page to load a book record based on a query search.
+	ipc.on("bookRecordRequest", (event, link) => {
+		let bookRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  		bookRecordWindow.webContents.on("did-finish-load", () => {
+  			bookRecordWindow.webContents.send("searchRecordStart", "Book");
+  			// Fetch book details.
+			GoodReadsScraper.getBook({ "url": link }).then(bookData => {
+				// Send the attained data to the front-end.
+				log.info("GoodReads-Scraper has finished getting the details associated to the book " + bookData.title + ".");
+				bookRecordWindow.webContents.send("bookFetchDetailsResult", [
+					bookData.title, bookData.originalTitle, bookData.coverLarge,
+					(bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
+					bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres
+				]);
+	  			ipc.once("performSave", (event, submission) => {
+	  				// Save the corresponding data.
+  					exports.bookSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
+	  			});
+			}).catch(err => log.error("There was an issue getting the book details based on the url " + link + "."));
+  		});
+	});
+
 	// Handles the request for getting the logs since the last application load.
 	ipc.on("logsRequest", event => {
 		// Read the logs file.
@@ -1228,6 +1264,12 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
   		exec(tools.startCommandLineFolder() + " " + path.join(originalPath, "Trak", "logs", "main.log"));
   		log.info("The logs file has been opened.");
 		event.sender.send("logsFileSuccess");
+  	});
+
+  	// Checks the validity of a user given path.
+  	ipc.on("checkPathValidity", (event, pathStr) => {
+  		log.info("Checking the validity of the path " + pathStr + ".");
+  		require('is-valid-path')(pathStr) == true ? event.sender.send("checkPathResult", true) : event.sender.send("checkPathResult", false);
   	});
 };
 

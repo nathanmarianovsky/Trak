@@ -115,7 +115,10 @@ window.addEventListener("load", () => {
         animeSearchBar = document.getElementById("animeSearchBar"),
         defaultSearchDiv = document.getElementById("defaultSearchDiv"),
         tabDivs = Array.from(document.getElementsByClassName("tabDiv")),
-        bookSearchBar = document.getElementById("bookSearchBar");
+        bookSearchBar = document.getElementById("bookSearchBar"),
+        databaseModalExit = document.getElementById("databaseModalExit"),
+        exportPath = document.getElementById("exportPath");
+    let submissionList = [];
     // Listen for a click on any search tab in order to hide the default search div.
     tabSearchLinks.forEach(tab => tab.addEventListener("click", e => defaultSearchDiv.style.display = "none"));
     // Listen for a click event on the anime search button.
@@ -470,16 +473,30 @@ window.addEventListener("load", () => {
     // Listen for a click event on the database export button in order to process an export of the chosen library records.
     databaseExportBtn.addEventListener("click", e => {
         // Define the list of records which the user desires to export.
-        const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]),
-            submissionList = checkAll.checked ? list.slice(1) : list,
-            exportPath = document.getElementById("exportPath");
+        const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
+        submissionList = checkAll.checked ? list.slice(1) : list;
         // Check that at least one record has been chosen by the user.
         if(submissionList.length > 0) {
-            ipcRenderer.send("databaseExport", [exportPath.value, submissionList, typeSwitch.checked == true ? "XLSX" : "ZIP", XLSXTypeSwitch.checked, document.getElementById("exportCheck").checked]);
-            exportPath.value = "";
+            if(exportPath.value.length > 0) {
+                ipcRenderer.send("checkPathValidity", exportPath.value);
+            }
+            else {
+                M.toast({"html": "In order to export a valid path must be provided.", "classes": "rounded"});
+            }
         }
         else {
+            databaseModalExit.click();
             M.toast({"html": "In order to export at least one record has to be checked.", "classes": "rounded"});
+        }
+    });
+    ipcRenderer.on("checkPathResult", (event, chk) => {
+        if(chk == true) {
+            ipcRenderer.send("databaseExport", [exportPath.value, submissionList, typeSwitch.checked == true ? "XLSX" : "ZIP", XLSXTypeSwitch.checked, document.getElementById("exportCheck").checked]);
+            exportPath.value = "";
+            databaseModalExit.click();
+        }
+        else {
+            M.toast({"html": "In order to export a valid path must be provided.", "classes": "rounded"});
         }
     });
     // Listen for a click event on the database import button in order to process an import of the chosen zip files.
