@@ -3,6 +3,7 @@
 BASIC DETAILS: This file provides front-end functions designed to be used by multiple aspects of the app.
 
     - rgba2hex: Convert a RGBA color to hex.
+    - addAlpha: Provides a hex representing a color with a certain opacity of the given hex color.
     - clearTooltips: Remove all tooltips on the page.
     - initTabs: Initialize the tabs on the page.
     - initFAB: Initialize the floating action button on the page.

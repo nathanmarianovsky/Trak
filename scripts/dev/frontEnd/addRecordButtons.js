@@ -6,6 +6,7 @@ BASIC DETAILS: This file handles all buttons on the addRecord.html page.
     - imgButtons: Adds the functionality for all image buttons based on the category currently chosen.
     - animeModalButtons: Listen for click events on the related content anime modal buttons.
     - animeSave: Processes the information required to save an anime record.
+    - bookSave: Processes the information required to save a book record.
     - recordChoicesButtons: Listen for click events on the record choices.
 
 */
@@ -298,10 +299,10 @@ var bookSave = () => {
             bookImg = document.getElementById("addRecordBookImg").getAttribute("list").split(","),
             bookFiles = Array.from(document.getElementById("bookAddRecordFiles").files).map(elem => elem.path),
             otherGenres = document.getElementById("otherGenres").value.split(",").map(elem => elem.trim()),
-            genresLst = bookGenreList(),
+            genresLst = genreList("Book"),
             genres = [];
         // Check to see that a proper ISBN was provided.
-        if(bookISBN.length == 13) {
+        if(bookISBN.length == 13 || bookISBN.length == 10) {
             // Save all information about the genres.
             for(let p = 0; p < genresLst.length; p++) {
                 genres.push(document.getElementById("bookGenre" + genresLst[p]).checked);
@@ -317,7 +318,7 @@ var bookSave = () => {
             ipcRenderer.send("performSave", submissionMaterial);
         }
         // If no ISBN has been provided then notify the user.
-        else { M.toast({"html": "A book record requires that an ISBN be provided.", "classes": "rounded"}); }
+        else { M.toast({"html": "A book record requires that an ASIN/ISBN be provided.", "classes": "rounded"}); }
     });
 };
 

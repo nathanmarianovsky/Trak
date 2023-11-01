@@ -3,6 +3,7 @@
 BASIC DETAILS: This file handles all buttons on the index.html page.
 
    - cleanFilter: Remove all active filters.
+   - bottomScrollRequest: Provides the request to load more chunks, if available, on a content search when the bottom of the page has been reached.
 
 */
 
@@ -39,6 +40,14 @@ var cleanFilter = () => {
 
 
 
+/*
+
+Provides the request to load more chunks, if available, on a content search when the bottom of the page has been reached.
+
+   - animeSearch is the search bar input for anime content searches.
+   - bookSearch is the search bar input for book content searches.
+
+*/
 var bottomScrollRequest = (animeSearch, bookSearch) => {
     window.addEventListener("scroll", ev => {
         if((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight) {
@@ -564,6 +573,7 @@ window.addEventListener("load", () => {
             importXLSXContentDetailed.style.display = "none";
         }
     });
+    // Populate the list of years available for an anime season content search.
     const maxYear = new Date().getFullYear() + 1;
     for(let curYear = maxYear; curYear >= 1917; curYear--) {
         let curYearOption = document.createElement("option");
@@ -571,6 +581,8 @@ window.addEventListener("load", () => {
         curYearOption.textContent = curYear;
         animeSeasonSearchYear.append(curYearOption);
     }
+    // Initialize all select tags.
     initSelect();
+    // Listen for a scroll to the bottom in order to load chunks, if available, for any type of content search.
     bottomScrollRequest(animeSearchBar, bookSearchBar);
 });
