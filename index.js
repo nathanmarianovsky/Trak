@@ -204,7 +204,7 @@ app.whenReady().then(() => {
 														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 															tools.createTrayMenu("h", primaryWindow, tray, Menu);
 															// Add all of the back-end listeners.
-															require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, os, spawn, https, exec, shell, ipc, tools, require("mal-scraper"), require("goodreads-scraper"), updateCheck, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, os, spawn, https, exec, shell, ipc, tools, updateCheck, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 														}
 													});
 												}

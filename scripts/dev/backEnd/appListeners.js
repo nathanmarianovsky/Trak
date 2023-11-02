@@ -296,8 +296,6 @@ Driver function for adding all app listeners.
 	- spawn provides the means to launch an update via an installer.
 	- https provides the means to download files.
 	- tools provides a collection of local functions.
-	- malScraper provides the means to attain anime and manga records from myanimelist.
-	- GoodReadsScraper provides the means to attain book records from goodreads.
 	- updateCondition is a boolean used to ensure that a check for an update occurs only once per application load.
 	- exec and shell provide the means to open files, folders, and links.
 	- mainWindow is an object referencing the primary window of the Electron app.
@@ -306,7 +304,7 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exec, shell, ipc, tools, malScraper, GoodReadsScraper, updateCondition, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exec, shell, ipc, tools, updateCondition, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -508,117 +506,35 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 	});
 
 	// Handles the search of a string through all possible anime listings on myanimelist.
-	ipc.on("animeSearch", (event, search) => {
-		// Use the MAL scraper to fetch anime listings possibly matching what the user is looking for.
-		malScraper.getResultsFromSearch(search[1], "anime").then(data => {
-			log.info("MyAnimeList-Scraper has finished getting the search results for the query " + search[1] + ".");
-			// Send the attained data to the front-end.
-			event.sender.send("animeSearchResults", [search[0], search[1], data.map(elem => [elem.name, elem.image_url])]);
-		}).catch(err => log.error("There was an issue in obtaining the anime search results for autocomplete options associated to the query " + search[1] + "."));
+	ipc.on("animeSearch", (event, submission) => {
+		require("./animeTools").animeSearch(log, require("mal-scraper"), event, submission);
 	});
 
 	// Handles the search of a string through all possible book listings on goodreads.
-	ipc.on("bookSearch", (event, search) => {
-		// Use the goodreads scraper to fetch book listings possibly matching what the user is looking for.
-		GoodReadsScraper.searchBooks({ "q": search[1] }).then(data => {
-			log.info("GoodReadsScraper has finished getting the search results for the query " + search[1] + ".");
-			// Send the attained data to the front-end.
-			event.sender.send("bookSearchResults", [search[0], search[1], data.books.map(elem => [elem.title, elem.coverLarge])]);
-		}).catch(err => log.error("There was an issue in obtaining the book search results for autocomplete options associated to the query " + search[1] + "."));
+	ipc.on("bookSearch", (event, submission) => {
+		require("./bookTools").bookSearch(log, require("goodreads-scraper"), event, submission);
 	});
 
 	// Handles the fetching of details for a given anime via its name.
-	ipc.on("animeFetchDetails", (event, name) => {
-		// Fetch anime details.
-		malScraper.getInfoFromName(name, true, "anime").then(animeData => {
-			// Define the parameters which will be passed to the front-end based on the details received.
-			let startDate = "",
-				endDate = "";
-			const directorsArr = [],
-				producersArr = [],
-				writersArr = [],
-				musicArr = [];
-			// Properly define the start and end date of an anime listing on myanimelist.
-			if(animeData.aired != undefined) {
-				let splitArr = animeData.aired.split("to");
-				startDate = splitArr[0];
-				if(splitArr.length > 1) {
-					endDate = splitArr[1];
-				}
-			}
-			// Properly define the lists of directors, producers, writers, and music directors associated to the anime listing on myanimelist.
-			animeData.staff.forEach(person => {
-				person.role.split(", ").forEach(personRole => {
-					if(personRole.toLowerCase().includes("director") && !personRole.toLowerCase().includes("sound")) {
-						directorsArr.push(person.name.split(", ").reverse().join(" "));
-					}
-					if(personRole.toLowerCase().includes("producer")) {
-						producersArr.push(person.name.split(", ").reverse().join(" "));
-					}
-					if(personRole.toLowerCase().includes("storyboard")) {
-						writersArr.push(person.name.split(", ").reverse().join(" "));
-					}
-					if(personRole.toLowerCase().includes("sound") || person.role.toLowerCase().includes("music")) {
-						musicArr.push(person.name.split(", ").reverse().join(" "));
-					}
-				});
-			});
-			// Fetch all possible images associated to the anime record.
-			malScraper.getPictures({ "name": animeData.title, "id": animeData.id }).then(malImgArr => {
-				// Send the attained data to the front-end.
-				log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + name + ".");
-				let allImgArr = malImgArr.map(pic => pic.imageLink);
-				tools.arrayMove(allImgArr, allImgArr.indexOf(animeData.picture), 0);
-				event.sender.send("animeFetchDetailsResult", [
-					animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, allImgArr], startDate, endDate,
-					animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
-					animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
-				]);
-			}).catch(err => log.error("There was an issue in obtaining the pictures associated to the anime record " + name + "."));
-		}).catch(err => log.error("There was an issue in obtaining the details associated to the anime name " + name + "."));
+	ipc.on("animeFetchDetails", (event, submission) => {
+		require("./animeTools").animeFetchDetails(log, require("mal-scraper"), tools, event, submission);
 	});
 
 	// Handles the fetching of details for a given book via its name.
-	ipc.on("bookFetchDetailsByName", (event, name) => {
-		// Fetch book search results.
-		GoodReadsScraper.searchBooks({ "q": name }).then(bookSearchData => {
-			// Define the item in the search results matching the name provided.
-			let bookLst = bookSearchData.books.map(elem => elem.title),
-				bookLstItem = bookSearchData.books[bookLst.indexOf(name)];
-			// Fetch book details.
-			GoodReadsScraper.getBook({ "url": "https://www.goodreads.com/en/book/show/" + bookLstItem.id }).then(bookData => {
-				event.sender.send("bookFetchDetailsResult", [bookData.title, bookData.originalTitle, bookData.coverLarge,
-					(bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
-					bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres]);
-			}).catch(err => log.error("There was an issue in obtaining the details associated to the book title " + name + " via the url " + bookLstItem.url + "."));
-		}).catch(err => log.error("There was an issue in obtaining the details associated to the book title " + name + "."));
+	ipc.on("bookFetchDetailsByName", (event, submission) => {
+		require("./bookTools").bookFetchDetailsByName(log, require("goodreads-scraper"), event, submission);
+	});
+
+	// Handles the fetching of details for a given book via its ISBN.
+	ipc.on("bookFetchDetailsByISBN", (event, submission) => {
+		require("./bookTools").bookFetchDetailsByISBN(log, require("goodreads-scraper"), event, submission);
 	});
 
 	// Handles the fetching of details for a given book via its ASIN.
 	ipc.on("bookFetchDetailsByASIN", (event, asin) => {
-		// Fetch book search results.
-		GoodReadsScraper.searchBooks({ "q": asin }).then(bookSearchData => {
-			// Define the item in the search results matching the name provided.
-			let bookLst = bookSearchData.books.map(elem => elem.title),
-				bookLstItem = bookSearchData.books[0];
-			// Fetch book details.
-			GoodReadsScraper.getBook({ "url": "https://www.goodreads.com/en/book/show/" + bookLstItem.id }).then(bookData => {
-				event.sender.send("bookFetchDetailsResult", [bookData.title, bookData.originalTitle, bookData.coverLarge,
-					(bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
-					bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres]);
-			}).catch(err => log.error("There was an issue in obtaining the details associated to the book ASIN " + asin + " via the url " + bookLstItem.url + "."));
-		}).catch(err => log.error("There was an issue in obtaining the details associated to the book ASIN " + asin + "."));
+		require("./bookTools").bookFetchDetailsByName(log, require("goodreads-scraper"), event, submission, 0);
 	});
 
-	// Handles the fetching of details for a given book via its ISBN.
-	ipc.on("bookFetchDetailsByISBN", (event, isbn) => {
-		// Fetch book details.
-		GoodReadsScraper.getBook({ "isbn": isbn }).then(bookData => {
-			event.sender.send("bookFetchDetailsResult", [bookData.title, bookData.originalTitle, bookData.coverLarge,
-				(bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
-				bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres]);
-		}).catch(err => log.error("There was an issue in obtaining the details associated to the book whose ISBN is " + isbn + "."));
-	});
 
 	// Handles the fetching of the primary window's current height in order to provide the necessary difference for the index page table height to be updated.
 	ipc.on("getAppHeight", event => {
@@ -626,223 +542,45 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 	});
 
 	// Handles the fetching of anime releases based on the season.
-	ipc.on("animeFetchSeason", (event, seasonInfo) => {
-		// Fetch the season releases.
-		malScraper.getSeason(seasonInfo[0], seasonInfo[1]).then(data => {
-			let seasonContent = [];
-			// If a user does not choose a filter then show all types of releases by default.
-			if(seasonInfo[2].length == 0) {
-				const attributes = ["TV", "OVAs", "ONAs", "Movies", "Specials"];
-				for(let a = 0; a < attributes.length; a++) {
-					seasonContent = seasonContent.concat(data[attributes[a]]);
-				}
-			}
-			// Otherwise only add the releases which adhere to the filters set by the user.
-			else {
-				for(let a = 0; a < seasonInfo[2].length; a++) {
-					seasonContent = seasonContent.concat(data[seasonInfo[2][a]]);
-				}
-			}
-			seasonContent.forEach(item => {
-				item.genres = item.genres[0].split("\n").map(str => {
-					str = str.trim();
-					if(str == "Coming-of-Age") {
-	                    str = "ComingOfAge";
-	                }
-	                else if(str == "Post-Apocalyptic") {
-	                    str = "PostApocalyptic";
-	                }
-	                else if(str == "Sci-Fi") {
-	                    str = "SciFi";
-	                }
-	                else if(str == "Slice of Life") {
-	                    str = "SliceOfLife";
-	                }
-	                return str;
-				}).filter(str => str != "");
-			});
-			// Send the list of anime releases for the season to the front-end.
-			event.sender.send("fetchResult", [seasonContent.map(elem => [elem.title, elem.picture, elem.link, elem.score, elem.genres]), true, "Anime"]);
-		}).catch(err => log.error("There was an issue in obtaining the releases for the anime season " + seasonInfo[0] + " " + seasonInfo[1].charAt(0).toUpperCase() + seasonInfo[1].slice(1) + "."));
+	ipc.on("animeFetchSeason", (event, submissionArr) => {
+		require("./bookTools").animeFetchSeason(log, require("mal-scraper"), event, submissionArr);
 	});
 
 	// Handles the fetching of anime releases based on a query search.
 	ipc.on("animeFetchSearch", (event, submission) => {
-		// Fetch the search results.
-		log.info("Searching for anime records based on the query " + submission[0] + ".");
-		malScraper.search.search("anime", { "term": submission[0], "has": (submission[1] - 1) * 50 }).then(results => {
-			const resultsArr = [];
-			// Define a promise which will resolve only once a picture has been attained for each search result.
-			const picPromise = new Promise((resolve, reject) => {
-				// Iterate through the search results.
-				results.forEach(elem => {
-					// Fetch the anime details based on the URL.
-					malScraper.getInfoFromURL(elem.url).then(elemData => {
-						elemData.genres = elemData.genres.map(str => {
-							if(str == "Coming-of-Age") {
-		                    str = "ComingOfAge";
-		                }
-		                else if(str == "Post-Apocalyptic") {
-		                    str = "PostApocalyptic";
-		                }
-		                else if(str == "Sci-Fi") {
-		                    str = "SciFi";
-		                }
-		                else if(str == "Slice of Life") {
-		                    str = "SliceOfLife";
-		                }
-		                return str;
-						});
-						// Push the anime details into the overall collection.
-						resultsArr.push([elem.title, elem.thumbnail.replace("/r/100x140", ""), elem.url, elem.score, elemData.genres]);
-						if(resultsArr.length == results.length) { resolve(); }
-					}).catch(err => {
-						log.error("There was an issue getting the anime details based on the url " + elem.url + ".");
-						resultsArr.push([elem.title, elem.thumbnail.replace("/r/100x140", ""), elem.url, elem.score, []]);
-						if(resultsArr.length == results.length) { resolve(); }
-					});
-				})
-			});
-			// Once all anime results have an associated picture send the list of anime releases to the front-end.
-			picPromise.then(() => {
-				event.sender.send("fetchResult", [resultsArr, false, "Anime", submission[1] == 1]);
-			}).catch(err => log.error("There was an issue resolving the promise associated to grabbing anime release pictures based on the search query " + submission[0] + "."));
-		}).catch(err => {
-			log.warn("There was an issue obtaining the anime releases based on the query " + submission[0] + ". Returning an empty collection.");
-			event.sender.send("fetchResult", [[], false, "Anime", submission[1] == 1]);
-		});
+		require("./animeTools").animeFetchSearch(log, require("mal-scraper"), event, submission);
 	});
 
 	// Handles the fetching of an anime synopsis.
-	ipc.on("animeSynopsisFetch", (event, link) => {
-		// Fetch the anime details based on the URL.
-		malScraper.getInfoFromURL(link).then(data => {
-			// Provide the anime synopsis to the front-end.
-			event.sender.send("animeSynopsisFetchResult", data.synopsis);
-		}).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
+	ipc.on("animeSynopsisFetch", (event, submission) => {
+		require("./animeTools").animeSynopsisFetch(log, require("mal-scraper"), event, submission);
 	});
 
 	// Handles the opening of the addRecord.html page to load an anime record based on a season or query search.
-	ipc.on("animeRecordRequest", (event, link) => {
+	ipc.on("animeRecordRequest", (event, submission) => {
 		let animeRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		animeRecordWindow.webContents.on("did-finish-load", () => {
   			animeRecordWindow.webContents.send("searchRecordStart", "Anime");
-  			// Fetch anime details.
-			malScraper.getInfoFromURL(link).then(animeData => {
-				// Define the parameters which will be passed to the front-end based on the details received.
-				let startDate = "",
-					endDate = "";
-				const directorsArr = [],
-					producersArr = [],
-					writersArr = [],
-					musicArr = [];
-				// Properly define the start and end date of an anime listing on myanimelist.
-				if(animeData.aired != undefined) {
-					let splitArr = animeData.aired.split("to");
-					startDate = splitArr[0];
-					if(splitArr.length > 1) {
-						endDate = splitArr[1];
-					}
-				}
-				// Properly define the lists of directors, producers, writers, and music directors associated to the anime listing on myanimelist.
-				animeData.staff.forEach(person => {
-					person.role.split(", ").forEach(personRole => {
-						if(personRole.toLowerCase().includes("director") && !personRole.toLowerCase().includes("sound")) {
-							directorsArr.push(person.name.split(", ").reverse().join(" "));
-						}
-						if(personRole.toLowerCase().includes("producer")) {
-							producersArr.push(person.name.split(", ").reverse().join(" "));
-						}
-						if(personRole.toLowerCase().includes("storyboard")) {
-							writersArr.push(person.name.split(", ").reverse().join(" "));
-						}
-						if(personRole.toLowerCase().includes("sound") || person.role.toLowerCase().includes("music")) {
-							musicArr.push(person.name.split(", ").reverse().join(" "));
-						}
-					});
-				});
-				animeRecordWindow.webContents.send("animeFetchDetailsResultName", animeData.title);
-				// Fetch all possible images associated to the anime record.
-				malScraper.getPictures({ "name": animeData.title, "id": animeData.id }).then(malImgArr => {
-					// Send the attained data to the front-end.
-					log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + animeData.title + ".");
-					let allImgArr = malImgArr.map(pic => pic.imageLink);
-					tools.arrayMove(allImgArr, allImgArr.indexOf(animeData.picture), 0);
-					animeRecordWindow.webContents.send("animeFetchDetailsResult", [
-						animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, allImgArr], startDate, endDate,
-						animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
-						animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
-					]);
-		  			ipc.once("performSave", (event, submission) => {
-		  				// Save the corresponding data.
-						require("./animeTools").animeSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
-		  			});
-				}).catch(err => log.error("There was an issue getting the pictures associated to the anime " + animeData.title + "."));
-			}).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
+  			require("./animeTools").animeRecordRequest(BrowserWindow, ipc, path, fs, log, https, require("mal-scraper"), tools, mainWindow, animeRecordWindow, dataPath, submission);
   		});
 	});
 
 	// Handles the fetching of books based on a query search.
 	ipc.on("bookFetchSearch", (event, submission) => {
-		// Fetch the search results.
-		log.info("Searching for book records based on the query " + submission[0] + ".");
-		GoodReadsScraper.searchBooks({ "q": submission[0], "page": submission[1] }).then(results => {
-			const resultsArr = [];
-			// Define a promise which will resolve only once a picture has been attained for each search result.
-			const itemPromise = new Promise((resolve, reject) => {
-				// Iterate through the search results.
-				results.books.forEach(elem => {
-					// Fetch the anime details based on the URL.
-					GoodReadsScraper.getBook({ "url": "https://www.goodreads.com/en/book/show/" + elem.id }).then(elemData => {
-						elemData.genres = elemData.genres.map(str => str == "Sci-Fi" ? "SciFi" : str);
-						// Push the book details into the overall collection.
-						resultsArr.push([elemData.title, elemData.coverLarge, elemData.url, (elemData.rating * 2).toFixed(2), elemData.genres]);
-						if(resultsArr.length == results.books.length) { resolve(); }
-					}).catch(err => {
-						log.error("There was an issue getting the book details based on the url " + elem.url + ".");
-						resultsArr.push([elem.title, elem.coverLarge, elem.url, (elem.rating * 2).toFixed(2), []]);
-						if(resultsArr.length == results.books.length) { resolve(); }
-					});
-				});
-			});
-			// Once all book results have the necessary details send the list of books to the front-end.
-			itemPromise.then(() => {
-				event.sender.send("fetchResult", [resultsArr, false, "Book", submission[1] == 1]);
-			}).catch(err => log.error("There was an issue resolving the promise associated to grabbing book details based on the search query " + submission[0] + "."));
-		}).catch(err => {
-			log.warn("There was an issue obtaining the books based on the query " + submission[0] + ". Returning an empty collection.");
-			event.sender.send("fetchResult", [[], false, "Book", submission[1] == 1]);
-		});
+		require("./bookTools").bookFetchSearch(log, require("goodreads-scraper"), event, submission);
 	});
 
 	// Handles the fetching of a book synopsis.
-	ipc.on("bookSynopsisFetch", (event, link) => {
-		// Fetch the book details based on the URL.
-		GoodReadsScraper.getBook({ "url": link }).then(data => {
-			// Provide the book synopsis to the front-end.
-			event.sender.send("bookSynopsisFetchResult", data.description);
-		}).catch(err => log.error("There was an issue getting the book details based on the url " + link + "."));
+	ipc.on("bookSynopsisFetch", (event, submission) => {
+		require("./bookTools").bookSynopsisFetch(log, GoodReadsScraper, event, submission);
 	});
 
 	// Handles the opening of the addRecord.html page to load a book record based on a query search.
-	ipc.on("bookRecordRequest", (event, link) => {
+	ipc.on("bookRecordRequest", (event, submission) => {
 		let bookRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		bookRecordWindow.webContents.on("did-finish-load", () => {
   			bookRecordWindow.webContents.send("searchRecordStart", "Book");
-  			// Fetch book details.
-			GoodReadsScraper.getBook({ "url": link }).then(bookData => {
-				// Send the attained data to the front-end.
-				log.info("GoodReads-Scraper has finished getting the details associated to the book " + bookData.title + ".");
-				bookRecordWindow.webContents.send("bookFetchDetailsResult", [
-					bookData.title, bookData.originalTitle, bookData.coverLarge,
-					(bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
-					bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres
-				]);
-	  			ipc.once("performSave", (event, submission) => {
-	  				// Save the corresponding data.
-  					require("./bookTools").bookSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
-	  			});
-			}).catch(err => log.error("There was an issue getting the book details based on the url " + link + "."));
+  			require("./bookTools").bookRecordRequest(BrowserWindow, ipc, path, fs, log, https, require("goodreads-scraper"), tools, mainWindow, bookRecordWindow, dataPath, submission);
   		});
 	});
 
