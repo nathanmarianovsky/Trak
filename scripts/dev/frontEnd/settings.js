@@ -79,7 +79,7 @@ ipcRenderer.on("logsFileReadFailure", event => {
 
 // Display a notification for the successful opening of the logs file.
 ipcRenderer.on("logsFileSuccess", event => {
-    M.toast({"html": "The logs file has been opened.", "classes": "rounded"});
+    M.toast({"html": "The folder containing the log files has been opened.", "classes": "rounded"});
     ipcRenderer.send("logsRequest");
 });
 
