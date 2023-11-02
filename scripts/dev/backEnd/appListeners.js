@@ -1067,6 +1067,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 	// Handles the fetching of anime releases based on a query search.
 	ipc.on("animeFetchSearch", (event, submission) => {
 		// Fetch the search results.
+		log.info("Searching for anime records based on the query " + submission[0] + ".");
 		malScraper.search.search("anime", { "term": submission[0], "has": (submission[1] - 1) * 50 }).then(results => {
 			const resultsArr = [];
 			// Define a promise which will resolve only once a picture has been attained for each search result.
@@ -1091,9 +1092,13 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 		                return str;
 						});
 						// Push the anime details into the overall collection.
-						resultsArr.push([elem.title, elemData.picture, elem.url, elem.score, elemData.genres]);
+						resultsArr.push([elem.title, elem.thumbnail.replace("/r/100x140", ""), elem.url, elem.score, elemData.genres]);
 						if(resultsArr.length == results.length) { resolve(); }
-					}).catch(err => log.error("There was an issue getting the anime details based on the url " + elem.url + "."));
+					}).catch(err => {
+						log.error("There was an issue getting the anime details based on the url " + elem.url + ".");
+						resultsArr.push([elem.title, elem.thumbnail.replace("/r/100x140", ""), elem.url, elem.score, []]);
+						if(resultsArr.length == results.length) { resolve(); }
+					});
 				})
 			});
 			// Once all anime results have an associated picture send the list of anime releases to the front-end.
@@ -1158,7 +1163,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 				// Fetch all possible images associated to the anime record.
 				malScraper.getPictures({ "name": animeData.title, "id": animeData.id }).then(malImgArr => {
 					// Send the attained data to the front-end.
-					log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + animeData.englishTitle + ".");
+					log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + animeData.title + ".");
 					let allImgArr = malImgArr.map(pic => pic.imageLink);
 					tools.arrayMove(allImgArr, allImgArr.indexOf(animeData.picture), 0);
 					animeRecordWindow.webContents.send("animeFetchDetailsResult", [
@@ -1178,6 +1183,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 	// Handles the fetching of books based on a query search.
 	ipc.on("bookFetchSearch", (event, submission) => {
 		// Fetch the search results.
+		log.info("Searching for book records based on the query " + submission[0] + ".");
 		GoodReadsScraper.searchBooks({ "q": submission[0], "page": submission[1] }).then(results => {
 			const resultsArr = [];
 			// Define a promise which will resolve only once a picture has been attained for each search result.
@@ -1190,7 +1196,11 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 						// Push the book details into the overall collection.
 						resultsArr.push([elemData.title, elemData.coverLarge, elemData.url, (elemData.rating * 2).toFixed(2), elemData.genres]);
 						if(resultsArr.length == results.books.length) { resolve(); }
-					}).catch(err => log.error("There was an issue getting the book details based on the url " + elem.url + "."));
+					}).catch(err => {
+						log.error("There was an issue getting the book details based on the url " + elem.url + ".");
+						resultsArr.push([elem.title, elem.coverLarge, elem.url, (elem.rating * 2).toFixed(2), []]);
+						if(resultsArr.length == results.books.length) { resolve(); }
+					});
 				});
 			});
 			// Once all book results have the necessary details send the list of books to the front-end.
