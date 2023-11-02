@@ -2,6 +2,9 @@
 
 BASIC DETAILS: This file serves as the collection of tools utilized by the various back-end requests.
 
+   - objCreationImgs: Downloads images associated to a record and returns an array to their location.
+   - writeDataFile: Handles the writing of files associated to a record.
+   - removeRecords: Handles the removal of records by deleting the associated folders and data file.
    - arrayMove: Moves an element in an array.
    - animeGenreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
    - calculateReleaseDate: Calculate the earliest release date of an anime record based on the related content information.
@@ -31,6 +34,156 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
 
 
 var exports = {};
+
+
+
+/*
+
+Downloads images associated to a record and returns an array to their location.
+
+	- path and fs provide the means to work with local files.
+	- https provides the means to download files.
+	- tools provides a collection of local functions.
+	- dir is the path to the local user data.
+	- recordDir is the folder name associated to the record.
+	- providedImgs is the image data provided by the front-end user submission for record save/update.
+
+*/
+exports.objCreationImgs = (path, fs, https, tools, dir, recordDir, providedImgs) => {
+	let imgArr = [];
+	if(providedImgs[0] == false && providedImgs[1][0] != "") {
+		for(let y = 0; y < providedImgs[1].length; y++) {
+			if(tools.isURL(providedImgs[1][y])) {
+				let downloadFilePath = path.join(dir, "Trak", "data", recordDir, "assets", tools.parseURLFilename(providedImgs[1][y]));
+		        imgArr.push(downloadFilePath);
+				https.get(providedImgs[1][y], res => {
+				    let filePath = fs.createWriteStream(downloadFilePath);
+				    res.pipe(filePath);
+				    filePath.on("finish", () => { filePath.close(); });
+				});
+			}
+			else {
+				let copyFilePath = path.join(dir, "Trak", "data", recordDir, "assets", providedImgs[1][y].replace(/^.*[\\\/]/, ""));
+				if(providedImgs[1][y] != copyFilePath) {
+					fs.copySync(providedImgs[1][y], copyFilePath);
+				}
+				imgArr.push(copyFilePath);
+			}
+		}
+	}
+	else { imgArr = providedImgs[1]; }
+	return imgArr;
+};
+
+
+
+/*
+
+Handles the writing of files associated to a record.
+
+	- log provides the means to create application logs to keep track of what is going on.
+	- globalWin is an object representing the app's primary window.
+	- curWin is an object representing the current window of the Electron app.
+	- writeData is an object representing the data that is to be written to the data.json file.
+	- mode is a string representing whether a record is being added or updated.
+	- savePath is the path to the local user data.
+	- fs and path provide the means to work with local files.
+	- evt provides the means to interact with the front-end of the Electron app.
+	- info is the data associated to the record.
+
+*/
+exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, path, evt, info) => {
+	let fldr = "";
+	const modeStr = (mode == "A" ? "add" : "update");
+	if(info[0] == "Anime") {
+		fldr = (info[0] + "-" + (info[1] != "" ? info[1] : info[2])).replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
+	}
+	else if(info[0] == "Book") {
+		fldr = info[0] + "-" + info[3] + "-" + info[1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
+	}
+	fs.writeFile(path.join(savePath, "Trak", "data", fldr, "data.json"), JSON.stringify(writeData), "UTF8", err => {
+		// If there was an error in writing to the data file, then notify the user.
+		if(err) {
+			if(info[0] == "Anime") {
+				log.error("There was an issue in writing the data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]));
+				evt.sender.send("writeRecordFailure", fldr);
+			}
+			if(info[0] == "Book") {
+				log.error("There was an issue in writing the data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[3]));
+				evt.sender.send("writeRecordFailure", info[0] + "-" + (info[1] != "" ? info[1] : info[3]));
+			}
+		}
+		else {
+			if(info[0] == "Anime") {
+				log.info("The data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]) + " has been successfully " + (modeStr == "A" ? "created and saved." : "updated."));
+			}
+			else if(info[0] == "Book") {
+				log.info("The data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[3]) + " has been successfully " + (modeStr == "A" ? "created and saved." : "updated."));
+			}
+			// Copy over the files asked to be added as assets in association to a particular record.
+			let i = 0;
+			for(; i < info[10].length; i++) {
+				let dest = path.join(savePath, "Trak", "data", fldr, "assets", path.basename(info[10][i]));
+				fs.copyFile(info[10][i], dest, err => {
+					if(err) {
+						log.error("There was an error in copying over the file " + info[10][i] + " as an asset.");
+						evt.sender.send("copyFailure", info[10][i]);
+					}
+				});
+			}
+			// Once all of the files have been updated, notify the user everything has been taken care of and close the window.
+			if(i == info[10].length) {
+				if(info[0] == "Anime") {
+					log.info("All assets associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]) + " have been copied over.");
+				}
+				else if(info[0] == "Book") {
+					log.info("All assets associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[3]) + " have been copied over.");
+				}
+				globalWin.reload();
+				if(info[0] == "Anime") {
+					curWin.webContents.send(modeStr + "RecordSuccess", fldr);
+				}
+				else if(info[0] == "Book") {
+					curWin.webContents.send(modeStr + "RecordSuccess", info[0] + "-" + (info[1] != "" ? info[1] : info[3]));
+				}
+				setTimeout(() => { curWin.destroy(); }, 2000);
+			}
+		}
+	});
+};
+
+
+
+/*
+
+Handles the removal of records by deleting the associated folders and data file.
+
+	- log provides the means to create application logs to keep track of what is going on.
+	- primaryWin is an object representing the current window of the Electron app.
+	- userPath is the path to the local user data.
+	- fs and path provide the means to work with local files.
+	- data is a collection of record names.
+
+*/
+exports.removeRecords = (log, primaryWin, userPath, fs, path, data) => {
+	// Once a confirmation has been provided by the user delete the associated record folders. 
+	let j = 0;
+	for(; j < data.length; j++) {
+		fs.rm(path.join(userPath, "Trak", "data", data[j]), { "force": true, "recursive": true }, err => {
+			// If there was an error in deleting the record folder notify the user.
+			if(err) {
+				log.error("There was an issue removing the data record associated to the " + data[j].split("-")[0].toLowerCase() + " " + data[j].substring(data[j].split("-")[0].length + 1) + ".");
+				primaryWin.webContents.send("recordRemovalFailure", data[j]);
+			}
+		});
+	}
+	// Refresh the primary window and notify the user that all checked records have been removed.
+	if(j == data.length) {
+		log.info("The data records associated to the folders " + data.join(", ") + (data.length > 1 ? "have" : "has") + " been deleted.");
+		primaryWin.reload();
+		setTimeout(() => { primaryWin.webContents.send("recordsRemovalSuccess"); }, 500);
+	}
+};
 
 
 

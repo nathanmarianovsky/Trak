@@ -2,15 +2,6 @@
 
 BASIC DETAILS: After the app loads up with index.js this file is meant to handle all calls made to the back-end.
 
-   - writeDataFile: Handles the writing of files associated to a record.
-   - objCreationImgs: Downloads images associated to a record and returns an array to their location.
-   - animeObjCreation: Creates an object associated to an anime record in order to save/update.
-   - bookObjCreation: Creates an object associated to a book record in order to save/update.
-   - animeSave: Handles the saving of an anime record by creating the associated folders and data file.
-   - bookSave: Handles the saving of a book record by creating the associated folders and data file.
-   - animeUpdate: Handles the update of an anime record.
-   - bookUpdate: Handles the update of a book record.
-   - removeRecords: Handles the removal of records by deleting the associated folders and data file.
    - updateSettings: Handles the update of all settings files.
    - addListeners: Driver function for adding all app listeners.
 
@@ -23,395 +14,6 @@ BASIC DETAILS: After the app loads up with index.js this file is meant to handle
 
 
 var exports = {};
-
-
-
-/*
-
-Handles the writing of files associated to a record.
-
-	- log provides the means to create application logs to keep track of what is going on.
-	- globalWin is an object representing the app's primary window.
-	- curWin is an object representing the current window of the Electron app.
-	- writeData is an object representing the data that is to be written to the data.json file.
-	- mode is a string representing whether a record is being added or updated.
-	- savePath is the path to the local user data.
-	- fs and path provide the means to work with local files.
-	- evt provides the means to interact with the front-end of the Electron app.
-	- info is the data associated to the record.
-
-*/
-exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, path, evt, info) => {
-	let fldr = "";
-	const modeStr = (mode == "A" ? "add" : "update");
-	if(info[0] == "Anime") {
-		fldr = (info[0] + "-" + (info[1] != "" ? info[1] : info[2])).replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
-	}
-	else if(info[0] == "Book") {
-		fldr = info[0] + "-" + info[3] + "-" + info[1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
-	}
-	fs.writeFile(path.join(savePath, "Trak", "data", fldr, "data.json"), JSON.stringify(writeData), "UTF8", err => {
-		// If there was an error in writing to the data file, then notify the user.
-		if(err) {
-			if(info[0] == "Anime") {
-				log.error("There was an issue in writing the data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]));
-				evt.sender.send("writeRecordFailure", fldr);
-			}
-			if(info[0] == "Book") {
-				log.error("There was an issue in writing the data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[3]));
-				evt.sender.send("writeRecordFailure", info[0] + "-" + (info[1] != "" ? info[1] : info[3]));
-			}
-		}
-		else {
-			if(info[0] == "Anime") {
-				log.info("The data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]) + " has been successfully " + (modeStr == "A" ? "created and saved." : "updated."));
-			}
-			else if(info[0] == "Book") {
-				log.info("The data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[3]) + " has been successfully " + (modeStr == "A" ? "created and saved." : "updated."));
-			}
-			// Copy over the files asked to be added as assets in association to a particular record.
-			let i = 0;
-			for(; i < info[10].length; i++) {
-				let dest = path.join(savePath, "Trak", "data", fldr, "assets", path.basename(info[10][i]));
-				fs.copyFile(info[10][i], dest, err => {
-					if(err) {
-						log.error("There was an error in copying over the file " + info[10][i] + " as an asset.");
-						evt.sender.send("copyFailure", info[10][i]);
-					}
-				});
-			}
-			// Once all of the files have been updated, notify the user everything has been taken care of and close the window.
-			if(i == info[10].length) {
-				if(info[0] == "Anime") {
-					log.info("All assets associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]) + " have been copied over.");
-				}
-				else if(info[0] == "Book") {
-					log.info("All assets associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[3]) + " have been copied over.");
-				}
-				globalWin.reload();
-				if(info[0] == "Anime") {
-					curWin.webContents.send(modeStr + "RecordSuccess", fldr);
-				}
-				else if(info[0] == "Book") {
-					curWin.webContents.send(modeStr + "RecordSuccess", info[0] + "-" + (info[1] != "" ? info[1] : info[3]));
-				}
-				setTimeout(() => { curWin.destroy(); }, 2000);
-			}
-		}
-	});
-};
-
-
-
-/*
-
-Downloads images associated to a record and returns an array to their location.
-
-	- path and fs provide the means to work with local files.
-	- https provides the means to download files.
-	- tools provides a collection of local functions.
-	- dir is the path to the local user data.
-	- recordDir is the folder name associated to the record.
-	- providedImgs is the image data provided by the front-end user submission for record save/update.
-
-*/
-exports.objCreationImgs = (path, fs, https, tools, dir, recordDir, providedImgs) => {
-	let imgArr = [];
-	if(providedImgs[0] == false && providedImgs[1][0] != "") {
-		for(let y = 0; y < providedImgs[1].length; y++) {
-			if(tools.isURL(providedImgs[1][y])) {
-				let downloadFilePath = path.join(dir, "Trak", "data", recordDir, "assets", tools.parseURLFilename(providedImgs[1][y]));
-		        imgArr.push(downloadFilePath);
-				https.get(providedImgs[1][y], res => {
-				    let filePath = fs.createWriteStream(downloadFilePath);
-				    res.pipe(filePath);
-				    filePath.on("finish", () => { filePath.close(); });
-				});
-			}
-			else {
-				let copyFilePath = path.join(dir, "Trak", "data", recordDir, "assets", providedImgs[1][y].replace(/^.*[\\\/]/, ""));
-				if(providedImgs[1][y] != copyFilePath) {
-					fs.copySync(providedImgs[1][y], copyFilePath);
-				}
-				imgArr.push(copyFilePath);
-			}
-		}
-	}
-	else { imgArr = providedImgs[1]; }
-	return imgArr;
-};
-
-
-
-/*
-
-Creates an object associated to an anime record in order to save/update.
-
-	- path and fs provide the means to work with local files.
-	- https provides the means to download files.
-	- tools provides a collection of local functions.
-	- dir is the path to the local user data.
-	- providedData is the data provided by the front-end user submission for anime record save/update.
-
-*/
-exports.animeObjCreation = (path, fs, https, tools, dir, providedData) => {
-	const animeObj = {
-		"category": providedData[0],
-		"name": providedData[1],
-		"jname": providedData[2],
-		"review": providedData[3],
-		"directors": providedData[4],
-		"producers": providedData[5],
-		"writers": providedData[6],
-		"musicians": providedData[7],
-		"studio": providedData[8],
-		"license": providedData[9],
-		"genres": providedData[11],
-		"synopsis": providedData[13],
-		"img": exports.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + (providedData[1] != "" ? providedData[1] : providedData[2]).replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), providedData[14]),
-		"content": []
-	};
-	for(let m = 0; m < providedData[12].length; m++) {
-		if(providedData[12][m][0] == "Single") {
-			animeObj.content.push({
-				"scenario": providedData[12][m][0],
-				"name": providedData[12][m][1],
-				"type": providedData[12][m][2],
-				"release": providedData[12][m][3],
-				"watched": providedData[12][m][4],
-				"rating": providedData[12][m][5],
-				"review": providedData[12][m][6]
-			});
-		}
-		else if(providedData[12][m][0] == "Season") {
-			let animeSeasonObj = {
-				"scenario": providedData[12][m][0],
-				"name": providedData[12][m][1],
-				"start": providedData[12][m][2],
-				"end": providedData[12][m][3],
-				"status": providedData[12][m][4],
-				"episodes": []
-			};
-			for(let n = 0; n < providedData[12][m][5].length; n++) {
-				animeSeasonObj.episodes.push({
-					"name": providedData[12][m][5][n][0],
-					"watched": providedData[12][m][5][n][1],
-					"rating": providedData[12][m][5][n][2],
-					"review": providedData[12][m][5][n][3]
-				});
-			}
-			animeObj.content.push(animeSeasonObj);
-		}
-	}
-	return animeObj;
-};
-
-
-
-/*
-
-Creates an object associated to a book record in order to save/update.
-
-	- path and fs provide the means to work with local files.
-	- https provides the means to download files.
-	- tools provides a collection of local functions.
-	- dir is the path to the local user data.
-	- providedData is the data provided by the front-end user submission for book record save/update.
-
-*/
-exports.bookObjCreation = (path, fs, https, tools, dir, providedData) => {
-	return {
-		"category": providedData[0],
-		"name": providedData[1],
-		"originalName": providedData[2],
-		"isbn": providedData[3],
-		"authors": providedData[4],
-		"publisher": providedData[5],
-		"publicationDate": providedData[6],
-		"pages": providedData[7],
-		"lastRead": providedData[8],
-		"media": providedData[9],
-		"synopsis": providedData[11],
-		"rating": providedData[12],
-		"review": providedData[13],
-		"genres": providedData[14],
-		"img": exports.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + providedData[3] + "-" + providedData[1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), providedData[15])
-	};
-};
-
-
-
-/*
-
-Handles the saving of an anime record by creating the associated folders and data file.
-
-	- BrowserWindow provides the means to operate the Electron app.
-	- path and fs provide the means to work with local files.
-	- log provides the means to create application logs to keep track of what is going on.
-	- https provides the means to download files.
-	- mainWindow is an object referencing the primary window of the Electron app.
-	- tools provides a collection of local functions.
-	- dataPath is the path to the local user data.
-	- evnt provides the means to interact with the front-end of the Electron app.
-	- data is the information associated to the record.
-
-*/
-exports.animeSave = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
-	// Check to see that the folder associated to the new record does not exist.
-	if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""))) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[2].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")))) {
-		// Create a new directory for the assets associated to the new record.
-		const assetsPath = path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]).replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "assets");
-		log.info("Creating the assets directory for the new anime record. To be located at " + assetsPath);
-		fs.mkdirSync(assetsPath, { "recursive": true });
-		exports.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data);
-	}
-	else {
-		log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[2]) + " already exists!");
-		evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
-	}
-};
-
-
-
-/*
-
-Handles the saving of a book record by creating the associated folders and data file.
-
-	- BrowserWindow provides the means to operate the Electron app.
-	- path and fs provide the means to work with local files.
-	- log provides the means to create application logs to keep track of what is going on.
-	- https provides the means to download files.
-	- mainWindow is an object referencing the primary window of the Electron app.
-	- tools provides a collection of local functions.
-	- dataPath is the path to the local user data.
-	- evnt provides the means to interact with the front-end of the Electron app.
-	- data is the information associated to the record.
-
-*/
-exports.bookSave = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
-	// Check to see that the folder associated to the new record does not exist.
-	if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[3] + "-" + data[1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")))) {
-		// Create a new directory for the assets associated to the new record.
-		const assetsPath = path.join(dataPath, "Trak", "data", data[0] + "-" + data[3] + "-" + data[1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "assets");
-		log.info("Creating the assets directory for the new book record. To be located at " + assetsPath);
-		fs.mkdirSync(assetsPath, { "recursive": true });
-		exports.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.bookObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data);
-	}
-	else {
-		log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[3]) + " already exists!");
-		evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[3]));
-	}
-};
-
-
-
-/*
-
-Handles the update of an anime record.
-
-	- BrowserWindow provides the means to operate the Electron app.
-	- path and fs provide the means to work with local files.
-	- log provides the means to create application logs to keep track of what is going on.
-	- https provides the means to download files.
-	- mainWindow is an object referencing the primary window of the Electron app.
-	- tools provides a collection of local functions.
-	- dataPath is the path to the local user data.
-	- evnt provides the means to interact with the front-end of the Electron app.
-	- data is the information associated to the record.
-
-*/
-exports.animeUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
-	// If the name has been updated then change the associated record folder name.
-	if((data[1] != "" && data[1] != data[data.length - 1]) || (data[1] == "" && data[2] != "" && data[2] != data[data.length - 1])) {
-		fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + data[data.length - 1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")), path.join(dataPath, "Trak", "data", data[0] + "-" + (data[1] != "" ? data[1] : data[2]).replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")), err => {
-			// If there was an error in renaming the record folder notify the user.
-			if(err) {
-				log.error("There was an error in renaming the anime record folder " + data[data.length - 1] + " to " + (data[1] != "" ? data[1] : data[2]) + ".");
-				evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1] != "" ? data[1] : data[2]]);
-			}
-			// If no error occured in renaming the record folder write the data file, and copy over the file assets.
-			else {
-				exports.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
-			}
-		});
-	}
-	else {
-		// Write the data file, and copy over the file assets.
-		exports.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
-	}
-};
-
-
-
-/*
-
-Handles the update of a book record.
-
-	- BrowserWindow provides the means to operate the Electron app.
-	- path and fs provide the means to work with local files.
-	- log provides the means to create application logs to keep track of what is going on.
-	- https provides the means to download files.
-	- mainWindow is an object referencing the primary window of the Electron app.
-	- tools provides a collection of local functions.
-	- dataPath is the path to the local user data.
-	- evnt provides the means to interact with the front-end of the Electron app.
-	- data is the information associated to the record.
-
-*/
-exports.bookUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
-	// If the ISBN has been updated then change the associated record folder name.
-	if(data[3] != data[data.length - 1][0] || data[1] != data[data.length - 1][1]) {
-		fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + data[data.length - 1][0] + "-" + data[data.length - 1][1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")),
-			path.join(dataPath, "Trak", "data", data[0] + "-" + data[3] + "-" + data[1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")), err => {
-			// If there was an error in renaming the record folder notify the user.
-			if(err) {
-				log.error("There was an error in renaming the book record folder " + (data[data.length - 1][1] != "" ? data[data.length - 1][1] : data[data.length - 1][0]) + " to " + (data[1] != "" ? data[1] : data[3]) + ".");
-				evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1][1] != "" ? data[data.length - 1][1] : data[data.length - 1][0], data[1] != "" ? data[1] : data[3]]);
-			}
-			// If no error occured in renaming the record folder write the data file, and copy over the file assets.
-			else {
-				exports.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.bookObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
-			}
-		});
-	}
-	else {
-		// Write the data file, and copy over the file assets.
-		exports.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.bookObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
-	}
-};
-
-
-
-/*
-
-Handles the removal of records by deleting the associated folders and data file.
-
-	- log provides the means to create application logs to keep track of what is going on.
-	- primaryWin is an object representing the current window of the Electron app.
-	- userPath is the path to the local user data.
-	- fs and path provide the means to work with local files.
-	- data is a collection of record names.
-
-*/
-exports.removeRecords = (log, primaryWin, userPath, fs, path, data) => {
-	// Once a confirmation has been provided by the user delete the associated record folders. 
-	let j = 0;
-	for(; j < data.length; j++) {
-		fs.rm(path.join(userPath, "Trak", "data", data[j]), { "force": true, "recursive": true }, err => {
-			// If there was an error in deleting the record folder notify the user.
-			if(err) {
-				log.error("There was an issue removing the data record associated to the " + data[j].split("-")[0].toLowerCase() + " " + data[j].substring(data[j].split("-")[0].length + 1) + ".");
-				primaryWin.webContents.send("recordRemovalFailure", data[j]);
-			}
-		});
-	}
-	// Refresh the primary window and notify the user that all checked records have been removed.
-	if(j == data.length) {
-		log.info("The data records associated to the folders " + data.join(", ") + (data.length > 1 ? "have" : "has") + " been deleted.");
-		primaryWin.reload();
-		setTimeout(() => { primaryWin.webContents.send("recordsRemovalSuccess"); }, 500);
-	}
-};
 
 
 
@@ -812,10 +414,10 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
   			ipc.once("performSave", (event, submission) => {
 				// If the record is an anime then save the corresponding data.
 				if(submission[0] == "Anime") {
-	  				exports.animeSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
+	  				require("./animeTools").animeSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
 				}
 				else if(submission[0] == "Book") {
-					exports.bookSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
+					require("./bookTools").bookSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
 				}
   			});
   		});
@@ -828,10 +430,10 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
   			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
   			ipc.once("performSave", (event, submission) => {
 				if(submission[0] == "Anime") {
-  					exports.animeUpdate(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
+  					require("./animeTools").animeUpdate(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
   				}
   				else if(submission[0] == "Book") {
-  					exports.bookUpdate(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
+  					require("./bookTools").bookUpdate(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
   				}
   			});
   		});
@@ -839,7 +441,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 
   	// Handles the deletion of multiple records.
   	ipc.on("removeRecords", (event, list) => {
-  		exports.removeRecords(log, BrowserWindow.getFocusedWindow(), dataPath, fs, path, list);
+  		tools.removeRecords(log, BrowserWindow.getFocusedWindow(), dataPath, fs, path, list);
   	});
 
   	// Handles the opening of a record's assets folder.
@@ -1173,7 +775,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 					]);
 		  			ipc.once("performSave", (event, submission) => {
 		  				// Save the corresponding data.
-	  					exports.animeSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
+						require("./animeTools").animeSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
 		  			});
 				}).catch(err => log.error("There was an issue getting the pictures associated to the anime " + animeData.title + "."));
 			}).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
@@ -1238,7 +840,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, os, spawn, https, exe
 				]);
 	  			ipc.once("performSave", (event, submission) => {
 	  				// Save the corresponding data.
-  					exports.bookSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
+  					require("./bookTools").bookSave(BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, event, submission);
 	  			});
 			}).catch(err => log.error("There was an issue getting the book details based on the url " + link + "."));
   		});
