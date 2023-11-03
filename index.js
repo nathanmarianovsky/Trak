@@ -2,26 +2,23 @@
 
 Declare all of the necessary variables.
 
-	- app, BrowserWindow, Menu, MenuItem, Tray, ipc, and shell provide the means to operate the Electron app.
+	- app, BrowserWindow, Menu, MenuItem, Tray, and ipc provide the means to operate the Electron app.
 	- fs and path provide the means to work with local files.
 	- https provides the means to download files.
 	- log provides the means to create application logs to keep track of what is going on.
 	- os provides the means to get information on the user operating system.
 	- exec provides the means to open files and folders.
-	- spawn provides the means to launch an update via an installer.
 	- tools provides a collection of local functions meant to help with writing files.
 	- basePath is the path to the local settings data.
 	- localPath is the path to the local user data.
 
 */
-const { app, BrowserWindow, Menu, MenuItem, Tray, shell } = require("electron"),
+const { app, BrowserWindow, Menu, MenuItem, Tray } = require("electron"),
 	ipc = require("electron").ipcMain,
 	path = require("path"),
 	fs = require("fs-extra"),
-	https = require("https"),
 	log = require("electron-log"),
-	os = require("os"),
-	{ exec, spawn } = require("child_process"),
+	{ exec } = require("child_process"),
 	tools = require("./scripts/dist/backEnd/tools"),
 	basePath = localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
 if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
@@ -195,7 +192,7 @@ app.whenReady().then(() => {
 																primaryWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
 																tools.tutorialLoad(fs, path, log, primaryWindow, basePath);
 																if(updateCheck == false) {
-																	tools.checkForUpdate(os, https, fs, path, log, basePath, primaryWindow);
+																	tools.checkForUpdate(require("os"), require("https"), fs, path, log, basePath, primaryWindow);
 																	updateCheck = true;
 																}
 															});
@@ -204,7 +201,7 @@ app.whenReady().then(() => {
 														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 															tools.createTrayMenu("h", primaryWindow, tray, Menu);
 															// Add all of the back-end listeners.
-															require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, os, spawn, https, exec, shell, ipc, tools, updateCheck, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, exec, ipc, tools, updateCheck, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 														}
 													});
 												}
