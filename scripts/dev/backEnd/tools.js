@@ -96,10 +96,10 @@ exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, 
 	let fldr = "";
 	const modeStr = (mode == "A" ? "add" : "update");
 	if(info[0] == "Anime") {
-		fldr = (info[0] + "-" + (info[1] != "" ? info[1] : info[2])).replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
+		fldr = (info[0] + "-" + (info[1] != "" ? info[1] : info[2])).replace(/[/\\?%*:|"<>|\#]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
 	}
 	else if(info[0] == "Book") {
-		fldr = info[0] + "-" + info[3] + "-" + info[1].replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
+		fldr = info[0] + "-" + info[3] + "-" + info[1].replace(/[/\\?%*:|"<>|\#]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
 	}
 	fs.writeFile(path.join(savePath, "Trak", "data", fldr, "data.json"), JSON.stringify(writeData), "UTF8", err => {
 		// If there was an error in writing to the data file, then notify the user.
@@ -1079,7 +1079,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 											}
 										});
 									}
-									let fldrName = animeObj.name.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
+									let fldrName = animeObj.name.replace(/[/\\?%*:|"<>|\#]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
 									// Check the assets that were imported from the associated zip file and add the images to the anime record object.
 									let assetsFolder = path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "assets");
 									if(fs.existsSync(assetsFolder)) {
@@ -1151,7 +1151,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 											bookObj.genres[1][genreIndex] = true;
 										}
 									}
-									let fldrName = bookObj.isbn + "-" + bookObj.name.replace(/[/\\?%*:|"<>]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
+									let fldrName = bookObj.isbn + "-" + bookObj.name.replace(/[/\\?%*:|"<>|\#]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
 									// Check the assets that were imported from the associated zip file and add the images to the book record object.
 									let assetsFolder = path.join(dir, "Trak", "importTemp", "Book-" + fldrName, "assets");
 									if(fs.existsSync(assetsFolder)) {

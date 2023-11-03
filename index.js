@@ -7,7 +7,6 @@ Declare all of the necessary variables.
 	- https provides the means to download files.
 	- log provides the means to create application logs to keep track of what is going on.
 	- os provides the means to get information on the user operating system.
-	- exec provides the means to open files and folders.
 	- tools provides a collection of local functions meant to help with writing files.
 	- basePath is the path to the local settings data.
 	- localPath is the path to the local user data.
@@ -18,7 +17,6 @@ const { app, BrowserWindow, Menu, MenuItem, Tray } = require("electron"),
 	path = require("path"),
 	fs = require("fs-extra"),
 	log = require("electron-log"),
-	{ exec } = require("child_process"),
 	tools = require("./scripts/dist/backEnd/tools"),
 	basePath = localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
 if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
@@ -201,7 +199,7 @@ app.whenReady().then(() => {
 														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 															tools.createTrayMenu("h", primaryWindow, tray, Menu);
 															// Add all of the back-end listeners.
-															require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, exec, ipc, tools, updateCheck, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, ipc, tools, updateCheck, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 														}
 													});
 												}

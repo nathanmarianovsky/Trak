@@ -86,14 +86,13 @@ Driver function for adding all listeners associated to the maintenance of record
 	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
 	- tools provides a collection of local functions.
-	- exec provides the means to open files, folders, and links.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the current path to the local user data.
 	- originalPath is the original path to the local user data.
 	- secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addRecordListeners = (BrowserWindow, path, fs, log, exec, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addRecordListeners = (BrowserWindow, path, fs, log, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Handles the load of the addRecord.html page for the creation of a record.
   	ipc.on("addLoad", (event, scenario) => {
   		let addWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
@@ -138,7 +137,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, exec, ipc, tools, ma
 
   	// Handles the opening of a record's assets folder.
 	ipc.on("recordFiles", (event, params) => {
-		exec(tools.startCommandLineFolder() + " " + path.join(dataPath, "Trak", "data", params[0], "assets"));
+		require("child_process").exec(tools.startCommandLineFolder() + " " + path.join(dataPath, "Trak", "data", params[0], "assets"));
 		log.info("The application successfully opened the folder directory " + path.join(dataPath, "Trak", "data", params[0], "assets") + ".");
 		event.sender.send("recordFilesSuccess", params[1]);
 	});
@@ -263,29 +262,28 @@ Driver function for adding all database listeners.
 	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
 	- tools provides a collection of local functions.
-	- exec provides the means to open files, folders, and links.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- originalPath is the original path to the local user data.
 
 */
-exports.addDatabaseListeners = (path, fs, log, exec, ipc, tools, mainWindow, originalPath) => {
+exports.addDatabaseListeners = (path, fs, log, ipc, tools, mainWindow, originalPath) => {
 	// Handles the opening of the zip import sample directory.
   	ipc.on("importSampleZIP", event => {
-  		exec(tools.startCommandLineFolder() + " " + path.join(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "location.json"), "UTF8")).appLocation, "assets", "importSamples"));
+  		require("child_process").exec(tools.startCommandLineFolder() + " " + path.join(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "location.json"), "UTF8")).appLocation, "assets", "importSamples"));
   		log.info("The directory containg the sample zip import has been opened.");
 		event.sender.send("importSampleZIPSuccess");
   	});
 
   	// Handles the opening of the simple xlsx import sample directory.
   	ipc.on("importSampleSimpleXLSX", event => {
-  		exec(tools.startCommandLineFolder() + " " + path.join(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "location.json"), "UTF8")).appLocation, "assets", "importSamples", "Trak-Simple-XLSX-Export-Sample"));
+  		require("child_process").exec(tools.startCommandLineFolder() + " " + path.join(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "location.json"), "UTF8")).appLocation, "assets", "importSamples", "Trak-Simple-XLSX-Export-Sample"));
   		log.info("The directory containg the sample simple xlsx import has been opened.");
 		event.sender.send("importSampleSimpleXLSXSuccess");
   	});
 
   	// Handles the opening of the detailed xlsx import sample directory.
   	ipc.on("importSampleDetailedXLSX", event => {
-  		exec(tools.startCommandLineFolder() + " " + path.join(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "location.json"), "UTF8")).appLocation, "assets", "importSamples", "Trak-Detailed-XLSX-Export-Sample"));
+  		require("child_process").exec(tools.startCommandLineFolder() + " " + path.join(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "location.json"), "UTF8")).appLocation, "assets", "importSamples", "Trak-Detailed-XLSX-Export-Sample"));
   		log.info("The directory containg the sample detailed xlsx import has been opened.");
 		event.sender.send("importSampleDetailedXLSXSuccess");
   	});
@@ -320,11 +318,10 @@ Driver function for adding all settings listeners.
 	- app and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
-	- exec provides the means to open files, folders, and links.
 	- originalPath is the original path to the local user data.
 
 */
-exports.addSettingsListeners = (app, path, fs, log, exec, ipc, originalPath) => {
+exports.addSettingsListeners = (app, path, fs, log, ipc, originalPath) => {
 	// Handles the saving of the tutorial.json file.
    	ipc.on("introductionFileSave", (event, launchIntro) => {
     	if(!fs.existsSync(path.join(originalPath, "Trak", "config", "tutorial.json"))) {
@@ -425,11 +422,10 @@ Driver function for adding all log listeners.
 	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
 	- tools provides a collection of local functions.
-	- exec provides the means to open files, folders, and links.
 	- originalPath is the original path to the local user data.
 
 */
-exports.addLogListeners = (path, fs, log, exec, ipc, tools, originalPath) => {
+exports.addLogListeners = (path, fs, log, ipc, tools, originalPath) => {
 	// Handles the request for getting the logs since the last application load.
 	ipc.on("logsRequest", event => {
 		// Read the logs file.
@@ -457,7 +453,7 @@ exports.addLogListeners = (path, fs, log, exec, ipc, tools, originalPath) => {
 
 	// Handles the opening of the logs file.
   	ipc.on("logsFile", event => {
-  		exec(tools.startCommandLineFolder() + " " + path.join(originalPath, "Trak", "logs"));
+  		require("child_process").exec(tools.startCommandLineFolder() + " " + path.join(originalPath, "Trak", "logs"));
   		log.info("The folder containing the log files has been opened.");
 		event.sender.send("logsFileSuccess");
   	});
@@ -498,30 +494,29 @@ Driver function for adding all app listeners.
 	- log provides the means to create application logs to keep track of what is going on.
 	- tools provides a collection of local functions.
 	- updateCondition is a boolean used to ensure that a check for an update occurs only once per application load.
-	- exec provides the means to open files, folders, and links.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the current path to the local user data.
 	- originalPath is the original path to the local user data.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, log, exec, ipc, tools, updateCondition, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, log, ipc, tools, updateCondition, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Add the basic listeners.
 	exports.addBasicListeners(app, BrowserWindow, path, fs, log, ipc, tools, updateCondition, mainWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
 	// Add the listeners associated to all types of records.
-	exports.addRecordListeners(BrowserWindow, path, fs, log, exec, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+	exports.addRecordListeners(BrowserWindow, path, fs, log, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to anime records.
 	exports.addAnimeListeners(BrowserWindow, path, fs, log, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to book records.
 	exports.addBookListeners(BrowserWindow, path, fs, log, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to exporting and importing data.
-	exports.addDatabaseListeners(path, fs, log, exec, ipc, tools, mainWindow, originalPath);
+	exports.addDatabaseListeners(path, fs, log, ipc, tools, mainWindow, originalPath);
 	// Add the listeners associated to all settings actions.
-	exports.addSettingsListeners(app, path, fs, log, exec, ipc, originalPath);
+	exports.addSettingsListeners(app, path, fs, log, ipc, originalPath);
 	// Add the listeners associated to all update actions.
 	exports.addUpdateListeners(app, path, fs, log, ipc);
 	// Add the listeners associated to log actions.
-	exports.addLogListeners(path, fs, log, exec, ipc, tools, originalPath);
+	exports.addLogListeners(path, fs, log, ipc, tools, originalPath);
 	// Add the listeners which act as tools for the front-end.
 	exports.addHelperListeners(log, ipc, mainWindow);
 };
