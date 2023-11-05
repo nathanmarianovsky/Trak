@@ -324,6 +324,13 @@ var bookSave = () => {
 
 
 
+var otherGenresReset = mode => {
+    Array.from(document.getElementsByClassName("otherGenresDiv")).forEach(div => div.style.display = "none");
+    document.getElementById(mode.toLowerCase() + "OtherGenresDiv").style.display = "block";
+};
+
+
+
 /*
 
 Listen for click events on the record choices.
@@ -354,6 +361,8 @@ var recordChoicesButtons = () => {
         e.preventDefault();
         // Reset the top nav accordingly.
         navReset(categoryInitial, categoryDivs, categoryLinks, categoryAnimeDiv, categoryAnime);
+        // Display the correct input associated to the anime other genres/tags.
+        otherGenresReset("Anime");
         // Initialize the dragging of the related content.
         let drake = dragula({"containers": [document.querySelector('#animeList')]});
         drake.on("dragend", () => { animeListReorganize(); });
@@ -535,7 +544,7 @@ var recordChoicesButtons = () => {
             // Reset all anime genres to not be checked.
             Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
             // Iterate through the fetched list of genres and check them off on the page if available.
-            const extraGenres = document.getElementById("otherGenres");
+            const extraGenres = document.getElementById("animeOtherGenres");
             newResponse[7].forEach(genreItem => {
                 let genreIter = genreItem;
                 if(genreIter == "Coming-Of-Age") {
@@ -656,6 +665,8 @@ var recordChoicesButtons = () => {
         e.preventDefault();
         // Reset the top nav accordingly.
         navReset(categoryInitial, categoryDivs, categoryLinks, categoryBookDiv, categoryBook);
+        // Display the correct input associated to the book other genres/tags.
+        otherGenresReset("Book");
         // Define all image buttons.
         const bookPreviousImgBtn = document.getElementById("bookPreviousImgBtn"),
             bookAddImgBtn = document.getElementById("bookAddImgBtn"),
@@ -914,7 +925,7 @@ var recordChoicesButtons = () => {
             parseInt(bookSynopsis.style.height) > parseInt(getComputedStyle(bookSynopsis).maxHeight) ? bookSynopsis.style.overflowY = "scroll" : bookSynopsis.style.overflowY = "hidden";
             if(newResponse[10] !== null) {
                 // Reset all anime genres to not be checked.
-                const extraGenres = document.getElementById("otherGenres");
+                const extraGenres = document.getElementById("bookOtherGenres");
                 extraGenres.value = "";
                 Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
                 // Iterate through the fetched list of genres and check them off on the page if available.

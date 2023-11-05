@@ -51,7 +51,7 @@ exports.bookObjCreation = (path, fs, https, tools, dir, providedData) => {
         "rating": providedData[12],
         "review": providedData[13],
         "genres": providedData[14],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + providedData[3] + "-" + providedData[1].replace(/[/\\?%*:|"<>|\#]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), providedData[15])
+        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + providedData[3] + "-" + tools.formatFolderName(providedData[1]), providedData[15])
     };
 };
 
@@ -74,9 +74,9 @@ Handles the saving of a book record by creating the associated folders and data 
 */
 exports.bookSave = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
     // Check to see that the folder associated to the new record does not exist.
-    if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[3] + "-" + data[1].replace(/[/\\?%*:|"<>|\#]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")))) {
+    if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + data[3] + "-" + tools.formatFolderName(data[1])))) {
         // Create a new directory for the assets associated to the new record.
-        const assetsPath = path.join(dataPath, "Trak", "data", data[0] + "-" + data[3] + "-" + data[1].replace(/[/\\?%*:|"<>|\#]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""), "assets");
+        const assetsPath = path.join(dataPath, "Trak", "data", data[0] + "-" + data[3] + "-" + tools.formatFolderName(data[1]), "assets");
         log.info("Creating the assets directory for the new book record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
         tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.bookObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data);
@@ -107,8 +107,7 @@ Handles the update of a book record.
 exports.bookUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
     // If the ISBN has been updated then change the associated record folder name.
     if(data[3] != data[data.length - 1][0] || data[1] != data[data.length - 1][1]) {
-        fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + data[data.length - 1][0] + "-" + data[data.length - 1][1].replace(/[/\\?%*:|"<>|\#]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")),
-            path.join(dataPath, "Trak", "data", data[0] + "-" + data[3] + "-" + data[1].replace(/[/\\?%*:|"<>|\#]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("")), err => {
+        fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + data[data.length - 1][0] + "-" + tools.formatFolderName(data[data.length - 1][1])), path.join(dataPath, "Trak", "data", data[0] + "-" + data[3] + "-" + tools.formatFolderName(data[1])), err => {
             // If there was an error in renaming the record folder notify the user.
             if(err) {
                 log.error("There was an error in renaming the book record folder " + (data[data.length - 1][1] != "" ? data[data.length - 1][1] : data[data.length - 1][0]) + " to " + (data[1] != "" ? data[1] : data[3]) + ".");

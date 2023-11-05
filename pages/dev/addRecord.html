@@ -359,17 +359,21 @@
                 </div>
             </div>
         </div>
-
-
         <div id="genresModal" class="modal modal-fixed-footer">
             <div class="modal-content">
                 <h4 class="center">Extra</h4>
                 <p>Any genres/tags not shown on the primary collection can be listed below as a comma separated list.</p>
                 <form class="col s12">
-                    <div class="row">
+                    <div id="animeOtherGenresDiv" class="row otherGenresDiv">
                         <div class="input-field col s12">
-                            <input id="otherGenres" type="text" class="validate left">
-                            <label for="otherGenres">Genres/Tags:</label>
+                            <input id="animeotherGenres" type="text" class="validate left">
+                            <label for="animeOtherGenres">Genres/Tags:</label>
+                        </div>
+                    </div>
+                    <div id="bookOtherGenresDiv" class="row otherGenresDiv">
+                        <div class="input-field col s12">
+                            <input id="bookOtherGenres" type="text" class="validate left">
+                            <label for="bookOtherGenres">Genres/Tags:</label>
                         </div>
                     </div>
                 </form>
@@ -378,11 +382,5 @@
                 <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
             </div>
         </div>
-
-
-
-
-
-
     </body>
 </html>

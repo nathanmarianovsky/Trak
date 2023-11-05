@@ -147,7 +147,9 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
         }
         // If the file loaded without issues populate the page with a record's information.
         else {
-            const recordData = JSON.parse(file);
+            const recordData = JSON.parse(file),
+                otherGenresDivs = Array.from(document.getElementsByClassName("otherGenresDiv"));
+            otherGenresDivs.forEach(div => div.style.display = "none");
             // If the record is of category type anime then proceed.
             if(recordData.category == "Anime") {
                 const animeSave = document.getElementById("animeSave"),
@@ -170,7 +172,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     animeMusicians = document.getElementById("animeMusicians"),
                     animeStudio = document.getElementById("animeStudio"),
                     animeLicense = document.getElementById("animeLicense"),
-                    animeImg = document.getElementById("addRecordAnimeImg");
+                    animeImg = document.getElementById("addRecordAnimeImg"),
+                    animeOtherGenresDiv = document.getElementById("animeOtherGenresDiv");
                 // Load the anime record portion of the addRecord page.
                 document.getElementById("categoryAnime").click();
                 document.getElementById("categoryAnimeDiv").children[0].style.marginTop = "3%";
@@ -282,7 +285,18 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 for(let v = 0; v < recordData.genres[0].length; v++) {
                     document.getElementById("animeGenre" + recordData.genres[0][v]).checked = recordData.genres[1][v];
                 }
+                let otherGenres = document.getElementById("animeOtherGenres"),
+                    otherGenresDiv = document.getElementById("animeOtherGenresDiv");
+                otherGenresDiv.style.display = "block";
                 document.getElementById("otherGenres").value = recordData.genres[2].join(", ");
+                if(recordData.genres[2].length > 0) { otherGenres.nextElementSibling.classList.add("active"); }
+                otherGenres.setAttribute("lastValue", recordData.genres[2].join(", "));
+                otherGenres.addEventListener("change", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
+                otherGenres.addEventListener("click", e => {
+                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+                });
                 // Display a preloader to indicate that the page is still loading the anime related content. This can take a bit of time depending on the amount to be loaded.
                 const updateAnimePreloader = document.getElementById("animePreloader");
                 updateAnimePreloader.style.top = "-32px";
@@ -510,7 +524,9 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 for(let v = 0; v < recordData.genres[0].length; v++) {
                     document.getElementById("bookGenre" + recordData.genres[0][v]).checked = recordData.genres[1][v];
                 }
-                const otherGenres = document.getElementById("otherGenres");
+                let otherGenres = document.getElementById("bookOtherGenres"),
+                    otherGenresDiv = document.getElementById("bookOtherGenresDiv");
+                otherGenresDiv.style.display = "block";
                 otherGenres.value = recordData.genres[2].join(", ");
                 if(recordData.genres[2].length > 0) { otherGenres.nextElementSibling.classList.add("active"); }
                 otherGenres.setAttribute("lastValue", recordData.genres[2].join(", "));

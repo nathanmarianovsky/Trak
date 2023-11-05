@@ -126,7 +126,8 @@ window.addEventListener("load", () => {
         tabDivs = Array.from(document.getElementsByClassName("tabDiv")),
         bookSearchBar = document.getElementById("bookSearchBar"),
         databaseModalExit = document.getElementById("databaseModalExit"),
-        exportPath = document.getElementById("exportPath");
+        exportPath = document.getElementById("exportPath"),
+        databaseTabs = document.getElementById("databaseTabs");
     let submissionList = [];
     // Listen for a click on any search tab in order to hide the default search div.
     tabSearchLinks.forEach(tab => tab.addEventListener("click", e => defaultSearchDiv.style.display = "none"));
@@ -142,9 +143,10 @@ window.addEventListener("load", () => {
         contentSearchDiv.style.display = "block";
         tabDivs.forEach(div => div.style.display = "none");
         defaultSearchDiv.style.display = "block";
+        // Initialize the content search tabs.
         initTabs();
-        let tabIndicator = document.querySelector(".indicator"),
-            tabs = document.querySelector(".tabs");
+        let tabIndicator = document.querySelector("#contentSearchDiv .indicator"),
+            tabs = document.querySelector("#contentSearchDiv .tabs");
         tabs.style.backgroundColor = "#" + addAlpha(rgba2hex(getComputedStyle(databaseImportBtn).backgroundColor).substring(1), 0.6);
         tabIndicator.style.display = "none";
         tabSearchLinks.forEach(tab => tab.classList.remove("active"));
@@ -438,6 +440,7 @@ window.addEventListener("load", () => {
         databaseImportContainer.style.display = "none";
         databaseExportBtn.style.display = "inline-block";
         databaseImportBtn.style.display = "none";
+        databaseTabs.style.display = "none";
         typeSwitch.checked == true ? XLSXTypeSwitchDiv.style.display = "initial" : XLSXTypeSwitchDiv.style.display = "none";
     });
     // Listen for a click event on the database import tab in order to update the database modal view.
@@ -453,15 +456,24 @@ window.addEventListener("load", () => {
         databaseImportContainer.style.display = "initial";
         databaseExportBtn.style.display = "none";
         databaseImportBtn.style.display = "inline-block";
+        // Initialize the content search tabs.
+        initTabs(1);
+        let tabIndicator = document.querySelector("#databaseModal .indicator"),
+            tabs = document.querySelector("#databaseModal .tabs");
+        tabs.style.backgroundColor = "#" + addAlpha(rgba2hex(getComputedStyle(databaseImportBtn).backgroundColor).substring(1), 0.6);
+        tabIndicator.style.display = "none";
+        tabSearchLinks.forEach(tab => tab.classList.remove("active"));
         if(typeSwitch.checked == true) {
             importZipContent.style.display = "none";
             XLSXTypeSwitchDiv.style.display = "initial";
             XLSXTypeSwitch.checked == true ? importXLSXContentDetailed.style.display = "block" : importXLSXContentSimple.style.display = "block";
+            databaseTabs.style.display = "block";
         }
         else {
             importZipContent.style.display = "block";
             importXLSXContentSimple.style.display = "none";
             importXLSXContentDetailed.style.display = "none";
+            databaseTabs.style.display = "none";
         }
     });
     // Listen for a click event on the importSampleZIP button in the import section in order to open a folder to it.

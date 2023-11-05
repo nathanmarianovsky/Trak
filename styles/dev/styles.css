@@ -443,8 +443,9 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 
 #databaseModal {
+	top: 3% !important;
 	width: 75%;
-	height: 670px;
+	height: 720px;
 	max-height: 100%;
 }
 
@@ -843,6 +844,10 @@ footer {
 
 #bookFetchDetailsBtn {
 	margin-top: 3%;
+}
+
+.otherGenresDiv {
+	display: none;
 }
 
 .addRecordAnimeImgBtnContainer, .addRecordBookImgBtnContainer {

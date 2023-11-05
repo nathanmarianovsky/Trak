@@ -75,17 +75,25 @@ var clearTooltips = () => {
 Initialize the tabs on the page.
 
 */
-var initTabs = () => {
+var initTabs = (scenario = 0) => {
     // Define the instances of the tabs on the page.
-    const elemsTabs = document.querySelector(".tabs");
-    const instanceTabs = M.Tabs.init(elemsTabs, { "onShow": pageTab => {
-        let tabTypeStr = pageTab.getAttribute("id").split("Search")[0],
-            tabType = tabTypeStr.charAt(0).toUpperCase() + tabTypeStr.slice(1);
-        genreListLoad(tabType, 5, true);
-        document.querySelector(".indicator").style.display = "list-item";
-        clearTooltips();
-        initTooltips();
-    }});
+    if(scenario == 0) {
+        let elemsTabs = document.querySelector("#contentSearchDiv .tabs");
+        let instanceTabs = M.Tabs.init(elemsTabs, { "onShow": pageTab => {
+            let tabTypeStr = pageTab.getAttribute("id").split("Search")[0],
+                tabType = tabTypeStr.charAt(0).toUpperCase() + tabTypeStr.slice(1);
+            genreListLoad(tabType, 5, true);
+            document.querySelector(".indicator").style.display = "list-item";
+            clearTooltips();
+            initTooltips();
+        }});
+    }
+    else if(scenario == 1) {
+        let elemsTabs = document.querySelector("#databaseModal .tabs");
+        let instanceTabs = M.Tabs.init(elemsTabs, { "onShow": pageTab => {
+            document.querySelector(".indicator").style.display = "list-item";
+        }});
+    }
 };
 
 
