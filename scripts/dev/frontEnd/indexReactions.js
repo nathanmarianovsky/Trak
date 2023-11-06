@@ -157,6 +157,8 @@ ipcRenderer.on("importZipFileFailure", (event, response) => {
 // Display a notification for the successful export of the library records.
 ipcRenderer.on("exportSuccess", (event, response) => {
     Array.from(document.querySelectorAll(".recordsChecks")).forEach(elem => elem.checked = false);
+    document.getElementById("databaseModalExit").click();
+    document.getElementById("databasePreloader").style.display = "none";
     document.getElementById("remove").style.display = "none";
     M.toast({"html": "The library records have been exported to " + response + ".", "classes": "rounded"});
 });
@@ -164,7 +166,7 @@ ipcRenderer.on("exportSuccess", (event, response) => {
 
 
 // Display a notification for the successful import of library records.
-ipcRenderer.on("importFileSuccess", (event, response) => {
+ipcRenderer.once("importFileSuccess", (event, response) => {
     M.toast({"html": "The library records have been updated with the contents of the file " + response + ".", "classes": "rounded"});
 });
 
@@ -234,7 +236,7 @@ ipcRenderer.on("importRecordExists", (event, response) => {
         importModalForm.append(div);
     });
     // Open the import modal to ask the user which library records should be overwritten.
-    M.Modal.init(document.getElementById("importModal")).open();
+    M.Modal.init(document.getElementById("importModal"), { "onCloseStart": () => document.getElementById("databasePreloader").style.display = "none" }).open();
     // Adjust the height of the div containing the checkboxes.
     document.getElementById("importModalFormDiv").style.height = (document.getElementById("importModal").offsetHeight - 220) + "px";
 });

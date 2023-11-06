@@ -45,7 +45,7 @@ Formats a string into a proper folder name by removing forbidden characters and 
    - str is the string representing a candidate for a folder name. 
 
 */
-exports.formatFolderName = str => str.replace(/[/\\?%*:|"<>|\#]/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
+exports.formatFolderName = str => str.replace(/[/\\?%*:|"<>]/g, "_").replace(/\#/g, "_").replace(/\,/g, "_").split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("");
 
 
 
@@ -75,7 +75,9 @@ exports.objCreationImgs = (path, fs, https, tools, dir, recordDir, providedImgs)
 				});
 			}
 			else {
-				let copyFilePath = path.join(dir, "Trak", "data", recordDir, "assets", providedImgs[1][y].replace(/^.*[\\\/]/, ""));
+				console.log(recordDir);
+				let copyFilePath = path.join(dir, "Trak", "data", recordDir, "assets", path.basename(providedImgs[1][y]));
+				console.log(copyFilePath);
 				if(providedImgs[1][y] != copyFilePath) {
 					fs.copySync(providedImgs[1][y], copyFilePath);
 				}
@@ -674,6 +676,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					filterGenreStrArr = filterGenreStrArr.concat(iterData.genres[2]);
 					filterGenreStrArr.sort((a, b) => a.localeCompare(b));
 					bookWorksheet.getCell("M" + (bookRowCounter + 2)).value = filterGenreStrArr.length > 0 ? filterGenreStrArr.join(", ") : "N/A";
+					bookRowCounter++;
 				}
 			}
 			// Write the xlsx file in the desired export location.

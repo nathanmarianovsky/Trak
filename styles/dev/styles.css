@@ -485,6 +485,11 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	line-height: 19px;
 }
 
+#databasePreloader {
+	display: none;
+	margin: 3% auto 3% auto;
+}
+
 #databaseSwitchDiv {
 /*	display: none;*/
 	position: relative;
@@ -560,6 +565,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 #importModal .modal-content {
 	overflow-y: hidden;
+}
+
+#importModalForm {
+	line-height: 2.5;
 }
 
 #importModalFormDiv {

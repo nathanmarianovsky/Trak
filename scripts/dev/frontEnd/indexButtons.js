@@ -128,7 +128,8 @@ window.addEventListener("load", () => {
         databaseModalExit = document.getElementById("databaseModalExit"),
         exportPath = document.getElementById("exportPath"),
         databaseTabs = document.getElementById("databaseTabs"),
-        importXLSXContent = document.getElementById("importXLSXContent");
+        importXLSXContent = document.getElementById("importXLSXContent"),
+        databaseModal = document.getElementById("databaseModal");
     let submissionList = [],
         tabsLoader = false;
     // Listen for a click on any search tab in order to hide the default search div.
@@ -523,9 +524,10 @@ window.addEventListener("load", () => {
     ipcRenderer.on("checkPathResult", (event, chk) => {
         // If the export path is valid then proceed with the export process.
         if(chk == true) {
+            document.getElementById("databasePreloader").style.display = "block";
+            window.scrollTo(0, databaseModal.scrollHeight);
             ipcRenderer.send("databaseExport", [exportPath.value, submissionList, typeSwitch.checked == true ? "XLSX" : "ZIP", XLSXTypeSwitch.checked, document.getElementById("exportCheck").checked]);
             exportPath.value = "";
-            databaseModalExit.click();
         }
         // Otherwise notify the user that the export path is not valid.
         else {
@@ -538,6 +540,8 @@ window.addEventListener("load", () => {
         const pathArr = Array.from(document.getElementById("importZipFile").files);
         // Make sure that at least one zip file has been chosen by the user.
         if(pathArr.length > 0) {
+            document.getElementById("databasePreloader").style.display = "block";
+            window.scrollTo(0, databaseModal.scrollHeight);
             ipcRenderer.send("databaseImport", [pathArr.map(elem => elem.path), typeSwitch.checked == true ? "XLSX" : "ZIP", XLSXTypeSwitch.checked]);
         }
         else {

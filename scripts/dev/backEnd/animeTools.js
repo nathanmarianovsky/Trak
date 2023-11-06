@@ -49,7 +49,7 @@ exports.animeObjCreation = (path, fs, https, tools, dir, providedData) => {
         "license": providedData[9],
         "genres": providedData[11],
         "synopsis": providedData[13],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + (providedData[1] != "" ? providedData[1] : tools.formatFolderName(providedData[2])), providedData[14]),
+        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1] != "" ? providedData[1] : providedData[2]), providedData[14]),
         "content": []
     };
     for(let m = 0; m < providedData[12].length; m++) {

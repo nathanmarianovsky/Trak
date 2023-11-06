@@ -58,14 +58,14 @@ ipcRenderer.on("copyFailure", (event, response) => {
 
 
 // Display a notification for the successful addition of a record.
-ipcRenderer.on("addRecordSuccess", (event, response) => {
+ipcRenderer.once("addRecordSuccess", (event, response) => {
     M.toast({"html": "The record associated to the " + toastParse(response) + " has been created and saved. This window will now close!", "classes": "rounded"});
 });
 
 
 
 // Display a notification for the successful update of a record.
-ipcRenderer.on("updateRecordSuccess", (event, response) => {
+ipcRenderer.once("updateRecordSuccess", (event, response) => {
     M.toast({"html": "The record associated to the " + toastParse(response) + " has been updated. This window will now close!", "classes": "rounded"});
 });
 
@@ -288,7 +288,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 let otherGenres = document.getElementById("animeOtherGenres"),
                     otherGenresDiv = document.getElementById("animeOtherGenresDiv");
                 otherGenresDiv.style.display = "block";
-                document.getElementById("otherGenres").value = recordData.genres[2].join(", ");
+                otherGenres.value = recordData.genres[2].join(", ");
                 if(recordData.genres[2].length > 0) { otherGenres.nextElementSibling.classList.add("active"); }
                 otherGenres.setAttribute("lastValue", recordData.genres[2].join(", "));
                 otherGenres.addEventListener("change", e => {
