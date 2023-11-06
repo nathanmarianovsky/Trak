@@ -467,29 +467,23 @@ window.addEventListener("load", () => {
             tabIndicator.style.display = "none";
             tabsLoader = true;
         }
-        else {
-
-        }
         tabSearchLinks.forEach(tab => tab.classList.remove("active"));
+        // If the user opts for a xlsx import then show the xlsx content and hide the zip content.
         if(typeSwitch.checked == true) {
             importZipContent.style.display = "none";
             XLSXTypeSwitchDiv.style.display = "initial";
-
             XLSXTypeSwitch.checked == true ? importXLSXContentDetailed.forEach(p => p.style.display = "block") : importXLSXContentSimple.forEach(p => p.style.display = "block");
             databaseTabs.style.display = "block";
             document.querySelector("#databaseModal .indicator").style.display = "none";
             importXLSXContent.style.display = "block";
         }
+        // If the user opts for a zip import then show the zip content and hide the xlsx content.
         else {
             importZipContent.style.display = "block";
-            // importXLSXContentSimple.forEach(p => p.style.display = "none");
-            // importXLSXContentDetailed.forEach(p => p.style.display = "none");
             importXLSXContent.style.display = "none";
-            // document.querySelector("#databaseModal .tabs").style.display = "none";
         }
+        // Hide all record xlsx import messages by default.
         Array.from(document.getElementsByClassName("importDiv")).forEach(div => div.style.display = "none");
-        // importXLSXContentSimple.forEach(p => p.style.display = "none");
-        // importXLSXContentDetailed.forEach(p => p.style.display = "none");
     });
     // Listen for a click event on the importSampleZIP button in the import section in order to open a folder to it.
     importSampleZIP.addEventListener("click", e => {
@@ -525,12 +519,15 @@ window.addEventListener("load", () => {
             M.toast({"html": "In order to export at least one record has to be checked.", "classes": "rounded"});
         }
     });
+    // React accordingly if a user provided export path is valid or not.
     ipcRenderer.on("checkPathResult", (event, chk) => {
+        // If the export path is valid then proceed with the export process.
         if(chk == true) {
             ipcRenderer.send("databaseExport", [exportPath.value, submissionList, typeSwitch.checked == true ? "XLSX" : "ZIP", XLSXTypeSwitch.checked, document.getElementById("exportCheck").checked]);
             exportPath.value = "";
             databaseModalExit.click();
         }
+        // Otherwise notify the user that the export path is not valid.
         else {
             M.toast({"html": "In order to export a valid path must be provided.", "classes": "rounded"});
         }
@@ -563,10 +560,15 @@ window.addEventListener("load", () => {
         newSwitchBackground = "#" + addAlpha(rgba2hex(getComputedStyle(databaseImportBtn).backgroundColor).substring(1), 0.6);
     typeSwitch.addEventListener("change", e => {
         const importZipContent = document.getElementById("importZipContent");
+        // Proceed if the user chooses for xlsx file type.
         if(e.target.checked == true) {
+            // Modify the coloring of the switch background.
             document.querySelector("#databaseSwitchDiv label input[type=checkbox]:checked+.lever").style.backgroundColor = newSwitchBackground;
+            // Show the xlsx type switch.
             XLSXTypeSwitchDiv.style.display = "initial";
+            // Proceed if dealing with data import.
             if(databaseImport.parentNode.classList.contains("active")) {
+                // Display the default xlsx import message.
                 databaseTabs.style.display = "block";
                 importZipContent.style.display = "none";
                 XLSXTypeSwitch.checked == true ? importXLSXContentDetailed.forEach(p => p.style.display = "block") : importXLSXContentSimple.forEach(p => p.style.display = "block");
@@ -576,11 +578,17 @@ window.addEventListener("load", () => {
                 databaseCheckLabel.style.left = "90px";
             }
         }
+        // Proceed if the user chooses for zip file type.
         else {
+            // Hide the xlsx import tabs.
             databaseTabs.style.display = "none";
+            // Modify the coloring of the switch background.
             document.querySelector("#databaseSwitchDiv label .lever").style.backgroundColor = originalSwitchBackground;
+            // Hide the xlsx type switch.
             XLSXTypeSwitchDiv.style.display = "none";
+            // Proceed if dealing with data import.
             if(databaseImport.parentNode.classList.contains("active")) {
+                // Hide the xlsx content and show the zip content.
                 importZipContent.style.display = "block";
                 importXLSXContentSimple.forEach(p => p.style.display = "none");
                 importXLSXContentDetailed.forEach(p => p.style.display = "none");
@@ -593,13 +601,19 @@ window.addEventListener("load", () => {
     });
     // Listen for a change in the xlsx import type to change the directions accordingly.
     XLSXTypeSwitch.addEventListener("change", e => {
+        // Proceed if a user chooses a detailed xlsx import.
         if(e.target.checked == true) {
+            // Modify the coloring of the switch background.
             document.querySelector("#XLSXTypeSwitchDiv label input[type=checkbox]:checked+.lever").style.backgroundColor = newSwitchBackground;
+            // Hide the simple content and show the detailed content.
             importXLSXContentSimple.forEach(p => p.style.display = "none");
             importXLSXContentDetailed.forEach(p => p.style.display = "block");
         }
+        // Proceed if a user chooses a simple xlsx import.
         else {
+            // Modify the coloring of the switch background.
             document.querySelector("#XLSXTypeSwitchDiv label .lever").style.backgroundColor = originalSwitchBackground;
+            // Show the simple content and hide the detailed content.
             importXLSXContentSimple.forEach(p => p.style.display = "block");
             importXLSXContentDetailed.forEach(p => p.style.display = "none");
         }
