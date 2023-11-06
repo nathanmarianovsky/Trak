@@ -268,7 +268,7 @@
                     </div>
                 </div>
             </div>
-            <div id="chunkCheck"><i class="material-icons">check_circle</i></div>
+            <div id="chunkCheck"><i class="material-icons">published_with_changes</i></div>
         </div>
         <div id="preloader" class="preloader-wrapper big active">
             <div class="spinner-layer">
@@ -367,20 +367,34 @@
                     <p id="importZipContent">
                         To import into the library records simply select the zip files which contain the data and click to import. Any zip file to be imported should correspond to an export generated from this application. A sample can be found <a id="importSampleZIP" class="hyperlink">here</a>.
                     </p>
-                    <p id="importXLSXContentSimple">
-                        To import into the library records a simple xlsx file there should be a single worksheet titled "Category-Anime" whose columns are expected to be in the order:
-                        <br><br>
-                        <span class="center textFocus">| Name | Japanese Name | Rating | Comments/Review | Synopsis | Directors |<br>| Producers | Writers | Music Directors | Studios | Licensed By | Release Date | Genres |</span>
-                        <br>
-                        The first row should be used for column headers with data starting on the second row with the genres component consisting of a comma separated list. Select the xlsx files which contain the data and click to import. A sample can be found <a id="importSampleSimpleXLSX" class="hyperlink">here</a>.
+                    <p id="importXLSXContent">
+                        To import into the library records simply select the xlsx files which contain the data and click to import. The instructions for how the xlsx files should be formatted is described for each record option above.
                     </p>
-                    <p id="importXLSXContentDetailed">
-                        To import into the library records a detailed xlsx file multiple worksheets are expected to be provided where the first worksheet corresponds to the same data provided for a simple xlsx import. All other worksheets are expected to be titled in the format "Category-FormattedName" where Category can take on one of the five values "Anime", "Book", "Film", "Manga", or "Show" and FormattedName is the value in the first column of the "Category-Anime" worksheet whose words all start with a capital letter and has all whitespaces removed. The columns for these same worksheets are expected to be in the order:
-                        <br><br>
-                        <span class="center textFocus">| Type | Name | Start Date | End Date | Status | Last Watched |<br>| Rating | Episode # | Episode Name | Comments/Review |</span>
-                        <br>
-                        The first row should be used for column headers with data starting on the second row. Furthermore, the value of a record's related content type can be either a Season or Single where single corresponds to an entry with a single episode and Status can take on one of five values "Watching", "Completed", "On-Hold", "Dropped", or "Plan To Watch". For type single provide the release date under the start date column and ignore the columns corresponding to the episode number and episode name. Select the xlsx files which contain the data and click to import. A sample can be found <a id="importSampleDetailedXLSX" class="hyperlink">here</a>.
-                    </p>
+                    <div id="animeImportDiv" class="importDiv">
+                        <p class="importXLSXContentSimple">
+                            To import anime records into the library via a simple xlsx file there should be a worksheet titled "Category-Anime" whose columns are expected to be in the order:
+                            <br><br>
+                            <span class="center textFocus">| Name | Japanese Name | Rating | Comments/Review | Synopsis | Directors |<br>| Producers | Writers | Music Directors | Studios | Licensed By | Release Date | Genres |</span>
+                            <br>
+                            The first row should be used for column headers with data starting on the second row whose genres component consists of a comma separated list. Select the xlsx files which contain the data and click to import. A sample can be found <a id="importSampleSimpleXLSX" class="hyperlink">here</a>.
+                        </p>
+                        <p class="importXLSXContentDetailed">
+                            To import anime records into the library via a detailed xlsx file multiple worksheets are expected to be provided where the first worksheet corresponds to the same data as with a simple xlsx import. All other worksheets are expected to be titled in the format "Anime-FormattedName" where FormattedName is the value in the first column of the "Category-Anime" worksheet whose words all start with a capital letter and has all whitespaces removed. The columns for these same worksheets are expected to be in the order:
+                            <br><br>
+                            <span class="center textFocus">| Type | Name | Start Date | End Date | Status | Last Watched |<br>| Rating | Episode # | Episode Name | Comments/Review |</span>
+                            <br>
+                            The first row should be used for column headers with data starting on the second row. Furthermore, the value of a record's related content type can be either a "Season" or "Single" where single corresponds to an entry with a single episode and status can take on one of five values "Watching", "Completed", "On-Hold", "Dropped", or "Plan To Watch". For type single provide the release date under the start date column and ignore the columns corresponding to the episode number and episode name. Select the xlsx files which contain the data and click to import. A sample can be found <a id="importSampleDetailedXLSX" class="hyperlink">here</a>.
+                        </p>
+                    </div>
+                    <div id="bookImportDiv" class="importDiv">
+                        <p>
+                            To import book records into the library via a simple or detailed xlsx file there should be a worksheet titled "Category-Book" whose columns are expected to be in the order:
+                            <br><br>
+                            <span class="center textFocus">| Title | Original Title | Rating | Comments/Review | Synopsis | ASIN/ISBN | Authors |<br>| Publisher | Publication Date | Number of Pages | Media Type | Last Read Date | Genres |</span>
+                            <br>
+                            The first row should be used for column headers with data starting on the second row whose genres component consists of a comma separated list. Select the xlsx files which contain the data and click to import. A sample can be found <a id="importSampleSimpleXLSX" class="hyperlink">here</a>.
+                        </p>
+                    </div>
                     <div class="row databaseImportDiv">
                         <form class="col s12">
                             <div class="file-field input-field col s10">

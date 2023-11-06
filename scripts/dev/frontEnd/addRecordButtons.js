@@ -213,7 +213,7 @@ var animeSave = () => {
             animeSynopsis = document.getElementById("animeSynopsis").value,
             animeImg = document.getElementById("addRecordAnimeImg").getAttribute("list").split(","),
             animeFiles = Array.from(document.getElementById("animeAddRecordFiles").files).map(elem => elem.path),
-            otherGenres = document.getElementById("otherGenres").value.split(",").map(elem => elem.trim()),
+            otherGenres = document.getElementById("animeOtherGenres").value.split(",").map(elem => elem.trim()),
             genresLst = genreList("Anime"),
             genres = [],
             content = [];
@@ -298,7 +298,7 @@ var bookSave = () => {
             bookReview = document.getElementById("bookReview").value,
             bookImg = document.getElementById("addRecordBookImg").getAttribute("list").split(","),
             bookFiles = Array.from(document.getElementById("bookAddRecordFiles").files).map(elem => elem.path),
-            otherGenres = document.getElementById("otherGenres").value.split(",").map(elem => elem.trim()),
+            otherGenres = document.getElementById("bookOtherGenres").value.split(",").map(elem => elem.trim()),
             genresLst = genreList("Book"),
             genres = [];
         // Check to see that a proper ISBN was provided.

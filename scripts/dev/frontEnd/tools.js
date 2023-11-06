@@ -92,6 +92,7 @@ var initTabs = (scenario = 0) => {
         let elemsTabs = document.querySelector("#databaseModal .tabs");
         let instanceTabs = M.Tabs.init(elemsTabs, { "onShow": pageTab => {
             document.querySelector(".indicator").style.display = "list-item";
+            document.getElementById("importXLSXContent").style.display = "none";
         }});
     }
 };

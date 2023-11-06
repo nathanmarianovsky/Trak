@@ -107,8 +107,8 @@ window.addEventListener("load", () => {
     // Define all page components which will be utilized.
     const tableBody = document.getElementById("tableBody"),
         XLSXTypeSwitchDiv = document.getElementById("XLSXTypeSwitchDiv"),
-        importXLSXContentSimple = document.getElementById("importXLSXContentSimple"),
-        importXLSXContentDetailed = document.getElementById("importXLSXContentDetailed"),
+        importXLSXContentSimple = Array.from(document.getElementsByClassName("importXLSXContentSimple")),
+        importXLSXContentDetailed = Array.from(document.getElementsByClassName("importXLSXContentDetailed")),
         databaseExportContainer = document.getElementById("databaseExportContainer"),
         databaseImportContainer = document.getElementById("databaseImportContainer"),
         outerLayer = document.getElementById("outerLayer"),
@@ -127,8 +127,10 @@ window.addEventListener("load", () => {
         bookSearchBar = document.getElementById("bookSearchBar"),
         databaseModalExit = document.getElementById("databaseModalExit"),
         exportPath = document.getElementById("exportPath"),
-        databaseTabs = document.getElementById("databaseTabs");
-    let submissionList = [];
+        databaseTabs = document.getElementById("databaseTabs"),
+        importXLSXContent = document.getElementById("importXLSXContent");
+    let submissionList = [],
+        tabsLoader = false;
     // Listen for a click on any search tab in order to hide the default search div.
     tabSearchLinks.forEach(tab => tab.addEventListener("click", e => defaultSearchDiv.style.display = "none"));
     // Listen for a click event on the anime search button.
@@ -456,25 +458,38 @@ window.addEventListener("load", () => {
         databaseImportContainer.style.display = "initial";
         databaseExportBtn.style.display = "none";
         databaseImportBtn.style.display = "inline-block";
-        // Initialize the content search tabs.
-        initTabs(1);
-        let tabIndicator = document.querySelector("#databaseModal .indicator"),
-            tabs = document.querySelector("#databaseModal .tabs");
-        tabs.style.backgroundColor = "#" + addAlpha(rgba2hex(getComputedStyle(databaseImportBtn).backgroundColor).substring(1), 0.6);
-        tabIndicator.style.display = "none";
+        // Initialize the xlsx import tabs.
+        if(tabsLoader == false) {
+            initTabs(1);
+            let tabIndicator = document.querySelector("#databaseModal .indicator"),
+                tabs = document.querySelector("#databaseModal .tabs");
+            tabs.style.backgroundColor = "#" + addAlpha(rgba2hex(getComputedStyle(databaseImportBtn).backgroundColor).substring(1), 0.6);
+            tabIndicator.style.display = "none";
+            tabsLoader = true;
+        }
+        else {
+
+        }
         tabSearchLinks.forEach(tab => tab.classList.remove("active"));
         if(typeSwitch.checked == true) {
             importZipContent.style.display = "none";
             XLSXTypeSwitchDiv.style.display = "initial";
-            XLSXTypeSwitch.checked == true ? importXLSXContentDetailed.style.display = "block" : importXLSXContentSimple.style.display = "block";
+
+            XLSXTypeSwitch.checked == true ? importXLSXContentDetailed.forEach(p => p.style.display = "block") : importXLSXContentSimple.forEach(p => p.style.display = "block");
             databaseTabs.style.display = "block";
+            document.querySelector("#databaseModal .indicator").style.display = "none";
+            importXLSXContent.style.display = "block";
         }
         else {
             importZipContent.style.display = "block";
-            importXLSXContentSimple.style.display = "none";
-            importXLSXContentDetailed.style.display = "none";
-            databaseTabs.style.display = "none";
+            // importXLSXContentSimple.forEach(p => p.style.display = "none");
+            // importXLSXContentDetailed.forEach(p => p.style.display = "none");
+            importXLSXContent.style.display = "none";
+            // document.querySelector("#databaseModal .tabs").style.display = "none";
         }
+        Array.from(document.getElementsByClassName("importDiv")).forEach(div => div.style.display = "none");
+        // importXLSXContentSimple.forEach(p => p.style.display = "none");
+        // importXLSXContentDetailed.forEach(p => p.style.display = "none");
     });
     // Listen for a click event on the importSampleZIP button in the import section in order to open a folder to it.
     importSampleZIP.addEventListener("click", e => {
@@ -552,20 +567,24 @@ window.addEventListener("load", () => {
             document.querySelector("#databaseSwitchDiv label input[type=checkbox]:checked+.lever").style.backgroundColor = newSwitchBackground;
             XLSXTypeSwitchDiv.style.display = "initial";
             if(databaseImport.parentNode.classList.contains("active")) {
+                databaseTabs.style.display = "block";
                 importZipContent.style.display = "none";
-                XLSXTypeSwitch.checked == true ? importXLSXContentDetailed.style.display = "block" : importXLSXContentSimple.style.display = "block";
+                XLSXTypeSwitch.checked == true ? importXLSXContentDetailed.forEach(p => p.style.display = "block") : importXLSXContentSimple.forEach(p => p.style.display = "block");
+                importXLSXContent.style.display = "block";
             }
             else {
                 databaseCheckLabel.style.left = "90px";
             }
         }
         else {
+            databaseTabs.style.display = "none";
             document.querySelector("#databaseSwitchDiv label .lever").style.backgroundColor = originalSwitchBackground;
             XLSXTypeSwitchDiv.style.display = "none";
             if(databaseImport.parentNode.classList.contains("active")) {
                 importZipContent.style.display = "block";
-                importXLSXContentSimple.style.display = "none";
-                importXLSXContentDetailed.style.display = "none";
+                importXLSXContentSimple.forEach(p => p.style.display = "none");
+                importXLSXContentDetailed.forEach(p => p.style.display = "none");
+                importXLSXContent.style.display = "none";
             }
             else {
                 databaseCheckLabel.style.left = "70px";
@@ -576,13 +595,13 @@ window.addEventListener("load", () => {
     XLSXTypeSwitch.addEventListener("change", e => {
         if(e.target.checked == true) {
             document.querySelector("#XLSXTypeSwitchDiv label input[type=checkbox]:checked+.lever").style.backgroundColor = newSwitchBackground;
-            importXLSXContentSimple.style.display = "none";
-            importXLSXContentDetailed.style.display = "block";
+            importXLSXContentSimple.forEach(p => p.style.display = "none");
+            importXLSXContentDetailed.forEach(p => p.style.display = "block");
         }
         else {
             document.querySelector("#XLSXTypeSwitchDiv label .lever").style.backgroundColor = originalSwitchBackground;
-            importXLSXContentSimple.style.display = "block";
-            importXLSXContentDetailed.style.display = "none";
+            importXLSXContentSimple.forEach(p => p.style.display = "block");
+            importXLSXContentDetailed.forEach(p => p.style.display = "none");
         }
     });
     // Populate the list of years available for an anime season content search.
