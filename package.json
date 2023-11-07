@@ -1,43 +1,43 @@
 {
-  "name": "Trak",
-  "version": "0.2.5",
-  "description": "A tracker designed to display and maintain details of content read and/or watched.",
-  "main": "index.js",
-  "author": "Nathan Marianovsky",
-  "license": "MIT",
-  "dependencies": {
-    "@node-minify/core": "^8.0.6",
-    "@node-minify/uglify-js": "^8.0.6",
-    "@node-minify/yui": "^8.0.6",
-    "check-internet-connected": "^2.0.6",
-    "cheerio": "^1.0.0-rc.12",
-    "cli-progress": "^3.12.0",
-    "download-github-release": "^0.3.2",
-    "electron-context-menu": "^3.6.1",
-    "electron-log": "^5.0.0",
-    "exceljs": "^4.4.0",
-    "fs-extra": "^11.1.1",
-    "goodreads-scraper": "^1.4.4",
-    "html-minifier": "^4.0.0",
-    "is-valid-path": "^0.1.1",
-    "mal-scraper": "^2.13.1",
-    "node-minify": "^3.6.0",
-    "semver": "^7.5.4",
-    "zip-local": "^0.3.5"
-  },
-  "devDependencies": {
-    "electron": "^27.0.2",
-    "electron-installer-debian": "^3.2.0",
-    "electron-packager": "^17.1.2",
-    "electron-wix-msi": "^5.0.0"
-  },
-  "scripts": {
-    "compress": "node ./minifier.js",
-    "start": "electron .",
-    "fullStart": "node ./minifier.js && electron .",
-    "packageWindows-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the EXE File: && npm exec electron-packager . Trak --platform=win32 --arch=x64",
-    "buildWindows-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the EXE File: && npm exec electron-packager . Trak --platform=win32 --arch=x64 && echo Building the MSI Package: && node build.js -amd64Windows",
-    "buildLinux-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the Executable File: && npm exec electron-packager . --platform=linux --arch=x64 && echo Building the Debian Package: && node build.js -amd64Debian",
-    "buildLinux-arm64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the Executable File: && npm exec electron-packager . --platform=linux --arch=arm && echo Building the Debian Package: && node build.js -armDebian"
-  }
+    "name": "Trak",
+    "version": "0.3.0",
+    "description": "A tracker designed to display and maintain details of content read and/or watched.",
+    "main": "index.js",
+    "author": "Nathan Marianovsky",
+    "license": "MIT",
+    "dependencies": {
+        "@node-minify/core": "^8.0.6",
+        "@node-minify/uglify-js": "^8.0.6",
+        "@node-minify/yui": "^8.0.6",
+        "check-internet-connected": "^2.0.6",
+        "cheerio": "^1.0.0-rc.12",
+        "cli-progress": "^3.12.0",
+        "download-github-release": "^0.3.2",
+        "electron-context-menu": "^3.6.1",
+        "electron-log": "^5.0.0",
+        "exceljs": "^4.4.0",
+        "fs-extra": "^11.1.1",
+        "goodreads-scraper": "^1.4.4",
+        "html-minifier": "^4.0.0",
+        "is-valid-path": "^0.1.1",
+        "mal-scraper": "^2.13.1",
+        "node-minify": "^3.6.0",
+        "semver": "^7.5.4",
+        "zip-local": "^0.3.5"
+    },
+    "devDependencies": {
+        "electron": "^27.0.3",
+        "electron-installer-debian": "^3.2.0",
+        "electron-packager": "^17.1.2",
+        "electron-wix-msi": "^5.0.0"
+    },
+    "scripts": {
+        "compress": "node ./minifier.js",
+        "start": "electron .",
+        "fullStart": "node ./minifier.js && electron .",
+        "packageWindows-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the EXE File: && npm exec electron-packager . Trak --platform=win32 --arch=x64",
+        "buildWindows-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the EXE File: && npm exec electron-packager . Trak --platform=win32 --arch=x64 && echo Building the MSI Package: && node build.js -amd64Windows",
+        "buildLinux-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the Executable File: && npm exec electron-packager . --platform=linux --arch=x64 && echo Building the Debian Package: && node build.js -amd64Debian",
+        "buildLinux-arm64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the Executable File: && npm exec electron-packager . --platform=linux --arch=arm && echo Building the Debian Package: && node build.js -armDebian"
+    }
 }
