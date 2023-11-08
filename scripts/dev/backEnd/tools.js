@@ -1350,12 +1350,13 @@ Executes the creation of the primary window with all necessary parameters.
 	- BrowserWindow provides the means to create a new app window.
 	- path provides the means to work with file paths.
 	- log provides the means to create application logs to keep track of what is going on.
+	- devCheck is a boolean representing whether the app is being run in a development mode.
 	- width and height are the physical parameters for describing the created window size.
 	- fullscreen is a boolean representing whether the window should be maximized on launch.
 	- resizable is a boolean representing whether a window should be allowed to rescale.
 
 */
-exports.createWindow = (extension, dir, BrowserWindow, path, log, width = 1000, height = 800, fullscreen = false, resizable = true) => {
+exports.createWindow = (extension, dir, BrowserWindow, path, log, devCheck, width = 1000, height = 800, fullscreen = false, resizable = true) => {
   	let win = new BrowserWindow({
 		"width": width,
     	"height": height,
@@ -1371,6 +1372,7 @@ exports.createWindow = (extension, dir, BrowserWindow, path, log, width = 1000, 
 	win.loadFile(path.join(dir, "Trak", "localPages", extension + ".html"));
 	if(fullscreen == true) { win.maximize(); }
 	log.info("The " + extension + ".html page is now loading.");
+	if(devCheck == true) { win.webContents.openDevTools(); }
   	return win;
 };
 

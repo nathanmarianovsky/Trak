@@ -14,6 +14,7 @@ Declare all of the necessary variables.
 */
 const { app, BrowserWindow, Menu, MenuItem, Tray } = require("electron"),
 	ipc = require("electron").ipcMain,
+	dev = process.argv.includes("--dev"),
 	path = require("path"),
 	fs = require("fs-extra"),
 	log = require("electron-log"),
@@ -185,7 +186,7 @@ app.whenReady().then(() => {
 														else {
 															log.info("The styles.css file has been successfully rewritten to the localStyles folder.");
 															// Create the primary window.
-														  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, path, log, primWinWidth, primWinHeight, primWinFullscreen);
+														  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, path, log, dev, primWinWidth, primWinHeight, primWinFullscreen);
 															primaryWindow.webContents.on("did-finish-load", () => {
 																primaryWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
 																tools.tutorialLoad(fs, path, log, primaryWindow, basePath);
@@ -199,7 +200,7 @@ app.whenReady().then(() => {
 														  	tray = new Tray(path.join(__dirname, "/assets/logo.png"));
 															tools.createTrayMenu("h", primaryWindow, tray, Menu);
 															// Add all of the back-end listeners.
-															require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, ipc, tools, updateCheck, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+															require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCheck, primaryWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 														}
 													});
 												}

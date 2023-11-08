@@ -32,6 +32,7 @@ Driver function for adding all basic listeners.
 	- app, BrowserWindow, and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
+	- dev is a boolean representing whether the app is being run in a development mode.
 	- tools provides a collection of local functions.
 	- updateCondition is a boolean used to ensure that a check for an update occurs only once per application load.
 	- mainWindow is an object referencing the primary window of the Electron app.
@@ -39,11 +40,11 @@ Driver function for adding all basic listeners.
 	- primaryWindowWidth, primaryWindowHeight, and primaryWindowFullscreen are the window parameters.
 
 */
-exports.addBasicListeners = (app, BrowserWindow, path, fs, log, ipc, tools, updateCondition, mainWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen) => {
+exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen) => {
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
-   		let win = tools.createWindow("index", originalPath, BrowserWindow, path, log, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
+   		let win = tools.createWindow("index", originalPath, BrowserWindow, path, log, dev, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
    		win.webContents.on("did-finish-load", () => {
   				win.webContents.send("loadRows", win.getContentSize()[1] - 800);
   				tools.tutorialLoad(fs, path, log, win, originalPath);
@@ -85,6 +86,7 @@ Driver function for adding all listeners associated to the maintenance of record
 	- BrowserWindow and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
+	- dev is a boolean representing whether the app is being run in a development mode.
 	- tools provides a collection of local functions.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the current path to the local user data.
@@ -92,10 +94,10 @@ Driver function for adding all listeners associated to the maintenance of record
 	- secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addRecordListeners = (BrowserWindow, path, fs, log, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Handles the load of the addRecord.html page for the creation of a record.
   	ipc.on("addLoad", (event, scenario) => {
-  		let addWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  		let addWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		addWindow.webContents.on("did-finish-load", () => {
   			if(scenario == true) {
   				log.info("Loading the application tutorial for the addRecord.html page.");
@@ -116,7 +118,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, ipc, tools, mainWind
 
   	// Handles the load of the addRecord.html page for the update of a record.
   	ipc.on("updateRecord", (event, fldrName) => {
-  		let recordUpdateWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  		let recordUpdateWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		recordUpdateWindow.webContents.on("did-finish-load", () => {
   			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
   			ipc.once("performSave", (event, submission) => {
@@ -152,6 +154,7 @@ Driver function for adding all anime listeners.
 	- BrowserWindow and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
+	- dev is a boolean representing whether the app is being run in a development mode.
 	- tools provides a collection of local functions.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the current path to the local user data.
@@ -159,7 +162,7 @@ Driver function for adding all anime listeners.
 	- secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addAnimeListeners = (BrowserWindow, path, fs, log, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addAnimeListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Handles the search of a string through all possible anime listings on myanimelist.
 	ipc.on("animeSearch", (event, submission) => {
 		require("./animeTools").animeSearch(log, require("mal-scraper"), event, submission);
@@ -182,7 +185,7 @@ exports.addAnimeListeners = (BrowserWindow, path, fs, log, ipc, tools, mainWindo
 
 	// Handles the opening of the addRecord.html page to load an anime record based on a season or query search.
 	ipc.on("animeRecordRequest", (event, submission) => {
-		let animeRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+		let animeRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		animeRecordWindow.webContents.on("did-finish-load", () => {
   			animeRecordWindow.webContents.send("searchRecordStart", "Anime");
   			require("./animeTools").animeRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("mal-scraper"), tools, mainWindow, animeRecordWindow, dataPath, submission);
@@ -199,6 +202,7 @@ Driver function for adding all book listeners.
 	- BrowserWindow and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
+	- dev is a boolean representing whether the app is being run in a development mode.
 	- tools provides a collection of local functions.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the current path to the local user data.
@@ -206,7 +210,7 @@ Driver function for adding all book listeners.
 	- secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addBookListeners = (BrowserWindow, path, fs, log, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addBookListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Handles the search of a string through all possible book listings on goodreads.
 	ipc.on("bookSearch", (event, submission) => {
 		require("./bookTools").bookSearch(log, require("goodreads-scraper"), event, submission);
@@ -244,7 +248,7 @@ exports.addBookListeners = (BrowserWindow, path, fs, log, ipc, tools, mainWindow
 
 	// Handles the opening of the addRecord.html page to load a book record based on a query search.
 	ipc.on("bookRecordRequest", (event, submission) => {
-		let bookRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+		let bookRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
   		bookRecordWindow.webContents.on("did-finish-load", () => {
   			bookRecordWindow.webContents.send("searchRecordStart", "Book");
   			require("./bookTools").bookRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("goodreads-scraper"), tools, mainWindow, bookRecordWindow, dataPath, submission);
@@ -492,6 +496,7 @@ Driver function for adding all app listeners.
 	- app, BrowserWindow, and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
+	- dev is a boolean representing whether the app is being run in a development mode.
 	- tools provides a collection of local functions.
 	- updateCondition is a boolean used to ensure that a check for an update occurs only once per application load.
 	- mainWindow is an object referencing the primary window of the Electron app.
@@ -500,15 +505,15 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, log, ipc, tools, updateCondition, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Add the basic listeners.
-	exports.addBasicListeners(app, BrowserWindow, path, fs, log, ipc, tools, updateCondition, mainWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
+	exports.addBasicListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
 	// Add the listeners associated to all types of records.
-	exports.addRecordListeners(BrowserWindow, path, fs, log, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+	exports.addRecordListeners(BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to anime records.
-	exports.addAnimeListeners(BrowserWindow, path, fs, log, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+	exports.addAnimeListeners(BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to book records.
-	exports.addBookListeners(BrowserWindow, path, fs, log, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+	exports.addBookListeners(BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to exporting and importing data.
 	exports.addDatabaseListeners(path, fs, log, ipc, tools, mainWindow, originalPath);
 	// Add the listeners associated to all settings actions.

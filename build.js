@@ -37,7 +37,6 @@ var windowsBuild = () => {
             "chooseDirectory": true
         }
     });
-    console.log(msiCreator);
     // Generate the msi file and remove the folder created by electron-packager in the process.
     msiCreator.create().then(() => {
         msiCreator.compile().then(() => {
