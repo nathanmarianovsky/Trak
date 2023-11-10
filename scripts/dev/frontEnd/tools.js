@@ -83,7 +83,7 @@ var initTabs = (scenario = 0) => {
             let tabTypeStr = pageTab.getAttribute("id").split("Search")[0],
                 tabType = tabTypeStr.charAt(0).toUpperCase() + tabTypeStr.slice(1);
             genreListLoad(tabType, 5, true);
-            document.querySelector(".indicator").style.display = "list-item";
+            document.querySelector("#contentSearchDiv .indicator").style.display = "list-item";
             clearTooltips();
             initTooltips();
         }});
@@ -91,7 +91,7 @@ var initTabs = (scenario = 0) => {
     else if(scenario == 1) {
         let elemsTabs = document.querySelector("#databaseModal .tabs");
         let instanceTabs = M.Tabs.init(elemsTabs, { "onShow": pageTab => {
-            document.querySelector(".indicator").style.display = "list-item";
+            document.querySelector("#databaseModal .indicator").style.display = "list-item";
             document.getElementById("importXLSXContent").style.display = "none";
         }});
     }

@@ -49,7 +49,7 @@
             </div>
         </div>
         <div id="categoryAnimeDiv" class="categoryDiv">
-            <div id="animePreloader" class="preloader-wrapper active">
+            <div id="animePreloader" class="preloader-wrapper active recordPreloader">
                 <div class="spinner-layer">
                     <div class="circle-clipper left">
                         <div class="circle"></div>
@@ -67,18 +67,18 @@
                 The only field required to add a record is the name. All other fields are optional.
             </div>
             <div class="row addRecordDiv">
-                <div id="addRecordAnimeImageDiv" class="left">
-                    <a id="animeFavoriteImageLink"><i class="material-icons">favorite</i></a>
-                    <img id="addRecordAnimeImg" src="../../assets/imgDef.png" list="" default="../../assets/imgDef.png">
-                    <div id="addRecordAnimeImgBtnDiv">
+                <div id="addRecordAnimeImageDiv" class="left addRecordImageDiv">
+                    <a id="animeFavoriteImageLink" class="recordFavoriteImageLink"><i class="material-icons">favorite</i></a>
+                    <img id="addRecordAnimeImg" class="addRecordImg" src="../../assets/imgDef.png" list="" default="../../assets/imgDef.png">
+                    <div id="addRecordAnimeImgBtnDiv" class="addRecordImgBtnDiv">
                         <div class="addRecordAnimeImgBtnContainer"><a id="animePreviousImgBtn" class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_before</i></a></div>
                         <div class="addRecordAnimeImgBtnContainer"><a id="animeAddImgBtn" class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">add</i></a></div>
                         <div class="addRecordAnimeImgBtnContainer"><a id="animeRemoveImgBtn" class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">remove</i></a></div>
                         <div class="addRecordAnimeImgBtnContainer"><a id="animeNextImgBtn" class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_next</i></a></div>
                     </div>
-                    <input id="animeAddImgInput" type="file" multiple>
+                    <input id="animeAddImgInput" class="recordAddImgInput" type="file" multiple>
                 </div>
-                <form id="categoryAnimeForm1" class="col s8">
+                <form id="categoryAnimeForm1" class="categoryTopForm col s8">
                     <div class="row">
                         <div class="input-field col s6">
                             <input id="animeName" type="text" class="validate left autocomplete">
@@ -98,7 +98,7 @@
                     <div class="row">
                         <div class="input-field col s2">
                             <input id="animeRating" type="text" class="left" readonly="true" value="N/A">
-                            <label for="animeRating">Rating: <a class="modal-trigger" href="#globalRatingModal"><i class="material-icons infoIcon">info</i></a></label>
+                            <label for="animeRating">Rating: <a class="modal-trigger" href="#animeGlobalRatingModal"><i class="material-icons infoIcon">info</i></a></label>
                         </div>
                         <div class="input-field col s10">
                             <textarea id="animeReview" class="validate materialize-textarea" maxlength="1000"></textarea>
@@ -110,10 +110,10 @@
                         <a id="animeFetchDetailsBtn" class="waves-effect waves-light btn addRecordBtn"><i class="material-icons right">refresh</i>Fetch Details</a>
                     </div>
                 </form>
-                <div id="animeMoreDetailsModal" class="modal modal-fixed-footer">
+                <div id="animeMoreDetailsModal" class="modal modal-fixed-footer recordMoreDetailsModal">
                     <div class="modal-content">
                         <h4 class="center">More Details</h4>
-                        <form id="categoryAnimeForm1" class="col s10">
+                        <form id="categoryAnimeForm3" class="categoryTopForm col s12">
                             <div class="row">
                                 <div class="input-field col s6">
                                     <input id="animeDirectors" type="text" class="validate left">
@@ -163,7 +163,7 @@
                     </div>
                 </div>
             </div>
-            <h2 id="animeGenresTitle">Genres/Tags: <a class="modal-trigger" href="#genresModal"><i class="material-icons infoIcon genresIcon">add_circle</i></a></h2>
+            <h2 id="animeGenresTitle" class="recordGenresTitle">Genres/Tags: <a class="modal-trigger" href="#genresModal"><i class="material-icons infoIcon genresIcon">add_circle</i></a></h2>
             <div class="row addRecordDiv">
                 <form id="categoryAnimeForm2" class="col s12"></form>
             </div>
@@ -184,7 +184,7 @@
                     <li><a id="animeSeasons" href="#animeModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
                 </ul>
             </div>
-            <div id="globalRatingModal" class="modal infoModal">
+            <div id="animeGlobalRatingModal" class="modal infoModal">
                 <div class="modal-content">
                     <h4 class="center">Anime Rating</h4>
                     <p>This will be automatically calculated as the average of all season, film, ONA, and OVA ratings related to the anime.</p>
@@ -205,14 +205,8 @@
                 </div>
             </div>
         </div>
-
-
-
-
-
-
         <div id="categoryBookDiv" class="categoryDiv">
-            <div id="bookPreloader" class="preloader-wrapper active">
+            <div id="bookPreloader" class="preloader-wrapper active recordPreloader">
                 <div class="spinner-layer">
                     <div class="circle-clipper left">
                         <div class="circle"></div>
@@ -230,18 +224,18 @@
                 The only field required to add a record is the ISBN. All other fields are optional.
             </div>
             <div class="row addRecordDiv">
-                <div id="addRecordBookImageDiv" class="left">
-                    <a id="bookFavoriteImageLink"><i class="material-icons">favorite</i></a>
-                    <img id="addRecordBookImg" src="../../assets/imgDef.png" list="" default="../../assets/imgDef.png">
-                    <div id="addRecordBookImgBtnDiv">
+                <div id="addRecordBookImageDiv" class="left addRecordImageDiv">
+                    <a id="bookFavoriteImageLink" class="recordFavoriteImageLink"><i class="material-icons">favorite</i></a>
+                    <img id="addRecordBookImg" class="addRecordImg" src="../../assets/imgDef.png" list="" default="../../assets/imgDef.png">
+                    <div id="addRecordBookImgBtnDiv" class="addRecordImgBtnDiv">
                         <div class="addRecordBookImgBtnContainer"><a id="bookPreviousImgBtn" class="addRecordBookImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_before</i></a></div>
                         <div class="addRecordBookImgBtnContainer"><a id="bookAddImgBtn" class="addRecordBookImgBtn waves-effect waves-light btn"><i class="material-icons">add</i></a></div>
                         <div class="addRecordBookImgBtnContainer"><a id="bookRemoveImgBtn" class="addRecordBookImgBtn waves-effect waves-light btn"><i class="material-icons">remove</i></a></div>
                         <div class="addRecordBookImgBtnContainer"><a id="bookNextImgBtn" class="addRecordBookImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_next</i></a></div>
                     </div>
-                    <input id="bookAddImgInput" type="file" multiple>
+                    <input id="bookAddImgInput" class="recordAddImgInput" type="file" multiple>
                 </div>
-                <form id="categoryBookForm1" class="col s8">
+                <form id="categoryBookForm1" class="categoryTopForm col s8">
                     <div class="row">
                         <div class="input-field col s9">
                             <input id="bookTitle" type="text" class="validate left autocomplete">
@@ -332,7 +326,7 @@
                     </div>
                 </form>
             </div>
-            <h2 id="bookGenresTitle">Genres/Tags: <a class="modal-trigger" href="#genresModal"><i class="material-icons infoIcon genresIcon">add_circle</i></a></h2>
+            <h2 id="bookGenresTitle" class="recordGenresTitle">Genres/Tags: <a class="modal-trigger" href="#genresModal"><i class="material-icons infoIcon genresIcon">add_circle</i></a></h2>
             <div class="row addRecordDiv">
                 <form id="categoryBookForm2" class="col s12"></form>
             </div>
@@ -359,6 +353,184 @@
                 </div>
             </div>
         </div>
+
+
+
+
+
+        <div id="categoryMangaDiv" class="categoryDiv">
+            <div id="mangaPreloader" class="preloader-wrapper active recordPreloader">
+                <div class="spinner-layer">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <h2>Directions:</h2>
+            <div class="text formInfo">
+                The only field required to add a record is the name. All other fields are optional.
+            </div>
+            <div class="row addRecordDiv">
+                <div id="addRecordMangaImageDiv" class="left addRecordImageDiv">
+                    <a id="mangaFavoriteImageLink" class="recordFavoriteImageLink"><i class="material-icons">favorite</i></a>
+                    <img id="addRecordMangaImg" class="addRecordImg" src="../../assets/imgDef.png" list="" default="../../assets/imgDef.png">
+                    <div id="addRecordMangaImgBtnDiv" class="addRecordImgBtnDiv">
+                        <div class="addRecordMangaImgBtnContainer"><a id="mangaPreviousImgBtn" class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_before</i></a></div>
+                        <div class="addRecordMangaImgBtnContainer"><a id="mangaAddImgBtn" class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">add</i></a></div>
+                        <div class="addRecordMangaImgBtnContainer"><a id="mangaRemoveImgBtn" class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">remove</i></a></div>
+                        <div class="addRecordMangaImgBtnContainer"><a id="mangaNextImgBtn" class="addRecordAnimeImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_next</i></a></div>
+                    </div>
+                    <input id="mangaAddImgInput" class="recordAddImgInput" type="file" multiple>
+                </div>
+                <form id="categoryMangaForm1" class="categoryTopForm col s8">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input id="mangaName" type="text" class="validate left autocomplete">
+                            <label for="mangaName">English Name:</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="mangaJapaneseName" type="text" class="validate left">
+                            <label for="mangaJapaneseName">Japanese Name:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea id="mangaSynopsis" class="validate materialize-textarea" maxlength="1000"></textarea>
+                            <label for="mangaSynopsis">Synopsis:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s2">
+                            <input id="mangaRating" type="text" class="left" readonly="true" value="N/A">
+                            <label for="mangaRating">Rating: <a class="modal-trigger" href="#mangaGlobalRatingModal"><i class="material-icons infoIcon">info</i></a></label>
+                        </div>
+                        <div class="input-field col s10">
+                            <textarea id="mangaReview" class="validate materialize-textarea" maxlength="1000"></textarea>
+                            <label for="mangaReview">Comments/Review:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <a id="mangaMoreDetailsBtn" class="waves-effect waves-light btn addRecordBtn modal-trigger" href="#mangaMoreDetailsModal"><i class="material-icons right">add</i>More Details</a>
+                        <a id="mangaFetchDetailsBtn" class="waves-effect waves-light btn addRecordBtn"><i class="material-icons right">refresh</i>Fetch Details</a>
+                    </div>
+                </form>
+                <div id="mangaMoreDetailsModal" class="modal modal-fixed-footer recordMoreDetailsModal">
+                    <div class="modal-content">
+                        <h4 class="center">More Details</h4>
+                        <form id="categoryMangaForm3" class="categoryTopForm col s12">
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="mangaPublisher" type="text" class="validate left">
+                                    <label for="mangaPublisher">English Publisher:</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="mangaJapanesePublisher" type="text" class="validate left">
+                                    <label for="mangaJapanesePublisher">Japanese Publisher:</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="mangaWriters" type="text" class="validate left">
+                                    <label for="mangaWriters">Written By:</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="mangaIllustrator" type="text" class="validate left">
+                                    <label for="mangaIllustrator">Illustrated By:</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s4">
+                                    <select id="mangaDemographic">
+                                        <option value="" disabled selected>N/A</option>
+                                        <option value="josei">Josei</option>
+                                        <option value="kodomomuke">Kodomomuke</option>
+                                        <option value="seinen">Seinen</option>
+                                        <option value="shonen">Shonen</option>
+                                        <option value="shoujo">Shoujo</option>
+                                    </select>
+                                    <label>Demographic:</label>
+                                </div>
+                                <div class="input-field col s4">
+                                    <input id="mangaStartDate" type="date" class="validate left">
+                                    <label for="mangaStartDate">Start Date:</label>
+                                </div>
+                                <div class="input-field col s4">
+                                    <input id="mangaEndDate" type="date" class="validate left">
+                                    <label for="mangaEndDate">End Date:</label>
+                                </div>
+                            </div>
+                            <div id="mangaAddRecordFilesOuterDiv" class="file-field input-field">
+                                <div id="mangaAddRecordFilesDiv" class="btn addRecordFilesDiv">
+                                    <span>
+                                        File<i class="material-icons right">add</i>
+                                    </span>
+                                    <input id="mangaAddRecordFiles" type="file" multiple>
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input id="mangaAddRecordFilesText" class="file-path validate" type="text">
+                                    <label for="mangaAddRecordFilesText">Upload one or more files.</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                    </div>
+                </div>
+            </div>
+            <h2 id="mangaGenresTitle" class="recordGenresTitle">Genres/Tags: <a class="modal-trigger" href="#genresModal"><i class="material-icons infoIcon genresIcon">add_circle</i></a></h2>
+            <div class="row addRecordDiv">
+                <form id="categoryMangaForm2" class="col s12"></form>
+            </div>
+            <a id="mangaSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
+            <div id="introductionTargetMangaSave" class="tap-target" data-target="mangaSave">
+                <div class="tap-target-content">
+                    <p>Use this button to save the manga record.</p>
+                </div>
+            </div>
+            <div class="fixed-action-btn">
+                <a id="mangaOptions" class="btn-floating btn-large waves-effect waves-light"><i class="large material-icons">add</i></a>
+                <div id="introductionTargetMangaOptions" class="tap-target" data-target="mangaOptions">
+                    <div class="tap-target-content">
+                        <p>Use the options to add associated content.</p>
+                    </div>
+                </div>
+                <ul>
+                    <li><a id="mangaContent" href="#mangaModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
+                </ul>
+            </div>
+            <div id="mangaGlobalRatingModal" class="modal infoModal">
+                <div class="modal-content">
+                    <h4 class="center">Manga Rating</h4>
+                    <p>This will be automatically calculated as the average of the average volume and chapter ratings related to the manga.</p>
+                </div>
+                <div class="modal-footer">
+                    <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                </div>
+            </div>
+            <div id="mangaModal" class="modal contentModal modal-fixed-footer">
+                <div class="modal-content">
+                    <h4 class="center">Related Content</h4>
+                    <ul id="mangaList" class="collapsible"></ul>
+                </div>
+                <div class="modal-footer">
+                    <a id="mangaAddChapter" class="waves-effect waves-light btn-flat left modalButtons">+ Chapter</a>
+                    <a id="mangaAddVolume" class="waves-effect waves-light btn-flat left modalButtons">+ Volume</a>
+                    <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
         <div id="genresModal" class="modal modal-fixed-footer">
             <div class="modal-content">
                 <h4 class="center">Extra</h4>
@@ -374,6 +546,12 @@
                         <div class="input-field col s12">
                             <input id="bookOtherGenres" type="text" class="validate left">
                             <label for="bookOtherGenres">Genres/Tags:</label>
+                        </div>
+                    </div>
+                    <div id="mangaOtherGenresDiv" class="row otherGenresDiv">
+                        <div class="input-field col s12">
+                            <input id="mangaOtherGenres" type="text" class="validate left">
+                            <label for="mangaOtherGenres">Genres/Tags:</label>
                         </div>
                     </div>
                 </form>
