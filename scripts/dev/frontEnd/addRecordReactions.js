@@ -555,6 +555,8 @@ window.addEventListener("load", () => {
     genreListLoad("Anime", 6);
     // Fill the book record page with the associated genre options.
     genreListLoad("Book", 6);
+    // Fill the manga record page with the associated genre options.
+    genreListLoad("Manga", 6);
     // Initialize the select tags on the page.
     initSelect();
     // Initialize the floating action button on the page.
@@ -573,7 +575,9 @@ window.addEventListener("load", () => {
     bookSave();
     // Add the listeners corresponding to the anime related content options.
     animeModalButtons();
-    const categories = ["anime", "book"];
+    // Add the listeners corresponding to the manga related content options.
+    mangaModalButtons();
+    const categories = ["anime", "book", "manga"];
     categories.forEach(category => {
         // Initialize the observer for the review.
         initReviewObserver(document.getElementById(category + "Review"));

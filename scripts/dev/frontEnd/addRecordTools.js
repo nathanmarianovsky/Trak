@@ -3,9 +3,12 @@
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page.
 
     - calculateAnimeRating: Calculates the average rating for an anime based on the available ratings for all films, ONAs, OVAs, and seasons.
+    - calculateMangaRating: Calculates the average rating for a manga based on the available ratings for all chapters and volumes.
     - animeListReorganize: Reorganize the list items in the associated anime modal.
+    - mangaListReorganize: Reorganize the list items in the associated manga modal.
     - animeSeasonContentButtons: Listen for change and click events on the related content anime episode table items.
     - animeContentSingleButtons: Listen for click events on the related content anime film/ONA/OVA table items.
+    - mangaContentSingleButtons: Listen for click events on the related content manga chapter/volume table items.
     - episodeAddition: Add an episode to an anime related content season.
     - animeContentSeasonButtons: Listen for click events on the related content anime season table items.
     - singleAddition: Driver function designed to add a film/ONA/OVA table item in the related content section of an anime record.
@@ -51,6 +54,38 @@ var calculateAnimeRating = () => {
     }
     // Update the page global rating input accordingly.
     count == 0 ? globalRating.value = "N/A" : globalRating.value = (sum / count).toFixed(2);
+};
+
+
+
+/*
+
+Calculates the average rating for a manga based on the available ratings for all chapters and volumes.
+
+*/
+var calculateMangaRating = () => {
+    // Define the related content list and global ratings input.
+    const relevantList = document.getElementById("mangaList"),
+        globalRating = document.getElementById("mangaRating");
+    // Initialize the overall sum and count of items utilized in the sum.
+    let chapterSum = 0, volumeSum = 0, chapterCount = 0, volumeCount = 0, singleValue = "";
+    // Iterate through all related content items.
+    for(let k = 0; k < relevantList.children.length; k++) {
+        let itemType = relevantList.children[k].id.split("_")[2];
+        // Pick out the required input based on whether the item is of a type chapter or volume.
+        singleValue = relevantList.children[k].children[0].children[4].children[0].children[3].value;
+        if(itemType == "Chapter" && singleValue != "") {
+            chapterSum += parseInt(singleValue);
+            chapterCount++;
+        }
+        else if(itemType == "Volume" && singleValue != "") {
+            volumeSum += parseInt(singleValue);
+            volumeCount++;
+        }
+    }
+    // Update the page global rating input accordingly.
+    chapterCount + volumeCount == 0 ? globalRating.value = "N/A"
+        : globalRating.value = (((chapterCount == 0 ? 0 : (chapterSum / chapterCount)) + (volumeCount == 0 ? 0 : (volumeSum / volumeCount))) / 2).toFixed(2);
 };
 
 
@@ -142,6 +177,57 @@ var animeListReorganize = () => {
 
 /*
 
+Reorganize the list items in the associated manga modal.
+
+*/
+var mangaListReorganize = () => {
+    // Define the related content list.
+    const mangaModalList = document.getElementById("mangaList");
+    // Iterate through all related content items.
+    for(let i = 1; i < mangaModalList.children.length + 1; i++) {
+        // Define the associated components to the related content item.
+        let child = mangaModalList.children[i - 1],
+            currentNum = child.id.split("_")[1],
+            childType = child.id.split("_")[2],
+            childHeader = child.children[0],
+            childBody = child.children[1],
+            singleNameInput = childHeader.children[0].children[0],
+            singleNameLabel = childHeader.children[0].children[1],
+            singleISBNInput = childHeader.children[1].children[0],
+            singleISBNLabel = childHeader.children[1].children[1],
+            singleReleaseInput = childHeader.children[2].children[0],
+            singleReleaseLabel = childHeader.children[2].children[1],
+            singleLastReadInput = childHeader.children[3].children[0],
+            singleLastReadabel = childHeader.children[3].children[1],
+            singleRatingSelect = childHeader.children[4].children[0].children[3],
+            singleSynopsisInput = childBody.children[0].children[0].children[0].children[0],
+            singleSynopsisLabel = childBody.children[0].children[0].children[0].children[1],
+            singleReviewInput = childBody.children[1].children[0].children[0].children[0],
+            singleReviewLabel = childBody.children[1].children[0].children[0].children[1];
+        // Change the item id and for attributes accordingly.
+        child.setAttribute("id", "li_" + i + "_" + childType);
+        singleNameInput.setAttribute("id", "li_" + i + "_" + childType + "_Name");
+        singleNameLabel.setAttribute("for", "li_" + i + "_" + childType + "_Name");
+        singleISBNInput.setAttribute("id", "li_" + i + "_" + childType + "_ISBN");
+        singleISBNLabel.setAttribute("for", "li_" + i + "_" + childType + "_ISBN");
+        singleReleaseInput.setAttribute("id", "li_" + i + "_" + childType + "_Release");
+        singleReleaseLabel.setAttribute("for", "li_" + i + "_" + childType + "_Release");
+        singleLastReadInput.setAttribute("id", "li_" + i + "_" + childType + "_LastRead");
+        singleLastReadLabel.setAttribute("for", "li_" + i + "_" + childType + "_LastRead");
+        singleRatingSelect.setAttribute("id", "li_" + i + "_" + childType + "_Rating");
+        if(childType == "Volume") {
+            singleSynopsisInput.setAttribute("id", "li_" + i + "_" + childType + "_Synopsis");
+            singleSynopsisLabel.setAttribute("for", "li_" + i + "_" + childType + "_Synopsis");
+        }
+        singleReviewInput.setAttribute("id", "li_" + i + "_" + childType + "_Review");
+        singleReviewLabel.setAttribute("for", "li_" + i + "_" + childType + "_Review");
+    }
+};
+
+
+
+/*
+
 Listen for change and click events on the related content anime episode table items.
 
     - ratingSelect is the input corresponding to the episode rating.
@@ -203,7 +289,7 @@ Listen for click events on the related content anime film/ONA/OVA table items.
     - formSingleName is the input corresponding to the film/ONA/OVA name.
     - formSingleReleaseDate is the input corresponding to the film/ONA/OVA release date.
     - formSingleLastWatchedDate is the input corresponding to the film/ONA/OVA last watched date.
-    - formSingleRating is the input corresponding to the episode rating.
+    - formSingleRating is the input corresponding to the film/ONA/OVA rating.
     - delSingleBtn is the button that deletes a film/ONA/OVA.
 
 */
@@ -212,7 +298,7 @@ var animeContentSingleButtons = (formSingleName, formSingleReleaseDate, formSing
     formSingleName.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formSingleReleaseDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formSingleLastWatchedDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
-    // Listen for a click event on the delete button for a season on the anime associated modal to delete the season.
+    // Listen for a click event on the delete button for a film/ONA/OVA on the anime associated modal to delete the season.
     delSingleBtn.addEventListener("click", e => { 
         let delTarget = e.target.parentNode.parentNode.parentNode.parentNode;
         setTimeout(() => delTarget.children[1].style.display = "none", 1);
@@ -230,6 +316,45 @@ var animeContentSingleButtons = (formSingleName, formSingleReleaseDate, formSing
     formSingleRating.addEventListener("change", e => {
         // Calculate and write the new anime global rating.
         calculateAnimeRating();
+    });
+};
+
+
+
+/*
+
+Listen for click events on the related content manga chapter/volume table items.
+
+    - formSingleName is the input corresponding to the chapter/volume name.
+    - formSingleReleaseDate is the input corresponding to the chapter/volume release date.
+    - formSingleLastReadDate is the input corresponding to the chapter/volume last read date.
+    - formSingleRating is the input corresponding to the chapter/volume rating.
+    - delSingleBtn is the button that deletes a chapter/volume.
+
+*/
+var mangaContentSingleButtons = (formSingleName, formSingleReleaseDate, formSingleLastReadDate, formSingleRating, delSingleBtn) => {
+    // Listen for a click on the item name, item start date, item end date, or item average rating in order to prevent the listed item body from displaying.
+    formSingleName.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
+    formSingleReleaseDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
+    formSingleLastReadDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
+    // Listen for a click event on the delete button for a chapter/volume on the manga associated modal to delete the item.
+    delSingleBtn.addEventListener("click", e => { 
+        let delTarget = e.target.parentNode.parentNode.parentNode.parentNode;
+        setTimeout(() => delTarget.children[1].style.display = "none", 1);
+        // Remove the tooltips.
+        clearTooltips();
+        delTarget.remove();
+        // Initialize the tooltips.
+        initTooltips();
+        // Reoganize the ids of the modal list items.
+        mangaListReorganize();
+        // Calculate and write the new anime global rating.
+        calculateMangaRating();
+    });
+    // Listen for a change in the rating of a chapter/volume.
+    formSingleRating.addEventListener("change", e => {
+        // Calculate and write the new anime global rating.
+        calculateMangaRating();
     });
 };
 
@@ -422,7 +547,7 @@ var singleAddition = () => {
     inputSingleName.setAttribute("type", "text");
     labelSingleName.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_Name");
     labelSingleName.textContent = "Name:";
-    // Prepare the season status.
+    // Prepare the single type.
     divSingleType.classList.add("input-field");
     divSingleType.style.width = "17.5%";
     divSingleType.style.marginLeft = "25px";
@@ -473,7 +598,7 @@ var singleAddition = () => {
         selectSingleRating.append(newOption);
     }
     labelSingleRating.textContent = "Rating:";
-    // Prepare the season button for deleting the season.
+    // Prepare the film/ONA/OVA button for deleting the item.
     divSingleDelete.classList.add("input-field");
     divSingleDelete.style.width = "5%";
     divSingleDelete.style.marginLeft = "25px";
@@ -668,6 +793,168 @@ var seasonAddition = () => {
     animeList.append(itemLI);
     // Add the button listeners associated to an anime season.
     animeContentSeasonButtons(inputName, inputStartDate, inputEndDate, inputAverageRating, iconAdd, iconDelete);
+    // Initialize the select tags.
+    initSelect();
+    // Initialize the tooltips.
+    initTooltips();
+    // Initialize the observers for all relevant select tags.
+    initSelectObservers();
+};
+
+
+/*
+
+Driver function designed to add a chapter table item in the related content section of a manga record.
+
+   - scenario is a string taking on either the value "chapter" or "volume" to correspond to which item to add.
+
+*/
+var mangaItemAddition = scenario => {
+    // Remove the tooltips.
+    clearTooltips();
+    // Define and construct all components needed to attach a manga chapter to the related content table.
+    const mangaList = document.getElementById("mangaList"),
+        itemSingleLI = document.createElement("li"),
+        itemSingleDivHeader = document.createElement("div"),
+        divSingleName = document.createElement("div"),
+        inputSingleName = document.createElement("input"),
+        labelSingleName = document.createElement("label"),
+        divSingleReleaseDate = document.createElement("div"),
+        inputSingleReleaseDate = document.createElement("input"),
+        labelSingleReleaseDate = document.createElement("label"),
+        divSingleLastReadDate = document.createElement("div"),
+        inputSingleLastReadDate = document.createElement("input"),
+        labelSingleLastReadDate = document.createElement("label"),
+        divSingleRating = document.createElement("div"),
+        selectSingleRating = document.createElement("select"),
+        labelSingleRating = document.createElement("label"),
+        defOptionSingleRating = document.createElement("option"),
+        divSingleDelete = document.createElement("div"),
+        spanSingleDelete = document.createElement("span"),
+        iconSingleDelete = document.createElement("i"),
+        itemSingleDivBody = document.createElement("div"),
+        itemSingleDivBodyForm = document.createElement("form"),
+        divSingleReview = document.createElement("div"),
+        spanSingleReview = document.createElement("span"),
+        inputSingleReview = document.createElement("textarea"),
+        labelSingleReview = document.createElement("label"),
+        divSingleISBN = document.createElement("div"),
+        inputSingleISBN = document.createElement("input"),
+        labelSingleISBN = document.createElement("label"),
+        divSingleSynopsis = document.createElement("div"),
+        spanSingleSynopsis = document.createElement("span"),
+        inputSingleSynopsis = document.createElement("textarea"),
+        labelSingleSynopsis = document.createElement("label");
+    if(scenario == "Volume") {
+        // Prepare the volume item isbn.
+        divSingleISBN.classList.add("input-field");
+        divSingleISBN.style.width = "17.5%";
+        divSingleISBN.style.marginLeft = "25px";
+        inputSingleISBN.classList.add("validate", "left");
+        inputSingleISBN.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_Volume_ISBN");
+        inputSingleISBN.setAttribute("type", "text");
+        labelSingleISBN.setAttribute("for", "li_" + (mangaList.children.length + 1) + "_Volume_ISBN");
+        labelSingleISBN.textContent = "ISBN:";
+        divSingleISBN.append(inputSingleISBN, labelSingleISBN);
+        // Prepare the volume synopsis.
+        divSingleSynopsis.classList.add("row");
+        spanSingleSynopsis.classList.add("input-field", "col", "s12");
+        inputSingleSynopsis.classList.add("validate", "materialize-textarea");
+        inputSingleSynopsis.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_Volume_Synopsis");
+        labelSingleSynopsis.setAttribute("for", "li_" + (mangaList.children.length + 1) + "_Volume_Synopsis");
+        labelSingleSynopsis.textContent = "Synopsis:";
+        spanSingleSynopsis.append(inputSingleSynopsis, labelSingleSynopsis);
+        divSingleSynopsis.append(spanSingleSynopsis);
+    }
+    // Prepare the chapter/volume item name.
+    divSingleName.classList.add("input-field");
+    scenario == "Volume" ? divSingleName.style.width = "20%" : divSingleName.style.width = "25%";
+    inputSingleName.classList.add("validate", "left");
+    inputSingleName.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_" + scenario + "_Name");
+    inputSingleName.setAttribute("type", "text");
+    labelSingleName.setAttribute("for", "li_" + (mangaList.children.length + 1) + "_" + scenario + "_Name");
+    labelSingleName.textContent = "Name:";
+    // Prepare the chapter/volume item release date.
+    divSingleReleaseDate.classList.add("input-field");
+    scenario == "Volume" ? divSingleReleaseDate.style.width = "20%" : divSingleReleaseDate.style.width = "25%";
+    divSingleReleaseDate.style.marginLeft = "25px";
+    inputSingleReleaseDate.classList.add("validate", "left");
+    inputSingleReleaseDate.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_" + scenario + "_Release");
+    inputSingleReleaseDate.setAttribute("type", "date");
+    labelSingleReleaseDate.setAttribute("for", "li_" + (mangaList.children.length + 1) + "_" + scenario + "_Release");
+    labelSingleReleaseDate.textContent = "Release Date:";
+    // Prepare the chapter/volume item last read date.
+    divSingleLastReadDate.classList.add("input-field");
+    scenario == "Volume" ? divSingleLastReadDate.style.width = "20%" : divSingleLastReadDate.style.width = "25%";
+    divSingleLastReadDate.style.marginLeft = "25px";
+    inputSingleLastReadDate.classList.add("validate", "left");
+    inputSingleLastReadDate.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_" + scenario + "_LastRead");
+    inputSingleLastReadDate.setAttribute("type", "date");
+    labelSingleLastReadDate.setAttribute("for", "li_" + (mangaList.children.length + 1) + "_" + scenario + "_LastRead");
+    labelSingleLastReadDate.textContent = "Last Read Date:";
+    // Prepare the chapter/volume item rating.
+    divSingleRating.classList.add("input-field", "selectShortVerticalScroll");
+    scenario == "Volume" ? divSingleRating.style.width = "17.5%" : divSingleRating.style.width = "20%";
+    divSingleRating.style.marginLeft = "25px";
+    defOptionSingleRating.setAttribute("value", "");
+    defOptionSingleRating.setAttribute("selected", "true");
+    defOptionSingleRating.textContent = "N/A";
+    selectSingleRating.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_" + scenario + "_Rating");
+    selectSingleRating.append(defOptionSingleRating);
+    for(let t = 0; t < 11; t++) {
+        let newOption = document.createElement("option");
+        newOption.setAttribute("value", t);
+        newOption.textContent = t + "/10";
+        selectSingleRating.append(newOption);
+    }
+    labelSingleRating.textContent = "Rating:";
+    // Prepare the season button for deleting the season.
+    divSingleDelete.classList.add("input-field");
+    divSingleDelete.style.width = "5%";
+    divSingleDelete.style.marginLeft = "25px";
+    spanSingleDelete.classList.add("center", "tooltipped");
+    spanSingleDelete.setAttribute("data-position", "top");
+    spanSingleDelete.setAttribute("data-tooltip", "Delete");
+    spanSingleDelete.classList.add("modalContentButtons", "modalContentDelete");
+    iconSingleDelete.textContent = "delete_sweep";
+    iconSingleDelete.classList.add("material-icons");
+    // Prepare the film/ONA/OVA review.
+    divSingleReview.classList.add("row");
+    spanSingleReview.classList.add("input-field", "col", "s12");
+    inputSingleReview.classList.add("validate", "materialize-textarea");
+    inputSingleReview.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_" + scenario + "_Review");
+    labelSingleReview.setAttribute("for", "li_" + (mangaList.children.length + 1) + "_" + scenario + "_Review");
+    labelSingleReview.textContent = "Comments/Review:";
+    // Attach all season components to the list item.
+    itemSingleDivHeader.classList.add("collapsible-header");
+    itemSingleDivBody.classList.add("collapsible-body");
+    divSingleName.append(inputSingleName, labelSingleName);
+    divSingleReleaseDate.append(inputSingleReleaseDate, labelSingleReleaseDate);
+    divSingleLastReadDate.append(inputSingleLastReadDate, labelSingleLastReadDate);
+    divSingleRating.append(selectSingleRating, labelSingleRating);
+    spanSingleReview.append(inputSingleReview, labelSingleReview);
+    divSingleReview.append(spanSingleReview);
+    spanSingleDelete.append(iconSingleDelete);
+    divSingleDelete.append(spanSingleDelete);
+    if(scenario == "Chapter") {
+        itemSingleDivHeader.append(divSingleName, divSingleReleaseDate, divSingleLastReadDate, divSingleRating, divSingleDelete);
+    }
+    else if(scenario == "Volume") {
+        itemSingleDivHeader.append(divSingleName, divSingleISBN, divSingleReleaseDate, divSingleLastReadDate, divSingleRating, divSingleDelete);
+    }
+    // Attach the div designed to house the film/ONA/OVA review.
+    itemSingleDivBodyForm.classList.add("col", "s12");
+    scenario == "Volume" ? itemSingleDivBodyForm.append(divSingleSynopsis) : itemSingleDivBodyForm.append(document.createElement("div"));
+    itemSingleDivBodyForm.append(divSingleReview);
+    itemSingleDivBody.append(itemSingleDivBodyForm);
+    // Attach the list item to the page modal.
+    itemSingleLI.setAttribute("draggable", "true");
+    itemSingleLI.classList.add("dropzone");
+    itemSingleLI.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_" + scenario);
+    itemSingleLI.append(itemSingleDivHeader, itemSingleDivBody);
+    mangaList.append(itemSingleLI);
+    // Add the button listeners associated to a film/ONA/OVA.
+    animeContentSingleButtons(inputSingleName, inputSingleReleaseDate, inputSingleLastReadDate, selectSingleRating, iconSingleDelete);
     // Initialize the select tags.
     initSelect();
     // Initialize the tooltips.

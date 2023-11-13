@@ -260,6 +260,54 @@ exports.addBookListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainW
 
 /*
 
+Driver function for adding all manga listeners.
+
+	- BrowserWindow and ipc provide the means to operate the Electron app.
+	- path and fs provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
+	- dev is a boolean representing whether the app is being run in a development mode.
+	- tools provides a collection of local functions.
+	- mainWindow is an object referencing the primary window of the Electron app.
+	- dataPath is the current path to the local user data.
+	- originalPath is the original path to the local user data.
+	- secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
+
+*/
+exports.addMangaListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+	// Handles the search of a string through all possible manga listings on myanimelist.
+	ipc.on("mangaSearch", (event, submission) => {
+		require("./mangaTools").mangaSearch(log, require("mal-scraper"), event, submission);
+	});
+
+	// // Handles the fetching of details for a given anime via its name.
+	// ipc.on("animeFetchDetails", (event, submission) => {
+	// 	require("./animeTools").animeFetchDetails(log, require("mal-scraper"), tools, event, submission);
+	// });
+
+	// // Handles the fetching of anime releases based on a query search.
+	// ipc.on("animeFetchSearch", (event, submission) => {
+	// 	require("./animeTools").animeFetchSearch(log, require("mal-scraper"), event, submission);
+	// });
+
+	// // Handles the fetching of an anime synopsis.
+	// ipc.on("animeSynopsisFetch", (event, submission) => {
+	// 	require("./animeTools").animeSynopsisFetch(log, require("mal-scraper"), event, submission);
+	// });
+
+	// // Handles the opening of the addRecord.html page to load an anime record based on a season or query search.
+	// ipc.on("animeRecordRequest", (event, submission) => {
+	// 	let animeRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  	// 	animeRecordWindow.webContents.on("did-finish-load", () => {
+  	// 		animeRecordWindow.webContents.send("searchRecordStart", "Anime");
+  	// 		require("./animeTools").animeRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("mal-scraper"), tools, mainWindow, animeRecordWindow, dataPath, submission);
+  	// 	});
+	// });
+};
+
+
+
+/*
+
 Driver function for adding all database listeners.
 
 	- ipc provides the means to operate the Electron app.
@@ -514,6 +562,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	exports.addAnimeListeners(BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to book records.
 	exports.addBookListeners(BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+	// Add the listeners associated to manga records.
+	exports.addMangaListeners(BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to exporting and importing data.
 	exports.addDatabaseListeners(path, fs, log, ipc, tools, mainWindow, originalPath);
 	// Add the listeners associated to all settings actions.

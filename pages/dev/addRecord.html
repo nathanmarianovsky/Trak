@@ -165,7 +165,7 @@
             </div>
             <h2 id="animeGenresTitle" class="recordGenresTitle">Genres/Tags: <a class="modal-trigger" href="#genresModal"><i class="material-icons infoIcon genresIcon">add_circle</i></a></h2>
             <div class="row addRecordDiv">
-                <form id="categoryAnimeForm2" class="col s12"></form>
+                <form id="categoryAnimeForm2" class="col s12 categoryBottomForm"></form>
             </div>
             <a id="animeSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
             <div id="introductionTargetAnimeSave" class="tap-target" data-target="animeSave">
@@ -328,7 +328,7 @@
             </div>
             <h2 id="bookGenresTitle" class="recordGenresTitle">Genres/Tags: <a class="modal-trigger" href="#genresModal"><i class="material-icons infoIcon genresIcon">add_circle</i></a></h2>
             <div class="row addRecordDiv">
-                <form id="categoryBookForm2" class="col s12"></form>
+                <form id="categoryBookForm2" class="col s12 categoryBottomForm"></form>
             </div>
             <a id="bookSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
             <div id="introductionTargetBookSave" class="tap-target" data-target="bookSave">
@@ -486,7 +486,7 @@
             </div>
             <h2 id="mangaGenresTitle" class="recordGenresTitle">Genres/Tags: <a class="modal-trigger" href="#genresModal"><i class="material-icons infoIcon genresIcon">add_circle</i></a></h2>
             <div class="row addRecordDiv">
-                <form id="categoryMangaForm2" class="col s12"></form>
+                <form id="categoryMangaForm2" class="col s12 categoryBottomForm"></form>
             </div>
             <a id="mangaSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
             <div id="introductionTargetMangaSave" class="tap-target" data-target="mangaSave">
@@ -520,8 +520,16 @@
                     <ul id="mangaList" class="collapsible"></ul>
                 </div>
                 <div class="modal-footer">
-                    <a id="mangaAddChapter" class="waves-effect waves-light btn-flat left modalButtons">+ Chapter</a>
-                    <a id="mangaAddVolume" class="waves-effect waves-light btn-flat left modalButtons">+ Volume</a>
+                    <div id="mangaModalSwitchDiv" class="switch left">
+                        <label>
+                            Volumes
+                            <input id="mangaModalSwitch" type="checkbox">
+                            <span class="lever"></span>
+                            Chapters
+                        </label>
+                    </div>
+                    <a id="mangaAddChapter" class="waves-effect waves-light btn-flat left modalButtons mangaModalButtons">+ Chapter</a>
+                    <a id="mangaAddVolume" class="waves-effect waves-light btn-flat left modalButtons mangaModalButtons">+ Volume</a>
                     <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
                 </div>
             </div>

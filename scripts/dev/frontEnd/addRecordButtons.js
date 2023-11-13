@@ -178,11 +178,55 @@ var animeModalButtons = () => {
         // Add a table item for the new film/ONA/OVA.
         singleAddition();
     });
-    // Listen for a click event on the animeAddSeason button on the anime associated modal to add a season listing.
+    // Listen for a click event on the anime related content season creation button.
     animeAddSeason.addEventListener("click", e => {
         e.preventDefault();
         // Add a table item for the new season.
         seasonAddition();
+    });
+};
+
+
+
+/*
+
+Listen for click events on the related content manga modal buttons.
+
+*/
+var mangaModalButtons = () => {
+    // Define the buttons for all actions.
+    const mangaAddVolume = document.getElementById("mangaAddVolume"),
+        mangaAddChapter = document.getElementById("mangaAddChapter"),
+        mangaModalSwitch = document.getElementById("mangaModalSwitch"),
+        mangaList = document.getElementById("mangaList");
+    // Listen for a change in the related content type to change the content accordingly.
+    const originalSwitchBackground = "#00000061",
+        newSwitchBackground = "#" + addAlpha(rgba2hex(getComputedStyle(mangaAddVolume).backgroundColor).substring(1), 0.6);
+    mangaModalSwitch.addEventListener("change", e => {
+        if(e.target.checked == true) {
+            mangaAddVolume.style.display = "none";
+            mangaAddChapter.style.display = "inline-block";
+            Array.from(mangaList.children).forEach(li => li.style.display = (li.getAttribute("id").split("_")[2] == "Chapter" ? "list-item" : "none"));
+            document.querySelector("#mangaModalSwitchDiv label input[type=checkbox]:checked+.lever").style.backgroundColor = newSwitchBackground;
+        }
+        else {
+            mangaAddVolume.style.display = "inline-block";
+            mangaAddChapter.style.display = "none";
+            Array.from(mangaList.children).forEach(li => li.style.display = (li.getAttribute("id").split("_")[2] == "Volume" ? "list-item" : "none"));
+            document.querySelector("#mangaModalSwitchDiv label .lever").style.backgroundColor = originalSwitchBackground;
+        }
+    });
+    // Listen for a click event on the manga related content chapter creation button.
+    mangaAddChapter.addEventListener("click", e => {
+        e.preventDefault();
+        // Add a table item for the new chapter.
+        mangaItemAddition("Chapter");
+    });
+    // Listen for a click event on the manga related content volume creation button.
+    mangaAddVolume.addEventListener("click", e => {
+        e.preventDefault();
+        // Add a table item for the new volume.
+        mangaItemAddition("Volume");
     });
 };
 
@@ -353,10 +397,12 @@ var recordChoicesButtons = () => {
     // Define the color which will be applied to the favorite image icon.
     const btnColorFavorite = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor;
     let introAnimeHolder = false,
-        introBookHolder = false;
+        introBookHolder = false,
+        introMangaHolder = false;
     ipcRenderer.on("addIntroduction", event => {
         introAnimeHolder = true;
         introBookHolder = true;
+        introMangaHolder = true;
     });
     // Listen for a click event on the categoryAnime button on the top bar to display the form corresponding to an anime record.
     categoryAnime.addEventListener("click", e => {
@@ -379,6 +425,7 @@ var recordChoicesButtons = () => {
         imgButtons(animeFavoriteImageLink, animePreviousImgBtn, animeAddImgBtn, animeAddImgInput, animeRemoveImgBtn, animeNextImgBtn, addRecordAnimeImg, btnColorFavorite);
         // Define the portions of the page associated to the autocomplete.
         const animeName = document.getElementById("animeName"),
+            animePreloader = document.getElementById("animePreloader"),
             animeNameAutocomplete = M.Autocomplete.init(animeName, {
                 "sortFunction": (a, b) => a.localeCompare(b),
                 "onAutocomplete": txt => {
@@ -387,20 +434,19 @@ var recordChoicesButtons = () => {
                 }
             }),
             animeNameUL = animeName.nextElementSibling,
-            animePreloader = document.getElementById("animePreloader"),
             animeMoreBtn = document.getElementById("animeMoreDetailsBtn"),
             animeFetchBtn = document.getElementById("animeFetchDetailsBtn"),
             animeSave = document.getElementById("animeSave"),
             animeOptions = document.getElementById("animeOptions"),
-            synopsisInput = document.getElementById("animeSynopsis"),
-            reviewInput = document.getElementById("animeReview");
+            animeSynopsis = document.getElementById("animeSynopsis"),
+            animeReview = document.getElementById("animeReview");
         // Listen for changes in the book description in order to hide/show a vertical scroll.
-        synopsisInput.addEventListener("input", e => {
-            parseInt(synopsisInput.style.height) > parseInt(getComputedStyle(synopsisInput).maxHeight) ? synopsisInput.style.overflowY = "scroll" : synopsisInput.style.overflowY = "hidden";
+        animeSynopsis.addEventListener("input", e => {
+            parseInt(animeSynopsis.style.height) > parseInt(getComputedStyle(animeSynopsis).maxHeight) ? animeSynopsis.style.overflowY = "scroll" : animeSynopsis.style.overflowY = "hidden";
         });
         // Listen for changes in the book comments/review in order to hide/show a vertical scroll.
-        reviewInput.addEventListener("input", e => {
-            parseInt(reviewInput.style.height) > parseInt(getComputedStyle(reviewInput).maxHeight) ? reviewInput.style.overflowY = "scroll" : reviewInput.style.overflowY = "hidden";
+        animeReview.addEventListener("input", e => {
+            parseInt(animeReview.style.height) > parseInt(getComputedStyle(animeReview).maxHeight) ? animeReview.style.overflowY = "scroll" : animeReview.style.overflowY = "hidden";
         });
         // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
         animeFetchBtn.addEventListener("click", e => {
@@ -538,10 +584,10 @@ var recordChoicesButtons = () => {
                     textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
                 }
                 textHolder = textHolder.trim();
-                synopsisInput.value = textHolder;
-                synopsisInput.classList.add("valid");
-                synopsisInput.nextElementSibling.classList.add("active");
-                M.textareaAutoResize(synopsisInput);
+                animeSynopsis.value = textHolder;
+                animeSynopsis.classList.add("valid");
+                animeSynopsis.nextElementSibling.classList.add("active");
+                M.textareaAutoResize(animeSynopsis);
             }
             // Reset all anime genres to not be checked.
             Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
@@ -683,6 +729,7 @@ var recordChoicesButtons = () => {
         // Define the portions of the page associated to the autocomplete.
         const bookTitle = document.getElementById("bookTitle"),
             bookISBN = document.getElementById("bookISBN"),
+            bookPreloader = document.getElementById("bookPreloader"),
             bookTitleAutocomplete = M.Autocomplete.init(bookTitle, {
                 "sortFunction": (a, b) => a.localeCompare(b),
                 "onAutocomplete": txt => {
@@ -691,7 +738,6 @@ var recordChoicesButtons = () => {
                 }
             }),
             bookTitleUL = bookTitle.nextElementSibling,
-            bookPreloader = document.getElementById("bookPreloader"),
             bookFetchBtn = document.getElementById("bookFetchDetailsBtn"),
             bookSave = document.getElementById("bookSave");
         // Listen for changes in the book ISBN in order to format it properly.
@@ -986,109 +1032,109 @@ var recordChoicesButtons = () => {
         // Initialize the dragging of the related content.
         let drake = dragula({"containers": [document.querySelector('#mangaList')]});
         drake.on("dragend", () => { mangaListReorganize(); });
-        // // Define all image buttons.
-        // const animePreviousImgBtn = document.getElementById("animePreviousImgBtn"),
-        //     animeAddImgBtn = document.getElementById("animeAddImgBtn"),
-        //     animeAddImgInput = document.getElementById("animeAddImgInput"),
-        //     animeRemoveImgBtn = document.getElementById("animeRemoveImgBtn"),
-        //     animeNextImgBtn = document.getElementById("animeNextImgBtn"),
-        //     addRecordAnimeImg = document.getElementById("addRecordAnimeImg"),
-        //     animeFavoriteImageLink = document.getElementById("animeFavoriteImageLink");
-        // imgButtons(animeFavoriteImageLink, animePreviousImgBtn, animeAddImgBtn, animeAddImgInput, animeRemoveImgBtn, animeNextImgBtn, addRecordAnimeImg, btnColorFavorite);
-        // // Define the portions of the page associated to the autocomplete.
-        // const animeName = document.getElementById("animeName"),
-        //     animeNameAutocomplete = M.Autocomplete.init(animeName, {
-        //         "sortFunction": (a, b) => a.localeCompare(b),
-        //         "onAutocomplete": txt => {
-        //             animePreloader.style.visibility = "visible";
-        //             ipcRenderer.send("animeFetchDetails", txt);
-        //         }
-        //     }),
-        //     animeNameUL = animeName.nextElementSibling,
-        //     animePreloader = document.getElementById("animePreloader"),
-        //     animeMoreBtn = document.getElementById("animeMoreDetailsBtn"),
-        //     animeFetchBtn = document.getElementById("animeFetchDetailsBtn"),
-        //     animeSave = document.getElementById("animeSave"),
-        //     animeOptions = document.getElementById("animeOptions"),
-        //     synopsisInput = document.getElementById("animeSynopsis"),
-        //     reviewInput = document.getElementById("animeReview");
-        // // Listen for changes in the book description in order to hide/show a vertical scroll.
-        // synopsisInput.addEventListener("input", e => {
-        //     parseInt(synopsisInput.style.height) > parseInt(getComputedStyle(synopsisInput).maxHeight) ? synopsisInput.style.overflowY = "scroll" : synopsisInput.style.overflowY = "hidden";
-        // });
-        // // Listen for changes in the book comments/review in order to hide/show a vertical scroll.
-        // reviewInput.addEventListener("input", e => {
-        //     parseInt(reviewInput.style.height) > parseInt(getComputedStyle(reviewInput).maxHeight) ? reviewInput.style.overflowY = "scroll" : reviewInput.style.overflowY = "hidden";
-        // });
-        // // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
-        // animeFetchBtn.addEventListener("click", e => {
-        //     if(animeName.value.length > 2) {
-        //         animePreloader.style.visibility = "visible";
-        //         ipcRenderer.send("animeFetchDetails", animeName.value);
-        //     }
-        //     else {
-        //         M.toast({"html": "The name is too short to fetch details from MyAnimeList", "classes": "rounded"});
-        //     }
-        // });
-        // // Define the autocomplete previous input and character max count for display purposes.
-        // let previousName = "",
-        //     maxCharCount = 0;
-        // // Listen for an input change in the anime name in order to fetch autocomplete options from myanimelist.
-        // animeName.addEventListener("input", e => {
-        //     // Only fetch myanimelist options if the anime name is of at least three characters.
-        //     if(e.target.value.length > 2) {
-        //         ipcRenderer.send("animeSearch", [previousName, e.target.value]);
-        //     }
-        //     else { animeNameAutocomplete.updateData({}); }
-        //     // Set the previous search value to the current one.
-        //     previousName = e.target.value;
-        // });
-        // // Listen for a click event on the anime name in order to trigger a fetch of autocomplete options from myanimelist.
-        // animeName.addEventListener("click", e => {
-        //     // Only fetch myanimelist options if the anime name is of at least three characters.
-        //     if(e.target.value.length > 2) {
-        //         ipcRenderer.send("animeSearch", [previousName, e.target.value]);
-        //     }
-        //     else { animeNameAutocomplete.updateData({}); }
-        // });
-        // // Once the autocomplete options have been attained update the page accordingly.
-        // ipcRenderer.on("animeSearchResults", (event, response) => {
-        //     // Proceed only if there are options available for autocomplete.
-        //     if(response[2].length > 0) {
-        //         // Define the object which will be used to update the autocomplete options.
-        //         let autoObj = {};
-        //         // Set the max character count based on the width of the page anime name input.
-        //         maxCharCount = Math.floor(((20/190) * (animeName.getBoundingClientRect().width - 467)) + 38);
-        //         // Iterate through all attained autocomplete options.
-        //         for(let t = 0; t < response[2].length; t++) {
-        //             // Add each option to the autocomplete object.
-        //             autoObj[response[2][t][0]] = response[2][t][1];
-        //         }
-        //         // Update the page autocomplete options.
-        //         animeNameAutocomplete.updateData(autoObj);
-        //         // In the case where the user is going from two to three characters, a refocus is necessary to make the unordered list for the autocomplete options to function properly.
-        //         if(response[0].length == 2 && response[1].length == 3) {
-        //             animeNameUL.style.display = "none";
-        //             animeName.click();
-        //             setTimeout(() => { animeName.click(); animeNameUL.style.display = "block"; }, 100);
-        //         }
-        //         // After a delay the list items for autocomplete options are provided the associated information in order to attain details upon a click.
-        //         setTimeout(() => {
-        //             // Iterate through all page autocomplete options.
-        //             for(let u = 0; u < animeNameUL.children.length; u++) {
-        //                 // Attach the anime name for each list item of the autocomplete options.
-        //                 let curChild = animeNameUL.children[u];
-        //                 for(let v = 0; v < response[2].length; v++) {
-        //                     if(curChild.children[0].getAttribute("src") == response[2][v][1]) {
-        //                         curChild.setAttribute("name", response[2][v][0]);
-        //                     }
-        //                 }
-        //             }
-        //         }, 500);
-        //     }
-        //     // If the anime name is not long enough then update the page autocomplete options to be empty.
-        //     else { animeNameAutocomplete.updateData({}); }
-        // });
+        // Define all image buttons.
+        const mangaPreviousImgBtn = document.getElementById("mangaPreviousImgBtn"),
+            mangaAddImgBtn = document.getElementById("mangaAddImgBtn"),
+            mangaAddImgInput = document.getElementById("mangaAddImgInput"),
+            mangaRemoveImgBtn = document.getElementById("mangaRemoveImgBtn"),
+            mangaNextImgBtn = document.getElementById("mangaNextImgBtn"),
+            addRecorMangaImg = document.getElementById("addRecorMangaImg"),
+            mangaFavoriteImageLink = document.getElementById("mangaFavoriteImageLink");
+        imgButtons(mangaFavoriteImageLink, mangaPreviousImgBtn, mangaAddImgBtn, mangaAddImgInput, mangaRemoveImgBtn, mangaNextImgBtn, addRecordMangaImg, btnColorFavorite);
+        // Define the portions of the page associated to the autocomplete.
+        const mangaName = document.getElementById("mangaName"),
+            mangaPreloader = document.getElementById("mangaPreloader"),
+            mangaNameAutocomplete = M.Autocomplete.init(mangaName, {
+                "sortFunction": (a, b) => a.localeCompare(b),
+                "onAutocomplete": txt => {
+                    mangaPreloader.style.visibility = "visible";
+                    ipcRenderer.send("animeFetchDetails", txt);
+                }
+            }),
+            mangaNameUL = animeName.nextElementSibling,
+            mangaMoreBtn = document.getElementById("mangaMoreDetailsBtn"),
+            mangaFetchBtn = document.getElementById("mangaFetchDetailsBtn"),
+            mangaSave = document.getElementById("mangaSave"),
+            mangaOptions = document.getElementById("mangaOptions"),
+            mangaSynopsis = document.getElementById("mangaSynopsis"),
+            mangaReview = document.getElementById("mangaReview");
+        // Listen for changes in the manga description in order to hide/show a vertical scroll.
+        mangaSynopsis.addEventListener("input", e => {
+            parseInt(mangaSynopsis.style.height) > parseInt(getComputedStyle(mangaSynopsis).maxHeight) ? mangaSynopsis.style.overflowY = "scroll" : mangaSynopsis.style.overflowY = "hidden";
+        });
+        // Listen for changes in the manga comments/review in order to hide/show a vertical scroll.
+        mangaReview.addEventListener("input", e => {
+            parseInt(mangaReview.style.height) > parseInt(getComputedStyle(mangaReview).maxHeight) ? mangaReview.style.overflowY = "scroll" : mangaReview.style.overflowY = "hidden";
+        });
+        // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
+        mangaFetchBtn.addEventListener("click", e => {
+            if(mangaName.value.length > 2) {
+                mangaPreloader.style.visibility = "visible";
+                ipcRenderer.send("mangaFetchDetails", mangaName.value);
+            }
+            else {
+                M.toast({"html": "The name is too short to fetch details from MyAnimeList", "classes": "rounded"});
+            }
+        });
+        // Define the autocomplete previous input and character max count for display purposes.
+        let previousName = "",
+            maxCharCount = 0;
+        // Listen for an input change in the manga name in order to fetch autocomplete options from myanimelist.
+        mangaName.addEventListener("input", e => {
+            // Only fetch myanimelist options if the manga name is of at least three characters.
+            if(e.target.value.length > 2) {
+                ipcRenderer.send("mangaSearch", [previousName, e.target.value]);
+            }
+            else { mangaNameAutocomplete.updateData({}); }
+            // Set the previous search value to the current one.
+            previousName = e.target.value;
+        });
+        // Listen for a click event on the manga name in order to trigger a fetch of autocomplete options from myanimelist.
+        mangaName.addEventListener("click", e => {
+            // Only fetch myanimelist options if the manga name is of at least three characters.
+            if(e.target.value.length > 2) {
+                ipcRenderer.send("mangaSearch", [previousName, e.target.value]);
+            }
+            else { mangaNameAutocomplete.updateData({}); }
+        });
+        // Once the autocomplete options have been attained update the page accordingly.
+        ipcRenderer.on("mangaSearchResults", (event, response) => {
+            // Proceed only if there are options available for autocomplete.
+            if(response[2].length > 0) {
+                // Define the object which will be used to update the autocomplete options.
+                let autoObj = {};
+                // Set the max character count based on the width of the page manga name input.
+                maxCharCount = Math.floor(((20/190) * (mangaName.getBoundingClientRect().width - 467)) + 38);
+                // Iterate through all attained autocomplete options.
+                for(let t = 0; t < response[2].length; t++) {
+                    // Add each option to the autocomplete object.
+                    autoObj[response[2][t][0]] = response[2][t][1];
+                }
+                // Update the page autocomplete options.
+                mangaNameAutocomplete.updateData(autoObj);
+                // In the case where the user is going from two to three characters, a refocus is necessary to make the unordered list for the autocomplete options to function properly.
+                if(response[0].length == 2 && response[1].length == 3) {
+                    mangaNameUL.style.display = "none";
+                    mangaName.click();
+                    setTimeout(() => { mangaName.click(); mangaNameUL.style.display = "block"; }, 100);
+                }
+                // After a delay the list items for autocomplete options are provided the associated information in order to attain details upon a click.
+                setTimeout(() => {
+                    // Iterate through all page autocomplete options.
+                    for(let u = 0; u < mangaNameUL.children.length; u++) {
+                        // Attach the manga name for each list item of the autocomplete options.
+                        let curChild = mangaNameUL.children[u];
+                        for(let v = 0; v < response[2].length; v++) {
+                            if(curChild.children[0].getAttribute("src") == response[2][v][1]) {
+                                curChild.setAttribute("name", response[2][v][0]);
+                            }
+                        }
+                    }
+                }, 500);
+            }
+            // If the manga name is not long enough then update the page autocomplete options to be empty.
+            else { mangaNameAutocomplete.updateData({}); }
+        });
         // // Update the page accordingly based on the fetched anime details.
         // ipcRenderer.on("animeFetchDetailsResult", (newEve, newResponse) => {
         //     const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none";
@@ -1156,10 +1202,10 @@ var recordChoicesButtons = () => {
         //             textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
         //         }
         //         textHolder = textHolder.trim();
-        //         synopsisInput.value = textHolder;
-        //         synopsisInput.classList.add("valid");
-        //         synopsisInput.nextElementSibling.classList.add("active");
-        //         M.textareaAutoResize(synopsisInput);
+        //         mangaSynopsis.value = textHolder;
+        //         mangaSynopsis.classList.add("valid");
+        //         mangaSynopsis.nextElementSibling.classList.add("active");
+        //         M.textareaAutoResize(mangaSynopsis);
         //     }
         //     // Reset all anime genres to not be checked.
         //     Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
@@ -1266,19 +1312,19 @@ var recordChoicesButtons = () => {
         //         animeOptions.style.visibility = "visible";
         //     }, 500);
         // });
-        // // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
-        // if(introAnimeHolder == true) {
-        //     const instancesTapAnimeSave = M.TapTarget.init(document.getElementById("introductionTargetAnimeSave"), { "onClose": () => {
-        //         setTimeout(() => {
-        //             const instancesTapAnimeOptions = M.TapTarget.init(document.getElementById("introductionTargetAnimeOptions"));
-        //             setTimeout(() => {
-        //                 instancesTapAnimeOptions.open();
-        //                 introAnimeHolder = false;
-        //             }, 500);
-        //         }, 500);
-        //     }});
-        //     setTimeout(() => { instancesTapAnimeSave.open(); }, 500);
-        // }
+        // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
+        if(introMangaHolder == true) {
+            const instancesTapMangaSave = M.TapTarget.init(document.getElementById("introductionTargetMangaSave"), { "onClose": () => {
+                setTimeout(() => {
+                    const instancesTapMangaOptions = M.TapTarget.init(document.getElementById("introductionTargetMangaOptions"));
+                    setTimeout(() => {
+                        instancesTapMangaOptions.open();
+                        introMangaHolder = false;
+                    }, 500);
+                }, 500);
+            }});
+            setTimeout(() => { instancesTapMangaSave.open(); }, 500);
+        }
     });
 
 

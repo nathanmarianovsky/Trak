@@ -490,8 +490,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	margin: 3% auto 3% auto;
 }
 
-#databaseSwitchDiv {
-/*	display: none;*/
+#databaseSwitchDiv, #mangaModalSwitchDiv {
 	position: relative;
     top: 12px;
     left: 25px;
@@ -505,13 +504,15 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 }
 
 #databaseSwitchDiv label,
+#mangaModalSwitchDiv label,
 #XLSXTypeSwitchDiv label,
 #databaseCheckLabel span {
-	color: initial;
+	color: black;
 	font-weight: bold;
 }
 
 #databaseSwitchDiv label input[type=checkbox]:checked+.lever:after,
+#mangaModalSwitchDiv label input[type=checkbox]:checked+.lever:after,
 #XLSXTypeSwitchDiv label input[type=checkbox]:checked+.lever:after {
 	background-color: #2A2A8E !important;
 }
@@ -745,13 +746,12 @@ footer {
 	bottom: 20px;
 }
 
-#categoryAnimeDiv .formInfo,
-#categoryBookDiv .formInfo {
+.categoryDiv .formInfo {
 	position: relative;
 	bottom: 15px;
 }
 
-#categoryAnimeForm2, #categoryBookForm2 {
+.categoryBottomForm {
 	position: relative;
 	bottom: 20px;
 }
@@ -955,4 +955,12 @@ footer {
 
 .addRecordDiv .active {
 	color: #2A2A8E;
+}
+
+#mangaAddChapter {
+	display: none;
+}
+
+.mangaModalButtons {
+	left: 5%;
 }
