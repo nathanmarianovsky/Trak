@@ -1048,7 +1048,7 @@ var recordChoicesButtons = () => {
                 "sortFunction": (a, b) => a.localeCompare(b),
                 "onAutocomplete": txt => {
                     mangaPreloader.style.visibility = "visible";
-                    ipcRenderer.send("animeFetchDetails", txt);
+                    ipcRenderer.send("mangaFetchDetails", txt);
                 }
             }),
             mangaNameUL = animeName.nextElementSibling,
@@ -1135,183 +1135,170 @@ var recordChoicesButtons = () => {
             // If the manga name is not long enough then update the page autocomplete options to be empty.
             else { mangaNameAutocomplete.updateData({}); }
         });
-        // // Update the page accordingly based on the fetched anime details.
-        // ipcRenderer.on("animeFetchDetailsResult", (newEve, newResponse) => {
-        //     const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none";
-        //     // Update the anime japanese name if available.
-        //     if(newResponse[1] != "" && newResponse[1] != "None found, add some") {
-        //         const jnameInput = document.getElementById("animeJapaneseName");
-        //         updateDetector == true ? jnameInput.value += newResponse[1] : jnameInput.value = newResponse[1];
-        //         jnameInput.value = newResponse[1];
-        //         jnameInput.classList.add("valid");
-        //         jnameInput.nextElementSibling.classList.add("active");
-        //     }
-        //     // Update the anime image if available.
-        //     if(newResponse[2][1].length > 0) {
-        //         const animeImg = document.getElementById("addRecordAnimeImg"),
-        //             animeFavImgLink = document.getElementById("animeFavoriteImageLink");
-        //         animeImg.setAttribute("list", "");
-        //         for(let t = 0; t < newResponse[2][1].length; t++) {
-        //             if(!animeImg.getAttribute("list").includes(newResponse[2][1][t])) {
-        //                 animeImg.getAttribute("list") == "" ? animeImg.setAttribute("list", newResponse[2][1][t]) : animeImg.setAttribute("list", animeImg.getAttribute("list") + "," + newResponse[2][1][t]);
-        //             }
-        //         }
-        //         animeImg.setAttribute("src", newResponse[2][0]);
-        //         animeFavImgLink.style.visibility = "visible";
-        //         animeFavImgLink.style.color = btnColorFavorite;
-        //     }
-        //     // Update the anime studios if available.
-        //     if(newResponse[8] != "" && newResponse[8] != "None found, add some") {
-        //         const studioInput = document.getElementById("animeStudio");
-        //         updateDetector == true ? studioInput.value += (studioInput.value == "" ? newResponse[8] : ", " + newResponse[8]) : studioInput.value = newResponse[8];
-        //         studioInput.classList.add("valid");
-        //         studioInput.nextElementSibling.classList.add("active");
-        //     }
-        //     // Update the anime directors if available.
-        //     if(newResponse[9].length > 0 && newResponse[9][0] != "None found, add some") {
-        //         const directorsInput = document.getElementById("animeDirectors");
-        //         updateDetector == true ? directorsInput.value += (directorsInput.value == "" ? newResponse[9].join(", ") : ", " + newResponse[9].join(", ")) : directorsInput.value = newResponse[9].join(", ");
-        //         directorsInput.classList.add("valid");
-        //         directorsInput.nextElementSibling.classList.add("active");
-        //     }
-        //     // Update the anime producers if available.
-        //     if(newResponse[10].length > 0 && newResponse[10][0] != "None found, add some") {
-        //         const producersInput = document.getElementById("animeProducers");
-        //         updateDetector == true ? producersInput.value += (producersInput.value == "" ? newResponse[10].join(", ") : ", " + newResponse[10].join(", ")) : producersInput.value = newResponse[10].join(", ");
-        //         producersInput.classList.add("valid");
-        //         producersInput.nextElementSibling.classList.add("active");
-        //     }
-        //     // Update the anime writers if available.
-        //     if(newResponse[11].length > 0 && newResponse[11][0] != "None found, add some") {
-        //         const writersInput = document.getElementById("animeWriters");
-        //         updateDetector == true ? writersInput.value += (writersInput.value == "" ? newResponse[11].join(", ") : ", " + newResponse[11].join(", ")) : writersInput.value = newResponse[11].join(", ");
-        //         writersInput.classList.add("valid");
-        //         writersInput.nextElementSibling.classList.add("active");
-        //     }
-        //     // Update the anime musicians if available.
-        //     if(newResponse[12].length > 0 && newResponse[12][0] != "None found, add some") {
-        //         const musicInput = document.getElementById("animeMusicians");
-        //         updateDetector == true ? musicInput.value += (musicInput.value == "" ? newResponse[12].join(", ") : ", " + newResponse[12].join(", ")) : musicInput.value = newResponse[12].join(", ");
-        //         musicInput.classList.add("valid");
-        //         musicInput.nextElementSibling.classList.add("active");
-        //     }
-        //     // Update the anime synopsis if available.
-        //     if(newResponse[13] != "" && newResponse[13] != "None found, add some") {
-        //         let textHolder = newResponse[13].replace("[Written by MAL Rewrite]", "");
-        //         if(textHolder.includes("(Source:")) {
-        //             textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
-        //         }
-        //         textHolder = textHolder.trim();
-        //         mangaSynopsis.value = textHolder;
-        //         mangaSynopsis.classList.add("valid");
-        //         mangaSynopsis.nextElementSibling.classList.add("active");
-        //         M.textareaAutoResize(mangaSynopsis);
-        //     }
-        //     // Reset all anime genres to not be checked.
-        //     Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
-        //     // Iterate through the fetched list of genres and check them off on the page if available.
-        //     const extraGenres = document.getElementById("animeOtherGenres");
-        //     newResponse[7].forEach(genreItem => {
-        //         let genreIter = genreItem;
-        //         if(genreIter == "Coming-Of-Age") {
-        //             genreIter = "ComingOfAge";
-        //         }
-        //         else if(genreIter == "Post-Apocalyptic") {
-        //             genreIter = "PostApocalyptic";
-        //         }
-        //         else if(genreIter == "Sci-Fi") {
-        //             genreIter = "SciFi";
-        //         }
-        //         else if(genreIter == "Slice of Life") {
-        //             genreIter = "SliceOfLife";
-        //         }
-        //         if(document.getElementById("animeGenre" + genreIter) != undefined) {
-        //             document.getElementById("animeGenre" + genreIter).checked = true;
-        //         }
-        //         else {
-        //             extraGenres.value == "" ? extraGenres.value = genreIter : extraGenres.value += ", " + genreIter;
-        //         }
-        //     });
-        //     if(extraGenres.value != "") {
-        //         extraGenres.classList.add("valid");
-        //         extraGenres.nextElementSibling.classList.add("active");
-        //     }
-        //     else {
-        //         extraGenres.classList.remove("valid");
-        //         extraGenres.nextElementSibling.classList.remove("active");
-        //     }
-        //     setTimeout(() => {
-        //         // Reset the related content modal.
-        //         if(updateDetector == false) {
-        //             document.getElementById("animeList").innerHTML = "";
-        //         }
-        //         const listNum = document.getElementById("animeList").children.length + 1;
-        //         // If the anime type is a season then add a season to the related content.
-        //         if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
-        //             // Attach a season.
-        //             seasonAddition();
-        //             const seasonName = document.getElementById("li_" + listNum + "_Season_Name");
-        //             // If the start date is provided then set it as the value for the season start date input. 
-        //             if(newResponse[3] != "") {
-        //                 let dateStart = new Date(newResponse[3]);
-        //                 dateStart.setDate(dateStart.getDate() - 1);
-        //                 document.getElementById("li_" + listNum + "_Season_Start").value = dateStart.getFullYear() + "-"
-        //                     + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
-        //                     + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
-        //             }
-        //             // If the end date is provided then set it as the value for the season end date input. 
-        //             if(newResponse[4] != "") {
-        //                 let dateEnd = new Date(newResponse[4]);
-        //                 dateEnd.setDate(dateEnd.getDate() - 1);
-        //                 document.getElementById("li_" + listNum + "_Season_End").value = dateEnd.getFullYear() + "-"
-        //                     + (dateEnd.getMonth() + 1 > 9 ? dateEnd.getMonth() + 1 : "0" + (dateEnd.getMonth() + 1)) + "-"
-        //                     + (dateEnd.getDate() + 1 > 9 ? dateEnd.getDate() + 1 : "0" + (dateEnd.getDate() + 1));
-        //             }
-        //             // Provide a default season name.
-        //             seasonName.value = "Season";
-        //             seasonName.classList.add("valid");
-        //             seasonName.nextElementSibling.classList.add("active");
-        //             // Add the appropriate number of episodes with a default episode name.
-        //             for(let f = 0; f < parseInt(newResponse[6]); f++) {
-        //                 document.getElementById("li_" + listNum + "_Season_AddEpisode").click();
-        //                 let episodeName = document.getElementById("li_" + listNum + "_Episode_Name_" + (f + 1));
-        //                 episodeName.value = "Episode " + (f + 1);
-        //                 episodeName.classList.add("valid");
-        //                 episodeName.nextElementSibling.classList.add("active");
-        //             }
-        //             // Hide the episodes by default.
-        //             document.getElementById("li_" + listNum + "_Season").children[0].click();
-        //         }
-        //         else {
-        //             // Attach a single film/ona/ova.
-        //             singleAddition();
-        //             const singleName = document.getElementById("li_" + listNum + "_Single_Name"),
-        //                 singleType = document.getElementById("li_" + listNum + "_Single_Type");
-        //             // If the release date is provided then set it as the value for the single release date input. 
-        //             if(newResponse[3] != "") {
-        //                 let dateStart = new Date(newResponse[3]);
-        //                 dateStart.setDate(dateStart.getDate() - 1);
-        //                 document.getElementById("li_" + listNum + "_Single_Release").value = dateStart.getFullYear() + "-"
-        //                     + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
-        //                     + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
-        //             }
-        //             // Provide a default film/ona/ova name.
-        //             singleName.value = "Item 1";
-        //             singleName.classList.add("valid");
-        //             singleName.nextElementSibling.classList.add("active");
-        //             // Set the type for the item.
-        //             singleType.value = newResponse[5];
-        //             // Initialize the select tags.
-        //             initSelect();
-        //         }
-        //         // Hide the preloader now that everything has been loaded and show the buttons if necessary.
-        //         animePreloader.style.visibility = "hidden";
-        //         animeMoreBtn.style.visibility = "visible";
-        //         animeFetchBtn.style.visibility = "visible";
-        //         animeSave.style.visibility = "visible";
-        //         animeOptions.style.visibility = "visible";
-        //     }, 500);
-        // });
+
+
+
+
+        // mangaData.englishTitle, mangaData.japaneseTitle, [mangaData.picture, allImgArr], startDate, endDate,
+        //         mangaData.chapters, mangaData.volumes, mangaData.genres, writersArr, mangaData.synopsis
+
+
+        // Update the page accordingly based on the fetched anime details.
+        ipcRenderer.on("mangaFetchDetailsResult", (newEve, newResponse) => {
+            console.log(newResponse);
+            const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none";
+            // Update the manga japanese name if available.
+            if(newResponse[1] != "" && newResponse[1] != "None found, add some") {
+                const jnameInput = document.getElementById("mangaJapaneseName");
+                updateDetector == true ? jnameInput.value += newResponse[1] : jnameInput.value = newResponse[1];
+                jnameInput.value = newResponse[1];
+                jnameInput.classList.add("valid");
+                jnameInput.nextElementSibling.classList.add("active");
+            }
+            // Update the manga image if available.
+            if(newResponse[2][1].length > 0) {
+                const mangaImg = document.getElementById("addRecordMangaImg"),
+                    mangaFavImgLink = document.getElementById("mangaFavoriteImageLink");
+                mangaImg.setAttribute("list", "");
+                for(let t = 0; t < newResponse[2][1].length; t++) {
+                    if(!mangaImg.getAttribute("list").includes(newResponse[2][1][t])) {
+                        mangaImg.getAttribute("list") == "" ? mangaImg.setAttribute("list", newResponse[2][1][t]) : mangaImg.setAttribute("list", mangaImg.getAttribute("list") + "," + newResponse[2][1][t]);
+                    }
+                }
+                mangaImg.setAttribute("src", newResponse[2][0]);
+                mangaFavImgLink.style.visibility = "visible";
+                mangaFavImgLink.style.color = btnColorFavorite;
+            }
+            // Update the manga writers if available.
+            if(newResponse[8].length > 0 && newResponse[8][0] != "None found, add some") {
+                const writersInput = document.getElementById("mangaWriters");
+                let writerStr = "";
+                for(let p = 0; p < Math.ceil(newResponse[8].length / 2); p += 2 ) {
+                    newResponse[8][p + 1] != undefined ? writerStr += newResponse[8][p + 1] + newResponse[8][p] : writerStr += newResponse[8][p];
+                }
+                updateDetector == true ? writersInput.value += (writersInput.value == "" ? writerStr : ", " + writerStr) : writersInput.value = writerStr;
+                writersInput.classList.add("valid");
+                writersInput.nextElementSibling.classList.add("active");
+            }
+            // Update the anime synopsis if available.
+            if(newResponse[9] != "" && newResponse[9] != "None found, add some") {
+                let textHolder = newResponse[9].replace("[Written by MAL Rewrite]", "");
+                if(textHolder.includes("(Source:")) {
+                    textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
+                }
+                textHolder = textHolder.trim();
+                mangaSynopsis.value = textHolder;
+                mangaSynopsis.classList.add("valid");
+                mangaSynopsis.nextElementSibling.classList.add("active");
+                M.textareaAutoResize(mangaSynopsis);
+            }
+            // Reset all anime genres to not be checked.
+            Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
+            // Iterate through the fetched list of genres and check them off on the page if available.
+            const extraGenres = document.getElementById("mangaOtherGenres");
+            newResponse[7].forEach(genreItem => {
+                let genreIter = genreItem;
+                if(genreIter == "Coming-Of-Age") {
+                    genreIter = "ComingOfAge";
+                }
+                else if(genreIter == "Post-Apocalyptic") {
+                    genreIter = "PostApocalyptic";
+                }
+                else if(genreIter == "Sci-Fi") {
+                    genreIter = "SciFi";
+                }
+                else if(genreIter == "Slice of Life") {
+                    genreIter = "SliceOfLife";
+                }
+                if(document.getElementById("mangaGenre" + genreIter) != undefined) {
+                    document.getElementById("mangaGenre" + genreIter).checked = true;
+                }
+                else {
+                    extraGenres.value == "" ? extraGenres.value = genreIter : extraGenres.value += ", " + genreIter;
+                }
+            });
+            if(extraGenres.value != "") {
+                extraGenres.classList.add("valid");
+                extraGenres.nextElementSibling.classList.add("active");
+            }
+            else {
+                extraGenres.classList.remove("valid");
+                extraGenres.nextElementSibling.classList.remove("active");
+            }
+            // setTimeout(() => {
+            //     // Reset the related content modal.
+            //     if(updateDetector == false) {
+            //         document.getElementById("animeList").innerHTML = "";
+            //     }
+            //     const listNum = document.getElementById("animeList").children.length + 1;
+            //     // If the anime type is a season then add a season to the related content.
+            //     if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
+            //         // Attach a season.
+            //         seasonAddition();
+            //         const seasonName = document.getElementById("li_" + listNum + "_Season_Name");
+            //         // If the start date is provided then set it as the value for the season start date input. 
+            //         if(newResponse[3] != "") {
+            //             let dateStart = new Date(newResponse[3]);
+            //             dateStart.setDate(dateStart.getDate() - 1);
+            //             document.getElementById("li_" + listNum + "_Season_Start").value = dateStart.getFullYear() + "-"
+            //                 + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
+            //                 + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
+            //         }
+            //         // If the end date is provided then set it as the value for the season end date input. 
+            //         if(newResponse[4] != "") {
+            //             let dateEnd = new Date(newResponse[4]);
+            //             dateEnd.setDate(dateEnd.getDate() - 1);
+            //             document.getElementById("li_" + listNum + "_Season_End").value = dateEnd.getFullYear() + "-"
+            //                 + (dateEnd.getMonth() + 1 > 9 ? dateEnd.getMonth() + 1 : "0" + (dateEnd.getMonth() + 1)) + "-"
+            //                 + (dateEnd.getDate() + 1 > 9 ? dateEnd.getDate() + 1 : "0" + (dateEnd.getDate() + 1));
+            //         }
+            //         // Provide a default season name.
+            //         seasonName.value = "Season";
+            //         seasonName.classList.add("valid");
+            //         seasonName.nextElementSibling.classList.add("active");
+            //         // Add the appropriate number of episodes with a default episode name.
+            //         for(let f = 0; f < parseInt(newResponse[6]); f++) {
+            //             document.getElementById("li_" + listNum + "_Season_AddEpisode").click();
+            //             let episodeName = document.getElementById("li_" + listNum + "_Episode_Name_" + (f + 1));
+            //             episodeName.value = "Episode " + (f + 1);
+            //             episodeName.classList.add("valid");
+            //             episodeName.nextElementSibling.classList.add("active");
+            //         }
+            //         // Hide the episodes by default.
+            //         document.getElementById("li_" + listNum + "_Season").children[0].click();
+            //     }
+            //     else {
+            //         // Attach a single film/ona/ova.
+            //         singleAddition();
+            //         const singleName = document.getElementById("li_" + listNum + "_Single_Name"),
+            //             singleType = document.getElementById("li_" + listNum + "_Single_Type");
+            //         // If the release date is provided then set it as the value for the single release date input. 
+            //         if(newResponse[3] != "") {
+            //             let dateStart = new Date(newResponse[3]);
+            //             dateStart.setDate(dateStart.getDate() - 1);
+            //             document.getElementById("li_" + listNum + "_Single_Release").value = dateStart.getFullYear() + "-"
+            //                 + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
+            //                 + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
+            //         }
+            //         // Provide a default film/ona/ova name.
+            //         singleName.value = "Item 1";
+            //         singleName.classList.add("valid");
+            //         singleName.nextElementSibling.classList.add("active");
+            //         // Set the type for the item.
+            //         singleType.value = newResponse[5];
+            //         // Initialize the select tags.
+            //         initSelect();
+            //     }
+            //     // Hide the preloader now that everything has been loaded and show the buttons if necessary.
+            //     animePreloader.style.visibility = "hidden";
+            //     animeMoreBtn.style.visibility = "visible";
+            //     animeFetchBtn.style.visibility = "visible";
+            //     animeSave.style.visibility = "visible";
+            //     animeOptions.style.visibility = "visible";
+            // }, 500);
+        });
+
+
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         if(introMangaHolder == true) {
             const instancesTapMangaSave = M.TapTarget.init(document.getElementById("introductionTargetMangaSave"), { "onClose": () => {

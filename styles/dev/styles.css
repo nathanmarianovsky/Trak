@@ -783,7 +783,7 @@ footer {
 }
 
 .categoryTopForm {
-	margin-left: 5%;
+	margin-left: 5% !important;
 	display: inline-block;
 }
 

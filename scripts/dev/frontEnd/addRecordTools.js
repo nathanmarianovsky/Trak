@@ -13,6 +13,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
     - animeContentSeasonButtons: Listen for click events on the related content anime season table items.
     - singleAddition: Driver function designed to add a film/ONA/OVA table item in the related content section of an anime record.
     - seasonAddition: Driver function designed to add a season table item in the related content section of an anime record.
+    - mangaItemAddition: Driver function designed to add a chapter/volume table item in the related content section of a manga record.
 
 */
 
@@ -73,7 +74,7 @@ var calculateMangaRating = () => {
     for(let k = 0; k < relevantList.children.length; k++) {
         let itemType = relevantList.children[k].id.split("_")[2];
         // Pick out the required input based on whether the item is of a type chapter or volume.
-        singleValue = relevantList.children[k].children[0].children[4].children[0].children[3].value;
+        itemType == "Volume" ? singleValue = relevantList.children[k].children[0].children[4].children[0].children[3].value : singleValue = relevantList.children[k].children[0].children[3].children[0].children[3].value;
         if(itemType == "Chapter" && singleValue != "") {
             chapterSum += parseInt(singleValue);
             chapterCount++;
@@ -85,7 +86,7 @@ var calculateMangaRating = () => {
     }
     // Update the page global rating input accordingly.
     chapterCount + volumeCount == 0 ? globalRating.value = "N/A"
-        : globalRating.value = (((chapterCount == 0 ? 0 : (chapterSum / chapterCount)) + (volumeCount == 0 ? 0 : (volumeSum / volumeCount))) / 2).toFixed(2);
+        : globalRating.value = (((chapterCount == 0 ? 0 : (chapterSum / chapterCount)) + (volumeCount == 0 ? 0 : (volumeSum / volumeCount))) / (chapterCount != 0 && volumeCount != 0 ? 2 : 1)).toFixed(2);
 };
 
 
@@ -332,9 +333,10 @@ Listen for click events on the related content manga chapter/volume table items.
     - delSingleBtn is the button that deletes a chapter/volume.
 
 */
-var mangaContentSingleButtons = (formSingleName, formSingleReleaseDate, formSingleLastReadDate, formSingleRating, delSingleBtn) => {
+var mangaContentSingleButtons = (formSingleName, formSingleISBN, formSingleReleaseDate, formSingleLastReadDate, formSingleRating, delSingleBtn) => {
     // Listen for a click on the item name, item start date, item end date, or item average rating in order to prevent the listed item body from displaying.
     formSingleName.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
+    formSingleISBN.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formSingleReleaseDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formSingleLastReadDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     // Listen for a click event on the delete button for a chapter/volume on the manga associated modal to delete the item.
@@ -355,6 +357,11 @@ var mangaContentSingleButtons = (formSingleName, formSingleReleaseDate, formSing
     formSingleRating.addEventListener("change", e => {
         // Calculate and write the new anime global rating.
         calculateMangaRating();
+    });
+    // Listen for a change in the ISBN input.
+    formSingleISBN.addEventListener("input", e => {
+        // Format the ISBN properly.
+        formatISBN(formSingleISBN);
     });
 };
 
@@ -804,7 +811,7 @@ var seasonAddition = () => {
 
 /*
 
-Driver function designed to add a chapter table item in the related content section of a manga record.
+Driver function designed to add a chapter/volume table item in the related content section of a manga record.
 
    - scenario is a string taking on either the value "chapter" or "volume" to correspond to which item to add.
 
@@ -954,7 +961,7 @@ var mangaItemAddition = scenario => {
     itemSingleLI.append(itemSingleDivHeader, itemSingleDivBody);
     mangaList.append(itemSingleLI);
     // Add the button listeners associated to a film/ONA/OVA.
-    animeContentSingleButtons(inputSingleName, inputSingleReleaseDate, inputSingleLastReadDate, selectSingleRating, iconSingleDelete);
+    mangaContentSingleButtons(inputSingleName, inputSingleISBN, inputSingleReleaseDate, inputSingleLastReadDate, selectSingleRating, iconSingleDelete);
     // Initialize the select tags.
     initSelect();
     // Initialize the tooltips.

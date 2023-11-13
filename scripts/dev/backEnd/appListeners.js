@@ -279,10 +279,10 @@ exports.addMangaListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, main
 		require("./mangaTools").mangaSearch(log, require("mal-scraper"), event, submission);
 	});
 
-	// // Handles the fetching of details for a given anime via its name.
-	// ipc.on("animeFetchDetails", (event, submission) => {
-	// 	require("./animeTools").animeFetchDetails(log, require("mal-scraper"), tools, event, submission);
-	// });
+	// Handles the fetching of details for a given anime via its name.
+	ipc.on("mangaFetchDetails", (event, submission) => {
+		require("./mangaTools").mangaFetchDetails(log, require("mal-scraper"), tools, event, submission);
+	});
 
 	// // Handles the fetching of anime releases based on a query search.
 	// ipc.on("animeFetchSearch", (event, submission) => {

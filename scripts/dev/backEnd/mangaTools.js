@@ -35,55 +35,47 @@ Creates an object associated to a manga record in order to save/update.
 
 */
 exports.mangaObjCreation = (path, fs, https, tools, dir, providedData) => {
-    const animeObj = {
+    const mangaObj = {
         "category": providedData[0],
         "name": providedData[1],
         "jname": providedData[2],
         "review": providedData[3],
-        "directors": providedData[4],
-        "producers": providedData[5],
-        "writers": providedData[6],
-        "musicians": providedData[7],
-        "studio": providedData[8],
-        "license": providedData[9],
-        "genres": providedData[11],
+        "writers": providedData[4],
+        "illustrators": providedData[5],
+        "publisher": providedData[6],
+        "jpublisher": providedData[7],
+        "demographic": providedData[8],
+        "start": providedData[9],
+        "end": providedData[11],
         "synopsis": providedData[13],
         "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1] != "" ? providedData[1] : providedData[2]), providedData[14]),
         "content": []
     };
     for(let m = 0; m < providedData[12].length; m++) {
-        if(providedData[12][m][0] == "Single") {
-            animeObj.content.push({
+        if(providedData[12][m][0] == "Chapter") {
+            mangaObj.content.push({
                 "scenario": providedData[12][m][0],
                 "name": providedData[12][m][1],
-                "type": providedData[12][m][2],
-                "release": providedData[12][m][3],
-                "watched": providedData[12][m][4],
-                "rating": providedData[12][m][5],
-                "review": providedData[12][m][6]
+                "release": providedData[12][m][2],
+                "read": providedData[12][m][3],
+                "rating": providedData[12][m][4],
+                "review": providedData[12][m][5]
             });
         }
-        else if(providedData[12][m][0] == "Season") {
-            let animeSeasonObj = {
+        else if(providedData[12][m][0] == "Volume") {
+            mangaObj.content.push({
                 "scenario": providedData[12][m][0],
                 "name": providedData[12][m][1],
-                "start": providedData[12][m][2],
-                "end": providedData[12][m][3],
-                "status": providedData[12][m][4],
-                "episodes": []
-            };
-            for(let n = 0; n < providedData[12][m][5].length; n++) {
-                animeSeasonObj.episodes.push({
-                    "name": providedData[12][m][5][n][0],
-                    "watched": providedData[12][m][5][n][1],
-                    "rating": providedData[12][m][5][n][2],
-                    "review": providedData[12][m][5][n][3]
-                });
-            }
-            animeObj.content.push(animeSeasonObj);
+                "release": providedData[12][m][2],
+                "read": providedData[12][m][3],
+                "rating": providedData[12][m][4],
+                "review": providedData[12][m][5],
+                "isbn": providedData[12][m][6],
+                "synopsis": providedData[12][m][7]
+            });
         }
     }
-    return animeObj;
+    return mangaObj;
 };
 
 
@@ -108,9 +100,9 @@ exports.mangaSave = (BrowserWindow, path, fs, log, https, tools, mainWindow, dat
     if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]))) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[2])))) {
         // Create a new directory for the assets associated to the new record.
         const assetsPath = path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]), "assets");
-        log.info("Creating the assets directory for the new anime record. To be located at " + assetsPath);
+        log.info("Creating the assets directory for the new manga record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data);
     }
     else {
         log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[2]) + " already exists!");
@@ -141,18 +133,18 @@ exports.mangaUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, d
         fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[data.length - 1])), path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2])), err => {
             // If there was an error in renaming the record folder notify the user.
             if(err) {
-                log.error("There was an error in renaming the anime record folder " + data[data.length - 1] + " to " + (data[1] != "" ? data[1] : data[2]) + ".");
+                log.error("There was an error in renaming the manga record folder " + data[data.length - 1] + " to " + (data[1] != "" ? data[1] : data[2]) + ".");
                 evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1] != "" ? data[1] : data[2]]);
             }
             // If no error occured in renaming the record folder write the data file, and copy over the file assets.
             else {
-                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
+                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
             }
         });
     }
     else {
         // Write the data file, and copy over the file assets.
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
     }
 };
 
@@ -192,52 +184,36 @@ Handles the fetching of a manga record from myanimelist based on a name.
 */
 exports.mangaFetchDetails = (log, malScraper, tools, ev, name) => {
     // Fetch anime details.
-    malScraper.getInfoFromName(name, true, "anime").then(animeData => {
+    malScraper.getInfoFromName(name, true, "manga").then(mangaData => {
         // Define the parameters which will be passed to the front-end based on the details received.
         let startDate = "",
             endDate = "";
-        const directorsArr = [],
-            producersArr = [],
-            writersArr = [],
-            musicArr = [];
-        // Properly define the start and end date of an anime listing on myanimelist.
-        if(animeData.aired != undefined) {
-            let splitArr = animeData.aired.split("to");
+        // Properly define the start and end date of a manga listing on myanimelist.
+        if(mangaData.published != undefined) {
+            let splitArr = mangaData.published.split("to");
             startDate = splitArr[0];
             if(splitArr.length > 1) {
                 endDate = splitArr[1];
             }
         }
-        // Properly define the lists of directors, producers, writers, and music directors associated to the anime listing on myanimelist.
-        animeData.staff.forEach(person => {
-            person.role.split(", ").forEach(personRole => {
-                if(personRole.toLowerCase().includes("director") && !personRole.toLowerCase().includes("sound")) {
-                    directorsArr.push(person.name.split(", ").reverse().join(" "));
-                }
-                if(personRole.toLowerCase().includes("producer")) {
-                    producersArr.push(person.name.split(", ").reverse().join(" "));
-                }
-                if(personRole.toLowerCase().includes("storyboard")) {
-                    writersArr.push(person.name.split(", ").reverse().join(" "));
-                }
-                if(personRole.toLowerCase().includes("sound") || person.role.toLowerCase().includes("music")) {
-                    musicArr.push(person.name.split(", ").reverse().join(" "));
-                }
-            });
-        });
-        // Fetch all possible images associated to the anime record.
-        malScraper.getPictures({ "name": animeData.title, "id": animeData.id }).then(malImgArr => {
+        // Fetch all possible images associated to the manga record.
+        malScraper.getPictures({ "name": mangaData.title, "id": mangaData.id }).then(malImgArr => {
             // Send the attained data to the front-end.
-            log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + name + ".");
+            log.info("MyAnimeList-Scraper has finished getting the details associated to the manga " + name + ".");
             let allImgArr = malImgArr.map(pic => pic.imageLink);
-            tools.arrayMove(allImgArr, allImgArr.indexOf(animeData.picture), 0);
-            ev.sender.send("animeFetchDetailsResult", [
-                animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, allImgArr], startDate, endDate,
-                animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
-                animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
+            allImgArr.indexOf(mangaData.picture) != -1 ? tools.arrayMove(allImgArr, allImgArr.indexOf(mangaData.picture), 0) : allImgArr = [mangaData.picture].concat(allImgArr);
+            ev.sender.send("mangaFetchDetailsResult", [
+                mangaData.englishTitle, mangaData.japaneseTitle, [mangaData.picture, allImgArr], startDate, endDate,
+                mangaData.chapters, mangaData.volumes, mangaData.genres, mangaData.authors, mangaData.synopsis
             ]);
-        }).catch(err => log.error("There was an issue in obtaining the pictures associated to the anime record " + name + "."));
-    }).catch(err => log.error("There was an issue in obtaining the details associated to the anime name " + name + "."));
+        }).catch(err => {
+            log.warn("There was an issue in obtaining the pictures associated to the manga record " + name + ".");
+            ev.sender.send("mangaFetchDetailsResult", [
+                mangaData.englishTitle, mangaData.japaneseTitle, [mangaData.picture, [mangaData.picture]], startDate, endDate,
+                mangaData.chapters, mangaData.volumes, mangaData.genres, mangaData.authors, mangaData.synopsis
+            ]);
+        });
+    }).catch(err => log.error("There was an issue in obtaining the details associated to the manga name " + name + "."));
 };
 
 
