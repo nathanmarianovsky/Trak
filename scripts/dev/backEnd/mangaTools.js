@@ -212,16 +212,11 @@ exports.mangaFetchDetails = (log, malScraper, GoodReadsScraper, tools, ev, name)
                         // index = bookLst.indexOf(mangaData.englishTitle + ", Vol. " + k),
                         index = 0;
                     for(; bookLst.length; index++) {
-                        if(mangaData.volumes == "1") {
-                            if(bookLst[index].title.includes(mangaData.englishTitle) && bookLst[index].author == mangaData.authors[0].split(", ").reverse().join(" ")) {
-                                break;
-                            }
-                        }
-                        else {
-                            if(bookLst[index].title.includes(mangaData.englishTitle + ", Vol. " + k) && bookLst[index].author == mangaData.authors[0].split(", ").reverse().join(" ")) {
-                                break;
-                            }
-                        }
+                        if(mangaData.volumes == "1" && bookLst[index].title.toLowerCase().includes(mangaData.englishTitle.toLowerCase())
+                                && bookLst[index].author.toLowerCase().includes(mangaData.authors[0].split(", ")[0].toLowerCase())) { break; }
+                        else if(bookLst[index].title.toLowerCase().includes(mangaData.englishTitle.toLowerCase())
+                                && (bookLst[index].title.toLowerCase().includes("vol. " + k) || bookLst[index].title.toLowerCase().includes("#" + k))
+                                && bookLst[index].author.toLowerCase().includes(mangaData.authors[0].split(", ")[0].toLowerCase())) { break; }
                     }
                     if(index == bookLst.length) {
                         throw new Error("No associated volumes could be found on GoodReads.");
@@ -246,6 +241,58 @@ exports.mangaFetchDetails = (log, malScraper, GoodReadsScraper, tools, ev, name)
             ev.sender.send("mangaVolumeFetchDetailsResult", results);
         });
     }).catch(err => log.error("There was an issue in obtaining the details associated to the manga " + name + "."));
+};
+
+
+
+/*
+
+Handles the fetching of a manga record's volume from goodreads based on an ISBN value.
+
+   - log provides the means to create application logs to keep track of what is going on.
+   - GoodReadsScraper provides the means to attain book records from goodreads.
+   - ev provides the means to interact with the front-end of the Electron app.
+   - isbn is a string representing the ISBN of a book record.
+   - tgt is a string representing the id of which element will receive the information on the front-end.
+
+*/
+exports.mangaVolumeFetchDetailsByISBN = (log, GoodReadsScraper, ev, isbn, tgt) => {
+    // Fetch manga volume details.
+    GoodReadsScraper.getBook({ "isbn": isbn }).then(bookData => {
+        log.info("GoodReads-Scraper has finished getting the details associated to the manga volume whose ISBN is " + isbn + ".");
+        ev.sender.send("mangaSingleVolumeFetchDetailsResult", [tgt, bookData.title, bookData.coverLarge,
+            (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.publisher,
+            bookData.publicationDate, bookData.description]);
+    }).catch(err => log.error("There was an issue in obtaining the details associated to the manga volume whose ISBN is " + isbn + "."));
+};
+
+
+
+/*
+
+Handles the fetching of a manga record's volume from goodreads based on a name.
+
+   - log provides the means to create application logs to keep track of what is going on.
+   - GoodReadsScraper provides the means to attain book records from goodreads.
+   - ev provides the means to interact with the front-end of the Electron app.
+   - name is a string representing the title of a book record.
+   - tgt is a string representing the id of which element will receive the information on the front-end.
+
+*/
+exports.mangaVolumeFetchDetailsByName = (log, GoodReadsScraper, ev, name, tgt) => {
+    // Fetch book search results.
+    GoodReadsScraper.searchBooks({ "q": name }).then(bookSearchData => {
+        // Define the item in the search results matching the name provided.
+        let bookLst = bookSearchData.books.map(elem => elem.title),
+            index = bookLst.indexOf(name);
+            bookLstItem = bookSearchData.books[index != -1 ? index : 0];
+        // Fetch book details.
+        GoodReadsScraper.getBook({ "url": bookLstItem.url }).then(bookData => {
+            ev.sender.send("mangaSingleVolumeFetchDetailsResult", [tgt, bookData.title, bookData.coverLarge,
+                (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.publisher,
+                bookData.publicationDate, bookData.description]);
+        }).catch(err => log.error("There was an issue in obtaining the details associated to the manga volume " + name + " via the url " + bookLstItem.url + "."));
+    }).catch(err => log.error("There was an issue in obtaining the details associated to the manga volume " + name + "."));
 };
 
 

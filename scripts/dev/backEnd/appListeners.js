@@ -279,9 +279,19 @@ exports.addMangaListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, main
 		require("./mangaTools").mangaSearch(log, require("mal-scraper"), event, submission);
 	});
 
-	// Handles the fetching of details for a given anime via its name.
+	// Handles the fetching of details for a given manga via its name.
 	ipc.on("mangaFetchDetails", (event, submission) => {
 		require("./mangaTools").mangaFetchDetails(log, require("mal-scraper"), require("goodreads-scraper"), tools, event, submission);
+	});
+
+	// Handles the fetching of details for a given manga volume via its ISBN.
+	ipc.on("mangaVolumeFetchDetailsByISBN", (event, submission) => {
+		require("./mangaTools").mangaVolumeFetchDetailsByISBN(log, require("goodreads-scraper"), event, submission[0], submission[1]);
+	});
+
+	// Handles the fetching of details for a given manga volume via its name.
+	ipc.on("mangaVolumeFetchDetailsByName", (event, submission) => {
+		require("./mangaTools").mangaVolumeFetchDetailsByName(log, require("goodreads-scraper"), event, submission[0], submission[1]);
 	});
 
 	// // Handles the fetching of anime releases based on a query search.
