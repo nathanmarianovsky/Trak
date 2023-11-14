@@ -193,30 +193,39 @@ var mangaListReorganize = () => {
             childHeader = child.children[0],
             childBody = child.children[1],
             singleNameInput = childHeader.children[0].children[0],
-            singleNameLabel = childHeader.children[0].children[1],
-            singleISBNInput = childHeader.children[1].children[0],
-            singleISBNLabel = childHeader.children[1].children[1],
-            singleReleaseInput = childHeader.children[2].children[0],
-            singleReleaseLabel = childHeader.children[2].children[1],
-            singleLastReadInput = childHeader.children[3].children[0],
-            singleLastReadabel = childHeader.children[3].children[1],
-            singleRatingSelect = childHeader.children[4].children[0].children[3],
-            singleSynopsisInput = childBody.children[0].children[0].children[0].children[0],
-            singleSynopsisLabel = childBody.children[0].children[0].children[0].children[1],
-            singleReviewInput = childBody.children[1].children[0].children[0].children[0],
-            singleReviewLabel = childBody.children[1].children[0].children[0].children[1];
+            singleNameLabel = childHeader.children[0].children[1];
+            singleReviewInput = childBody.children[0].children[1].children[0].children[0],
+            singleReviewLabel = childBody.children[0].children[1].children[0].children[1];
+        if(childType == "Chapter") {
+            var singleReleaseInput = childHeader.children[1].children[0],
+                singleReleaseLabel = childHeader.children[1].children[1],
+                singleLastReadInput = childHeader.children[2].children[0],
+                singleLastReadLabel = childHeader.children[2].children[1],
+                singleRatingSelect = childHeader.children[3].children[0].children[3];
+        }
+        else if(childType == "Volume") {
+            var singleReleaseInput = childHeader.children[2].children[0],
+                singleReleaseLabel = childHeader.children[2].children[1],
+                singleLastReadInput = childHeader.children[3].children[0],
+                singleLastReadLabel = childHeader.children[3].children[1],
+                singleRatingSelect = childHeader.children[4].children[0].children[3];
+        }
         // Change the item id and for attributes accordingly.
         child.setAttribute("id", "li_" + i + "_" + childType);
         singleNameInput.setAttribute("id", "li_" + i + "_" + childType + "_Name");
         singleNameLabel.setAttribute("for", "li_" + i + "_" + childType + "_Name");
-        singleISBNInput.setAttribute("id", "li_" + i + "_" + childType + "_ISBN");
-        singleISBNLabel.setAttribute("for", "li_" + i + "_" + childType + "_ISBN");
         singleReleaseInput.setAttribute("id", "li_" + i + "_" + childType + "_Release");
         singleReleaseLabel.setAttribute("for", "li_" + i + "_" + childType + "_Release");
         singleLastReadInput.setAttribute("id", "li_" + i + "_" + childType + "_LastRead");
         singleLastReadLabel.setAttribute("for", "li_" + i + "_" + childType + "_LastRead");
         singleRatingSelect.setAttribute("id", "li_" + i + "_" + childType + "_Rating");
         if(childType == "Volume") {
+            let singleISBNInput = childHeader.children[1].children[0],
+                singleISBNLabel = childHeader.children[1].children[1],
+                singleSynopsisInput = childBody.children[0].children[0].children[0].children[0],
+                singleSynopsisLabel = childBody.children[0].children[0].children[0].children[1];
+            singleISBNInput.setAttribute("id", "li_" + i + "_" + childType + "_ISBN");
+            singleISBNLabel.setAttribute("for", "li_" + i + "_" + childType + "_ISBN");
             singleSynopsisInput.setAttribute("id", "li_" + i + "_" + childType + "_Synopsis");
             singleSynopsisLabel.setAttribute("for", "li_" + i + "_" + childType + "_Synopsis");
         }
@@ -813,7 +822,7 @@ var seasonAddition = () => {
 
 Driver function designed to add a chapter/volume table item in the related content section of a manga record.
 
-   - scenario is a string taking on either the value "chapter" or "volume" to correspond to which item to add.
+   - scenario is a string taking on either the value "Chapter" or "Volume" to correspond to which item to add.
 
 */
 var mangaItemAddition = scenario => {
@@ -866,7 +875,7 @@ var mangaItemAddition = scenario => {
         // Prepare the volume synopsis.
         divSingleSynopsis.classList.add("row");
         spanSingleSynopsis.classList.add("input-field", "col", "s12");
-        inputSingleSynopsis.classList.add("validate", "materialize-textarea");
+        inputSingleSynopsis.classList.add("validate", "materialize-textarea", "mangaVolumeSynopsis");
         inputSingleSynopsis.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_Volume_Synopsis");
         labelSingleSynopsis.setAttribute("for", "li_" + (mangaList.children.length + 1) + "_Volume_Synopsis");
         labelSingleSynopsis.textContent = "Synopsis:";
@@ -875,7 +884,15 @@ var mangaItemAddition = scenario => {
     }
     // Prepare the chapter/volume item name.
     divSingleName.classList.add("input-field");
-    scenario == "Volume" ? divSingleName.style.width = "20%" : divSingleName.style.width = "25%";
+    if(scenario == "Volume") {
+        divSingleName.style.width = "20%";
+    }
+    else if(scenario == "Chapter") {
+        divSingleName.style.width = "25%";
+        inputSingleName.value = "Chapter " + (Array.from(mangaList.children).filter(li => li.getAttribute("id").split("_")[2] == "Chapter").length + 1);
+        inputSingleName.classList.add("valid");
+        labelSingleName.classList.add("active");
+    }
     inputSingleName.classList.add("validate", "left");
     inputSingleName.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_" + scenario + "_Name");
     inputSingleName.setAttribute("type", "text");

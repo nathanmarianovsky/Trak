@@ -412,7 +412,7 @@ var recordChoicesButtons = () => {
         // Display the correct input associated to the anime other genres/tags.
         otherGenresReset("Anime");
         // Initialize the dragging of the related content.
-        let drake = dragula({"containers": [document.querySelector('#animeList')]});
+        let drake = dragula({"containers": [document.querySelector("#animeList")]});
         drake.on("dragend", () => { animeListReorganize(); });
         // Define all image buttons.
         const animePreviousImgBtn = document.getElementById("animePreviousImgBtn"),
@@ -1030,7 +1030,7 @@ var recordChoicesButtons = () => {
         // Display the correct input associated to the manga other genres/tags.
         otherGenresReset("Manga");
         // Initialize the dragging of the related content.
-        let drake = dragula({"containers": [document.querySelector('#mangaList')]});
+        let drake = dragula({"containers": [document.querySelector("#mangaList")]});
         drake.on("dragend", () => { mangaListReorganize(); });
         // Define all image buttons.
         const mangaPreviousImgBtn = document.getElementById("mangaPreviousImgBtn"),
@@ -1038,16 +1038,18 @@ var recordChoicesButtons = () => {
             mangaAddImgInput = document.getElementById("mangaAddImgInput"),
             mangaRemoveImgBtn = document.getElementById("mangaRemoveImgBtn"),
             mangaNextImgBtn = document.getElementById("mangaNextImgBtn"),
-            addRecorMangaImg = document.getElementById("addRecorMangaImg"),
+            addRecordMangaImg = document.getElementById("addRecordMangaImg"),
             mangaFavoriteImageLink = document.getElementById("mangaFavoriteImageLink");
         imgButtons(mangaFavoriteImageLink, mangaPreviousImgBtn, mangaAddImgBtn, mangaAddImgInput, mangaRemoveImgBtn, mangaNextImgBtn, addRecordMangaImg, btnColorFavorite);
         // Define the portions of the page associated to the autocomplete.
         const mangaName = document.getElementById("mangaName"),
             mangaPreloader = document.getElementById("mangaPreloader"),
+            volumeFetchPreloader = document.getElementById("volumeFetchPreloader"),
             mangaNameAutocomplete = M.Autocomplete.init(mangaName, {
                 "sortFunction": (a, b) => a.localeCompare(b),
                 "onAutocomplete": txt => {
                     mangaPreloader.style.visibility = "visible";
+                    volumeFetchPreloader.style.visibility = "visible";
                     ipcRenderer.send("mangaFetchDetails", txt);
                 }
             }),
@@ -1070,6 +1072,7 @@ var recordChoicesButtons = () => {
         mangaFetchBtn.addEventListener("click", e => {
             if(mangaName.value.length > 2) {
                 mangaPreloader.style.visibility = "visible";
+                volumeFetchPreloader.style.visibility = "visible";
                 ipcRenderer.send("mangaFetchDetails", mangaName.value);
             }
             else {
@@ -1135,17 +1138,8 @@ var recordChoicesButtons = () => {
             // If the manga name is not long enough then update the page autocomplete options to be empty.
             else { mangaNameAutocomplete.updateData({}); }
         });
-
-
-
-
-        // mangaData.englishTitle, mangaData.japaneseTitle, [mangaData.picture, allImgArr], startDate, endDate,
-        //         mangaData.chapters, mangaData.volumes, mangaData.genres, writersArr, mangaData.synopsis
-
-
         // Update the page accordingly based on the fetched anime details.
         ipcRenderer.on("mangaFetchDetailsResult", (newEve, newResponse) => {
-            console.log(newResponse);
             const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none";
             // Update the manga japanese name if available.
             if(newResponse[1] != "" && newResponse[1] != "None found, add some") {
@@ -1169,13 +1163,30 @@ var recordChoicesButtons = () => {
                 mangaFavImgLink.style.visibility = "visible";
                 mangaFavImgLink.style.color = btnColorFavorite;
             }
+            // Update the manga start date if available.
+            if(newResponse[3] !== null && newResponse[3] != "" && newResponse[3] != " ?") {
+                const mangaStartDate = document.getElementById("mangaStartDate");
+                mangaStartDate.value = new Date(newResponse[3]).toISOString().split("T")[0];
+                mangaStartDate.classList.add("valid");
+            }
+            else {
+                mangaStartDate.value = "";
+                mangaStartDate.classList.remove("valid");
+            }
+            // Update the manga end date if available.
+            if(newResponse[4] !== null && newResponse[4] != "" && newResponse[4] != " ?") {
+                const mangaEndDate = document.getElementById("mangaEndDate");
+                mangaEndDate.value = new Date(newResponse[4]).toISOString().split("T")[0];
+                mangaEndDate.classList.add("valid");
+            }
+            else {
+                mangaEndDate.value = "";
+                mangaEndDate.classList.remove("valid");
+            }
             // Update the manga writers if available.
-            if(newResponse[8].length > 0 && newResponse[8][0] != "None found, add some") {
-                const writersInput = document.getElementById("mangaWriters");
-                let writerStr = "";
-                for(let p = 0; p < Math.ceil(newResponse[8].length / 2); p += 2 ) {
-                    newResponse[8][p + 1] != undefined ? writerStr += newResponse[8][p + 1] + newResponse[8][p] : writerStr += newResponse[8][p];
-                }
+            if(newResponse[8].length > 0) {
+                const writersInput = document.getElementById("mangaWriters"),
+                    writerStr = newResponse[8].map(writer => writer.split(", ").reverse().join(" ")).join(", ");
                 updateDetector == true ? writersInput.value += (writersInput.value == "" ? writerStr : ", " + writerStr) : writersInput.value = writerStr;
                 writersInput.classList.add("valid");
                 writersInput.nextElementSibling.classList.add("active");
@@ -1225,80 +1236,91 @@ var recordChoicesButtons = () => {
                 extraGenres.classList.remove("valid");
                 extraGenres.nextElementSibling.classList.remove("active");
             }
-            // setTimeout(() => {
-            //     // Reset the related content modal.
-            //     if(updateDetector == false) {
-            //         document.getElementById("animeList").innerHTML = "";
-            //     }
-            //     const listNum = document.getElementById("animeList").children.length + 1;
-            //     // If the anime type is a season then add a season to the related content.
-            //     if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
-            //         // Attach a season.
-            //         seasonAddition();
-            //         const seasonName = document.getElementById("li_" + listNum + "_Season_Name");
-            //         // If the start date is provided then set it as the value for the season start date input. 
-            //         if(newResponse[3] != "") {
-            //             let dateStart = new Date(newResponse[3]);
-            //             dateStart.setDate(dateStart.getDate() - 1);
-            //             document.getElementById("li_" + listNum + "_Season_Start").value = dateStart.getFullYear() + "-"
-            //                 + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
-            //                 + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
-            //         }
-            //         // If the end date is provided then set it as the value for the season end date input. 
-            //         if(newResponse[4] != "") {
-            //             let dateEnd = new Date(newResponse[4]);
-            //             dateEnd.setDate(dateEnd.getDate() - 1);
-            //             document.getElementById("li_" + listNum + "_Season_End").value = dateEnd.getFullYear() + "-"
-            //                 + (dateEnd.getMonth() + 1 > 9 ? dateEnd.getMonth() + 1 : "0" + (dateEnd.getMonth() + 1)) + "-"
-            //                 + (dateEnd.getDate() + 1 > 9 ? dateEnd.getDate() + 1 : "0" + (dateEnd.getDate() + 1));
-            //         }
-            //         // Provide a default season name.
-            //         seasonName.value = "Season";
-            //         seasonName.classList.add("valid");
-            //         seasonName.nextElementSibling.classList.add("active");
-            //         // Add the appropriate number of episodes with a default episode name.
-            //         for(let f = 0; f < parseInt(newResponse[6]); f++) {
-            //             document.getElementById("li_" + listNum + "_Season_AddEpisode").click();
-            //             let episodeName = document.getElementById("li_" + listNum + "_Episode_Name_" + (f + 1));
-            //             episodeName.value = "Episode " + (f + 1);
-            //             episodeName.classList.add("valid");
-            //             episodeName.nextElementSibling.classList.add("active");
-            //         }
-            //         // Hide the episodes by default.
-            //         document.getElementById("li_" + listNum + "_Season").children[0].click();
-            //     }
-            //     else {
-            //         // Attach a single film/ona/ova.
-            //         singleAddition();
-            //         const singleName = document.getElementById("li_" + listNum + "_Single_Name"),
-            //             singleType = document.getElementById("li_" + listNum + "_Single_Type");
-            //         // If the release date is provided then set it as the value for the single release date input. 
-            //         if(newResponse[3] != "") {
-            //             let dateStart = new Date(newResponse[3]);
-            //             dateStart.setDate(dateStart.getDate() - 1);
-            //             document.getElementById("li_" + listNum + "_Single_Release").value = dateStart.getFullYear() + "-"
-            //                 + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
-            //                 + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
-            //         }
-            //         // Provide a default film/ona/ova name.
-            //         singleName.value = "Item 1";
-            //         singleName.classList.add("valid");
-            //         singleName.nextElementSibling.classList.add("active");
-            //         // Set the type for the item.
-            //         singleType.value = newResponse[5];
-            //         // Initialize the select tags.
-            //         initSelect();
-            //     }
-            //     // Hide the preloader now that everything has been loaded and show the buttons if necessary.
-            //     animePreloader.style.visibility = "hidden";
-            //     animeMoreBtn.style.visibility = "visible";
-            //     animeFetchBtn.style.visibility = "visible";
-            //     animeSave.style.visibility = "visible";
-            //     animeOptions.style.visibility = "visible";
-            // }, 500);
+            setTimeout(() => {
+                const mangaList = document.getElementById("mangaList");
+                // Reset the related content modal.
+                if(updateDetector == false) {
+                    mangaList.innerHTML = "";
+                }
+                const listNum = mangaList.children.length + 1;
+                // If the manga type is a season then add a season to the related content.
+                for(let r = 0; r < parseInt(newResponse[5]); r++) {
+                    mangaItemAddition("Chapter");
+                }
+                for(let s = 0; s < parseInt(newResponse[6]); s++) {
+                    mangaItemAddition("Volume");
+                }
+                Array.from(mangaList.children).forEach(li => {
+                    let scenario = li.getAttribute("id").split("_")[2];
+                    if(mangaModalSwitch.checked == false) {
+                        scenario == "Volume" ? li.style.display = "list-item" : li.style.display = "none";
+                    }
+                    else {
+                        scenario == "Chapter" ? li.style.display = "list-item" : li.style.display = "none";
+                    }
+                });
+                initSelect();
+                // Hide the preloader now that everything has been loaded and show the buttons if necessary.
+                mangaPreloader.style.visibility = "hidden";
+                mangaMoreBtn.style.visibility = "visible";
+                mangaFetchBtn.style.visibility = "visible";
+                mangaSave.style.visibility = "visible";
+                mangaOptions.style.visibility = "visible";
+            }, 500);
         });
-
-
+        // Update the page accordingly based on the fetched anime details.
+        ipcRenderer.on("mangaVolumeFetchDetailsResult", (volEve, volResponse) => {
+            const mangaVolumesList = Array.from(document.getElementById("mangaList").children).filter(li => li.getAttribute("id").split("_")[2] == "Volume"),
+                recordImg = document.getElementById("addRecordMangaImg");
+            for(let t = 0; t < volResponse.length; t++) {
+                let id = mangaVolumesList[t].getAttribute("id").split("_")[1],
+                    pub = document.getElementById("mangaPublisher"),
+                    name = document.getElementById("li_" + id + "_Volume_Name"),
+                    isbn = document.getElementById("li_" + id + "_Volume_ISBN"),
+                    rel = document.getElementById("li_" + id + "_Volume_Release"),
+                    syn = document.getElementById("li_" + id + "_Volume_Synopsis");
+                if(volResponse[t][0] != undefined && volResponse[t][0] != "") {
+                    name.value = volResponse[t][0];
+                    name.classList.add("valid");
+                    name.nextElementSibling.classList.add("active");
+                }
+                else {
+                    name.classList.remove("valid");
+                    name.nextElementSibling.classList.remove("active");
+                }
+                if(volResponse[t][1] != undefined && !recordImg.getAttribute("list").includes(volResponse[t][1])) { recordImg.setAttribute("list", recordImg.getAttribute("list") + "," + volResponse[t][1]); }
+                if(volResponse[t][2] != undefined && volResponse[t][2] != "") {
+                    isbn.value = volResponse[t][2];
+                    isbn.classList.add("valid");
+                    isbn.nextElementSibling.classList.add("active");
+                    formatISBN(isbn);
+                }
+                else {
+                    isbn.classList.remove("valid");
+                    isbn.nextElementSibling.classList.remove("active");
+                }
+                if(volResponse[t][3] != undefined && !pub.value.includes(volResponse[t][3])) {
+                    pub.value.length > 0 ? pub.value = ", " + volResponse[t][3] : pub.value = volResponse[t][3];
+                    pub.classList.add("valid");
+                    pub.nextElementSibling.classList.add("active");
+                }
+                if(volResponse[t][4] != undefined && volResponse[t][4] != "") {
+                    rel.value = (new Date(volResponse[t][4])).toISOString().split("T")[0];
+                    rel.classList.add("valid");
+                }
+                else {
+                    rel.value = "";
+                    rel.classList.remove("valid");
+                }
+                if(volResponse[t][5] != undefined && volResponse[t][5] != "") {
+                    syn.value = volResponse[t][5];
+                    syn.classList.add("valid");
+                    syn.nextElementSibling.classList.add("active");
+                    M.textareaAutoResize(syn);
+                }
+            }
+            volumeFetchPreloader.style.visibility = "hidden";
+        });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         if(introMangaHolder == true) {
             const instancesTapMangaSave = M.TapTarget.init(document.getElementById("introductionTargetMangaSave"), { "onClose": () => {
@@ -1313,10 +1335,4 @@ var recordChoicesButtons = () => {
             setTimeout(() => { instancesTapMangaSave.open(); }, 500);
         }
     });
-
-
-
-
-
-
 };

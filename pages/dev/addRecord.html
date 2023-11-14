@@ -113,7 +113,7 @@
                 <div id="animeMoreDetailsModal" class="modal modal-fixed-footer recordMoreDetailsModal">
                     <div class="modal-content">
                         <h4 class="center">More Details</h4>
-                        <form id="categoryAnimeForm3" class="categoryTopForm col s12">
+                        <form id="categoryAnimeForm3" class="categoryMoreDetailsForm col s12">
                             <div class="row">
                                 <div class="input-field col s6">
                                     <input id="animeDirectors" type="text" class="validate left">
@@ -423,7 +423,7 @@
                 <div id="mangaMoreDetailsModal" class="modal modal-fixed-footer recordMoreDetailsModal">
                     <div class="modal-content">
                         <h4 class="center">More Details</h4>
-                        <form id="categoryMangaForm3" class="categoryTopForm col s12">
+                        <form id="categoryMangaForm3" class="categoryMoreDetailsForm col s12">
                             <div class="row">
                                 <div class="input-field col s6">
                                     <input id="mangaPublisher" type="text" class="validate left">
@@ -517,6 +517,19 @@
             <div id="mangaModal" class="modal contentModal modal-fixed-footer">
                 <div class="modal-content">
                     <h4 class="center">Related Content</h4>
+                    <div id="volumeFetchPreloader" class="preloader-wrapper big active">
+                        <div class="spinner-layer">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="gap-patch">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                        </div>
+                    </div>
                     <ul id="mangaList" class="collapsible"></ul>
                 </div>
                 <div class="modal-footer">

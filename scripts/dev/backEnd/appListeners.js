@@ -281,7 +281,7 @@ exports.addMangaListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, main
 
 	// Handles the fetching of details for a given anime via its name.
 	ipc.on("mangaFetchDetails", (event, submission) => {
-		require("./mangaTools").mangaFetchDetails(log, require("mal-scraper"), tools, event, submission);
+		require("./mangaTools").mangaFetchDetails(log, require("mal-scraper"), require("goodreads-scraper"), tools, event, submission);
 	});
 
 	// // Handles the fetching of anime releases based on a query search.

@@ -177,17 +177,19 @@ Handles the fetching of a manga record from myanimelist based on a name.
 
    - log provides the means to create application logs to keep track of what is going on.
    - malScraper provides the means to attain anime and manga records from myanimelist.
+   - GoodReadsScraper provides the means to attain book records from goodreads.
    - tools provides a collection of local functions.
    - ev provides the means to interact with the front-end of the Electron app.
    - name is a string representing the title of an anime record.
 
 */
-exports.mangaFetchDetails = (log, malScraper, tools, ev, name) => {
+exports.mangaFetchDetails = (log, malScraper, GoodReadsScraper, tools, ev, name) => {
     // Fetch anime details.
     malScraper.getInfoFromName(name, true, "manga").then(mangaData => {
         // Define the parameters which will be passed to the front-end based on the details received.
         let startDate = "",
-            endDate = "";
+            endDate = "",
+            volumePromiseArr = [];
         // Properly define the start and end date of a manga listing on myanimelist.
         if(mangaData.published != undefined) {
             let splitArr = mangaData.published.split("to");
@@ -196,24 +198,54 @@ exports.mangaFetchDetails = (log, malScraper, tools, ev, name) => {
                 endDate = splitArr[1];
             }
         }
-        // Fetch all possible images associated to the manga record.
-        malScraper.getPictures({ "name": mangaData.title, "id": mangaData.id }).then(malImgArr => {
-            // Send the attained data to the front-end.
-            log.info("MyAnimeList-Scraper has finished getting the details associated to the manga " + name + ".");
-            let allImgArr = malImgArr.map(pic => pic.imageLink);
-            allImgArr.indexOf(mangaData.picture) != -1 ? tools.arrayMove(allImgArr, allImgArr.indexOf(mangaData.picture), 0) : allImgArr = [mangaData.picture].concat(allImgArr);
-            ev.sender.send("mangaFetchDetailsResult", [
-                mangaData.englishTitle, mangaData.japaneseTitle, [mangaData.picture, allImgArr], startDate, endDate,
-                mangaData.chapters, mangaData.volumes, mangaData.genres, mangaData.authors, mangaData.synopsis
-            ]);
-        }).catch(err => {
-            log.warn("There was an issue in obtaining the pictures associated to the manga record " + name + ".");
-            ev.sender.send("mangaFetchDetailsResult", [
-                mangaData.englishTitle, mangaData.japaneseTitle, [mangaData.picture, [mangaData.picture]], startDate, endDate,
-                mangaData.chapters, mangaData.volumes, mangaData.genres, mangaData.authors, mangaData.synopsis
-            ]);
+        log.info("MyAnimeList-Scraper has finished getting the details associated to the manga " + name + ".");
+        ev.sender.send("mangaFetchDetailsResult", [
+            mangaData.englishTitle, mangaData.japaneseTitle, [mangaData.picture, [mangaData.picture]], startDate, endDate,
+            mangaData.chapters, mangaData.volumes, mangaData.genres, mangaData.authors, mangaData.synopsis
+        ]);
+        for(let k = 1; k <= parseInt(mangaData.volumes); k++) {
+            // Fetch book search results.
+            volumePromiseArr.push(new Promise((resolve, reject) => {
+                GoodReadsScraper.searchBooks({ "q": (mangaData.volumes == "1" ? mangaData.englishTitle : mangaData.englishTitle + ", Vol. " + k) }).then(bookSearchData => {
+                    // Define the item in the search results matching the name provided.
+                    let bookLst = bookSearchData.books,
+                        // index = bookLst.indexOf(mangaData.englishTitle + ", Vol. " + k),
+                        index = 0;
+                    for(; bookLst.length; index++) {
+                        if(mangaData.volumes == "1") {
+                            if(bookLst[index].title.includes(mangaData.englishTitle) && bookLst[index].author == mangaData.authors[0].split(", ").reverse().join(" ")) {
+                                break;
+                            }
+                        }
+                        else {
+                            if(bookLst[index].title.includes(mangaData.englishTitle + ", Vol. " + k) && bookLst[index].author == mangaData.authors[0].split(", ").reverse().join(" ")) {
+                                break;
+                            }
+                        }
+                    }
+                    if(index == bookLst.length) {
+                        throw new Error("No associated volumes could be found on GoodReads.");
+                    }
+                    let bookLstItem = bookSearchData.books[index];
+                    // Fetch book details.
+                    GoodReadsScraper.getBook({ "url": bookLstItem.url }).then(bookData => {
+                        resolve([bookLstItem.title, bookData.coverLarge.replace(".__SX50__", ""), (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin),
+                            bookData.publisher, bookData.publicationDate, bookData.description]);
+                    }).catch(err => {
+                        log.warn("There was an issue in obtaining the details associated to volume #" + k + " of the manga " + name + " via the url " + bookLstItem.url + ".");
+                        resolve([]);
+                    });
+                }).catch(err => {
+                    log.warn("There was an issue in obtaining the details associated to volume #" + k + " of the manga " + name + ".");
+                    resolve([]);
+                });
+            }));
+        }
+        Promise.all(volumePromiseArr).then(results => {
+            log.info("GoodReads-Scraper has finished getting the details associated to the manga volumes of " + name + ".");
+            ev.sender.send("mangaVolumeFetchDetailsResult", results);
         });
-    }).catch(err => log.error("There was an issue in obtaining the details associated to the manga name " + name + "."));
+    }).catch(err => log.error("There was an issue in obtaining the details associated to the manga " + name + "."));
 };
 
 

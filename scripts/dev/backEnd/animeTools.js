@@ -231,13 +231,20 @@ exports.animeFetchDetails = (log, malScraper, tools, ev, name) => {
             // Send the attained data to the front-end.
             log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + name + ".");
             let allImgArr = malImgArr.map(pic => pic.imageLink);
-            tools.arrayMove(allImgArr, allImgArr.indexOf(animeData.picture), 0);
+            allImgArr.indexOf(animeData.picture) != -1 ? tools.arrayMove(allImgArr, allImgArr.indexOf(animeData.picture), 0) : allImgArr = [animeData.picture].concat(allImgArr);
             ev.sender.send("animeFetchDetailsResult", [
                 animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, allImgArr], startDate, endDate,
                 animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
                 animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
             ]);
-        }).catch(err => log.error("There was an issue in obtaining the pictures associated to the anime record " + name + "."));
+        }).catch(err => {
+            log.error("There was an issue in obtaining the pictures associated to the anime record " + name + ".");
+            ev.sender.send("animeFetchDetailsResult", [
+                animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, [animeData.picture]], startDate, endDate,
+                animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
+                animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
+            ]);
+        });
     }).catch(err => log.error("There was an issue in obtaining the details associated to the anime name " + name + "."));
 };
 
