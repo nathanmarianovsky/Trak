@@ -383,7 +383,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 name = str.split("-").slice(1).join("-");
             }
             else if(cat == "Book") {
-                name = str.split("-").slice(2).join("-");
+                name = str.split("-").slice(1).join("-");
             }
             return name;
         };

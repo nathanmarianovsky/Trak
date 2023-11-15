@@ -75,11 +75,11 @@ exports.objCreationImgs = (path, fs, https, tools, dir, recordDir, providedImgs)
 				});
 			}
 			else {
-				console.log(recordDir);
 				let copyFilePath = path.join(dir, "Trak", "data", recordDir, "assets", path.basename(providedImgs[1][y]));
-				console.log(copyFilePath);
 				if(providedImgs[1][y] != copyFilePath) {
-					fs.copySync(providedImgs[1][y], copyFilePath);
+					if(fs.existsSync(providedImgs[1][y])) {
+						fs.copySync(providedImgs[1][y], copyFilePath);
+					}
 				}
 				imgArr.push(copyFilePath);
 			}
@@ -113,7 +113,7 @@ exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, 
 		fldr = info[0] + "-" + exports.formatFolderName(info[1] != "" ? info[1] : info[2]);
 	}
 	else if(info[0] == "Book") {
-		fldr = info[0] + "-" + info[3] + "-" + exports.formatFolderName(info[1]);
+		fldr = info[0] + "-" + exports.formatFolderName(info[1]) + "-" + info[3];
 	}
 	fs.writeFile(path.join(savePath, "Trak", "data", fldr, "data.json"), JSON.stringify(writeData), "UTF8", err => {
 		// If there was an error in writing to the data file, then notify the user.
@@ -193,7 +193,7 @@ exports.removeRecords = (log, primaryWin, userPath, fs, path, data) => {
 	}
 	// Refresh the primary window and notify the user that all checked records have been removed.
 	if(j == data.length) {
-		log.info("The data records associated to the folders " + data.join(", ") + (data.length > 1 ? "have" : "has") + " been deleted.");
+		log.info("The data records associated to the folders " + data.join(", ") + (data.length > 1 ? " have" : " has") + " been deleted.");
 		primaryWin.reload();
 		setTimeout(() => { primaryWin.webContents.send("recordsRemovalSuccess"); }, 500);
 	}
@@ -1166,7 +1166,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 											bookObj.genres[1][genreIndex] = true;
 										}
 									}
-									let fldrName = bookObj.isbn + "-" + exports.formatFolderName(bookObj.name);
+									let fldrName = exports.formatFolderName(bookObj.name) + "-" + bookObj.isbn;
 									// Check the assets that were imported from the associated zip file and add the images to the book record object.
 									let assetsFolder = path.join(dir, "Trak", "importTemp", "Book-" + fldrName, "assets");
 									if(fs.existsSync(assetsFolder)) {
