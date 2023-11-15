@@ -409,7 +409,19 @@ var mangaContentSingleButtons = (formSingleName, formSingleISBN, formSingleRelea
             name.classList.remove("valid");
             name.nextElementSibling.classList.remove("active");
         }
-        if(response[2] != undefined && !recordImg.getAttribute("list").includes(response[2])) { recordImg.setAttribute("list", recordImg.getAttribute("list") + "," + response[2]); }
+        if(response[2] != undefined && !recordImg.getAttribute("list").includes(response[2])) {
+            let curLst = recordImg.getAttribute("list"),
+                favoriteLink = document.getElementById("mangaFavoriteImageLink");
+            if(curLst != "") {
+                recordImg.setAttribute("list", curLst + "," + response[2]);
+            }
+            else {
+                recordImg.setAttribute("src", response[2]);
+                recordImg.setAttribute("list", response[2]);
+            }
+            favoriteLink.style.visibility = "visible";
+            favoriteLink.style.color = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor;
+        }
         if(response[3] != undefined && response[3] != "") {
             isbn.value = response[3];
             isbn.classList.add("valid");
