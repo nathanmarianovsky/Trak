@@ -239,7 +239,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     otherGenresDiv = document.getElementById("animeOtherGenresDiv");
                 otherGenresDiv.style.display = "block";
                 otherGenres.value = recordData.genres[2].join(", ");
-                if(otherGenres.value.trim() > 0) { otherGenres.nextElementSibling.classList.add("active"); }
+                if(otherGenres.value.trim() != "") { otherGenres.nextElementSibling.classList.add("active"); }
                 otherGenres.setAttribute("lastValue", recordData.genres[2].join(", "));
                 relatedContentListeners(otherGenres);
                 // Display a preloader to indicate that the page is still loading the anime related content. This can take a bit of time depending on the amount to be loaded.
@@ -251,19 +251,19 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     const rtngList = [];
                     // Iterate through the saved related content and add a page item for each.
                     for(let u = 1; u < recordData.content.length + 1; u++) {
-                        let curName = document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Name");
-                        curName.value = recordData.content[u-1].name;
-                        curName.setAttribute("lastValue", recordData.content[u-1].name);
-                        if(recordData.content[u-1].name != "") { curName.parentNode.children[1].classList.add("active"); }
-                        relatedContentListeners(curName);
                         // If the iterated item is of type single then proceed accordingly.
                         if(recordData.content[u-1].scenario == "Single") {
                             singleAddition();
-                            let curType = document.getElementById("li_" + u + "_Single_Type"),
+                            let curName = document.getElementById("li_" + u + "_Single_Name"),
+                                curType = document.getElementById("li_" + u + "_Single_Type"),
                                 curRelease = document.getElementById("li_" + u + "_Single_Release"),
                                 curWatched = document.getElementById("li_" + u + "_Single_LastWatched"),
                                 curRating = document.getElementById("li_" + u + "_Single_Rating"),
                                 curReview = document.getElementById("li_" + u + "_Single_Review");
+                            curName.value = recordData.content[u-1].name;
+                            curName.setAttribute("lastValue", recordData.content[u-1].name);
+                            if(recordData.content[u-1].name != "") { curName.parentNode.children[1].classList.add("active"); }
+                            relatedContentListeners(curName);
                             curType.value = recordData.content[u-1].type;
                             curRelease.value = recordData.content[u-1].release;
                             curRelease.setAttribute("lastValue", recordData.content[u-1].release);
@@ -284,9 +284,14 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                         // If the iterated item is of type season then proceed accordingly.
                         else if(recordData.content[u-1].scenario == "Season") {
                             seasonAddition();
-                            let curStart = document.getElementById("li_" + u + "_Season_Start"),
+                            let curName = document.getElementById("li_" + u + "_Season_Name"),
+                                curStart = document.getElementById("li_" + u + "_Season_Start"),
                                 curEnd = document.getElementById("li_" + u + "_Season_End"),
                                 curStatus = document.getElementById("li_" + u + "_Season_Status");
+                            curName.value = recordData.content[u-1].name;
+                            curName.setAttribute("lastValue", recordData.content[u-1].name);
+                            if(recordData.content[u-1].name != "") { curName.parentNode.children[1].classList.add("active"); }
+                            relatedContentListeners(curName);
                             curStart.value = recordData.content[u-1].start;
                             curStart.setAttribute("lastValue", recordData.content[u-1].start);
                             relatedContentListeners(curStart);
@@ -426,7 +431,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     otherGenresDiv = document.getElementById("bookOtherGenresDiv");
                 otherGenresDiv.style.display = "block";
                 otherGenres.value = recordData.genres[2].join(", ");
-                if(otherGenres.value.trim() > 0) { otherGenres.nextElementSibling.classList.add("active"); }
+                if(otherGenres.value.trim() != "") { otherGenres.nextElementSibling.classList.add("active"); }
                 otherGenres.setAttribute("lastValue", recordData.genres[2].join(", "));
                 relatedContentListeners(otherGenres);
                 bookTitle.setAttribute("oldISBN", recordData.isbn);
@@ -471,105 +476,51 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 // Populate the manga record page with the saved data.
                 mangaName.value = recordData.name;
                 mangaName.setAttribute("lastValue", recordData.name);
-                if(recordData.name != "") { mangaName.parentNode.children[2].classList.add("active"); }
-                mangaName.addEventListener("change", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaName.addEventListener("click", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
+                if(recordData.name.trim() != "") { mangaName.parentNode.children[2].classList.add("active"); }
+                relatedContentListeners(mangaName);
                 mangaJapaneseName.value = recordData.jname;
                 mangaJapaneseName.setAttribute("lastValue", recordData.jname);
-                if(recordData.jname != "") { mangaJapaneseName.parentNode.children[1].classList.add("active"); }
-                mangaJapaneseName.addEventListener("change", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaJapaneseName.addEventListener("click", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
+                if(recordData.jname.trim() != "") { mangaJapaneseName.parentNode.children[1].classList.add("active"); }
+                relatedContentListeners(mangaJapaneseName);
                 mangaReview.value = recordData.review;
                 mangaReview.setAttribute("lastValue", recordData.review);
-                if(recordData.review != "") {
+                if(recordData.review.trim() != "") {
                     mangaReview.parentNode.children[1].classList.add("active");
                     M.textareaAutoResize(mangaReview);
                 }
-                mangaReview.addEventListener("change", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaReview.addEventListener("click", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
+                relatedContentListeners(mangaReview);
                 mangaSynopsis.value = recordData.synopsis;
                 mangaSynopsis.setAttribute("lastValue", recordData.synopsis);
-                if(recordData.synopsis != "") {
+                if(recordData.synopsis.trim() != "") {
                     mangaSynopsis.parentNode.children[1].classList.add("active");
                     M.textareaAutoResize(mangaSynopsis);
                 }
-                mangaSynopsis.addEventListener("change", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaSynopsis.addEventListener("click", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaPublisher.value = recordData.producers;
-                mangaPublisher.setAttribute("lastValue", recordData.producers);
-                if(recordData.publisher != "") { mangaPublisher.parentNode.children[1].classList.add("active"); }
-                mangaPublisher.addEventListener("change", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaPublisher.addEventListener("click", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaJapanesePublisher.value = recordData.musicians;
-                mangaJapanesePublisher.setAttribute("lastValue", recordData.musicians);
-                if(recordData.jpublisher != "") { mangaJapanesePublisher.parentNode.children[1].classList.add("active"); }
-                mangaJapanesePublisher.addEventListener("change", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaJapanesePublisher.addEventListener("click", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaIllustrators.value = recordData.directors;
-                mangaIllustrators.setAttribute("lastValue", recordData.directors);
-                if(recordData.illustrators != "") { mangaIllustrators.parentNode.children[1].classList.add("active"); }
-                mangaIllustrators.addEventListener("change", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaIllustrators.addEventListener("click", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
+                relatedContentListeners(mangaSynopsis);
+                mangaPublisher.value = recordData.publisher;
+                mangaPublisher.setAttribute("lastValue", recordData.publisher);
+                if(recordData.publisher.trim() != "") { mangaPublisher.parentNode.children[1].classList.add("active"); }
+                relatedContentListeners(mangaPublisher);
+                mangaJapanesePublisher.value = recordData.jpublisher;
+                mangaJapanesePublisher.setAttribute("lastValue", recordData.jpublisher);
+                if(recordData.jpublisher.trim() != "") { mangaJapanesePublisher.parentNode.children[1].classList.add("active"); }
+                relatedContentListeners(mangaJapanesePublisher);
+                mangaIllustrators.value = recordData.illustrators;
+                mangaIllustrators.setAttribute("lastValue", recordData.illustrators);
+                if(recordData.illustrators.trim() != "") { mangaIllustrators.parentNode.children[1].classList.add("active"); }
+                relatedContentListeners(mangaIllustrators);
                 mangaWriters.value = recordData.writers;
                 mangaWriters.setAttribute("lastValue", recordData.writers);
-                if(recordData.writers != "") { mangaWriters.parentNode.children[1].classList.add("active"); }
-                mangaWriters.addEventListener("change", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaWriters.addEventListener("click", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaDemographic.value = recordData.studio;
-                mangaDemographic.setAttribute("lastValue", recordData.studio);
-                mangaDemographic.addEventListener("change", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaStartDate.value = recordData.license;
-                mangaStartDate.setAttribute("lastValue", recordData.license);
-                if(recordData.start != "") { mangaStartDate.parentNode.children[1].classList.add("active"); }
-                mangaStartDate.addEventListener("change", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaStartDate.addEventListener("click", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaEndDate.value = recordData.license;
-                mangaEndDate.setAttribute("lastValue", recordData.license);
-                if(recordData.end != "") { mangaEndDate.parentNode.children[1].classList.add("active"); }
-                mangaEndDate.addEventListener("change", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                mangaEndDate.addEventListener("click", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
+                if(recordData.writers.trim() != "") { mangaWriters.parentNode.children[1].classList.add("active"); }
+                relatedContentListeners(mangaWriters);
+                mangaDemographic.value = recordData.demographic;
+                mangaStartDate.value = recordData.start;
+                mangaStartDate.setAttribute("lastValue", recordData.start);
+                if(recordData.start.trim() != "") { mangaStartDate.parentNode.children[1].classList.add("active"); }
+                relatedContentListeners(mangaStartDate);
+                mangaEndDate.value = recordData.end;
+                mangaEndDate.setAttribute("lastValue", recordData.end);
+                if(recordData.end.trim() != "") { mangaEndDate.parentNode.children[1].classList.add("active"); }
+                relatedContentListeners(mangaEndDate);
                 mangaImg.setAttribute("list", recordData.img.join(","));
                 mangaImg.setAttribute("previous", recordData.img.join(","));
                 mangaImg.setAttribute("src", recordData.img.length > 0 && recordData.img[0] != "" ? recordData.img[0] : mangaImg.getAttribute("default"));
@@ -585,14 +536,9 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     otherGenresDiv = document.getElementById("mangaOtherGenresDiv");
                 otherGenresDiv.style.display = "block";
                 otherGenres.value = recordData.genres[2].join(", ");
-                if(recordData.genres[2].join(", ").trim().length > 0) { otherGenres.nextElementSibling.classList.add("active"); }
+                if(otherGenres.value.trim() != "") { otherGenres.nextElementSibling.classList.add("active"); }
                 otherGenres.setAttribute("lastValue", recordData.genres[2].join(", "));
-                otherGenres.addEventListener("change", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
-                otherGenres.addEventListener("click", e => {
-                    e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                });
+                relatedContentListeners(otherGenres);
                 // Display a preloader to indicate that the page is still loading the manga related content. This can take a bit of time depending on the amount to be loaded.
                 const updateMangaPreloader = document.getElementById("mangaPreloader");
                 updateMangaPreloader.style.top = "-32px";
@@ -603,38 +549,30 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     // Iterate through the saved related content and add a page item for each.
                     for(let u = 1; u < recordData.content.length + 1; u++) {
                         mangaItemAddition(recordData.content[u-1].scenario);
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Name").value = recordData.content[u-1].name;
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Name").setAttribute("lastValue", recordData.content[u-1].name);
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Name").classList.remove("valid");
-                        if(recordData.content[u-1].name != "") { document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Name").parentNode.children[1].classList.add("active"); }
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Name").addEventListener("change", e => {
-                            e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                        });
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Name").addEventListener("click", e => {
-                            e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                        });
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Release").value = recordData.content[u-1].release;
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Release").setAttribute("lastValue", recordData.content[u-1].release);
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Release").addEventListener("change", e => {
-                            e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                        });
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Release").addEventListener("click", e => {
-                            e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                        });
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_LastRead").value = recordData.content[u-1].read;
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_LastRead").setAttribute("lastValue", recordData.content[u-1].read);
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_LastRead").addEventListener("change", e => {
-                            e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                        });
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_LastRead").addEventListener("click", e => {
-                            e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                        });
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Rating").value = recordData.content[u-1].rating;
-                        document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Review").value = recordData.content[u-1].review;
+                        let curName = document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Name"),
+                            curRelease = document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Release"),
+                            curLastRead = document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_LastRead"),
+                            curRating = document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Rating"),
+                            curReview = document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Review");
+                        curName.value = recordData.content[u-1].name;
+                        curName.setAttribute("lastValue", recordData.content[u-1].name);
+                        curName.classList.remove("valid");
+                        if(recordData.content[u-1].name != "") { curName.parentNode.children[1].classList.add("active"); }
+                        relatedContentListeners(curName);
+                        curRelease.value = recordData.content[u-1].release;
+                        curRelease.setAttribute("lastValue", recordData.content[u-1].release);
+                        relatedContentListeners(curRelease);
+                        curLastRead.value = recordData.content[u-1].read;
+                        curLastRead.setAttribute("lastValue", recordData.content[u-1].read);
+                        relatedContentListeners(curLastRead);
+                        curRating.value = recordData.content[u-1].rating;
+                        curReview.value = recordData.content[u-1].review;
+                        curReview.setAttribute("lastValue", recordData.content[u-1].review);
                         if(recordData.review != "") {
-                            document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Review").parentNode.children[1].classList.add("active");
-                            M.textareaAutoResize(document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Review"));
+                            curReview.parentNode.children[1].classList.add("active");
+                            M.textareaAutoResize(curReview);
                         }
+                        relatedContentListeners(curReview);
                         // If the iterated item is of type chapter then proceed accordingly.
                         if(recordData.content[u-1].scenario == "Chapter") {
                             document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario).style.display = "none";
@@ -642,21 +580,20 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                         }
                         // If the iterated item is of type volume then proceed accordingly.
                         else if(recordData.content[u-1].scenario == "Volume") {
-                            document.getElementById("li_" + u + "_Volume_ISBN").value = recordData.content[u-1].isbn;
-                            document.getElementById("li_" + u + "_Volume_ISBN").setAttribute("lastValue", recordData.content[u-1].isbn);
-                            formatISBN(document.getElementById("li_" + u + "_Volume_ISBN"));
-                            if(recordData.content[u-1].isbn != "") { document.getElementById("li_" + u + "_Volume_ISBN").parentNode.children[1].classList.add("active"); }
-                            document.getElementById("li_" + u + "_Volume_ISBN").addEventListener("change", e => {
-                                e.target.value.replace(/-/g, "") == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                            });
-                            document.getElementById("li_" + u + "_Volume_ISBN").addEventListener("click", e => {
-                                e.target.value.replace(/-/g, "") == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-                            });
-                            document.getElementById("li_" + u + "_Volume_Synopsis").value = recordData.content[u-1].synopsis;
-                            if(recordData.synopsis != "") {
-                                document.getElementById("li_" + u + "_Volume_Synopsis").parentNode.children[1].classList.add("active");
-                                M.textareaAutoResize(document.getElementById("li_" + u + "_Volume_Synopsis"));
+                            let curISBN = document.getElementById("li_" + u + "_Volume_ISBN"),
+                                curSynopsis = document.getElementById("li_" + u + "_Volume_Synopsis");
+                            curISBN.value = recordData.content[u-1].isbn;
+                            curISBN.setAttribute("lastValue", recordData.content[u-1].isbn);
+                            formatISBN(curISBN);
+                            if(recordData.content[u-1].isbn.trim() != "") { curISBN.parentNode.children[1].classList.add("active"); }
+                            relatedContentListeners(curISBN);
+                            curSynopsis.value = recordData.content[u-1].synopsis;
+                            curSynopsis.setAttribute("lastValue", recordData.content[u-1].synopsis);
+                            if(recordData.synopsis.trim() != "") {
+                                curSynopsis.parentNode.children[1].classList.add("active");
+                                M.textareaAutoResize(curSynopsis);
                             }
+                            relatedContentListeners(curSynopsis);
                             if(recordData.content[u-1].rating != "") { rtngList[1].push(parseInt(recordData.content[u-1].rating)); }
                         }
                     }
@@ -697,12 +634,6 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
 
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
-    // Fill the anime record page with the associated genre options.
-    genreListLoad("Anime", 6);
-    // Fill the book record page with the associated genre options.
-    genreListLoad("Book", 6);
-    // Fill the manga record page with the associated genre options.
-    genreListLoad("Manga", 6);
     // Initialize the select tags on the page.
     initSelect();
     // Initialize the floating action button on the page.
@@ -725,11 +656,13 @@ window.addEventListener("load", () => {
     animeModalButtons();
     // Add the listeners corresponding to the manga related content options.
     mangaModalButtons();
-    const categories = ["anime", "book", "manga"];
+    const categories = ["Anime", "Book", "Manga"];
     categories.forEach(category => {
+        // Fill the record page with the associated genre options.
+        genreListLoad(category, 6);
         // Initialize the observer for the review.
-        initReviewObserver(document.getElementById(category + "Review"));
+        initReviewObserver(document.getElementById(category.toLowerCase() + "Review"));
         // Initialize the observer for the synopsis.
-        initSynopsisObserver(document.getElementById(category + "Synopsis"));
+        initSynopsisObserver(document.getElementById(category.toLowerCase() + "Synopsis"));
     });
 });
