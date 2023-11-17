@@ -376,17 +376,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
     document.body.style.overflowY = "hidden";
     // Sort the records alphabetically by default.
     list.sort((a, b) => {
-        let nameFunc = str => {
-            let cat = str.split("-")[0],
-                name = "";
-            if(cat == "Anime") {
-                name = str.split("-").slice(1).join("-");
-            }
-            else if(cat == "Book") {
-                name = str.split("-").slice(1).join("-");
-            }
-            return name;
-        };
+        let nameFunc = str => str.split("-")[1];
         return nameFunc(a).localeCompare(nameFunc(b));
     });
     // Iterate through each saved record and add a row for each one containing the name, category, and genres of the record.
@@ -411,7 +401,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             tdCheck = document.createElement("td"),
             recordData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", list[n], "data.json")));
         // Modify the name portion.
-        if(recordData.category == "Anime") {
+        if(recordData.category == "Anime" || recordData.category == "Manga") {
             tdNameDiv.textContent = recordData.name != "" ? recordData.name : recordData.jname;
         }
         else if(recordData.category == "Book") {
@@ -448,6 +438,9 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                         else if(recordData.category == "Book") {
                             M.toast({"html": "There was an issue reading the data file associated to the book " +
                                 (e.parentNode.parentNode.parentNode.getAttribute("name") != "" ? e.parentNode.parentNode.parentNode.getAttribute("name") : e.parentNode.parentNode.parentNode.getAttribute("isbn")) + ".", "classes": "rounded"});
+                        }
+                        else if(recordData.category == "Manga") {
+                            M.toast({"html": "There was an issue reading the data file associated to the manga " + e.parentNode.parentNode.parentNode.getAttribute("name") + ".", "classes": "rounded"});
                         }
                     }
                     else {
@@ -491,6 +484,24 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         }
         else if(recordData.category == "Book") {
             tdRatingDiv.textContent = recordData.rating != "" ? parseInt(recordData.rating).toFixed(2) : "N/A";
+        }
+        else if(recordData.category == "Manga") {
+            let displayRating = "N/A",
+                displayRatingArr = [[],[]];
+                // ratingArr = [];
+            for(let a = 0; a < recordData.content.length; a++) {
+                if(recordData.content[a].rating != "") {
+                    if(recordData.content[a].scenario == "Chapter") {
+                        displayRatingArr[0].push(parseInt(recordData.content[a].rating));
+                    }
+                    else if(recordData.content[a].scenario == "Volume") {
+                        displayRatingArr[1].push(parseInt(recordData.content[a].rating));
+                    }
+                }
+            }
+            displayRating = displayRatingArr[0].length + displayRatingArr[1].length == 0 ? "N/A" : (((displayRatingArr[0].length == 0 ? 0 : (displayRatingArr[0].reduce((accum, cur) => accum + cur, 0) / displayRatingArr[0].length))
+                + (displayRatingArr[1].length == 0 ? 0 : (displayRatingArr[1].reduce((accum, cur) => accum + cur, 0) / displayRatingArr[1].length))) / (displayRatingArr[0].length != 0 && displayRatingArr[1].length != 0 ? 2 : 1)).toFixed(2);
+            tdRatingDiv.textContent = displayRating;
         }
         tdRatingDiv.classList.add("recordsRowDiv", "left");
         tdRating.append(tdRatingDiv);
@@ -560,10 +571,10 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         tr.setAttribute("category", recordData.category);
         tr.setAttribute("name", recordData.name);
         tr.setAttribute("genres", rowGenreInfo);
-        tr.setAttribute("directors", recordData.directors);
         if(recordData.category == "Anime") {
             tr.setAttribute("jname", recordData.jname);
             tr.setAttribute("license", recordData.license);
+            tr.setAttribute("directors", recordData.directors);
             tr.setAttribute("musicians", recordData.musicians);
             tr.setAttribute("producers", recordData.producers);
             tr.setAttribute("studio", recordData.studio);
@@ -578,6 +589,16 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             tr.setAttribute("pages", recordData.pages);
             tr.setAttribute("media", recordData.media);
             tr.setAttribute("lastRead", recordData.lastRead);
+        }
+        else if(recordData.category == "Manga") {
+            tr.setAttribute("jname", recordData.jname);
+            tr.setAttribute("publisher", recordData.publisher);
+            tr.setAttribute("jpublisher", recordData.jpublisher);
+            tr.setAttribute("demographic", recordData.demographic);
+            tr.setAttribute("illustrators", recordData.illustrators);
+            tr.setAttribute("writers", recordData.writers);
+            tr.setAttribute("start", recordData.start);
+            tr.setAttribute("end", recordData.end);
         }
         tr.append(tdCheck, tdName, tdCategory, tdRating, tdGenres, tdFiles);
         tableBody.append(tr);

@@ -899,6 +899,7 @@ var seasonAddition = () => {
 };
 
 
+
 /*
 
 Driver function designed to add a chapter/volume table item in the related content section of a manga record.
@@ -946,7 +947,7 @@ var mangaItemAddition = scenario => {
         inputSingleSynopsis = document.createElement("textarea"),
         labelSingleSynopsis = document.createElement("label");
     if(scenario == "Volume") {
-        // Prepare the chapter/volume item name.
+        // Prepare the volume item name.
         divSingleName.style.width = "20%";
         // Prepare the volume item isbn.
         divSingleISBN.classList.add("input-field");
@@ -969,11 +970,13 @@ var mangaItemAddition = scenario => {
         divSingleSynopsis.append(spanSingleSynopsis);
     }
     else if(scenario == "Chapter") {
+        // Prepare the chapter item name.
         divSingleName.style.width = "25%";
         inputSingleName.value = "Chapter " + (Array.from(mangaList.children).filter(li => li.getAttribute("id").split("_")[2] == "Chapter").length + 1);
         inputSingleName.classList.add("valid");
         labelSingleName.classList.add("active");
     }
+    // Prepare the chapter/volume item name.
     divSingleName.classList.add("input-field");
     inputSingleName.classList.add("validate", "left");
     inputSingleName.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_" + scenario + "_Name");
@@ -1025,7 +1028,7 @@ var mangaItemAddition = scenario => {
     iconSingleFetch.textContent = "refresh";
     iconSingleFetch.classList.add("material-icons");
     iconSingleFetch.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_Volume_Fetch");
-    // Prepare the season button for deleting the season.
+    // Prepare the button for deleting a chapter/volume.
     divSingleDelete.classList.add("input-field");
     divSingleDelete.style.width = "5%";
     divSingleDelete.style.marginLeft = "25px";
@@ -1035,14 +1038,14 @@ var mangaItemAddition = scenario => {
     spanSingleDelete.classList.add("modalContentButtons", "modalContentDelete");
     iconSingleDelete.textContent = "delete_sweep";
     iconSingleDelete.classList.add("material-icons");
-    // Prepare the film/ONA/OVA review.
+    // Prepare the chapter/volume review.
     divSingleReview.classList.add("row");
     spanSingleReview.classList.add("input-field", "col", "s12");
     inputSingleReview.classList.add("validate", "materialize-textarea");
     inputSingleReview.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_" + scenario + "_Review");
     labelSingleReview.setAttribute("for", "li_" + (mangaList.children.length + 1) + "_" + scenario + "_Review");
     labelSingleReview.textContent = "Comments/Review:";
-    // Attach all season components to the list item.
+    // Attach all chapter/volume components to the list item.
     itemSingleDivHeader.classList.add("collapsible-header");
     itemSingleDivBody.classList.add("collapsible-body");
     divSingleName.append(inputSingleName, labelSingleName);
@@ -1061,7 +1064,7 @@ var mangaItemAddition = scenario => {
     else if(scenario == "Volume") {
         itemSingleDivHeader.append(divSingleName, divSingleISBN, divSingleReleaseDate, divSingleLastReadDate, divSingleRating, divSingleFetch, divSingleDelete);
     }
-    // Attach the div designed to house the film/ONA/OVA review.
+    // Attach the div designed to house the chapter/volume review.
     itemSingleDivBodyForm.classList.add("col", "s12");
     scenario == "Volume" ? itemSingleDivBodyForm.append(divSingleSynopsis) : itemSingleDivBodyForm.append(document.createElement("div"));
     itemSingleDivBodyForm.append(divSingleReview);
@@ -1072,7 +1075,7 @@ var mangaItemAddition = scenario => {
     itemSingleLI.setAttribute("id", "li_" + (mangaList.children.length + 1) + "_" + scenario);
     itemSingleLI.append(itemSingleDivHeader, itemSingleDivBody);
     mangaList.append(itemSingleLI);
-    // Add the button listeners associated to a film/ONA/OVA.
+    // Add the button listeners associated to a chapter/volume.
     mangaContentSingleButtons(inputSingleName, inputSingleISBN, inputSingleReleaseDate, inputSingleLastReadDate, selectSingleRating, iconSingleFetch, iconSingleDelete);
     // Initialize the select tags.
     initSelect();
@@ -1080,4 +1083,12 @@ var mangaItemAddition = scenario => {
     initTooltips();
     // Initialize the observers for all relevant select tags.
     initSelectObservers();
+};
+
+
+
+var relatedContentListeners = item => {
+    const listenerFunc = e => e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+    item.addEventListener("change", listenerFunc);
+    item.addEventListener("click", listenerFunc);
 };

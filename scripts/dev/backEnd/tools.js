@@ -109,7 +109,7 @@ Handles the writing of files associated to a record.
 exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, path, evt, info) => {
 	let fldr = "";
 	const modeStr = (mode == "A" ? "add" : "update");
-	if(info[0] == "Anime") {
+	if(info[0] == "Anime" || info[0] == "Manga") {
 		fldr = info[0] + "-" + exports.formatFolderName(info[1] != "" ? info[1] : info[2]);
 	}
 	else if(info[0] == "Book") {
@@ -244,6 +244,24 @@ Provides the list of all genres/tags that can be selected on the addRecord.html 
 exports.bookGenreList = () => {
     return ["Action", "Adventure", "Comedy", "Crime", "Dystopian", "Fantasy", "Fiction", "Historical", "Horror", "Mystery",
             "Mythology", "Nonfiction", "Romance", "Satire", "Sci-Fi", "Thriller", "Tragedy", "Western"];
+};
+
+
+
+/*
+
+Provides the list of all genres/tags that can be selected on the addRecord.html page for a manga record.
+
+*/
+exports.mangaGenreList = () => {
+    return ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
+            "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
+            "Hentai", "Historical", "Horror", "Isekai", "Kids", "Medical", "Mystery", "Magic", "MagicalSexShift",
+            "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police", "PostApocalyptic",
+            "Psychological", "Racing", "Reincarnation", "ReverseHarem", "Romance", "Samurai", "School", "SciFi",
+            "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame", "SuperPower", "Supernatural", "Survival",
+            "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy", "Vampire", "VideoGame", "War", "Western",
+            "Workplace", "Yaoi", "Yuri"];
 };
 
 

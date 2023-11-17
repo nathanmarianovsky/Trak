@@ -377,6 +377,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 .recordsNameContainer {
 	text-align: left;
+	padding-right: 25px;
 }
 
 .synopsisInfoIcon {
