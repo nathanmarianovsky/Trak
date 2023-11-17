@@ -737,12 +737,6 @@ var singleAddition = () => {
     animeList.append(itemSingleLI);
     // Add the button listeners associated to a film/ONA/OVA.
     animeContentSingleButtons(inputSingleName, inputSingleReleaseDate, inputSingleLastWatchedDate, selectSingleRating, iconSingleDelete);
-    // Initialize the select tags.
-    initSelect();
-    // Initialize the tooltips.
-    initTooltips();
-    // Initialize the observers for all relevant select tags.
-    initSelectObservers();
 };
 
 
@@ -753,8 +747,6 @@ Driver function designed to add a season table item in the related content secti
 
 */
 var seasonAddition = () => {
-    // Remove the tooltips.
-    clearTooltips();
     // Define and construct all components needed to attach an anime season to the related content table.
     const animeList = document.getElementById("animeList"),
         itemLI = document.createElement("li"),
@@ -890,12 +882,6 @@ var seasonAddition = () => {
     animeList.append(itemLI);
     // Add the button listeners associated to an anime season.
     animeContentSeasonButtons(inputName, inputStartDate, inputEndDate, inputAverageRating, iconAdd, iconDelete);
-    // Initialize the select tags.
-    initSelect();
-    // Initialize the tooltips.
-    initTooltips();
-    // Initialize the observers for all relevant select tags.
-    initSelectObservers();
 };
 
 
@@ -908,8 +894,6 @@ Driver function designed to add a chapter/volume table item in the related conte
 
 */
 var mangaItemAddition = scenario => {
-    // Remove the tooltips.
-    clearTooltips();
     // Define and construct all components needed to attach a manga chapter to the related content table.
     const mangaList = document.getElementById("mangaList"),
         itemSingleLI = document.createElement("li"),
@@ -1077,6 +1061,11 @@ var mangaItemAddition = scenario => {
     mangaList.append(itemSingleLI);
     // Add the button listeners associated to a chapter/volume.
     mangaContentSingleButtons(inputSingleName, inputSingleISBN, inputSingleReleaseDate, inputSingleLastReadDate, selectSingleRating, iconSingleFetch, iconSingleDelete);
+};
+
+
+
+var relatedContentFinisher = () => {
     // Initialize the select tags.
     initSelect();
     // Initialize the tooltips.

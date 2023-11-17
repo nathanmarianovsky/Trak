@@ -250,6 +250,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     // Define the collection of ratings to be used in calculating the global average rating of an anime.
                     const rtngList = [];
                     // Iterate through the saved related content and add a page item for each.
+                    clearTooltips();
                     for(let u = 1; u < recordData.content.length + 1; u++) {
                         // If the iterated item is of type single then proceed accordingly.
                         if(recordData.content[u-1].scenario == "Single") {
@@ -335,6 +336,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                             initSelectObservers();
                         }
                     }
+                    relatedContentFinisher();
                     // Write the global average rating of the anime record on the page.
                     const animeRtng = rtngList.length > 0 ? (rtngList.reduce((accum, cur) => accum + cur, 0) / rtngList.length).toFixed(2) : "N/A";
                     document.getElementById("animeRating").value = animeRtng;
@@ -374,7 +376,6 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 relatedContentListeners(bookTitle);
                 bookOriginalTitle.value = recordData.originalName;
                 bookOriginalTitle.setAttribute("lastValue", recordData.originalName);
-                if(recordData.originalName.trim() != "") { bookOriginalTitle.parentNode.children[1].classList.add("active"); }
                 relatedContentListeners(bookOriginalTitle);
                 bookReview.value = recordData.review;
                 bookReview.setAttribute("lastValue", recordData.review);
@@ -547,6 +548,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     // Define the collection of ratings to be used in calculating the global average rating of a manga.
                     const rtngList = [[],[]];
                     // Iterate through the saved related content and add a page item for each.
+                    clearTooltips();
                     for(let u = 1; u < recordData.content.length + 1; u++) {
                         mangaItemAddition(recordData.content[u-1].scenario);
                         let curName = document.getElementById("li_" + u + "_" + recordData.content[u-1].scenario + "_Name"),
@@ -597,10 +599,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                             if(recordData.content[u-1].rating != "") { rtngList[1].push(parseInt(recordData.content[u-1].rating)); }
                         }
                     }
-                    // Initialize the select tags.
-                    initSelect();
-                    // Initialize the observer for the select tags.
-                    initSelectObservers();
+                    relatedContentFinisher();
                     // Write the global average rating of the anime record on the page.
                     const mangaRtng = rtngList[0].length + rtngList[1].length == 0 ? "N/A" : (((rtngList[0].length == 0 ? 0 : (rtngList[0].reduce((accum, cur) => accum + cur, 0) / rtngList[0].length))
                         + (rtngList[1].length == 0 ? 0 : (rtngList[1].reduce((accum, cur) => accum + cur, 0) / rtngList[1].length))) / (rtngList[0].length != 0 && rtngList[1].length != 0 ? 2 : 1)).toFixed(2);
@@ -646,12 +645,12 @@ window.addEventListener("load", () => {
     initCollapsible();
     // Add the listeners corresponding to the record choices.
     recordChoicesButtons();
-    // Add the listeners corresponding to the anime record save.
-    animeSave();
-    // Add the listeners corresponding to the book record save.
-    bookSave();
-    // Add the listeners corresponding to the manga record save.
-    mangaSave();
+    // // Add the listeners corresponding to the anime record save.
+    // animeSave();
+    // // Add the listeners corresponding to the book record save.
+    // bookSave();
+    // // Add the listeners corresponding to the manga record save.
+    // mangaSave();
     // Add the listeners corresponding to the anime related content options.
     animeModalButtons();
     // Add the listeners corresponding to the manga related content options.
@@ -660,6 +659,8 @@ window.addEventListener("load", () => {
     categories.forEach(category => {
         // Fill the record page with the associated genre options.
         genreListLoad(category, 6);
+        // Add the listeners corresponding to the record save.
+        window[category.toLowerCase() + "Save"]();
         // Initialize the observer for the review.
         initReviewObserver(document.getElementById(category.toLowerCase() + "Review"));
         // Initialize the observer for the synopsis.

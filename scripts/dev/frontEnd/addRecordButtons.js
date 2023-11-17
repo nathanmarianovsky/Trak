@@ -176,13 +176,17 @@ var animeModalButtons = () => {
     animeAddSingle.addEventListener("click", e => {
         e.preventDefault();
         // Add a table item for the new film/ONA/OVA.
+        clearTooltips();
         singleAddition();
+        relatedContentFinisher();
     });
     // Listen for a click event on the anime related content season creation button.
     animeAddSeason.addEventListener("click", e => {
         e.preventDefault();
         // Add a table item for the new season.
+        clearTooltips();
         seasonAddition();
+        relatedContentFinisher();
     });
 };
 
@@ -220,13 +224,17 @@ var mangaModalButtons = () => {
     mangaAddChapter.addEventListener("click", e => {
         e.preventDefault();
         // Add a table item for the new chapter.
+        clearTooltips();
         mangaItemAddition("Chapter");
+        relatedContentFinisher();
     });
     // Listen for a click event on the manga related content volume creation button.
     mangaAddVolume.addEventListener("click", e => {
         e.preventDefault();
         // Add a table item for the new volume.
+        clearTooltips();
         mangaItemAddition("Volume");
+        relatedContentFinisher();
     });
 };
 
@@ -747,6 +755,7 @@ var recordChoicesButtons = () => {
                 }
                 const listNum = document.getElementById("animeList").children.length + 1;
                 // If the anime type is a season then add a season to the related content.
+                clearTooltips();
                 if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
                     // Attach a season.
                     seasonAddition();
@@ -801,9 +810,8 @@ var recordChoicesButtons = () => {
                     singleName.nextElementSibling.classList.add("active");
                     // Set the type for the item.
                     singleType.value = newResponse[5];
-                    // Initialize the select tags.
-                    initSelect();
                 }
+                relatedContentFinisher();
                 // Hide the preloader now that everything has been loaded and show the buttons if necessary.
                 animePreloader.style.visibility = "hidden";
                 animeMoreBtn.style.visibility = "visible";
@@ -1361,13 +1369,15 @@ var recordChoicesButtons = () => {
                     mangaList.innerHTML = "";
                 }
                 const listNum = mangaList.children.length + 1;
-                // If the manga type is a season then add a season to the related content.
+                // Add the appropriate manga items.
+                clearTooltips();
                 for(let r = 0; r < parseInt(newResponse[5]); r++) {
                     mangaItemAddition("Chapter");
                 }
                 for(let s = 0; s < parseInt(newResponse[6]); s++) {
                     mangaItemAddition("Volume");
                 }
+                relatedContentFinisher();
                 Array.from(mangaList.children).forEach(li => {
                     let scenario = li.getAttribute("id").split("_")[2];
                     if(mangaModalSwitch.checked == false) {
