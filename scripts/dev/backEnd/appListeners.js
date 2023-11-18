@@ -310,14 +310,14 @@ exports.addMangaListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, main
 		require("./mangaTools").mangaSynopsisFetch(log, require("mal-scraper"), event, submission);
 	});
 
-	// // Handles the opening of the addRecord.html page to load an anime record based on a season or query search.
-	// ipc.on("animeRecordRequest", (event, submission) => {
-	// 	let animeRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
-  	// 	animeRecordWindow.webContents.on("did-finish-load", () => {
-  	// 		animeRecordWindow.webContents.send("searchRecordStart", "Anime");
-  	// 		require("./animeTools").animeRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("mal-scraper"), tools, mainWindow, animeRecordWindow, dataPath, submission);
-  	// 	});
-	// });
+	// Handles the opening of the addRecord.html page to load a manga record based on a season or query search.
+	ipc.on("mangaRecordRequest", (event, submission) => {
+		let mangaRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  		mangaRecordWindow.webContents.on("did-finish-load", () => {
+  			mangaRecordWindow.webContents.send("searchRecordStart", "Manga");
+  			require("./mangaTools").mangaRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("mal-scraper"), require("goodreads-scraper"), tools, mainWindow, mangaRecordWindow, dataPath, submission);
+  		});
+	});
 };
 
 

@@ -201,7 +201,7 @@ exports.mangaFetchDetails = (log, malScraper, GoodReadsScraper, tools, ev, name)
         }
         log.info("MyAnimeList-Scraper has finished getting the details associated to the manga " + name + ".");
         ev.sender.send("mangaFetchDetailsResult", [
-            mangaData.englishTitle, mangaData.japaneseTitle, [mangaData.picture, [mangaData.picture]], startDate, endDate,
+            (mangaData.englishTitle != "" ? mangaData.englishTitle : mangaData.title), mangaData.japaneseTitle, [mangaData.picture, [mangaData.picture]], startDate, endDate,
             mangaData.chapters, mangaData.volumes, mangaData.genres, mangaData.authors, mangaData.synopsis
         ]);
         for(let k = 1; k <= parseInt(mangaData.volumes); k++) {
@@ -385,66 +385,76 @@ Provides the front-end with manga details associated to an item clicked in the m
    - log provides the means to create application logs to keep track of what is going on.
    - https provides the means to download files.
    - malScraper provides the means to attain anime and manga records from myanimelist.
+   - GoodReadsScraper provides the means to attain book records from goodreads.
    - tools provides a collection of local functions.
    - globalWin is an object representing the primary window of the Electron app.
    - win is an object representing the addRecord window of the Electron app.
    - usrDataPath is the current path to the local user data.
-   - link is a string representing the URL of an anime record on myanimelist.
+   - link is a string representing the URL of a manga record on myanimelist.
 
 */
-exports.mangaRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScraper, tools, globalWin, win, usrDataPath, link) => {
+exports.mangaRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScraper, GoodReadsScraper, tools, globalWin, win, usrDataPath, link) => {
     // Fetch anime details.
-    malScraper.getInfoFromURL(link).then(animeData => {
+    malScraper.getInfoFromURL(link).then(mangaData => {
         // Define the parameters which will be passed to the front-end based on the details received.
         let startDate = "",
-            endDate = "";
-        const directorsArr = [],
-            producersArr = [],
-            writersArr = [],
-            musicArr = [];
-        // Properly define the start and end date of an anime listing on myanimelist.
-        if(animeData.aired != undefined) {
-            let splitArr = animeData.aired.split("to");
+            endDate = "",
+            volumePromiseArr = [];
+        // Properly define the start and end date of a manga listing on myanimelist.
+        if(mangaData.published != undefined) {
+            let splitArr = mangaData.published.split("to");
             startDate = splitArr[0];
             if(splitArr.length > 1) {
                 endDate = splitArr[1];
             }
         }
-        // Properly define the lists of directors, producers, writers, and music directors associated to the anime listing on myanimelist.
-        animeData.staff.forEach(person => {
-            person.role.split(", ").forEach(personRole => {
-                if(personRole.toLowerCase().includes("director") && !personRole.toLowerCase().includes("sound")) {
-                    directorsArr.push(person.name.split(", ").reverse().join(" "));
-                }
-                if(personRole.toLowerCase().includes("producer")) {
-                    producersArr.push(person.name.split(", ").reverse().join(" "));
-                }
-                if(personRole.toLowerCase().includes("storyboard")) {
-                    writersArr.push(person.name.split(", ").reverse().join(" "));
-                }
-                if(personRole.toLowerCase().includes("sound") || person.role.toLowerCase().includes("music")) {
-                    musicArr.push(person.name.split(", ").reverse().join(" "));
-                }
-            });
+        log.info("MyAnimeList-Scraper has finished getting the details associated to the manga " + mangaData.englishTitle + ".");
+        win.webContents.send("mangaFetchDetailsResult", [
+            (mangaData.englishTitle != "" ? mangaData.englishTitle : mangaData.title), mangaData.japaneseTitle, [mangaData.picture, [mangaData.picture]], startDate, endDate,
+            mangaData.chapters, mangaData.volumes, mangaData.genres, mangaData.authors, mangaData.synopsis
+        ]);
+        ipc.once("performSave", (event, submission) => {
+            // Save the corresponding data.
+            exports.mangaSave(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission);
         });
-        win.webContents.send("animeFetchDetailsResultName", animeData.title);
-        // Fetch all possible images associated to the anime record.
-        malScraper.getPictures({ "name": animeData.title, "id": animeData.id }).then(malImgArr => {
-            // Send the attained data to the front-end.
-            log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + animeData.title + ".");
-            let allImgArr = malImgArr.map(pic => pic.imageLink);
-            tools.arrayMove(allImgArr, allImgArr.indexOf(animeData.picture), 0);
-            win.webContents.send("animeFetchDetailsResult", [
-                animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, allImgArr], startDate, endDate,
-                animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
-                animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
-            ]);
-            ipc.once("performSave", (event, submission) => {
-                // Save the corresponding data.
-                exports.animeSave(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission);
-            });
-        }).catch(err => log.error("There was an issue getting the pictures associated to the anime " + animeData.title + "."));
-    }).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
+        for(let k = 1; k <= parseInt(mangaData.volumes); k++) {
+            // Fetch book search results.
+            volumePromiseArr.push(new Promise((resolve, reject) => {
+                GoodReadsScraper.searchBooks({ "q": (mangaData.volumes == "1" ? mangaData.englishTitle : mangaData.englishTitle + ", Vol. " + k) }).then(bookSearchData => {
+                    // Define the item in the search results matching the name provided.
+                    let bookLst = bookSearchData.books,
+                        // index = bookLst.indexOf(mangaData.englishTitle + ", Vol. " + k),
+                        index = 0;
+                    for(; bookLst.length; index++) {
+                        if(mangaData.volumes == "1" && bookLst[index].title.toLowerCase().includes(mangaData.englishTitle.toLowerCase())
+                                && bookLst[index].author.toLowerCase().includes(mangaData.authors[0].split(", ")[0].toLowerCase())) { break; }
+                        else if(bookLst[index].title.toLowerCase().includes(mangaData.englishTitle.toLowerCase())
+                                && (bookLst[index].title.toLowerCase().includes("vol. " + k) || bookLst[index].title.toLowerCase().includes("#" + k))
+                                && bookLst[index].author.toLowerCase().includes(mangaData.authors[0].split(", ")[0].toLowerCase())) { break; }
+                    }
+                    if(index == bookLst.length) {
+                        throw new Error("No associated volumes could be found on GoodReads.");
+                    }
+                    let bookLstItem = bookSearchData.books[index];
+                    // Fetch book details.
+                    GoodReadsScraper.getBook({ "url": bookLstItem.url }).then(bookData => {
+                        resolve([bookLstItem.title, bookData.coverLarge.replace(".__SX50__", ""), (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin),
+                            bookData.publisher, bookData.publicationDate, bookData.description]);
+                    }).catch(err => {
+                        log.warn("There was an issue in obtaining the details associated to volume #" + k + " of the manga " + mangaData.englishTitle + " via the url " + bookLstItem.url + ".");
+                        resolve([]);
+                    });
+                }).catch(err => {
+                    log.warn("There was an issue in obtaining the details associated to volume #" + k + " of the manga " + mangaData.englishTitle + ".");
+                    resolve([]);
+                });
+            }));
+        }
+        Promise.all(volumePromiseArr).then(results => {
+            log.info("GoodReads-Scraper has finished getting the details associated to the manga volumes of " + mangaData.englishTitle + ".");
+            win.webContents.send("mangaVolumeFetchDetailsResult", results);
+        });
+    }).catch(err => {log.error("There was an issue getting the manga details based on the url " + link + "."); console.log(err);});
 };
 
 

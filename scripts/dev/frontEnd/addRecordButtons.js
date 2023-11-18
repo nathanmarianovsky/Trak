@@ -376,50 +376,6 @@ var bookSave = () => {
 
 
 
-// const mangaObj = {
-//         "category": providedData[0],
-//         "name": providedData[1],
-//         "jname": providedData[2],
-//         "review": providedData[3],
-//         "writers": providedData[4],
-//         "illustrators": providedData[5],
-//         "publisher": providedData[6],
-//         "jpublisher": providedData[7],
-//         "demographic": providedData[8],
-//         "start": providedData[9],
-//         "end": providedData[11],
-//         "synopsis": providedData[13],
-            // "genres": providedData[15],
-//         "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1] != "" ? providedData[1] : providedData[2]), providedData[14]),
-//         "content": []
-//     };
-//     for(let m = 0; m < providedData[12].length; m++) {
-//         if(providedData[12][m][0] == "Chapter") {
-//             mangaObj.content.push({
-//                 "scenario": providedData[12][m][0],
-//                 "name": providedData[12][m][1],
-//                 "release": providedData[12][m][2],
-//                 "read": providedData[12][m][3],
-//                 "rating": providedData[12][m][4],
-//                 "review": providedData[12][m][5]
-//             });
-//         }
-//         else if(providedData[12][m][0] == "Volume") {
-//             mangaObj.content.push({
-//                 "scenario": providedData[12][m][0],
-//                 "name": providedData[12][m][1],
-//                 "release": providedData[12][m][2],
-//                 "read": providedData[12][m][3],
-//                 "rating": providedData[12][m][4],
-//                 "review": providedData[12][m][5],
-//                 "isbn": providedData[12][m][6],
-//                 "synopsis": providedData[12][m][7]
-//             });
-//         }
-//     }
-
-
-
 /*
 
 Processes the information required to save a manga record.
@@ -487,8 +443,8 @@ var mangaSave = () => {
                 [document.getElementById("addRecordMangaImg").getAttribute("list") == document.getElementById("addRecordMangaImg").getAttribute("previous"), mangaImg], oldTitle];
             ipcRenderer.send("performSave", submissionMaterial);
         }
-        // If no ISBN has been provided then notify the user.
-        else { M.toast({"html": "A manga record requires that an ISBN be provided.", "classes": "rounded"}); }
+        // If no name has been provided then notify the user.
+        else { M.toast({"html": "A manga record requires that a name be provided.", "classes": "rounded"}); }
     });
 };
 
@@ -1267,6 +1223,12 @@ var recordChoicesButtons = () => {
         // Update the page accordingly based on the fetched anime details.
         ipcRenderer.on("mangaFetchDetailsResult", (newEve, newResponse) => {
             const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none";
+            if(newResponse[0] != "" && newResponse[0] != "None found, add some") {
+                updateDetector == true ? mangaName.value += newResponse[0] : mangaName.value = newResponse[0];
+                mangaName.value = newResponse[0];
+                mangaName.classList.add("valid");
+                mangaName.parentNode.children[2].classList.add("active");
+            }
             // Update the manga japanese name if available.
             if(newResponse[1] != "" && newResponse[1] != "None found, add some") {
                 const jnameInput = document.getElementById("mangaJapaneseName");
@@ -1428,7 +1390,7 @@ var recordChoicesButtons = () => {
                     isbn.nextElementSibling.classList.remove("active");
                 }
                 if(volResponse[t][3] != undefined && !pub.value.includes(volResponse[t][3])) {
-                    pub.value.length > 0 ? pub.value = ", " + volResponse[t][3] : pub.value = volResponse[t][3];
+                    pub.value.trim().length > 0 ? pub.value += ", " + volResponse[t][3] : pub.value = volResponse[t][3];
                     pub.classList.add("valid");
                     pub.nextElementSibling.classList.add("active");
                 }
