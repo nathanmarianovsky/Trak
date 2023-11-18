@@ -310,14 +310,14 @@ Handles the search of myanimelist manga records based on a query in order to pro
 */
 exports.mangaFetchSearch = (log, malScraper, ev, search) => {
     // Fetch the search results.
-    log.info("Searching for anime records based on the query " + search[0] + ".");
-    malScraper.search.search("anime", { "term": search[0], "has": (search[1] - 1) * 50 }).then(results => {
+    log.info("Searching for manga records based on the query " + search[0] + ".");
+    malScraper.search.search("manga", { "term": search[0], "has": (search[1] - 1) * 50 }).then(results => {
         const resultsArr = [];
         // Define a promise which will resolve only once a picture has been attained for each search result.
         const picPromise = new Promise((resolve, reject) => {
             // Iterate through the search results.
             results.forEach(elem => {
-                // Fetch the anime details based on the URL.
+                // Fetch the manga details based on the URL.
                 malScraper.getInfoFromURL(elem.url).then(elemData => {
                     elemData.genres = elemData.genres.map(str => {
                         if(str == "Coming-of-Age") {
@@ -334,23 +334,23 @@ exports.mangaFetchSearch = (log, malScraper, ev, search) => {
                     }
                     return str;
                     });
-                    // Push the anime details into the overall collection.
+                    // Push the manga details into the overall collection.
                     resultsArr.push([elem.title, elem.thumbnail.replace("/r/100x140", ""), elem.url, elem.score, elemData.genres]);
                     if(resultsArr.length == results.length) { resolve(); }
                 }).catch(err => {
-                    log.error("There was an issue getting the anime details based on the url " + elem.url + ".");
+                    log.error("There was an issue getting the manga details based on the url " + elem.url + ".");
                     resultsArr.push([elem.title, elem.thumbnail.replace("/r/100x140", ""), elem.url, elem.score, []]);
                     if(resultsArr.length == results.length) { resolve(); }
                 });
             })
         });
-        // Once all anime results have an associated picture send the list of anime releases to the front-end.
+        // Once all manga results have an associated picture send the list of manga releases to the front-end.
         picPromise.then(() => {
-            ev.sender.send("fetchResult", [resultsArr, false, "Anime", search[1] == 1]);
-        }).catch(err => log.error("There was an issue resolving the promise associated to grabbing anime release pictures based on the search query " + search[0] + "."));
+            ev.sender.send("fetchResult", [resultsArr, false, "Manga", search[1] == 1]);
+        }).catch(err => log.error("There was an issue resolving the promise associated to grabbing manga release pictures based on the search query " + search[0] + "."));
     }).catch(err => {
-        log.warn("There was an issue obtaining the anime releases based on the query " + search[0] + ". Returning an empty collection.");
-        ev.sender.send("fetchResult", [[], false, "Anime", search[1] == 1]);
+        log.warn("There was an issue obtaining the manga releases based on the query " + search[0] + ". Returning an empty collection.");
+        ev.sender.send("fetchResult", [[], false, "Manga", search[1] == 1]);
     });
 };
 
@@ -363,15 +363,15 @@ Handles the fetching of a synopsis associated to a manga record from myanimelist
    - log provides the means to create application logs to keep track of what is going on.
    - malScraper provides the means to attain anime and manga records from myanimelist.
    - ev provides the means to interact with the front-end of the Electron app.
-   - link is a string representing the URL of an anime record on myanimelist.
+   - link is a string representing the URL of an manga record on myanimelist.
 
 */
 exports.mangaSynopsisFetch = (log, malScraper, ev, link) => {
-    // Fetch the anime details based on the URL.
+    // Fetch the manga details based on the URL.
     malScraper.getInfoFromURL(link).then(data => {
-        // Provide the anime synopsis to the front-end.
-        ev.sender.send("animeSynopsisFetchResult", data.synopsis);
-    }).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
+        // Provide the manga synopsis to the front-end.
+        ev.sender.send("mangaSynopsisFetchResult", data.synopsis);
+    }).catch(err => log.error("There was an issue getting the manga details based on the url " + link + "."));
 };
 
 

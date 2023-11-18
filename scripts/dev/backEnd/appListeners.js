@@ -300,15 +300,15 @@ exports.addMangaListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, main
 		require("./mangaTools").mangaVolumeFetchDetailsByName(log, require("goodreads-scraper"), event, submission[0], submission[1]);
 	});
 
-	// // Handles the fetching of anime releases based on a query search.
-	// ipc.on("animeFetchSearch", (event, submission) => {
-	// 	require("./animeTools").animeFetchSearch(log, require("mal-scraper"), event, submission);
-	// });
+	// Handles the fetching of manga releases based on a query search.
+	ipc.on("mangaFetchSearch", (event, submission) => {
+		require("./mangaTools").mangaFetchSearch(log, require("mal-scraper"), event, submission);
+	});
 
-	// // Handles the fetching of an anime synopsis.
-	// ipc.on("animeSynopsisFetch", (event, submission) => {
-	// 	require("./animeTools").animeSynopsisFetch(log, require("mal-scraper"), event, submission);
-	// });
+	// Handles the fetching of a manga synopsis.
+	ipc.on("mangaSynopsisFetch", (event, submission) => {
+		require("./mangaTools").mangaSynopsisFetch(log, require("mal-scraper"), event, submission);
+	});
 
 	// // Handles the opening of the addRecord.html page to load an anime record based on a season or query search.
 	// ipc.on("animeRecordRequest", (event, submission) => {

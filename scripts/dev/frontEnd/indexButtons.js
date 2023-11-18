@@ -64,10 +64,10 @@ var bottomScrollRequest = (animeSearch, bookSearch) => {
                     else if(type == "Book" && chunkPreloader.getAttribute("bookCheck") == "0") {
                         ipcRenderer.send("bookFetchSearch", [bookSearch.value, Math.floor(document.getElementById("bookSearchContainer").children.length / 20) + 1]);
                     }
+                    else if(type == "Manga" && chunkPreloader.getAttribute("mangaCheck") == "0") {
+                        ipcRenderer.send("mangaFetchSearch", [animeSearch.value, Math.floor(document.getElementById("mangaSearchContainer").children.length / 50) + 1]);
+                    }
                 }
-
-
-
             }
         }
     });
@@ -103,7 +103,8 @@ window.addEventListener("load", () => {
         animeSearchSubmission = document.getElementById("animeSearchSubmission"),
         animeSearchSwitch = document.getElementById("animeSearchSwitch"),
         tabSearchLinks = Array.from(document.getElementsByClassName("tabSearchLink")),
-        bookSearchSubmission = document.getElementById("bookSearchSubmission");
+        bookSearchSubmission = document.getElementById("bookSearchSubmission"),
+        mangaSearchSubmission = document.getElementById("mangaSearchSubmission");
     // Define all page components which will be utilized.
     const tableBody = document.getElementById("tableBody"),
         XLSXTypeSwitchDiv = document.getElementById("XLSXTypeSwitchDiv"),
@@ -125,6 +126,7 @@ window.addEventListener("load", () => {
         defaultSearchDiv = document.getElementById("defaultSearchDiv"),
         tabDivs = Array.from(document.getElementsByClassName("tabDiv")),
         bookSearchBar = document.getElementById("bookSearchBar"),
+        mangaSearchBar = document.getElementById("mangaSearchBar"),
         databaseModalExit = document.getElementById("databaseModalExit"),
         exportPath = document.getElementById("exportPath"),
         databaseTabs = document.getElementById("databaseTabs"),
@@ -280,6 +282,27 @@ window.addEventListener("load", () => {
         }
         // If no query has been provided notify the user.
         else { M.toast({"html": "In order to search for books based on a written query the query has to be of non-zero length.", "classes": "rounded"}); }
+        // Reset the genres/tags filter.
+        clearFilter.click();
+    });
+    // Listen for a click event on the manga search submission button.
+    mangaSearchSubmission.addEventListener("click", e => {
+        // Define the manga search container.
+        const mangaResultsContainer = document.getElementById("mangaSearchContainer");
+        // Proceed only if the query is non-empty.
+        if(mangaSearchBar.value.length > 0) {
+            // Reset the manga search container.
+            mangaResultsContainer.innerHTML = "";
+            // Reset the sort select tag.
+            document.getElementById("mangaNameSearchSort").value = "";
+            initSelect();
+            // Display the preloader.
+            preloader.style.display = "block";
+            // Send a request to the back-end in order to retrieve the search results for the provided query.
+            ipcRenderer.send("mangaFetchSearch", [mangaSearchBar.value, 1]);
+        }
+        // If no query has been provided notify the user.
+        else { M.toast({"html": "In order to search for manga based on a written query the query has to be of non-zero length.", "classes": "rounded"}); }
         // Reset the genres/tags filter.
         clearFilter.click();
     });

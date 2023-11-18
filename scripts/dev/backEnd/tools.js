@@ -118,7 +118,7 @@ exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, 
 	fs.writeFile(path.join(savePath, "Trak", "data", fldr, "data.json"), JSON.stringify(writeData), "UTF8", err => {
 		// If there was an error in writing to the data file, then notify the user.
 		if(err) {
-			if(info[0] == "Anime") {
+			if(info[0] == "Anime" || info[0] == "Manga") {
 				log.error("There was an issue in writing the data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]));
 				evt.sender.send("writeRecordFailure", fldr);
 			}
@@ -128,7 +128,7 @@ exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, 
 			}
 		}
 		else {
-			if(info[0] == "Anime") {
+			if(info[0] == "Anime" || info[0] == "Manga") {
 				log.info("The data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]) + " has been successfully " + (modeStr == "A" ? "created and saved." : "updated."));
 			}
 			else if(info[0] == "Book") {
@@ -147,15 +147,15 @@ exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, 
 			}
 			// Once all of the files have been updated, notify the user everything has been taken care of and close the window.
 			if(i == info[10].length) {
-				if(info[0] == "Anime") {
+				if(info[0] == "Anime" || info[0] == "Manga") {
 					log.info("All assets associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]) + " have been copied over.");
 				}
 				else if(info[0] == "Book") {
 					log.info("All assets associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[3]) + " have been copied over.");
 				}
 				globalWin.reload();
-				if(info[0] == "Anime") {
-					curWin.webContents.send(modeStr + "RecordSuccess", fldr);
+				if(info[0] == "Anime" || info[0] == "Manga") {
+					curWin.webContents.send(modeStr + "RecordSuccess", info[0] + "-" + (info[1] != "" ? info[1] : info[2]));
 				}
 				else if(info[0] == "Book") {
 					curWin.webContents.send(modeStr + "RecordSuccess", info[0] + "-" + (info[1] != "" ? info[1] : info[3]));

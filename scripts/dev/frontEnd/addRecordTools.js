@@ -14,6 +14,8 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
     - singleAddition: Driver function designed to add a film/ONA/OVA table item in the related content section of an anime record.
     - seasonAddition: Driver function designed to add a season table item in the related content section of an anime record.
     - mangaItemAddition: Driver function designed to add a chapter/volume table item in the related content section of a manga record.
+    - relatedContentFinisher: Initializes select tags and tooltips. Designed to be executed after all related content items have been added.
+    - relatedContentListeners: Addes the appropriate event listeners to ensure that page items are highlighted only in the event that a change in the original value is detected.
 
 */
 
@@ -600,8 +602,6 @@ Driver function designed to add a film/ONA/OVA table item in the related content
 
 */
 var singleAddition = () => {
-    // Remove the tooltips.
-    clearTooltips();
     // Define and construct all components needed to attach an anime film to the related content table.
     const animeList = document.getElementById("animeList"),
         itemSingleLI = document.createElement("li"),
@@ -1065,6 +1065,11 @@ var mangaItemAddition = scenario => {
 
 
 
+/*
+
+Initializes select tags and tooltips. Designed to be executed after all related content items have been added.
+
+*/
 var relatedContentFinisher = () => {
     // Initialize the select tags.
     initSelect();
@@ -1076,6 +1081,13 @@ var relatedContentFinisher = () => {
 
 
 
+/*
+
+Addes the appropriate event listeners to ensure that page items are highlighted only in the event that a change in the original value is detected.
+
+   - item is the page element to which the change and click events will be attached.
+
+*/
 var relatedContentListeners = item => {
     const listenerFunc = e => e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
     item.addEventListener("change", listenerFunc);
