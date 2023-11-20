@@ -484,6 +484,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 			mangaWorksheet.getRow(1).height = 20;
 			animeWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
 			bookWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
+			mangaWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
 			const styleObj = {
 				"top": { "style": "thin" },
 				"left": { "style": "thin" },
@@ -827,6 +828,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 							detailedWorksheet.getRow(rowPos).height = 75;
 							detailedWorksheet.getCell("A" + rowPos).value = iterData.content[v].scenario
 							detailedWorksheet.getCell("B" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
+							detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 							detailedWorksheet.getCell("D" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 							dateArr = iterData.content[v].release.split("-");
 							detailedWorksheet.getCell("D" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
@@ -838,7 +840,6 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 							detailedWorksheet.getCell("H" + rowPos).value = iterData.content[v].review != "" ? iterData.content[v].review : "N/A";
 							// If the related content item corresponds to a chapter listing then update the appropriate columns.
 							if(iterData.content[v].scenario == "Chapter") {
-								detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 								detailedWorksheet.getCell("C" + rowPos).value = "N/A";
 								detailedWorksheet.getCell("G" + rowPos).value = "N/A";
 							}
@@ -1210,7 +1211,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 										// Iterate through all workbook worksheets.
 										wb.worksheets.forEach(newElem => {
 											// Detect the anime record detailed worksheet by its name.
-											if(newElem.name == "Anime-" + animeObj.name.split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1)).join("").substring(0, 25)) {
+											if(newElem.name == "Anime-" + animeObj.name.split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25)) {
 												animeObj.content = [];
 												// Iterate through the detailed worksheet's rows.
 												for(let l = 2; l < newElem.rowCount + 1; l++) {
@@ -1364,6 +1365,120 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 									// Write data.json file associated to the book record.
 									log.info("Writing the data file associated to the book " + (bookObj.name != "" ? bookObj.name : bookObj.isbn));
 									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Book-" + fldrName, "data.json"), JSON.stringify(bookObj), "UTF8");
+									if(q == elem.rowCount) { resolve(); }
+								}
+							}
+							// Handle the import of simple manga records.
+							if(elem.name == "Category-Manga") {
+								log.info("Importing the manga records.");
+								// Get the list of manga genres.
+								let genreLst = exports.mangaGenreList();
+								// Iterate through all the rows of the manga worksheet.
+								for(let q = 2; q < elem.rowCount + 1; q++) {
+									// Define the object which will correspond to a manga record.
+									let mangaObj = {
+										"category": "Manga",
+										"name": (typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value,
+										"jname": elem.getCell("B" + q).value != "N/A" ? elem.getCell("B" + q).value : "", 
+										"review": elem.getCell("D" + q).value != "N/A" ? elem.getCell("D" + q).value : "", 
+										"writers": elem.getCell("F" + q).value != "N/A" ? elem.getCell("F" + q).value : "", 
+										"illustrators": elem.getCell("G" + q).value != "N/A" ? elem.getCell("G" + q).value : "", 
+										"publisher": elem.getCell("H" + q).value != "N/A" ? elem.getCell("H" + q).value : "", 
+										"jpublisher": elem.getCell("I" + q).value != "N/A" ? elem.getCell("I" + q).value : "", 
+										"demographic": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "", 
+										"start": "", 
+										"end": "", 
+										"genres": [genreLst, new Array(genreLst.length).fill(false), []],
+										"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "", 
+										"img": [],
+										"content": []
+									};
+									// Update the genres of the manga record object.
+									let genresCellList = elem.getCell("M" + q).value.split(",").map(elem => elem.trim());
+									for(let p = 0; p < genresCellList.length; p++) {
+										let compare = genresCellList[p];
+										if(compare == "Coming-of-Age") {
+											compare = "ComingOfAge";
+										}
+										else if(compare == "Post-Apocalyptic") {
+											compare = "PostApocalyptic";
+										}
+										else if(compare == "Sci-Fi") {
+											compare = "SciFi";
+										}
+										else if(compare == "Slice of Life") {
+											compare = "SliceOfLife";
+										}
+										let genreIndex = genreLst.indexOf(compare);
+										if(genreIndex == -1) {
+											mangaObj.genres[2].push(compare);
+										}
+										else {
+											mangaObj.genres[1][genreIndex] = true;
+										}
+									}
+									// Update the start date of the manga record object.
+									if(elem.getCell("K" + q).value != "" && elem.getCell("K" + q).value != "N/A") {
+										relDateArr = elem.getCell("K" + q).value.split("-");
+										mangaObj.start = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+									}
+									// Update the end date of the manga record object.
+									if(elem.getCell("L" + q).value != "" && elem.getCell("L" + q).value != "N/A") {
+										relDateArr = elem.getCell("L" + q).value.split("-");
+										mangaObj.end = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+									}
+									// If the user requests a detailed import then update the related content of the manga record object.
+									if(full == true) {
+										// Iterate through all workbook worksheets.
+										wb.worksheets.forEach(newElem => {
+											// Detect the manga record detailed worksheet by its name.
+											if(newElem.name == "Anime-" + mangaObj.name.split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25)) {
+												// Iterate through the detailed worksheet's rows.
+												for(let l = 2; l < newElem.rowCount + 1; l++) {
+													let detailedObj = {
+														"scenario": newElem.getCell("A" + l).value != "N/A" ? newElem.getCell("A" + l).value : "Chapter",
+														"name": newElem.getCell("B" + l).value != "N/A" ? newElem.getCell("B" + l).value : "",
+														"release": "",
+														"read": "",
+														"rating": newElem.getCell("F" + l).value != "N/A" ? parseInt(newElem.getCell("F" + l).value) : "",
+														"review": newElem.getCell("H" + l).value != "N/A" ? newElem.getCell("H" + l).value : ""
+													};
+													if(newElem.getCell("D" + l).value != "" && newElem.getCell("D" + l).value != "N/A") {
+														relDateArr = newElem.getCell("D" + l).value.split("-");
+														detailedObj.release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+													}
+													if(newElem.getCell("E" + l).value != "" && newElem.getCell("E" + l).value != "N/A") {
+														relDateArr = newElem.getCell("E" + l).value.split("-");
+														detailedObj.read = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+													}
+													if(detailedObj.scenario == "Volume") {
+														detailedObj.isbn = newElem.getCell("C" + l).value != "N/A" ? exports.formatISBNString(newElem.getCell("C" + l).value) : "";
+														detailedObj.synopsis = newElem.getCell("G" + l).value != "N/A" ? newElem.getCell("G" + l).value : "";
+													}
+													mangaObj.content.push(detailedObj);
+												}
+											}
+										});
+									}
+									let fldrName = exports.formatFolderName(mangaObj.name);
+									// Check the assets that were imported from the associated zip file and add the images to the manga record object.
+									let assetsFolder = path.join(dir, "Trak", "importTemp", "Manga-" + fldrName, "assets");
+									if(fs.existsSync(assetsFolder)) {
+										log.info("Copying over the record assets for " + mangaObj.name + ".");
+										fs.readdirSync(assetsFolder).forEach(asset => {
+											if(imgExtArr.includes(path.extname(asset))) {
+												mangaObj.img.push(path.join(fileData, "Manga-" + fldrName, "assets", asset));
+											}
+										});
+									}
+									// Otherwise if no assets were found then create the assets folder.
+									else {
+										log.info("Creating the record assets folder associated to the manga " + (mangaObj.name != "" ? mangaObj.name : mangaObj.jname));
+										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Manga-" + fldrName, "assets"), { "recursive": true });
+									}
+									// Write data.json file associated to the manga record.
+									log.info("Writing the data file associated to the manga " + mangaObj.name);
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Manga-" + fldrName, "data.json"), JSON.stringify(mangaObj), "UTF8");
 									if(q == elem.rowCount) { resolve(); }
 								}
 							}
