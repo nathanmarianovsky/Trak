@@ -9,7 +9,8 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
    - arrayMove: Moves an element in an array.
    - animeGenreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
    - calculateReleaseDate: Calculate the earliest release date of an anime record based on the related content information.
-   - calculateGlobalRating: Calculate the average rating of an anime record based on the related content information.
+   - calculateAnimeGlobalRating: Calculate the average rating of an anime record based on the related content information.
+   - calculateMangaGlobalRating: Calculate the average rating of a manga record based on the related content information.
    - formatMedia: Formats the media type of a book record.
    - formatISBNString: Formats a string into a proper ISBN by adding hyphens.
    - exportDataXLSX: Create a xlsx file containing the exported library records along with a zip of the associated assets.
@@ -308,7 +309,7 @@ Calculate the average rating of an anime record based on the related content inf
 	- contentArr is an array containing the related content details for a library record.
 
 */ 
-exports.calculateGlobalRating = contentArr => {
+exports.calculateAnimeGlobalRating = contentArr => {
 	// Define the sum of all related content ratings and count of how many are used in the sum.
 	let overallSum = 0,
 		overallCount = 0;
@@ -337,6 +338,35 @@ exports.calculateGlobalRating = contentArr => {
 	}
 	// Return the anime record global rating if the count is non-zero, otherwise provide N/A.
 	return overallCount != 0 ? String((overallSum / overallCount).toFixed(2)) : "N/A";
+};
+
+
+
+/*
+
+Calculate the average rating of a manga record based on the related content information.
+
+	- contentArr is an array containing the related content details for a library record.
+
+*/ 
+exports.calculateMangaGlobalRating = contentArr => {
+	// Define the arrays of all related content ratings.
+	let chapterArr = [],
+		volumeArr = [];
+	// Iterate through all record related content.
+	for(let r = 0; r < contentArr.length; r++) {
+		// If the entry in the related content is a chapter then add the rating of the item to the associated array.
+		if(contentArr[r].scenario == "Chapter" && contentArr[r].rating != "") {
+			chapterArr.push(parseInt(contentArr[r].rating));
+		}
+		// Otherwise if the entry in the related content is a volume then add the rating of the item to the associated array.
+		else if(contentArr[r].scenario == "Volume" && contentArr[r].rating != "") {
+			volumeArr.push(parseInt(contentArr[r].rating));
+		}
+	}
+	// Return the anime record global rating if the count is non-zero, otherwise provide N/A.
+	return chapterArr.length + volumeArr.length == 0 ? "N/A" : (((chapterArr.length == 0 ? 0 : (chapterArr.reduce((accum, cur) => accum + cur, 0) / chapterArr.length))
+        + (volumeArr.length == 0 ? 0 : (volumeArr.reduce((accum, cur) => accum + cur, 0) / volumeArr.length))) / (chapterArr.length != 0 && volumeArr.length != 0 ? 2 : 1)).toFixed(2);
 };
 
 
@@ -443,28 +473,29 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 			workbook.created = new Date();
 			// Define the anime worksheet.
 			const animeWorksheet = workbook.addWorksheet("Category-Anime"),
-				bookWorksheet = workbook.addWorksheet("Category-Book");
+				bookWorksheet = workbook.addWorksheet("Category-Book"),
+				mangaWorksheet = workbook.addWorksheet("Category-Manga");
 			animeWorksheet.views = [{"state": "frozen", "xSplit": 1, "ySplit": 1, "activeCell": "A2"}];
 			bookWorksheet.views = [{"state": "frozen", "xSplit": 1, "ySplit": 1, "activeCell": "A2"}];
+			mangaWorksheet.views = [{"state": "frozen", "xSplit": 1, "ySplit": 1, "activeCell": "A2"}];
 			// Update the style of the first row.
 			animeWorksheet.getRow(1).height = 20;
 			bookWorksheet.getRow(1).height = 20;
+			mangaWorksheet.getRow(1).height = 20;
 			animeWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
 			bookWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
-			animeWorksheet.getRow(1).border = {
+			const styleObj = {
 				"top": { "style": "thin" },
 				"left": { "style": "thin" },
 				"bottom": { "style": "thin" },
 				"right": { "style": "thin" }
 			};
-			bookWorksheet.getRow(1).border = {
-				"top": { "style": "thin" },
-				"left": { "style": "thin" },
-				"bottom": { "style": "thin" },
-				"right": { "style": "thin" }
-			};
+			animeWorksheet.getRow(1).border = styleObj;
+			bookWorksheet.getRow(1).border = styleObj;
+			mangaWorksheet.getRow(1).border = styleObj;
 			animeWorksheet.getRow(1).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
 			bookWorksheet.getRow(1).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
+			mangaWorksheet.getRow(1).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
 			// Construct the column headers.
 			animeWorksheet.columns = [
 			  	{ "header": "Name", "width": 40},
@@ -496,11 +527,27 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 			  	{ "header": "Last Read Date", "width": 25 },
 			  	{ "header": "Genres", "width": 40 },
 			];
+			mangaWorksheet.columns = [
+			  	{ "header": "Name", "width": 40},
+			  	{ "header": "Japanese Name", "width": 30 },
+			  	{ "header": "Rating", "width": 10 },
+			  	{ "header": "Comments/Review", "width": 125 },
+			  	{ "header": "Synopsis", "width": 125 },
+			  	{ "header": "Writers", "width": 30 },
+			  	{ "header": "Illustrators", "width": 30 },
+			  	{ "header": "Publisher", "width": 30 },
+			  	{ "header": "Japanese Publisher", "width": 30 },
+			  	{ "header": "Demographic", "width": 30 },
+			  	{ "header": "Start Date", "width": 30 },
+			  	{ "header": "End Date", "width": 15 },
+			  	{ "header": "Genres", "width": 40 },
+			];
 			// Iterate through all records the user desires to export.
 			let animeRowCounter = 0,
-				bookRowCounter = 0;
+				bookRowCounter = 0,
+				mangaRowCounter = 0;
 			for(let x = 0; x < records.length; x++) {
-				// Define the data associated to an anime record.
+				// Define the data associated to a record.
 				let iterData = JSON.parse(fs.readFileSync(path.join(dataPath, records[x], "data.json"), "UTF8"));
 				// Generate the worksheets associated to anime library records.
 				if(iterData.category == "Anime") {
@@ -513,7 +560,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					animeWorksheet.getCell("A" + (animeRowCounter + 2)).value = iterData.name;
 					animeWorksheet.getCell("B" + (animeRowCounter + 2)).value = iterData.jname != "" ? iterData.jname : "N/A";
 					animeWorksheet.getCell("C" + (animeRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-					animeWorksheet.getCell("C" + (animeRowCounter + 2)).value = exports.calculateGlobalRating(iterData.content);
+					animeWorksheet.getCell("C" + (animeRowCounter + 2)).value = exports.calculateAnimeGlobalRating(iterData.content);
 					animeWorksheet.getCell("D" + (animeRowCounter + 2)).value = iterData.review != "" ? iterData.review : "N/A";
 					animeWorksheet.getCell("E" + (animeRowCounter + 2)).value = iterData.synopsis != "" ? iterData.synopsis : "N/A";
 					animeWorksheet.getCell("F" + (animeRowCounter + 2)).value = iterData.directors != "" ? iterData.directors : "N/A";
@@ -550,11 +597,12 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					}
 					filterGenreStrArr = filterGenreStrArr.concat(iterData.genres[2]);
 					filterGenreStrArr.sort((a, b) => a.localeCompare(b));
-					animeWorksheet.getCell("M" + (animeRowCounter + 2)).value = filterGenreStrArr.length > 0 ? filterGenreStrArr.join(", ") : "N/A";
+					animeWorksheet.getCell("M" + (animeRowCounter + 2)).value = filterGenreStrArr.length > 0 ? filterGenreStrArr.filter(elem => elem.trim() != "").join(", ") : "N/A";
 					// If the user desires to export a detailed xlsx file then create a new worksheet for each anime record and populate it with the related content information.
 					if(detailed == true) {
+						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-");
 						// Define the worksheet associated to the anime record.
-						let detailedWorksheet = workbook.addWorksheet("Anime-" + iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join(""));
+						let detailedWorksheet = workbook.addWorksheet("Anime-" + detailedWorksheetName);
 						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
 						// Update the style of the first row.
 						detailedWorksheet.getRow(1).height = 20;
@@ -635,12 +683,13 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 							}
 						}
 						// For a detailed xlsx export the names on the anime worksheet become hyperlinks to their respective worksheet.
-						animeWorksheet.getCell("A" + (animeRowCounter + 2)).value = { hyperlink: "#\'Anime-" + iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("") + "\'!A2", text: iterData.name }
+						animeWorksheet.getCell("A" + (animeRowCounter + 2)).value = { hyperlink: "#\'Anime-" + detailedWorksheetName + "\'!A2", text: iterData.name }
 						animeWorksheet.getCell("A" + (animeRowCounter + 2)).font.underline = true;
 						animeWorksheet.getCell("A" + (animeRowCounter + 2)).font.color = { "argb": "FF0000FF" };
 					}
 					animeRowCounter++;
 				}
+				// Generate the worksheet associated to book library records.
 				else if(iterData.category == "Book") {
 					// Update each row with the relevant book record details on the book worksheet.
 					bookWorksheet.getRow(bookRowCounter + 2).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
@@ -693,8 +742,120 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					}
 					filterGenreStrArr = filterGenreStrArr.concat(iterData.genres[2]);
 					filterGenreStrArr.sort((a, b) => a.localeCompare(b));
-					bookWorksheet.getCell("M" + (bookRowCounter + 2)).value = filterGenreStrArr.length > 0 ? filterGenreStrArr.join(", ") : "N/A";
+					bookWorksheet.getCell("M" + (bookRowCounter + 2)).value = filterGenreStrArr.length > 0 ? filterGenreStrArr.filter(elem => elem.trim() != "").join(", ") : "N/A";
 					bookRowCounter++;
+				}
+				// Generate the worksheet associated to manga library records.
+				else if(iterData.category == "Manga") {
+					// Update each row with the relevant manga record details on the manga worksheet.
+					mangaWorksheet.getRow(mangaRowCounter + 2).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
+					mangaWorksheet.getRow(mangaRowCounter + 2).height = 75;
+					mangaWorksheet.getRow(mangaRowCounter + 2).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+					mangaWorksheet.getCell("A" + (mangaRowCounter + 2)).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
+					mangaWorksheet.getCell("A" + (mangaRowCounter + 2)).border = { "top": { "style": "thin" }, "left": { "style": "thin" }, "bottom": { "style": "thin" }, "right": { "style": "thin" } };
+					mangaWorksheet.getCell("A" + (mangaRowCounter + 2)).value = iterData.name;
+					mangaWorksheet.getCell("B" + (mangaRowCounter + 2)).value = iterData.jname != "" ? iterData.jname : "N/A";
+					mangaWorksheet.getCell("C" + (mangaRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					mangaWorksheet.getCell("C" + (mangaRowCounter + 2)).value = exports.calculateMangaGlobalRating(iterData.content);
+					mangaWorksheet.getCell("D" + (mangaRowCounter + 2)).value = iterData.review != "" ? iterData.review : "N/A";
+					mangaWorksheet.getCell("E" + (mangaRowCounter + 2)).value = iterData.synopsis != "" ? iterData.synopsis : "N/A";
+					mangaWorksheet.getCell("F" + (mangaRowCounter + 2)).value = iterData.writers != "" ? iterData.writers : "N/A";
+					mangaWorksheet.getCell("G" + (mangaRowCounter + 2)).value = iterData.illustrators != "" ? iterData.illustrators : "N/A";
+					mangaWorksheet.getCell("H" + (mangaRowCounter + 2)).value = iterData.publisher != "" ? iterData.publisher : "N/A";
+					mangaWorksheet.getCell("I" + (mangaRowCounter + 2)).value = iterData.jpublisher != "" ? iterData.jpublisher : "N/A";
+					mangaWorksheet.getCell("J" + (mangaRowCounter + 2)).value = iterData.demographic != "" ? iterData.demographic : "N/A";
+					mangaWorksheet.getCell("K" + (mangaRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					let dateArr = iterData.start.split("-");
+					mangaWorksheet.getCell("K" + (mangaRowCounter + 2)).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+					mangaWorksheet.getCell("L" + (mangaRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					dateArr = iterData.end.split("-");
+					mangaWorksheet.getCell("L" + (mangaRowCounter + 2)).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+					let filterGenreStrArr = [];
+					for(let f = 0; f < iterData.genres[0].length; f++) {
+						if(iterData.genres[1][f] == true) {
+				            if(iterData.genres[0][f] == "CGDCT") {
+				                filterGenreStrArr.push("CGDCT");
+				            }
+				            else if(iterData.genres[0][f] == "ComingOfAge") {
+				                filterGenreStrArr.push("Coming-of-Age");
+				            }
+				            else if(iterData.genres[0][f] == "PostApocalyptic") {
+				                filterGenreStrArr.push("Post-Apocalyptic");
+				            }
+				            else if(iterData.genres[0][f] == "SciFi") {
+				                filterGenreStrArr.push("Sci-Fi");
+				            }
+				            else if(iterData.genres[0][f] == "SliceOfLife") {
+				                filterGenreStrArr.push("Slice of Life");
+				            }
+				            else {
+				                filterGenreStrArr.push(iterData.genres[0][f].split(/(?=[A-Z])/).join(" "));
+				            }
+						}
+					}
+					filterGenreStrArr = filterGenreStrArr.concat(iterData.genres[2]);
+					filterGenreStrArr.sort((a, b) => a.localeCompare(b));
+					mangaWorksheet.getCell("M" + (mangaRowCounter + 2)).value = filterGenreStrArr.length > 0 ? filterGenreStrArr.filter(elem => elem.trim() != "").join(", ") : "N/A";
+					// If the user desires to export a detailed xlsx file then create a new worksheet for each manga record and populate it with the related content information.
+					if(detailed == true) {
+						// Define the worksheet associated to the manga record.
+						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-");
+						let detailedWorksheet = workbook.addWorksheet("Manga-" + detailedWorksheetName);
+						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
+						// Update the style of the first row.
+						detailedWorksheet.getRow(1).height = 20;
+						detailedWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
+						detailedWorksheet.getRow(1).border = styleObj;
+						detailedWorksheet.getRow(1).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
+						// Construct the column headers.
+						detailedWorksheet.columns = [
+						  	{ "header": "Type", "width": 20},
+						  	{ "header": "Name", "width": 40 },
+						  	{ "header": "ISBN", "width": 25 },
+						  	{ "header": "Release Date", "width": 15 },
+						  	{ "header": "Last Read", "width": 15 },
+						  	{ "header": "Rating", "width": 10 },
+						  	{ "header": "Synopsis", "width": 125 },
+						  	{ "header": "Comments/Review", "width": 125 }
+						];
+						// Keep track of the row position in the worksheet.
+						let rowPos = 2;
+						// Iterate through the related content of a manga record.
+						for(let v = 0; v < iterData.content.length; v++) {
+							detailedWorksheet.getRow(rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+							detailedWorksheet.getRow(rowPos).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
+							detailedWorksheet.getRow(rowPos).height = 75;
+							detailedWorksheet.getCell("A" + rowPos).value = iterData.content[v].scenario
+							detailedWorksheet.getCell("B" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
+							detailedWorksheet.getCell("D" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+							dateArr = iterData.content[v].release.split("-");
+							detailedWorksheet.getCell("D" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+							detailedWorksheet.getCell("E" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+							dateArr = iterData.content[v].read.split("-");
+							detailedWorksheet.getCell("E" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+							detailedWorksheet.getCell("F" + rowPos).alignment = { "vertical": "middle", "horizontal": "center" };
+							detailedWorksheet.getCell("F" + rowPos).value = iterData.content[v].rating != "" ? iterData.content[v].rating : "N/A";
+							detailedWorksheet.getCell("H" + rowPos).value = iterData.content[v].review != "" ? iterData.content[v].review : "N/A";
+							// If the related content item corresponds to a chapter listing then update the appropriate columns.
+							if(iterData.content[v].scenario == "Chapter") {
+								detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+								detailedWorksheet.getCell("C" + rowPos).value = "N/A";
+								detailedWorksheet.getCell("G" + rowPos).value = "N/A";
+							}
+							// Otherwise if the related content item corresponds to a volume listing then update the appropriate columns.
+							else if(iterData.content[v].scenario == "Volume") {
+								detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+								detailedWorksheet.getCell("C" + rowPos).value = iterData.content[v].isbn != "" ? exports.formatISBNString(iterData.content[v].isbn) : "N/A";
+								detailedWorksheet.getCell("G" + rowPos).value = iterData.content[v].synopsis != "" ? iterData.content[v].synopsis : "N/A";
+							}
+							rowPos++;
+						}
+						// For a detailed xlsx export the names on the manga worksheet become hyperlinks to their respective worksheet.
+						mangaWorksheet.getCell("A" + (mangaRowCounter + 2)).value = { hyperlink: "#\'Manga-" + detailedWorksheetName + "\'!A2", text: iterData.name }
+						mangaWorksheet.getCell("A" + (mangaRowCounter + 2)).font.underline = true;
+						mangaWorksheet.getCell("A" + (mangaRowCounter + 2)).font.color = { "argb": "FF0000FF" };
+					}
+					mangaRowCounter++;
 				}
 			}
 			// Write the xlsx file in the desired export location.

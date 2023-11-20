@@ -131,7 +131,8 @@ window.addEventListener("load", () => {
         exportPath = document.getElementById("exportPath"),
         databaseTabs = document.getElementById("databaseTabs"),
         importXLSXContent = document.getElementById("importXLSXContent"),
-        databaseModal = document.getElementById("databaseModal");
+        databaseModal = document.getElementById("databaseModal"),
+        chunkLoad = document.getElementById("chunkPreloader");
     let submissionList = [],
         tabsLoader = false;
     // Listen for a click on any search tab in order to hide the default search div.
@@ -208,8 +209,10 @@ window.addEventListener("load", () => {
                 // Reset the sort select tag.
                 document.getElementById("animeSeasonSearchSort").value = "";
                 initSelect();
+                window.scrollTo(0, 0);
                 // Display the preloader.
                 preloader.style.display = "block";
+                chunkLoad.setAttribute("animeCheck", "0");
                 // Send a request to the back-end in order to fetch a season's anime releases.
                 ipcRenderer.send("animeFetchSeason", [curYear, curSeason, Array.from(animeSeasonSearchType.selectedOptions).map(({ value }) => value)]);
             }
@@ -223,8 +226,10 @@ window.addEventListener("load", () => {
                 // Reset the sort select tag.
                 document.getElementById("animeNameSearchSort").value = "";
                 initSelect();
+                window.scrollTo(0, 0);
                 // Display the preloader.
                 preloader.style.display = "block";
+                chunkLoad.setAttribute("animeCheck", "0");
                 // Send a request to the back-end in order to retrieve the search results for the provided query.
                 ipcRenderer.send("animeFetchSearch", [animeSearchBar.value, 1]);
             }
@@ -275,8 +280,10 @@ window.addEventListener("load", () => {
             // Reset the sort select tag.
             document.getElementById("bookNameSearchSort").value = "";
             initSelect();
+            window.scrollTo(0, 0);
             // Display the preloader.
             preloader.style.display = "block";
+            chunkLoad.setAttribute("bookCheck", "0");
             // Send a request to the back-end in order to retrieve the search results for the provided query.
             ipcRenderer.send("bookFetchSearch", [bookSearchBar.value, 1]);
         }
@@ -296,8 +303,10 @@ window.addEventListener("load", () => {
             // Reset the sort select tag.
             document.getElementById("mangaNameSearchSort").value = "";
             initSelect();
+            window.scrollTo(0, 0);
             // Display the preloader.
             preloader.style.display = "block";
+            chunkLoad.setAttribute("mangaCheck", "0");
             // Send a request to the back-end in order to retrieve the search results for the provided query.
             ipcRenderer.send("mangaFetchSearch", [mangaSearchBar.value, 1]);
         }
