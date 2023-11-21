@@ -458,13 +458,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 // Initialize the select tags.
                 initSelect();
             }
-
-
-
-
-
-
-
+            // If a record is of category type manga then proceed.
             else if(recordData.category == "Manga") {
                 const mangaSave = document.getElementById("mangaSave"),
                     mangaOptions = document.getElementById("mangaOptions"),
@@ -633,15 +627,6 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 }, 500)
                 mangaName.setAttribute("oldName", recordData.name != "" ? recordData.name : recordData.jname);
             }
-
-
-
-
-
-
-
-
-            
         }
         // Hide the addRecord preloader once the file data has been added.
         updateRecordPreloader.style.display = "none";
@@ -664,16 +649,16 @@ window.addEventListener("load", () => {
     initCollapsible();
     // Add the listeners corresponding to the record choices.
     recordChoicesButtons();
-    // Add the listeners corresponding to the anime related content options.
-    animeModalButtons();
-    // Add the listeners corresponding to the manga related content options.
-    mangaModalButtons();
     const categories = ["Anime", "Book", "Manga"];
     categories.forEach(category => {
         // Fill the record page with the associated genre options.
         genreListLoad(category, 6);
         // Add the listeners corresponding to the record save.
         window[category.toLowerCase() + "Save"]();
+        // Add the listeners corresponding to the related content options.
+        if(category == "Anime" || category == "Manga") {
+            window[category.toLowerCase() + "ModalButtons"]();
+        }
         // Initialize the observer for the review.
         initReviewObserver(document.getElementById(category.toLowerCase() + "Review"));
         // Initialize the observer for the synopsis.

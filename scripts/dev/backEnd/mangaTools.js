@@ -7,6 +7,8 @@ BASIC DETAILS: Provides all actions associated to working with manga records.
    - mangaUpdate: Handles the update of a manga record.
    - mangaSearch: Handles the search of myanimelist manga records based on a query.
    - mangaFetchDetails: Handles the fetching of a manga record from myanimelist based on a name.
+   - mangaVolumeFetchDetailsByISBN: Handles the fetching of a manga record's volume from goodreads based on an ISBN value.
+   - mangaVolumeFetchDetailsByName: Handles the fetching of a manga record's volume from goodreads based on a name.
    - mangaFetchSearch: Handles the search of myanimelist manga records based on a query in order to provide a manga content search.
    - mangaSynopsisFetch: Handles the fetching of a synopsis associated to a manga record from myanimelist.
    - mangaRecordRequest: Provides the front-end with manga details associated to an item clicked in the manga content search.

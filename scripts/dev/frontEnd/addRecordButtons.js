@@ -5,8 +5,11 @@ BASIC DETAILS: This file handles all buttons on the addRecord.html page.
     - navReset: Resets the top nav to correspond to the clicked category.
     - imgButtons: Adds the functionality for all image buttons based on the category currently chosen.
     - animeModalButtons: Listen for click events on the related content anime modal buttons.
+    - mangaModalButtons: Listen for click events on the related content manga modal buttons.
     - animeSave: Processes the information required to save an anime record.
     - bookSave: Processes the information required to save a book record.
+    - mangaSave: Processes the information required to save a manga record.
+    - otherGenresReset: Hides and shows the appropriate inputs on the genresModal.
     - recordChoicesButtons: Listen for click events on the record choices.
 
 */
@@ -454,6 +457,11 @@ var mangaSave = () => {
 
 
 
+/*
+
+Hides and shows the appropriate inputs on the genresModal.
+
+*/
 var otherGenresReset = mode => {
     Array.from(document.getElementsByClassName("otherGenresDiv")).forEach(div => div.style.display = "none");
     document.getElementById(mode.toLowerCase() + "OtherGenresDiv").style.display = "block";
@@ -1101,14 +1109,6 @@ var recordChoicesButtons = () => {
             }, 500);
         }
     });
-
-
-
-
-
-
-
-
     // Listen for a click event on the categoryManga button on the top bar to display the form corresponding to a manga record.
     categoryManga.addEventListener("click", e => {
         e.preventDefault();

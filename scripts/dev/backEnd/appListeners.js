@@ -6,6 +6,7 @@ BASIC DETAILS: After the app loads up with index.js this file is meant to handle
    - addRecordListeners: Driver function for adding all listeners associated to the maintenance of records.
    - addAnimeListeners: Driver function for adding all anime listeners.
    - addBookListeners: Driver function for adding all book listeners.
+   - addMangaListeners: Driver function for adding all manga listeners.
    - addDatabaseListeners: Driver function for adding all database listeners.
    - addSettingsListeners: Driver function for adding all settings listeners.
    - addUpdateListeners: Driver function for adding all update listeners.

@@ -8,6 +8,8 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
    - removeRecords: Handles the removal of records by deleting the associated folders and data file.
    - arrayMove: Moves an element in an array.
    - animeGenreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
+   - bookGenreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for a book record.
+   - mangaGenreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for a manga record.
    - calculateReleaseDate: Calculate the earliest release date of an anime record based on the related content information.
    - calculateAnimeGlobalRating: Calculate the average rating of an anime record based on the related content information.
    - calculateMangaGlobalRating: Calculate the average rating of a manga record based on the related content information.
@@ -25,6 +27,7 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
    - tutorialLoad: Tells the front-end to load the application tutorial.
    - startCommandLineFolder: Provides the necessary command to execute the opening of a folder.
    - isURL: Tests whether a given string represents a url.
+   - parseURLFilename: Extracts the filename from a given string representing a url.
    - checkForUpdate: Checks against the most recent release on github to determine if an update is available.
 
 */
