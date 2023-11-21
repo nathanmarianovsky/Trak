@@ -179,6 +179,7 @@ var animeModalButtons = () => {
         clearTooltips();
         singleAddition();
         relatedContentFinisher();
+        resetAnimeContentCounters();
     });
     // Listen for a click event on the anime related content season creation button.
     animeAddSeason.addEventListener("click", e => {
@@ -187,6 +188,7 @@ var animeModalButtons = () => {
         clearTooltips();
         seasonAddition();
         relatedContentFinisher();
+        resetAnimeContentCounters();
     });
 };
 

@@ -354,6 +354,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                         }
                     }
                     relatedContentFinisher();
+                    resetAnimeContentCounters();
                     // Write the global average rating of the anime record on the page.
                     const animeRtng = rtngList.length > 0 ? (rtngList.reduce((accum, cur) => accum + cur, 0) / rtngList.length).toFixed(2) : "N/A";
                     document.getElementById("animeRating").value = animeRtng;

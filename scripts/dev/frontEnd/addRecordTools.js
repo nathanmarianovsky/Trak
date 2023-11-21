@@ -2,6 +2,7 @@
 
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page.
 
+    - resetAnimeContentCounters: Resets the page counters for an anime record's related content.
     - calculateAnimeRating: Calculates the average rating for an anime based on the available ratings for all films, ONAs, OVAs, and seasons.
     - calculateMangaRating: Calculates the average rating for a manga based on the available ratings for all chapters and volumes.
     - animeListReorganize: Reorganize the list items in the associated anime modal.
@@ -22,6 +23,46 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*
+
+Resets the page counters for an anime record's related content.
+
+*/
+var resetAnimeContentCounters = () => {
+    const itemList = Array.from(document.getElementById("animeList").children);
+    let movieCount = 0, onaCount = 0, ovaCount = 0, specialCount = 0, unclassifiedCount = 0, seasonCount = 0, episodeCount = 0;
+    for(let w = 0; w < itemList.length; w++) {
+        let scenario = itemList[w].getAttribute("id").split("_")[2];
+        if(scenario == "Single") {
+            let curType = itemList[w].children[0].children[1].children[0].children[0].value;
+            if(curType == "Movie") {
+                movieCount++;
+            }
+            else if(curType == "ONA") {
+                onaCount++;
+            }
+            else if(curType == "OVA") {
+                ovaCount++;
+            }
+            else if(curType == "Special") {
+                specialCount++;
+            }
+        }
+        else if(scenario == "Season") {
+            seasonCount++;
+            episodeCount += itemList[w].children[1].children[0].children.length;
+        }
+    }
+    document.getElementById("animeMovieCount").value = movieCount;
+    document.getElementById("animeONACount").value = onaCount;
+    document.getElementById("animeOVACount").value = ovaCount;
+    document.getElementById("animeSpecialCount").value = specialCount;
+    document.getElementById("animeSeasonCount").value = seasonCount;
+    document.getElementById("animeEpisodeCount").value = episodeCount;
+};
 
 
 
