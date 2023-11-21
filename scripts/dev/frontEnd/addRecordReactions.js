@@ -618,6 +618,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                         }
                     }
                     relatedContentFinisher();
+                    resetMangaContentCounters();
                     // Write the global average rating of the anime record on the page.
                     const mangaRtng = rtngList[0].length + rtngList[1].length == 0 ? "N/A" : (((rtngList[0].length == 0 ? 0 : (rtngList[0].reduce((accum, cur) => accum + cur, 0) / rtngList[0].length))
                         + (rtngList[1].length == 0 ? 0 : (rtngList[1].reduce((accum, cur) => accum + cur, 0) / rtngList[1].length))) / (rtngList[0].length != 0 && rtngList[1].length != 0 ? 2 : 1)).toFixed(2);

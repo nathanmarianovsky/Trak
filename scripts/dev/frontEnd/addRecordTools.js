@@ -3,6 +3,7 @@
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page.
 
     - resetAnimeContentCounters: Resets the page counters for an anime record's related content.
+    - resetMangaContentCounters: Resets the page counters for a manga record's related content.
     - calculateAnimeRating: Calculates the average rating for an anime based on the available ratings for all films, ONAs, OVAs, and seasons.
     - calculateMangaRating: Calculates the average rating for a manga based on the available ratings for all chapters and volumes.
     - animeListReorganize: Reorganize the list items in the associated anime modal.
@@ -62,6 +63,29 @@ var resetAnimeContentCounters = () => {
     document.getElementById("animeSpecialCount").value = specialCount;
     document.getElementById("animeSeasonCount").value = seasonCount;
     document.getElementById("animeEpisodeCount").value = episodeCount;
+};
+
+
+
+/*
+
+Resets the page counters for a manga record's related content.
+
+*/
+var resetMangaContentCounters = () => {
+    const itemList = Array.from(document.getElementById("mangaList").children);
+    let chapterCount = 0, volumeCount = 0;
+    for(let w = 0; w < itemList.length; w++) {
+        let scenario = itemList[w].getAttribute("id").split("_")[2];
+        if(scenario == "Chapter") {
+            chapterCount++;
+        }
+        else if(scenario == "Volume") {
+            volumeCount++;
+        }
+    }
+    document.getElementById("mangaChapterCount").value = chapterCount;
+    document.getElementById("mangaVolumeCount").value = volumeCount;
 };
 
 

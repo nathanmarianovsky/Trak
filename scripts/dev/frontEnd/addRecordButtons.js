@@ -229,6 +229,7 @@ var mangaModalButtons = () => {
         clearTooltips();
         mangaItemAddition("Chapter");
         relatedContentFinisher();
+        resetMangaContentCounters();
     });
     // Listen for a click event on the manga related content volume creation button.
     mangaAddVolume.addEventListener("click", e => {
@@ -237,6 +238,7 @@ var mangaModalButtons = () => {
         clearTooltips();
         mangaItemAddition("Volume");
         relatedContentFinisher();
+        resetMangaContentCounters();
     });
 };
 
@@ -770,6 +772,7 @@ var recordChoicesButtons = () => {
                     singleType.value = newResponse[5];
                 }
                 relatedContentFinisher();
+                resetAnimeContentCounters();
                 // Hide the preloader now that everything has been loaded and show the buttons if necessary.
                 animePreloader.style.visibility = "hidden";
                 animeMoreBtn.style.visibility = "visible";
@@ -1342,6 +1345,7 @@ var recordChoicesButtons = () => {
                     mangaItemAddition("Volume");
                 }
                 relatedContentFinisher();
+                resetMangaContentCounters();
                 Array.from(mangaList.children).forEach(li => {
                     let scenario = li.getAttribute("id").split("_")[2];
                     if(mangaModalSwitch.checked == false) {
