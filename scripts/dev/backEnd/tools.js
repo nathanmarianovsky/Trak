@@ -812,7 +812,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 						detailedWorksheet.columns = [
 						  	{ "header": "Type", "width": 20},
 						  	{ "header": "Name", "width": 40 },
-						  	{ "header": "ISBN", "width": 25 },
+						  	{ "header": "ASIN/ISBN", "width": 25 },
 						  	{ "header": "Release Date", "width": 15 },
 						  	{ "header": "Last Read", "width": 15 },
 						  	{ "header": "Rating", "width": 10 },
