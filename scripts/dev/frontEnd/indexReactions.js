@@ -411,6 +411,88 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         tdName.classList.add("left");
         tdNameOuterDiv.classList.add("recordsNameContainer");
         tdNameOuterDiv.append(tdNameDiv);
+        if(recordData.category == "Anime" && recordData.content.length > 0) {
+            let movieCount = 0, onaCount = 0, ovaCount = 0, specialCount = 0, unclassifiedCount = 0, seasonCount = 0, episodeCount = 0;
+            for(let t = 0; t < recordData.content.length; t++) {
+                if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Movie") {
+                    movieCount++;
+                }
+                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "ONA") {
+                    onaCount++;
+                }
+                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "OVA") {
+                    ovaCount++;
+                }
+                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Special") {
+                    specialCount++;
+                }
+                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "") {
+                    unclassifiedCount++;
+                }
+                else if(recordData.content[t].scenario == "Season") {
+                    seasonCount++;
+                    episodeCount += recordData.content[t].episodes.length;
+                }
+            }
+            tdNameOuterDiv.classList.add("tooltipped");
+            tdNameOuterDiv.setAttribute("data-position", "right");
+            let movieStr = (movieCount == 1 ? "1 Movie" : movieCount + " Movies"),
+                onaStr = (onaCount == 1 ? "1 ONA" : onaCount + " ONAs"),
+                ovaStr = (ovaCount == 1 ? "1 OVA" : ovaCount + " OVAs"),
+                specialStr = (specialCount == 1 ? "1 Special" : specialCount + " Specials"),
+                unclassifiedStr = unclassifiedCount + " Unclassified",
+                seasonStr = (seasonCount == 1
+                    ? "1 Season with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")
+                    : seasonCount + " Seasons with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")),
+                tooltipStr = "";
+            if(movieCount > 0) {
+                tooltipStr = movieStr;
+            }
+            if(onaCount > 0) {
+                tooltipStr += tooltipStr.length > 0 ? ", " + onaStr : onaStr;
+            }
+            if(ovaCount > 0) {
+                tooltipStr += tooltipStr.length > 0 ? ", " + ovaStr : ovaStr;
+            }
+            if(specialCount > 0) {
+                tooltipStr += tooltipStr.length > 0 ? ", " + specialStr : specialStr;
+            }
+            if(unclassifiedCount > 0) {
+                tooltipStr += tooltipStr.length > 0 ? ", " + unclassifiedStr : unclassifiedStr;
+            }
+            if(seasonCount > 0) {
+                if(tooltipStr.length >= seasonStr.length) {
+                    tooltipStr += tooltipStr.length > 0 ? "<br>" + seasonStr : seasonStr;
+                }
+                else {
+                    tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "")
+                }
+            }
+            tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
+        }
+        else if(recordData.category == "Manga" && recordData.content.length > 0) {
+            let chapterCount = 0, volumeCount = 0;
+            for(let t = 0; t < recordData.content.length; t++) {
+                if(recordData.content[t].scenario == "Chapter") {
+                    chapterCount++;
+                }
+                else if(recordData.content[t].scenario == "Volume") {
+                    volumeCount++;
+                }
+            }
+            tdNameOuterDiv.classList.add("tooltipped");
+            tdNameOuterDiv.setAttribute("data-position", "right");
+            let chapterStr = (chapterCount == 1 ? "1 Chapter" : chapterCount + " Chapters"),
+                volumeStr = (volumeCount == 1 ? "1 Volume" : volumeCount + " Volumes"),
+                tooltipStr = "";
+            if(chapterCount > 0) {
+                tooltipStr = chapterStr;
+            }
+            if(volumeCount > 0) {
+                tooltipStr += tooltipStr.length > 0 ? " and " + volumeStr : volumeStr;
+            }
+            tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
+        }
         // If a synopsis is availble then create link for it to open the synopsis modal.
         if(recordData.synopsis != undefined && recordData.synopsis.length > 0) {
             // Define the link and icon.
