@@ -21,15 +21,29 @@ Remove all active filters.
 var cleanFilter = () => {
     const homeIcon = document.getElementById("indexHome");
     // Define the category and genre arrays along with the record rows.
-    const pageTable = homeIcon.style.display == "none" ? Array.from(document.getElementById("tableBody").children) : Array.from(document.getElementById("animeSearchContainer").children);
+    const pageTable = homeIcon.style.display == "none" || homeIcon.style.display == ""
+        ? Array.from(document.getElementById("tableBody").children)
+        : Array.from(document.getElementById("animeSearchContainer").children).concat(
+            Array.from(document.getElementById("bookSearchContainer").children),
+            Array.from(document.getElementById("mangaSearchContainer").children)
+        );
+    console.log(homeIcon.style.display);
+    console.log(pageTable);
     // Iterate through the records rows.
     for(let z = 0; z < pageTable.length; z++) {
         // Show all record rows.
-        pageTable[z].style.display = homeIcon.style.display == "none" ? "table-row" : "inline-block";
+        // pageTable[z].style.display = homeIcon.style.display == "none" ? "table-row" : "inline-block";
+        if(homeIcon.style.display == "none" || homeIcon.style.display == "") {
+            pageTable[z].style.display = "table-row";
+            pageTable[z].setAttribute("genreFiltered", "1");
+        }
+        else {
+            pageTable[z].style.display = "inline-block";
+        }
     }
     // Clear the filter modal checkboxes.
     Array.from(document.getElementsByClassName("filterCheckbox")).forEach(elem => elem.checked = false);
-    if(homeIcon.style.display == "none") {
+    if(homeIcon.style.display == "none" || homeIcon.style.display == "") {
         // Upon the submission of a filter clear the search bar.
         searchBar.parentNode.children[0].classList.remove("active");
         searchBar.parentNode.children[2].classList.remove("active");
@@ -137,7 +151,7 @@ window.addEventListener("load", () => {
         tabsLoader = false;
     // Listen for a click on any search tab in order to hide the default search div.
     tabSearchLinks.forEach(tab => tab.addEventListener("click", e => defaultSearchDiv.style.display = "none"));
-    // Listen for a click event on the anime search button.
+    // Listen for a click event on the content search button.
     contentSearch.addEventListener("click", e => {
         // Hide the local records table.
         outerLayer.style.display = "none";
@@ -334,7 +348,7 @@ window.addEventListener("load", () => {
         for(let i = 0; i < rowList.length; i++) {
             let rowDiv = rowList[i].children[1].children[0];
             // Show a row if it contains the desired string and hide it otherwise.
-            !rowDiv.textContent.toLowerCase().includes(curSearch) ? rowList[i].style.display = "none" : rowList[i].style.display = "table-row";
+            rowList[i].getAttribute("genreFiltered") == "1" && rowDiv.textContent.toLowerCase().includes(curSearch) ? rowList[i].style.display = "table-row" : rowList[i].style.display = "none";
         }
     });
     // Listen for a click event on the check all checkbox in order to check or uncheck all record checkboxes.

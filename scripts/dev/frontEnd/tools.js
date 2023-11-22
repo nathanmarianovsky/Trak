@@ -418,6 +418,7 @@ var genreListLoad = (type, cols, filterLoad = false) => {
                 ? (filterLoad == false ? genereCheckInput.setAttribute("id", type.toLowerCase() + "Genre" + genresLst[(s * rows) + r]) : genereCheckInput.setAttribute("id", "filterGenre" + genresLst[(s * rows) + r]))
                 : genreCheckLabel.classList.add("invisibleGenreCheck");
             genereCheckInput.classList.add("filled-in");
+            if(filterLoad == true) { genereCheckInput.classList.add("filterCheckbox"); }
             genereCheckSpan.textContent = filterGenreStr;
             genereCheckSpan.classList.add("checkboxText");
             // Append the checkbox and text to the row.

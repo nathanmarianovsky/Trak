@@ -415,6 +415,12 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	margin-left: 5%;
 }
 
+.recordIcon {
+	border-radius: 50%;
+	width: 100px;
+	height: 100px;
+}
+
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/

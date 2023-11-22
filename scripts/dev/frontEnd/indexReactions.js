@@ -653,6 +653,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         tr.setAttribute("category", recordData.category);
         tr.setAttribute("name", recordData.name);
         tr.setAttribute("genres", rowGenreInfo);
+        tr.setAttribute("genreFiltered", "1");
         if(recordData.category == "Anime") {
             tr.setAttribute("jname", recordData.jname);
             tr.setAttribute("license", recordData.license);
@@ -745,11 +746,27 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     for(let y = 0; y < genreCheck.length; y++) {
                         if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
                     }
-                    genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+                    // genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+                    if(genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category"))) {
+                        pageTable[x].style.display = "table-row";
+                        pageTable[x].setAttribute("genreFiltered", "1");
+                    }
+                    else {
+                        pageTable[x].style.display = "none";
+                        pageTable[x].setAttribute("genreFiltered", "0");
+                    }
                 }
                 // Filter based only on categories.
                 else if(catCheck.length > 0 && genreCheck.length == 0) {
-                    catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+                    // catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+                    if(catCheck.includes(pageTable[x].getAttribute("category"))) {
+                        pageTable[x].style.display = "table-row";
+                        pageTable[x].setAttribute("genreFiltered", "1");
+                    }
+                    else {
+                        pageTable[x].style.display = "none";
+                        pageTable[x].setAttribute("genreFiltered", "0");
+                    }
                 }
                 // Filter based only on genres.
                 else if(catCheck.length == 0 && genreCheck.length > 0) {
@@ -758,10 +775,18 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     for(let y = 0; y < genreCheck.length; y++) {
                         if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
                     }
-                    genreOverall == true ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+                    // genreOverall == true ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
+                    if(genreOverall == true) {
+                        pageTable[x].style.display = "table-row"
+                        pageTable[x].setAttribute("genreFiltered", "1");
+                    }
+                    else {
+                        pageTable[x].style.display = "none";
+                        pageTable[x].setAttribute("genreFiltered", "0");
+                    }
                 }
                 // If the empty filter is applied then show all record rows.
-                else { pageTable[x].style.display = "table-row"; }
+                else { pageTable[x].style.display = "table-row"; pageTable[x].setAttribute("genreFiltered", "1"); }
             }
             // Upon the submission of a filter clear the search bar.
             searchBar.parentNode.children[0].classList.remove("active");

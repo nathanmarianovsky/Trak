@@ -180,6 +180,11 @@ exports.addAnimeListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, main
 		require("./animeTools").animeFetchDetails(log, require("mal-scraper"), tools, event, submission);
 	});
 
+	// Handles the fetching of anime releases based on the season.
+	ipc.on("animeFetchSeason", (event, submissionArr) => {
+		require("./animeTools").animeFetchSeason(log, require("mal-scraper"), event, submissionArr);
+	});
+
 	// Handles the fetching of anime releases based on a query search.
 	ipc.on("animeFetchSearch", (event, submission) => {
 		require("./animeTools").animeFetchSearch(log, require("mal-scraper"), event, submission);
@@ -236,11 +241,6 @@ exports.addBookListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainW
 	// Handles the fetching of details for a given book via its ASIN.
 	ipc.on("bookFetchDetailsByASIN", (event, asin) => {
 		require("./bookTools").bookFetchDetailsByName(log, require("goodreads-scraper"), event, submission, 0);
-	});
-
-	// Handles the fetching of anime releases based on the season.
-	ipc.on("animeFetchSeason", (event, submissionArr) => {
-		require("./bookTools").animeFetchSeason(log, require("mal-scraper"), event, submissionArr);
 	});
 
 	// Handles the fetching of books based on a query search.
