@@ -27,8 +27,6 @@ var cleanFilter = () => {
             Array.from(document.getElementById("bookSearchContainer").children),
             Array.from(document.getElementById("mangaSearchContainer").children)
         );
-    console.log(homeIcon.style.display);
-    console.log(pageTable);
     // Iterate through the records rows.
     for(let z = 0; z < pageTable.length; z++) {
         // Show all record rows.
@@ -348,7 +346,118 @@ window.addEventListener("load", () => {
         for(let i = 0; i < rowList.length; i++) {
             let rowDiv = rowList[i].children[1].children[0];
             // Show a row if it contains the desired string and hide it otherwise.
-            rowList[i].getAttribute("genreFiltered") == "1" && rowDiv.textContent.toLowerCase().includes(curSearch) ? rowList[i].style.display = "table-row" : rowList[i].style.display = "none";
+            if(curSearch.includes("@")) {
+                let searchArr = curSearch.split(","),
+                    searchCheck = true;
+                for(let g = 0; g < searchArr.length; g++) {
+                    let searchOption = searchArr[g].split(":")[0].substring(1).toLowerCase(),
+                        searchParamsAND = searchArr[g].split(":").slice(1).join(":").split("&").map(param => param.toLowerCase());
+                    let checkArrAND = [];
+                    if(!(searchParamsAND.length == 1 && searchParamsAND[0] == "")) {
+                        for(let h = 0; h < searchParamsAND.length; h++) {
+                            if(searchParamsAND.length > 0) {
+                                let searchParamsOR = searchParamsAND[h].split("|"),
+                                    checkArrOR = [];
+                                for(let j = 0; j < searchParamsOR.length; j++) {
+                                    if(searchParamsOR[j] != "") {
+                                        if(searchOption == "category") {
+                                            checkArrOR.push(rowList[i].getAttribute("category").toLowerCase().includes(searchParamsOR[j]));
+                                        }
+                                        else if(searchOption == "name") {
+                                            checkArrOR.push(rowList[i].getAttribute("name").toLowerCase().includes(searchParamsOR[j]));
+                                        }
+                                        else if(searchOption == "genres") {
+                                            checkArrOR.push(rowList[i].getAttribute("genres").toLowerCase().includes(searchParamsOR[j]));
+                                        }
+                                        else if(searchOption == "jname") {
+                                            if(rowList[i].getAttribute("jname") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("jname").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                        else if(searchOption == "ogname") {
+                                            if(rowList[i].getAttribute("originalName") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("originalName").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                        else if(searchOption == "demographic") {
+                                            if(rowList[i].getAttribute("demographic") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("demographic").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                        else if(searchOption == "writers") {
+                                            if(rowList[i].getAttribute("writers") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("writers").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                        else if(searchOption == "illustrators") {
+                                            if(rowList[i].getAttribute("illustrators") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("illustrators").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                        else if(searchOption == "directors") {
+                                            if(rowList[i].getAttribute("directors") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("directors").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                        else if(searchOption == "producers") {
+                                            if(rowList[i].getAttribute("producers") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("producers").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                        else if(searchOption == "musicians") {
+                                            if(rowList[i].getAttribute("musicians") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("musicians").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                        else if(searchOption == "studio") {
+                                            if(rowList[i].getAttribute("studio") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("studio").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                        else if(searchOption == "publisher") {
+                                            if(rowList[i].getAttribute("publisher") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("publisher").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                        else if(searchOption == "jpublisher") {
+                                            if(rowList[i].getAttribute("jpublisher") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("jpublisher").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                        else if(searchOption == "license") {
+                                            if(rowList[i].getAttribute("license") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("license").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                    }
+                                }
+                                if(checkArrOR.length > 0 && !checkArrOR.includes(true)) {
+                                    checkArrAND.push(false);
+                                }
+                            }
+                        }
+                    }
+                    if(checkArrAND.length > 0 && checkArrAND.includes(false)) {
+                        searchCheck = false;
+                    }
+                }
+                searchCheck == true ? rowList[i].style.display = "table-row" : rowList[i].style.display = "none";
+            }
+            else {
+                rowList[i].getAttribute("genreFiltered") == "1" && rowDiv.textContent.toLowerCase().includes(curSearch) ? rowList[i].style.display = "table-row" : rowList[i].style.display = "none";
+            }
         }
     });
     // Listen for a click event on the check all checkbox in order to check or uncheck all record checkboxes.
