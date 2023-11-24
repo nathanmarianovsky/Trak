@@ -345,102 +345,145 @@ window.addEventListener("load", () => {
         // Iterate through all of the rows and check whether the record name contains the desired search string.
         for(let i = 0; i < rowList.length; i++) {
             let rowDiv = rowList[i].children[1].children[0];
-            // Show a row if it contains the desired string and hide it otherwise.
+            // Show a row if it contains the desired parameters and hide it otherwise.
             if(curSearch.includes("@")) {
+                // Define the list of parameters the user wishes to be satisfied.
                 let searchArr = curSearch.split(","),
                     searchCheck = true;
+                // Iterate through the parameters.
                 for(let g = 0; g < searchArr.length; g++) {
+                    // Define the parameter options and associated queries under the & operator.
                     let searchOption = searchArr[g].split(":")[0].substring(1).toLowerCase(),
                         searchParamsAND = searchArr[g].split(":").slice(1).join(":").split("&").map(param => param.toLowerCase());
                     let checkArrAND = [];
+                    // Proceed only if a non-empty query has been provided for the parameter.
                     if(!(searchParamsAND.length == 1 && searchParamsAND[0] == "")) {
+                        // Iterate through the list of queries under the & operator.
                         for(let h = 0; h < searchParamsAND.length; h++) {
+                            // Proceed only if at least one query has been provided.
                             if(searchParamsAND.length > 0) {
-                                let searchParamsOR = searchParamsAND[h].split("|"),
+                                let searchParamsOR = searchParamsAND[h].split("|").map(param => param.trim()),
                                     checkArrOR = [];
+                                // Iterate through the queries under the | operator.
                                 for(let j = 0; j < searchParamsOR.length; j++) {
+                                    // Proceed only if at least one query has been provided.
                                     if(searchParamsOR[j] != "") {
+                                        // Check if the category of the record satisfied the current query.
                                         if(searchOption == "category") {
                                             checkArrOR.push(rowList[i].getAttribute("category").toLowerCase().includes(searchParamsOR[j]));
                                         }
+                                        // Check if the name of the record satisfied the current query.
                                         else if(searchOption == "name") {
                                             checkArrOR.push(rowList[i].getAttribute("name").toLowerCase().includes(searchParamsOR[j]));
                                         }
+                                        // Check if the genres of the record satisfied the current query.
                                         else if(searchOption == "genres") {
                                             checkArrOR.push(rowList[i].getAttribute("genres").toLowerCase().includes(searchParamsOR[j]));
                                         }
+                                        // Check if the japanese name of the record satisfied the current query.
                                         else if(searchOption == "jname") {
                                             if(rowList[i].getAttribute("jname") != null) {
                                                 checkArrOR.push(rowList[i].getAttribute("jname").toLowerCase().includes(searchParamsOR[j]));
                                             }
                                             else { checkArrOR.push(false); }
                                         }
+                                        // Check if the original name of the record satisfied the current query.
                                         else if(searchOption == "ogname") {
                                             if(rowList[i].getAttribute("originalName") != null) {
                                                 checkArrOR.push(rowList[i].getAttribute("originalName").toLowerCase().includes(searchParamsOR[j]));
                                             }
                                             else { checkArrOR.push(false); }
                                         }
+                                        // Check if the demographic of the record satisfied the current query.
                                         else if(searchOption == "demographic") {
                                             if(rowList[i].getAttribute("demographic") != null) {
                                                 checkArrOR.push(rowList[i].getAttribute("demographic").toLowerCase().includes(searchParamsOR[j]));
                                             }
                                             else { checkArrOR.push(false); }
                                         }
-                                        else if(searchOption == "writers") {
-                                            if(rowList[i].getAttribute("writers") != null) {
-                                                checkArrOR.push(rowList[i].getAttribute("writers").toLowerCase().includes(searchParamsOR[j]));
+                                        // Check if the writers or authors of the record satisfied the current query.
+                                        else if(searchOption == "writers" || searchOption == "authors") {
+                                            if(rowList[i].getAttribute("writers") != null || rowList[i].getAttribute("authors") != null) {
+                                                if(rowList[i].getAttribute("writers") != null) {
+                                                    checkArrOR.push(rowList[i].getAttribute("writers").toLowerCase().includes(searchParamsOR[j]));
+                                                }
+                                                else if(rowList[i].getAttribute("authors") != null) {
+                                                    checkArrOR.push(rowList[i].getAttribute("authors").toLowerCase().includes(searchParamsOR[j]));
+                                                }
                                             }
                                             else { checkArrOR.push(false); }
                                         }
+                                        // Check if the illustrators of the record satisfied the current query.
                                         else if(searchOption == "illustrators") {
                                             if(rowList[i].getAttribute("illustrators") != null) {
                                                 checkArrOR.push(rowList[i].getAttribute("illustrators").toLowerCase().includes(searchParamsOR[j]));
                                             }
                                             else { checkArrOR.push(false); }
                                         }
+                                        // Check if the directors of the record satisfied the current query.
                                         else if(searchOption == "directors") {
                                             if(rowList[i].getAttribute("directors") != null) {
                                                 checkArrOR.push(rowList[i].getAttribute("directors").toLowerCase().includes(searchParamsOR[j]));
                                             }
                                             else { checkArrOR.push(false); }
                                         }
+                                        // Check if the producers of the record satisfied the current query.
                                         else if(searchOption == "producers") {
                                             if(rowList[i].getAttribute("producers") != null) {
                                                 checkArrOR.push(rowList[i].getAttribute("producers").toLowerCase().includes(searchParamsOR[j]));
                                             }
                                             else { checkArrOR.push(false); }
                                         }
+                                        // Check if the musicians of the record satisfied the current query.
                                         else if(searchOption == "musicians") {
                                             if(rowList[i].getAttribute("musicians") != null) {
                                                 checkArrOR.push(rowList[i].getAttribute("musicians").toLowerCase().includes(searchParamsOR[j]));
                                             }
                                             else { checkArrOR.push(false); }
                                         }
+                                        // Check if the studio of the record satisfied the current query.
                                         else if(searchOption == "studio") {
                                             if(rowList[i].getAttribute("studio") != null) {
                                                 checkArrOR.push(rowList[i].getAttribute("studio").toLowerCase().includes(searchParamsOR[j]));
                                             }
                                             else { checkArrOR.push(false); }
                                         }
+                                        // Check if the publisher of the record satisfied the current query.
                                         else if(searchOption == "publisher") {
                                             if(rowList[i].getAttribute("publisher") != null) {
                                                 checkArrOR.push(rowList[i].getAttribute("publisher").toLowerCase().includes(searchParamsOR[j]));
                                             }
                                             else { checkArrOR.push(false); }
                                         }
+                                        // Check if the japanese publisher of the record satisfied the current query.
                                         else if(searchOption == "jpublisher") {
                                             if(rowList[i].getAttribute("jpublisher") != null) {
                                                 checkArrOR.push(rowList[i].getAttribute("jpublisher").toLowerCase().includes(searchParamsOR[j]));
                                             }
                                             else { checkArrOR.push(false); }
                                         }
+                                        // Check if the license of the record satisfied the current query.
                                         else if(searchOption == "license") {
                                             if(rowList[i].getAttribute("license") != null) {
                                                 checkArrOR.push(rowList[i].getAttribute("license").toLowerCase().includes(searchParamsOR[j]));
                                             }
                                             else { checkArrOR.push(false); }
                                         }
+                                        // Check if the asin/isbn of the record satisfied the current query.
+                                        else if(searchOption == "isbn") {
+                                            if(rowList[i].getAttribute("isbn") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("isbn").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                        // Check if the media type of the record satisfied the current query.
+                                        else if(searchOption == "media") {
+                                            if(rowList[i].getAttribute("media") != null) {
+                                                checkArrOR.push(rowList[i].getAttribute("media").toLowerCase().includes(searchParamsOR[j]));
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+
                                     }
                                 }
                                 if(checkArrOR.length > 0 && !checkArrOR.includes(true)) {
@@ -455,6 +498,7 @@ window.addEventListener("load", () => {
                 }
                 searchCheck == true ? rowList[i].style.display = "table-row" : rowList[i].style.display = "none";
             }
+            // Show a row if it contains the desired query and hide it otherwise.
             else {
                 rowList[i].getAttribute("genreFiltered") == "1" && rowDiv.textContent.toLowerCase().includes(curSearch) ? rowList[i].style.display = "table-row" : rowList[i].style.display = "none";
             }
