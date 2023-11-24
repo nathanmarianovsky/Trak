@@ -508,6 +508,7 @@ window.addEventListener("load", () => {
     checkAll.addEventListener("click", e => {
         // Define the collection of all record rows and the remove button.
         const bodyList = tableBody.children,
+            homeSelected = document.getElementById("homeSelected");
             btn = document.getElementById("remove");
         // If the checkAll is checked then check all records.
         if(checkAll.checked) {
@@ -517,6 +518,7 @@ window.addEventListener("load", () => {
             if(bodyList.length > 0) {
                 btn.style.display = "inherit";
             }
+            homeSelected.textContent = bodyList.length + " Selected";
         }
         // Otherwise, if the checkAll is unchecked then uncheck all records.
         else {
@@ -524,6 +526,7 @@ window.addEventListener("load", () => {
                 bodyList[i].children[0].children[0].children[0].checked = false;
             }
             btn.style.display = "none";
+            homeSelected.textContent = "";
         }
     });
     // Listen for a click event on the name sorter to reorder the records.

@@ -317,6 +317,20 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	display: none;
 }
 
+#homeCounter {
+	text-align: center;
+    width: 105%;
+    position: absolute;
+    bottom: -10%;
+}
+
+#homeSelected {
+	text-align: center;
+    width: 105%;
+    position: absolute;
+    bottom: -5%;
+}
+
 .spinner-layer {
 	border-color: #2A2A8E !important;
 }

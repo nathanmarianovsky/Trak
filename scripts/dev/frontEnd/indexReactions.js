@@ -352,7 +352,8 @@ ipcRenderer.on("introduction", (event, response) => {
 ipcRenderer.on("loadRows", (event, tableDiff) => {
     // Define the path for all items and get a list of all available records.
     const pathDir = path.join(localPath, "Trak", "data");
-    let list = [];
+    let list = [],
+        counters = [0,0,0,0,0];
     fs.existsSync(pathDir) ? list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()) : list = [];
     if(list.length > 0) {
         list = list.sort((lhs, rhs) => {
@@ -403,9 +404,12 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         // Modify the name portion.
         if(recordData.category == "Anime" || recordData.category == "Manga") {
             tdNameDiv.textContent = recordData.name != "" ? recordData.name : recordData.jname;
+            if(recordData.category == "Anime") { counters[0]++; }
+            if(recordData.category == "Manga") { counters[3]++; }
         }
         else if(recordData.category == "Book") {
             tdNameDiv.textContent = recordData.name != "" ? recordData.name : formatISBNString(recordData.isbn);
+            if(recordData.category == "Book") { counters[1]++; }
         }
         tdNameDiv.classList.add("recordsNameRowDiv");
         tdName.classList.add("left");
@@ -692,11 +696,20 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         checkInput.addEventListener("change", () => {
             let btn = document.getElementById("remove"),
                 checkAllBtn = document.getElementById("checkAll"),
+                homeSelected = document.getElementById("homeSelected"),
                 checkArr = Array.from(document.querySelectorAll(".recordsChecks")),
                 checkTotal = checkArr.length,
                 checkedNum = checkArr.filter(elem => elem.checked).length;
-            checkedNum > 0 ? btn.style.display = "inherit" : btn.style.display = "none";
             checkTotal - 1 == checkedNum && !checkAllBtn.checked ? checkAllBtn.checked = true : checkAllBtn.checked = false;
+            if(checkedNum > 0) {
+                btn.style.display = "inherit";
+                if(checkTotal - 1 == checkedNum && !checkAllBtn.checked) { checkedNum--; }
+                homeSelected.textContent = checkedNum + " Selected";
+            }
+            else {
+                btn.style.display = "none";
+                homeSelected.textContent = "";
+            }
         });
         // Listen for a click on the name of a record in order to open the update page.
         tdNameDiv.addEventListener("click", e => {
@@ -711,6 +724,38 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             ipcRenderer.send("recordFiles", [holder.join(""), e.target.closest("tr").getAttribute("category") + "-" + e.target.closest("tr").getAttribute("name")]);
         });
     }
+    let bottomStr = "Total Records: " + list.length;
+    if(counters.reduce((accum, cur) => accum + cur, 0) > 0) {
+        bottomStr += " (";
+        for(let catIter = 0; catIter < counters.length; catIter++) {
+            if(counters[catIter] > 0) {
+                if(catIter == 0) {
+                    bottomStr += counters[0] + " Anime";
+                }
+                else {
+                    let prevSum = counters.slice(0, catIter).reduce((accum, cur) => accum + cur, 0);
+                    if(prevSum != 0) {
+                        bottomStr += ", ";
+                    }
+                    bottomStr += counters[catIter];
+                    if(catIter == 1) {
+                        bottomStr += " Book";
+                    }
+                    else if(catIter == 2) {
+                        bottomStr += " Film";
+                    }
+                    else if(catIter == 3) {
+                        bottomStr += " Manga";
+                    }
+                    else if(catIter == 4) {
+                        bottomStr += " Show";
+                    }
+                }
+            }
+        }
+        bottomStr += ")";
+    }
+    document.getElementById("homeCounter").textContent = bottomStr;
     // Initialize the tooltips.
     initTooltips();
     // Initialize the filter genres/tags list.
