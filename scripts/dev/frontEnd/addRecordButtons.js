@@ -478,6 +478,7 @@ var recordChoicesButtons = () => {
     // Define the buttons for all record choices.
     const categoryAnime = document.getElementById("categoryAnime"),
         categoryBook = document.getElementById("categoryBook"),
+        categoryFilm = document.getElementById("categoryFilm"),
         categoryManga = document.getElementById("categoryManga");
     // Define the relevant portions of the page that are in the rotation of record forms.
     const directionsTitle = document.getElementById("directionsTitle"),
@@ -487,15 +488,18 @@ var recordChoicesButtons = () => {
         categoryInitial = document.getElementById("categoryInitial"),
         categoryAnimeDiv = document.getElementById("categoryAnimeDiv"),
         categoryBookDiv = document.getElementById("categoryBookDiv"),
+        categoryFilmDiv = document.getElementById("categoryFilmDiv"),
         categoryMangaDiv = document.getElementById("categoryMangaDiv");
     // Define the color which will be applied to the favorite image icon.
     const btnColorFavorite = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor;
     let introAnimeHolder = false,
         introBookHolder = false,
+        introFilmHolder = false,
         introMangaHolder = false;
     ipcRenderer.on("addIntroduction", event => {
         introAnimeHolder = true;
         introBookHolder = true;
+        introFilmHolder = true;
         introMangaHolder = true;
     });
     // Listen for a click event on the categoryAnime button on the top bar to display the form corresponding to an anime record.
@@ -1109,6 +1113,319 @@ var recordChoicesButtons = () => {
             }, 500);
         }
     });
+
+
+
+
+    // Listen for a click event on the categoryFilm button on the top bar to display the form corresponding to a film record.
+    categoryFilm.addEventListener("click", e => {
+        e.preventDefault();
+        // Reset the top nav accordingly.
+        navReset(categoryInitial, categoryDivs, categoryLinks, categoryFilmDiv, categoryFilm);
+        // Display the correct input associated to the anime other genres/tags.
+        otherGenresReset("Film");
+        // // Initialize the dragging of the related content.
+        // let drake = dragula({"containers": [document.querySelector("#animeList")]});
+        // drake.on("dragend", () => { animeListReorganize(); });
+        // // Define all image buttons.
+        // const animePreviousImgBtn = document.getElementById("animePreviousImgBtn"),
+        //     animeAddImgBtn = document.getElementById("animeAddImgBtn"),
+        //     animeAddImgInput = document.getElementById("animeAddImgInput"),
+        //     animeRemoveImgBtn = document.getElementById("animeRemoveImgBtn"),
+        //     animeNextImgBtn = document.getElementById("animeNextImgBtn"),
+        //     addRecordAnimeImg = document.getElementById("addRecordAnimeImg"),
+        //     animeFavoriteImageLink = document.getElementById("animeFavoriteImageLink");
+        // imgButtons(animeFavoriteImageLink, animePreviousImgBtn, animeAddImgBtn, animeAddImgInput, animeRemoveImgBtn, animeNextImgBtn, addRecordAnimeImg, btnColorFavorite);
+        // // Define the portions of the page associated to the autocomplete.
+        // const animeName = document.getElementById("animeName"),
+        //     animePreloader = document.getElementById("animePreloader"),
+        //     animeNameAutocomplete = M.Autocomplete.init(animeName, {
+        //         "sortFunction": (a, b) => a.localeCompare(b),
+        //         "onAutocomplete": txt => {
+        //             animePreloader.style.visibility = "visible";
+        //             ipcRenderer.send("animeFetchDetails", txt);
+        //         }
+        //     }),
+        //     animeNameUL = animeName.nextElementSibling,
+        //     animeMoreBtn = document.getElementById("animeMoreDetailsBtn"),
+        //     animeFetchBtn = document.getElementById("animeFetchDetailsBtn"),
+        //     animeSave = document.getElementById("animeSave"),
+        //     animeOptions = document.getElementById("animeOptions"),
+        //     animeSynopsis = document.getElementById("animeSynopsis"),
+        //     animeReview = document.getElementById("animeReview");
+        // // Listen for changes in the book description in order to hide/show a vertical scroll.
+        // animeSynopsis.addEventListener("input", e => {
+        //     parseInt(animeSynopsis.style.height) > parseInt(getComputedStyle(animeSynopsis).maxHeight) ? animeSynopsis.style.overflowY = "scroll" : animeSynopsis.style.overflowY = "hidden";
+        // });
+        // // Listen for changes in the book comments/review in order to hide/show a vertical scroll.
+        // animeReview.addEventListener("input", e => {
+        //     parseInt(animeReview.style.height) > parseInt(getComputedStyle(animeReview).maxHeight) ? animeReview.style.overflowY = "scroll" : animeReview.style.overflowY = "hidden";
+        // });
+        // // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
+        // animeFetchBtn.addEventListener("click", e => {
+        //     if(animeName.value.length > 2) {
+        //         animePreloader.style.visibility = "visible";
+        //         ipcRenderer.send("animeFetchDetails", animeName.value);
+        //     }
+        //     else {
+        //         M.toast({"html": "The name is too short to fetch details from MyAnimeList", "classes": "rounded"});
+        //     }
+        // });
+        // // Define the autocomplete previous input and character max count for display purposes.
+        // let previousName = "",
+        //     maxCharCount = 0;
+        // // Listen for an input change in the anime name in order to fetch autocomplete options from myanimelist.
+        // animeName.addEventListener("input", e => {
+        //     // Only fetch myanimelist options if the anime name is of at least three characters.
+        //     if(e.target.value.length > 2) {
+        //         ipcRenderer.send("animeSearch", [previousName, e.target.value]);
+        //     }
+        //     else { animeNameAutocomplete.updateData({}); }
+        //     // Set the previous search value to the current one.
+        //     previousName = e.target.value;
+        // });
+        // // Listen for a click event on the anime name in order to trigger a fetch of autocomplete options from myanimelist.
+        // animeName.addEventListener("click", e => {
+        //     // Only fetch myanimelist options if the anime name is of at least three characters.
+        //     if(e.target.value.length > 2) {
+        //         ipcRenderer.send("animeSearch", [previousName, e.target.value]);
+        //     }
+        //     else { animeNameAutocomplete.updateData({}); }
+        // });
+        // // Once the autocomplete options have been attained update the page accordingly.
+        // ipcRenderer.on("animeSearchResults", (event, response) => {
+        //     // Proceed only if there are options available for autocomplete.
+        //     if(response[2].length > 0) {
+        //         // Define the object which will be used to update the autocomplete options.
+        //         let autoObj = {};
+        //         // Set the max character count based on the width of the page anime name input.
+        //         maxCharCount = Math.floor(((20/190) * (animeName.getBoundingClientRect().width - 467)) + 38);
+        //         // Iterate through all attained autocomplete options.
+        //         for(let t = 0; t < response[2].length; t++) {
+        //             // Add each option to the autocomplete object.
+        //             autoObj[response[2][t][0]] = response[2][t][1];
+        //         }
+        //         // Update the page autocomplete options.
+        //         animeNameAutocomplete.updateData(autoObj);
+        //         // In the case where the user is going from two to three characters, a refocus is necessary to make the unordered list for the autocomplete options to function properly.
+        //         if(response[0].length == 2 && response[1].length == 3) {
+        //             animeNameUL.style.display = "none";
+        //             animeName.click();
+        //             setTimeout(() => { animeName.click(); animeNameUL.style.display = "block"; }, 100);
+        //         }
+        //         // After a delay the list items for autocomplete options are provided the associated information in order to attain details upon a click.
+        //         setTimeout(() => {
+        //             // Iterate through all page autocomplete options.
+        //             for(let u = 0; u < animeNameUL.children.length; u++) {
+        //                 // Attach the anime name for each list item of the autocomplete options.
+        //                 let curChild = animeNameUL.children[u];
+        //                 for(let v = 0; v < response[2].length; v++) {
+        //                     if(curChild.children[0].getAttribute("src") == response[2][v][1]) {
+        //                         curChild.setAttribute("name", response[2][v][0]);
+        //                     }
+        //                 }
+        //             }
+        //         }, 500);
+        //     }
+        //     // If the anime name is not long enough then update the page autocomplete options to be empty.
+        //     else { animeNameAutocomplete.updateData({}); }
+        // });
+        // // Update the page accordingly based on the fetched anime details.
+        // ipcRenderer.on("animeFetchDetailsResult", (newEve, newResponse) => {
+        //     const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none";
+        //     // Update the anime japanese name if available.
+        //     if(newResponse[1] != "" && newResponse[1] != "None found, add some") {
+        //         const jnameInput = document.getElementById("animeJapaneseName");
+        //         updateDetector == true ? jnameInput.value += newResponse[1] : jnameInput.value = newResponse[1];
+        //         jnameInput.value = newResponse[1];
+        //         jnameInput.classList.add("valid");
+        //         jnameInput.nextElementSibling.classList.add("active");
+        //     }
+        //     // Update the anime image if available.
+        //     if(newResponse[2][1].length > 0) {
+        //         const animeImg = document.getElementById("addRecordAnimeImg"),
+        //             animeFavImgLink = document.getElementById("animeFavoriteImageLink");
+        //         animeImg.setAttribute("list", "");
+        //         for(let t = 0; t < newResponse[2][1].length; t++) {
+        //             if(!animeImg.getAttribute("list").includes(newResponse[2][1][t])) {
+        //                 animeImg.getAttribute("list") == "" ? animeImg.setAttribute("list", newResponse[2][1][t]) : animeImg.setAttribute("list", animeImg.getAttribute("list") + "," + newResponse[2][1][t]);
+        //             }
+        //         }
+        //         animeImg.setAttribute("src", newResponse[2][0]);
+        //         animeFavImgLink.style.visibility = "visible";
+        //         animeFavImgLink.style.color = btnColorFavorite;
+        //     }
+        //     // Update the anime studios if available.
+        //     if(newResponse[8] != "" && newResponse[8] != "None found, add some") {
+        //         const studioInput = document.getElementById("animeStudio");
+        //         updateDetector == true ? studioInput.value += (studioInput.value == "" ? newResponse[8] : ", " + newResponse[8]) : studioInput.value = newResponse[8];
+        //         studioInput.classList.add("valid");
+        //         studioInput.nextElementSibling.classList.add("active");
+        //     }
+        //     // Update the anime directors if available.
+        //     if(newResponse[9].length > 0 && newResponse[9][0] != "None found, add some") {
+        //         const directorsInput = document.getElementById("animeDirectors");
+        //         updateDetector == true ? directorsInput.value += (directorsInput.value == "" ? newResponse[9].join(", ") : ", " + newResponse[9].join(", ")) : directorsInput.value = newResponse[9].join(", ");
+        //         directorsInput.classList.add("valid");
+        //         directorsInput.nextElementSibling.classList.add("active");
+        //     }
+        //     // Update the anime producers if available.
+        //     if(newResponse[10].length > 0 && newResponse[10][0] != "None found, add some") {
+        //         const producersInput = document.getElementById("animeProducers");
+        //         updateDetector == true ? producersInput.value += (producersInput.value == "" ? newResponse[10].join(", ") : ", " + newResponse[10].join(", ")) : producersInput.value = newResponse[10].join(", ");
+        //         producersInput.classList.add("valid");
+        //         producersInput.nextElementSibling.classList.add("active");
+        //     }
+        //     // Update the anime writers if available.
+        //     if(newResponse[11].length > 0 && newResponse[11][0] != "None found, add some") {
+        //         const writersInput = document.getElementById("animeWriters");
+        //         updateDetector == true ? writersInput.value += (writersInput.value == "" ? newResponse[11].join(", ") : ", " + newResponse[11].join(", ")) : writersInput.value = newResponse[11].join(", ");
+        //         writersInput.classList.add("valid");
+        //         writersInput.nextElementSibling.classList.add("active");
+        //     }
+        //     // Update the anime musicians if available.
+        //     if(newResponse[12].length > 0 && newResponse[12][0] != "None found, add some") {
+        //         const musicInput = document.getElementById("animeMusicians");
+        //         updateDetector == true ? musicInput.value += (musicInput.value == "" ? newResponse[12].join(", ") : ", " + newResponse[12].join(", ")) : musicInput.value = newResponse[12].join(", ");
+        //         musicInput.classList.add("valid");
+        //         musicInput.nextElementSibling.classList.add("active");
+        //     }
+        //     // Update the anime synopsis if available.
+        //     if(newResponse[13] != "" && newResponse[13] != "None found, add some") {
+        //         let textHolder = newResponse[13].replace("[Written by MAL Rewrite]", "");
+        //         if(textHolder.includes("(Source:")) {
+        //             textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
+        //         }
+        //         textHolder = textHolder.trim();
+        //         animeSynopsis.value = textHolder;
+        //         animeSynopsis.classList.add("valid");
+        //         animeSynopsis.nextElementSibling.classList.add("active");
+        //         M.textareaAutoResize(animeSynopsis);
+        //     }
+        //     // Reset all anime genres to not be checked.
+        //     Array.from(document.querySelectorAll(".genreRow .filled-in")).forEach(inp => inp.checked = false);
+        //     // Iterate through the fetched list of genres and check them off on the page if available.
+        //     const extraGenres = document.getElementById("animeOtherGenres");
+        //     newResponse[7].forEach(genreItem => {
+        //         let genreIter = genreItem;
+        //         if(genreIter == "Coming-Of-Age") {
+        //             genreIter = "ComingOfAge";
+        //         }
+        //         else if(genreIter == "Post-Apocalyptic") {
+        //             genreIter = "PostApocalyptic";
+        //         }
+        //         else if(genreIter == "Sci-Fi") {
+        //             genreIter = "SciFi";
+        //         }
+        //         else if(genreIter == "Slice of Life") {
+        //             genreIter = "SliceOfLife";
+        //         }
+        //         if(document.getElementById("animeGenre" + genreIter) != undefined) {
+        //             document.getElementById("animeGenre" + genreIter).checked = true;
+        //         }
+        //         else {
+        //             extraGenres.value == "" ? extraGenres.value = genreIter : extraGenres.value += ", " + genreIter;
+        //         }
+        //     });
+        //     if(extraGenres.value != "") {
+        //         extraGenres.classList.add("valid");
+        //         extraGenres.nextElementSibling.classList.add("active");
+        //     }
+        //     else {
+        //         extraGenres.classList.remove("valid");
+        //         extraGenres.nextElementSibling.classList.remove("active");
+        //     }
+        //     setTimeout(() => {
+        //         // Reset the related content modal.
+        //         if(updateDetector == false) {
+        //             document.getElementById("animeList").innerHTML = "";
+        //         }
+        //         const listNum = document.getElementById("animeList").children.length + 1;
+        //         // If the anime type is a season then add a season to the related content.
+        //         clearTooltips();
+        //         if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
+        //             // Attach a season.
+        //             seasonAddition();
+        //             const seasonName = document.getElementById("li_" + listNum + "_Season_Name");
+        //             // If the start date is provided then set it as the value for the season start date input. 
+        //             if(newResponse[3] != "") {
+        //                 let dateStart = new Date(newResponse[3]);
+        //                 dateStart.setDate(dateStart.getDate() - 1);
+        //                 document.getElementById("li_" + listNum + "_Season_Start").value = dateStart.getFullYear() + "-"
+        //                     + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
+        //                     + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
+        //             }
+        //             // If the end date is provided then set it as the value for the season end date input. 
+        //             if(newResponse[4] != "") {
+        //                 let dateEnd = new Date(newResponse[4]);
+        //                 dateEnd.setDate(dateEnd.getDate() - 1);
+        //                 document.getElementById("li_" + listNum + "_Season_End").value = dateEnd.getFullYear() + "-"
+        //                     + (dateEnd.getMonth() + 1 > 9 ? dateEnd.getMonth() + 1 : "0" + (dateEnd.getMonth() + 1)) + "-"
+        //                     + (dateEnd.getDate() + 1 > 9 ? dateEnd.getDate() + 1 : "0" + (dateEnd.getDate() + 1));
+        //             }
+        //             // Provide a default season name.
+        //             seasonName.value = "Season";
+        //             seasonName.classList.add("valid");
+        //             seasonName.nextElementSibling.classList.add("active");
+        //             // Add the appropriate number of episodes with a default episode name.
+        //             for(let f = 0; f < parseInt(newResponse[6]); f++) {
+        //                 document.getElementById("li_" + listNum + "_Season_AddEpisode").click();
+        //                 let episodeName = document.getElementById("li_" + listNum + "_Episode_Name_" + (f + 1));
+        //                 episodeName.value = "Episode " + (f + 1);
+        //                 episodeName.classList.add("valid");
+        //                 episodeName.nextElementSibling.classList.add("active");
+        //             }
+        //             // Hide the episodes by default.
+        //             document.getElementById("li_" + listNum + "_Season").children[0].click();
+        //         }
+        //         else {
+        //             // Attach a single film/ona/ova.
+        //             singleAddition();
+        //             const singleName = document.getElementById("li_" + listNum + "_Single_Name"),
+        //                 singleType = document.getElementById("li_" + listNum + "_Single_Type");
+        //             // If the release date is provided then set it as the value for the single release date input. 
+        //             if(newResponse[3] != "") {
+        //                 let dateStart = new Date(newResponse[3]);
+        //                 dateStart.setDate(dateStart.getDate() - 1);
+        //                 document.getElementById("li_" + listNum + "_Single_Release").value = dateStart.getFullYear() + "-"
+        //                     + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
+        //                     + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
+        //             }
+        //             // Provide a default film/ona/ova name.
+        //             singleName.value = "Item 1";
+        //             singleName.classList.add("valid");
+        //             singleName.nextElementSibling.classList.add("active");
+        //             // Set the type for the item.
+        //             singleType.value = newResponse[5];
+        //         }
+        //         relatedContentFinisher();
+        //         resetAnimeContentCounters();
+        //         // Hide the preloader now that everything has been loaded and show the buttons if necessary.
+        //         animePreloader.style.visibility = "hidden";
+        //         animeMoreBtn.style.visibility = "visible";
+        //         animeFetchBtn.style.visibility = "visible";
+        //         animeSave.style.visibility = "visible";
+        //         animeOptions.style.visibility = "visible";
+        //     }, 500);
+        // });
+        // // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
+        // if(introAnimeHolder == true) {
+        //     const instancesTapAnimeSave = M.TapTarget.init(document.getElementById("introductionTargetAnimeSave"), { "onClose": () => {
+        //         setTimeout(() => {
+        //             const instancesTapAnimeOptions = M.TapTarget.init(document.getElementById("introductionTargetAnimeOptions"));
+        //             setTimeout(() => {
+        //                 instancesTapAnimeOptions.open();
+        //                 introAnimeHolder = false;
+        //             }, 500);
+        //         }, 500);
+        //     }});
+        //     setTimeout(() => { instancesTapAnimeSave.open(); }, 500);
+        // }
+    });
+
+
+
+
     // Listen for a click event on the categoryManga button on the top bar to display the form corresponding to a manga record.
     categoryManga.addEventListener("click", e => {
         e.preventDefault();

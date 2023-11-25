@@ -382,6 +382,183 @@
 
 
 
+        <div id="categoryFilmDiv" class="categoryDiv">
+            <div id="filmPreloader" class="preloader-wrapper active recordPreloader">
+                <div class="spinner-layer">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <h2>Directions:</h2>
+            <div class="text formInfo">
+                The only field required to add a record is the name. All other fields are optional.
+            </div>
+            <div class="row addRecordDiv">
+                <div id="addRecordFilmImageDiv" class="left addRecordImageDiv">
+                    <a id="filmFavoriteImageLink" class="recordFavoriteImageLink"><i class="material-icons">favorite</i></a>
+                    <img id="addRecordFilmImg" class="addRecordImg" src="../../assets/imgDef.png" list="" default="../../assets/imgDef.png">
+                    <div id="addRecordFilmImgBtnDiv" class="addRecordImgBtnDiv">
+                        <div class="addRecordFilmImgBtnContainer"><a id="filmPreviousImgBtn" class="addRecordFilmImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_before</i></a></div>
+                        <div class="addRecordFilmImgBtnContainer"><a id="filmAddImgBtn" class="addRecordFilmImgBtn waves-effect waves-light btn"><i class="material-icons">add</i></a></div>
+                        <div class="addRecordFilmImgBtnContainer"><a id="filmRemoveImgBtn" class="addRecordFilmImgBtn waves-effect waves-light btn"><i class="material-icons">remove</i></a></div>
+                        <div class="addRecordFilmImgBtnContainer"><a id="filmNextImgBtn" class="addRecordFilmImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_next</i></a></div>
+                    </div>
+                    <input id="filmAddImgInput" class="recordAddImgInput" type="file" multiple>
+                </div>
+                <form id="categoryFilmForm1" class="categoryTopForm col s8">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input id="filmName" type="text" class="validate left autocomplete">
+                            <label for="filmName">Name: <a class="modal-trigger" href="#filmInternationalNameModal"><i class="material-icons infoIcon">info</i></a></label>
+                        </div>
+                        <div class="input-field col s3">
+                            <input id="filmReleaseDate" type="date" class="validate left">
+                            <label for="filmReleaseDate">Release Date:</label>
+                        </div>
+                        <div class="input-field col s3">
+                            <input id="filmRunningTime" type="text" class="validate left">
+                            <label for="filmRunningTime">Running Time:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea id="filmSynopsis" class="validate materialize-textarea" maxlength="1000"></textarea>
+                            <label for="filmSynopsis">Plot:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s2 selectShortVerticalScroll">
+                            <select id="filmRating">
+                                <option value="" disabled selected>N/A</option>
+                                <option value="0">0/10</option>
+                                <option value="1">1/10</option>
+                                <option value="2">2/10</option>
+                                <option value="3">3/10</option>
+                                <option value="4">4/10</option>
+                                <option value="5">5/10</option>
+                                <option value="6">6/10</option>
+                                <option value="7">7/10</option>
+                                <option value="8">8/10</option>
+                                <option value="9">9/10</option>
+                                <option value="10">10/10</option>
+                            </select>
+                            <label>Rating:</label>
+                        </div>
+                        <div class="input-field col s10">
+                            <textarea id="filmReview" class="validate materialize-textarea" maxlength="1000"></textarea>
+                            <label for="filmReview">Comments/Review:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <a id="filmMoreDetailsBtn" class="waves-effect waves-light btn addRecordBtn modal-trigger" href="#filmMoreDetailsModal"><i class="material-icons right">add</i>More Details</a>
+                        <a id="filmFetchDetailsBtn" class="waves-effect waves-light btn addRecordBtn"><i class="material-icons right">refresh</i>Fetch Details</a>
+                    </div>
+                </form>
+                <div id="filmMoreDetailsModal" class="modal modal-fixed-footer recordMoreDetailsModal">
+                    <div class="modal-content">
+                        <h4 class="center">More Details</h4>
+                        <form id="filmAnimeForm3" class="categoryMoreDetailsForm col s12">
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="filmDirectors" type="text" class="validate left">
+                                    <label for="filmDirectors">Directed By:</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="filmEditors" type="text" class="validate left">
+                                    <label for="filmEditors">Edited By:</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="filmWriters" type="text" class="validate left">
+                                    <label for="filmWriters">Written By:</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="filmCinematographers" type="text" class="validate left">
+                                    <label for="filmCinematographers">Cinematography By:</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="filmMusicians" type="text" class="validate left">
+                                    <label for="filmMusicians">Music By:</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="filmDistributors" type="text" class="validate left">
+                                    <label for="filmDistributors">Distributed By:</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="filmProducers" type="text" class="validate left">
+                                    <label for="filmProducers">Produced By:</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="filmProductionCompanies" type="text" class="validate left">
+                                    <label for="filmProductionCompanies">Production Companies:</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="filmStarring" type="text" class="validate left">
+                                    <label for="filmStarring">Starring:</label>
+                                </div>
+                            </div>
+                            <div id="filmAddRecordFilesOuterDiv" class="file-field input-field">
+                                <div id="filmAddRecordFilesDiv" class="btn addRecordFilesDiv">
+                                    <span>
+                                        File<i class="material-icons right">add</i>
+                                    </span>
+                                    <input id="filmAddRecordFiles" type="file" multiple>
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input id="filmAddRecordFilesText" class="file-path validate" type="text">
+                                    <label for="filmAddRecordFilesText">Upload one or more files.</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                    </div>
+                </div>
+            </div>
+            <h2 id="filmGenresTitle" class="recordGenresTitle">Genres/Tags: <a class="modal-trigger" href="#genresModal"><i class="material-icons infoIcon genresIcon">add_circle</i></a></h2>
+            <div class="row addRecordDiv">
+                <form id="categoryFilmForm2" class="col s12 categoryBottomForm"></form>
+            </div>
+            <a id="filmSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
+            <div id="introductionTargetFilmSave" class="tap-target" data-target="filmSave">
+                <div class="tap-target-content">
+                    <p>Use this button to save the film record.</p>
+                </div>
+            </div>
+            <div id="filmInternationalNameModal" class="modal infoModal">
+                <div class="modal-content">
+                    <h4 class="center">International Name</h4>
+                    <p>Provide an alternate name for the film, if available:</p>
+                    <form class="col s10">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="filmInternationalName" type="text" class="validate left autocomplete">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                </div>
+            </div>
+        </div>
+
+
 
 
         <div id="categoryMangaDiv" class="categoryDiv">
@@ -583,11 +760,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
-
         <div id="genresModal" class="modal modal-fixed-footer">
             <div class="modal-content">
                 <h4 class="center">Extra</h4>
@@ -603,6 +775,12 @@
                         <div class="input-field col s12">
                             <input id="bookOtherGenres" type="text" class="validate left">
                             <label for="bookOtherGenres">Genres/Tags:</label>
+                        </div>
+                    </div>
+                    <div id="filmOtherGenresDiv" class="row otherGenresDiv">
+                        <div class="input-field col s12">
+                            <input id="filmOtherGenres" type="text" class="validate left">
+                            <label for="filmOtherGenres">Genres/Tags:</label>
                         </div>
                     </div>
                     <div id="mangaOtherGenresDiv" class="row otherGenresDiv">
