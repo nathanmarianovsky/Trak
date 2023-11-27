@@ -794,7 +794,7 @@ footer {
 	bottom: 92px;
 }
 
-#bookSave {
+#bookSave, #filmSave {
 	position: fixed;
 	right: 23px;
 	bottom: 23px;
@@ -863,6 +863,11 @@ footer {
 	left: 50%;
 }
 
+#filmMoreDetailsModal {
+	max-height: 75%;
+	height: 75%;
+}
+
 .recordFavoriteImageLink {
 	color: #2A2A8E;
     position: absolute;
@@ -903,7 +908,7 @@ footer {
 	margin-left: 1.5%;
 }
 
-.addRecordAnimeImgBtn, .addRecordBookImgBtn {
+.addRecordImgBtn {
 	background-color: #2A2A8E !important;
 	width: 100%;
 }
