@@ -69,10 +69,40 @@
                         <div class="input-field col s12">
                             <i class="material-icons prefix">search</i>
                             <input id="searchBar" type="text" class="validate">
-                            <label for="searchBar">Search:</label>
+                            <label for="searchBar">Search: <a class="modal-trigger" href="#searchBarModal"><i class="material-icons infoIcon">info</i></a></label>
                         </div>
                     </div>
                 </form>
+            </div>
+            <div id="searchBarModal" class="modal">
+                <div class="modal-content">
+                    <h4 class="center">Search Bar Features</h4>
+                    <div>
+                        The search bar on the home page of the application has been designed to provide mechanisms for performing searches based upon any record parameter desired. More specifically, the search bar may be utilized in the following two manners:
+                        <ul>
+                            <li>By typing any string without the @ symbol will initiate a simple search based on finding records whose name includes the desired string.</li>
+                            <li>
+                                Provided the search @option:param the application will filter all records whose attribute "option" matches "param." More specifically:
+                                <ul>
+                                    <li>The "option" of a search can correspond to any of the following: category, name, genres, jname, ogname, demographic, writers, authors, illustrators, directors, producers, musicians, studio, publisher, jpublisher, license, isbn, or media.</li>
+                                    <li>For the above options jname, ogname, musicians, jpublisher, and media reference the Japanese name, original title, musical producers, Japanese publisher, and media type of a record, respectively.</li>
+                                    <li>Multiple searches can be accomplished at the same time by formatting the search in the format @option1:param1,@option2:param2,...,@optionK:paramK for K many searches.</li>
+                                    <li>
+                                        For any single search multiple parameters can be provided by stating whether they should be searched in conjunction or disjunction with each other. More specifically:
+                                        <ul>
+                                            <li>The &amp symbol is used to denote the operation of conjunction, i.e. @option:param1&ampparam2 will filter the records whose attribute "option" includes both "param1" AND "param2."</li>
+                                            <li>The | symbol is used to denote the operation of disjunction, i.e. @option:param1|param2 will filter the records whose attribute "option" includes either "param1" OR "param2."</li>
+                                            <li>The &amp operator takes precedence over the | operator, i.e. @option:param1&ampparam2|param3 will filter the records whose attribute "option" includes param1 AND (param2 OR param3).</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                </div>
             </div>
             <div id="headersTableDiv">
                 <table id="headersTable" class="centered">

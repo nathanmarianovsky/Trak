@@ -29,7 +29,7 @@ The search bar on the home page of the application has been designed to provide 
    * The "option" of a search can correspond to any of the following: category, name, genres, jname, ogname, demographic, writers, authors, illustrators, directors, producers, musicians, studio, publisher, jpublisher, license, isbn, or media.
    * For the above options jname, ogname, musicians, jpublisher, and media reference the Japanese name, original title, musical producers, Japanese publisher, and media type of a record, respectively.
    * Multiple searches can be accomplished at the same time by formatting the search in the format @option1:param1,@option2:param2,...,@optionK:paramK for K many searches.
-   * For any single search multiple parameters can be provided by providing whether they should be searched in conjunction or disjunction with each other. More specifically:
+   * For any single search multiple parameters can be provided by stating whether they should be searched in conjunction or disjunction with each other. More specifically:
       * The & symbol is used to denote the operation of conjunction, i.e. @option:param1&param2 will filter the records whose attribute "option" includes both "param1" AND "param2."
       * The | symbol is used to denote the operation of disjunction, i.e. @option:param1|param2 will filter the records whose attribute "option" includes either "param1" OR "param2."
       * The & operator takes precedence over the | operator, i.e. @option:param1&param2|param3 will filter the records whose attribute "option" includes param1 AND (param2 OR param3). 
