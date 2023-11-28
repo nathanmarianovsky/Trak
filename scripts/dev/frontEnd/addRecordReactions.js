@@ -649,7 +649,7 @@ window.addEventListener("load", () => {
     initCollapsible();
     // Add the listeners corresponding to the record choices.
     recordChoicesButtons();
-    const categories = ["Anime", "Book", "Manga"];
+    const categories = ["Anime", "Book", "Film", "Manga"];
     categories.forEach(category => {
         // Fill the record page with the associated genre options.
         genreListLoad(category, 6);

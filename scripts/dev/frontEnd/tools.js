@@ -345,6 +345,12 @@ var genreList = (type = "All") => {
         genArr = ["Action", "Adventure", "Comedy", "Crime", "Dystopian", "Fantasy", "Fiction", "Historical", "Horror", "Mystery",
             "Mythology", "Nonfiction", "Romance", "Satire", "Sci-Fi", "Thriller", "Tragedy", "Western"];
     }
+    else if(type == "Film") {
+        genArr = ["Action", "Adventure", "AlternateHistory", "Amateur", "Animation", "Biopic", "Comedy", "Crime", "Cyberpunk", "Detective", "Docudrama",
+            "Documentary", "Drama", "Dystopian", "Fantasy", "Gangster", "Gore", "Gothic", "Heist", "Historical", "Horror", "Military", "Musical",
+            "Mystery", "Nature", "Parody", "Political", "PostApocalyptic", "Psychological", "Reality", "Religious", "Romance", "Satire",
+            "SciFi", "Space", "SpaceOpera", "Sports", "Spy", "Superhero", "Thriller", "Utopian", "Vampire", "Western", "Zombie"];
+    }
     else if(type == "Manga") {
         genArr = ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
             "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",

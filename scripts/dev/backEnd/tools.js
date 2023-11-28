@@ -7,9 +7,7 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
    - writeDataFile: Handles the writing of files associated to a record.
    - removeRecords: Handles the removal of records by deleting the associated folders and data file.
    - arrayMove: Moves an element in an array.
-   - animeGenreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
-   - bookGenreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for a book record.
-   - mangaGenreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for a manga record.
+   - genreList: Provides the list of all genres/tags that can be selected on the addRecord.html page for a record.
    - calculateReleaseDate: Calculate the earliest release date of an anime record based on the related content information.
    - calculateAnimeGlobalRating: Calculate the average rating of an anime record based on the related content information.
    - calculateMangaGlobalRating: Calculate the average rating of a manga record based on the related content information.
@@ -224,11 +222,13 @@ exports.arrayMove = (arr, fromIndex, toIndex) => {
 
 /*
 
-Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
+Provides the list of all genres/tags that can be selected on the addRecord.html page for a record.
 
 */
-exports.animeGenreList = () => {
-    return ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
+exports.genreList = recType => {
+    let genArr = [];
+    if(recType == "Anime") {
+	    genArr = ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
             "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
             "Hentai", "Historical", "Horror", "Isekai", "Josei", "Kids", "Medical", "Mystery", "Magic",
             "MagicalSexShift", "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police",
@@ -236,29 +236,19 @@ exports.animeGenreList = () => {
             "School", "SciFi", "Seinen", "Shoujo", "Shounen", "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame",
             "SuperPower", "Supernatural", "Survival", "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy",
             "Vampire", "VideoGame", "War", "Western", "Workplace", "Yaoi", "Yuri"];
-};
-
-
-
-/*
-
-Provides the list of all genres/tags that can be selected on the addRecord.html page for a book record.
-
-*/
-exports.bookGenreList = () => {
-    return ["Action", "Adventure", "Comedy", "Crime", "Dystopian", "Fantasy", "Fiction", "Historical", "Horror", "Mystery",
+    }
+    else if(recType == "Book") {
+    	genArr = ["Action", "Adventure", "Comedy", "Crime", "Dystopian", "Fantasy", "Fiction", "Historical", "Horror", "Mystery",
             "Mythology", "Nonfiction", "Romance", "Satire", "Sci-Fi", "Thriller", "Tragedy", "Western"];
-};
-
-
-
-/*
-
-Provides the list of all genres/tags that can be selected on the addRecord.html page for a manga record.
-
-*/
-exports.mangaGenreList = () => {
-    return ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
+    }
+    else if(recType == "Film") {
+    	genArr = ["Action", "Adventure", "Amateur", "Animation", "Biopic", "Comedy", "Crime", "Cyberpunk", "Docudrama",
+    		"Documentary", "Drama", "Dystopian", "Fantasy", "Gangster", "Historical", "Horror", "Military", "Musical",
+    		"Mystery", "Nature", "Post-Apocalyptic", "Psychological", "Reality", "Religious", "Romance", "Satire",
+    		"Sci-Fi", "Sports", "Spy", "Superhero", "Thriller", "Utopian", "Western", "Zombie"]
+    }
+    else if(recType == "Manga") {
+    	genArr = ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
             "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
             "Hentai", "Historical", "Horror", "Isekai", "Kids", "Medical", "Mystery", "Magic", "MagicalSexShift",
             "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police", "PostApocalyptic",
@@ -266,7 +256,57 @@ exports.mangaGenreList = () => {
             "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame", "SuperPower", "Supernatural", "Survival",
             "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy", "Vampire", "VideoGame", "War", "Western",
             "Workplace", "Yaoi", "Yuri"];
+    }
+    return genArr;
 };
+
+
+
+// /*
+
+// Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
+
+// */
+// exports.animeGenreList = () => {
+//     return ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
+//             "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
+//             "Hentai", "Historical", "Horror", "Isekai", "Josei", "Kids", "Medical", "Mystery", "Magic",
+//             "MagicalSexShift", "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police",
+//             "PostApocalyptic", "Psychological", "Racing", "Reincarnation", "ReverseHarem", "Romance", "Samurai",
+//             "School", "SciFi", "Seinen", "Shoujo", "Shounen", "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame",
+//             "SuperPower", "Supernatural", "Survival", "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy",
+//             "Vampire", "VideoGame", "War", "Western", "Workplace", "Yaoi", "Yuri"];
+// };
+
+
+
+// /*
+
+// Provides the list of all genres/tags that can be selected on the addRecord.html page for a book record.
+
+// */
+// exports.bookGenreList = () => {
+//     return ["Action", "Adventure", "Comedy", "Crime", "Dystopian", "Fantasy", "Fiction", "Historical", "Horror", "Mystery",
+//             "Mythology", "Nonfiction", "Romance", "Satire", "Sci-Fi", "Thriller", "Tragedy", "Western"];
+// };
+
+
+
+// /*
+
+// Provides the list of all genres/tags that can be selected on the addRecord.html page for a manga record.
+
+// */
+// exports.mangaGenreList = () => {
+//     return ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
+//             "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
+//             "Hentai", "Historical", "Horror", "Isekai", "Kids", "Medical", "Mystery", "Magic", "MagicalSexShift",
+//             "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police", "PostApocalyptic",
+//             "Psychological", "Racing", "Reincarnation", "ReverseHarem", "Romance", "Samurai", "School", "SciFi",
+//             "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame", "SuperPower", "Supernatural", "Survival",
+//             "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy", "Vampire", "VideoGame", "War", "Western",
+//             "Workplace", "Yaoi", "Yuri"];
+// };
 
 
 
@@ -1156,7 +1196,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 							if(elem.name == "Category-Anime") {
 								log.info("Importing the anime records.");
 								// Get the list of anime genres.
-								let genreLst = exports.animeGenreList();
+								let genreLst = exports.genreList("Anime");
 								// Iterate through all the rows of the anime worksheet.
 								for(let q = 2; q < elem.rowCount + 1; q++) {
 									// Define the object which will correspond to an anime record.
@@ -1303,7 +1343,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 							else if(elem.name == "Category-Book") {
 								log.info("Importing the book records.");
 								// Get the list of book genres.
-								let genreLst = exports.bookGenreList();
+								let genreLst = exports.genreList("Book");
 								// Iterate through all the rows of the book worksheet.
 								for(let q = 2; q < elem.rowCount + 1; q++) {
 									// Define the object which will correspond to a book record.
@@ -1375,7 +1415,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 							if(elem.name == "Category-Manga") {
 								log.info("Importing the manga records.");
 								// Get the list of manga genres.
-								let genreLst = exports.mangaGenreList();
+								let genreLst = exports.genreList("Manga");
 								// Iterate through all the rows of the manga worksheet.
 								for(let q = 2; q < elem.rowCount + 1; q++) {
 									// Define the object which will correspond to a manga record.

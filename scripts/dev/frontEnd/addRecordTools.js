@@ -2,6 +2,8 @@
 
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page.
 
+    - autoCompleteListener: Add a listener for fetched autocomplete options on the addRecord page.
+    - genreFill: Checks the appropriate genres on the addRecord page for fetched data.
     - resetAnimeContentCounters: Resets the page counters for an anime record's related content.
     - resetMangaContentCounters: Resets the page counters for a manga record's related content.
     - calculateAnimeRating: Calculates the average rating for an anime based on the available ratings for all films, ONAs, OVAs, and seasons.
@@ -24,6 +26,109 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*
+
+Add a listener for fetched autocomplete options on the addRecord page.
+
+   - category is a string corresponding to a record category.
+   - objName is the page element corresponding to the record name/title input.
+   - objNameUL is the page unordered list associated to the autocomplete options.
+   - nameAutoComplete is the initialized object corresponding to the autocomplete options.
+
+*/
+var autoCompleteListener = (category, objName, objNameUL, nameAutoComplete) => {
+    // Once the autocomplete options have been attained update the page accordingly.
+    ipcRenderer.on(category.toLowerCase() + "SearchResults", (event, response) => {
+        // Proceed only if there are options available for autocomplete.
+        if(response[2].length > 0) {
+            // Define the object which will be used to update the autocomplete options.
+            let autoObj = {};
+            // Set the max character count based on the width of the page record name input.
+            maxCharCount = Math.floor(((20/190) * (objName.getBoundingClientRect().width - 467)) + 38);
+            // Iterate through all attained autocomplete options.
+            for(let t = 0; t < response[2].length; t++) {
+                // Add each option to the autocomplete object.
+                autoObj[response[2][t][0]] = response[2][t][1];
+            }
+            // Update the page autocomplete options.
+            nameAutoComplete.updateData(autoObj);
+            // In the case where the user is going from two to three characters, a refocus is necessary to make the unordered list for the autocomplete options to function properly.
+            if(response[0].length == 2 && response[1].length == 3) {
+                objNameUL.style.display = "none";
+                objName.click();
+                setTimeout(() => { objName.click(); objNameUL.style.display = "block"; }, 100);
+            }
+            // After a delay the list items for autocomplete options are provided the associated information in order to attain details upon a click.
+            setTimeout(() => {
+                // Iterate through all page autocomplete options.
+                for(let u = 0; u < objNameUL.children.length; u++) {
+                    // Attach the record name for each list item of the autocomplete options.
+                    let curChild = objNameUL.children[u];
+                    for(let v = 0; v < response[2].length; v++) {
+                        if(curChild.children[0].getAttribute("src") == response[2][v][1]) {
+                            curChild.setAttribute("name", response[2][v][0]);
+                        }
+                    }
+                }
+            }, 500);
+        }
+        // If the record name is not long enough then update the page autocomplete options to be empty.
+        else { nameAutoComplete.updateData({}); }
+    });
+};
+
+
+
+/*
+
+Checks the appropriate genres on the addRecord page for fetched data.
+
+   - category is a string corresponding to a record category.
+   - list is an array of strings corresponding to genres.
+
+*/
+var genreFill = (category, list) => {
+    if(list.constructor === Array && list.length > 0) {
+        // Reset all anime genres to not be checked.
+        const extraGenres = document.getElementById(category.toLowerCase() + "OtherGenres");
+        extraGenres.value = "";
+        Array.from(document.querySelectorAll("#category" + category + "Div .genreRow .filled-in")).forEach(inp => inp.checked = false);
+        // Iterate through the fetched list of genres and check them off on the page if available.
+        list.sort((a, b) => a.localeCompare(b));
+        list.forEach(genreItem => {
+            let genreIter = genreItem;
+            if(genreIter == "Coming-Of-Age") {
+                    genreIter = "ComingOfAge";
+                }
+                else if(genreIter == "Post-Apocalyptic") {
+                    genreIter = "PostApocalyptic";
+                }
+                else if(genreIter == "Sci-Fi") {
+                    genreIter = "SciFi";
+                }
+                else if(genreIter == "Slice of Life") {
+                    genreIter = "SliceOfLife";
+                }
+            if(document.getElementById(category.toLowerCase() + "Genre" + genreIter) != undefined) {
+                document.getElementById(category.toLowerCase() + "Genre" + genreIter).checked = true;
+            }
+            else {
+                extraGenres.value == "" ? extraGenres.value = genreIter : extraGenres.value += ", " + genreIter;
+            }
+        });
+        if(extraGenres.value != "") {
+            extraGenres.classList.add("valid");
+            extraGenres.nextElementSibling.classList.add("active");
+        }
+        else {
+            extraGenres.classList.remove("valid");
+            extraGenres.nextElementSibling.classList.remove("active");
+        }
+    }
+};
 
 
 

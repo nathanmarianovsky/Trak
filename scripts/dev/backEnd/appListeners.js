@@ -6,6 +6,7 @@ BASIC DETAILS: After the app loads up with index.js this file is meant to handle
    - addRecordListeners: Driver function for adding all listeners associated to the maintenance of records.
    - addAnimeListeners: Driver function for adding all anime listeners.
    - addBookListeners: Driver function for adding all book listeners.
+   - addFilmListeners: Driver function for adding all film listeners.
    - addMangaListeners: Driver function for adding all manga listeners.
    - addDatabaseListeners: Driver function for adding all database listeners.
    - addSettingsListeners: Driver function for adding all settings listeners.
@@ -261,6 +262,59 @@ exports.addBookListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainW
   			require("./bookTools").bookRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("goodreads-scraper"), tools, mainWindow, bookRecordWindow, dataPath, submission);
   		});
 	});
+};
+
+
+
+/*
+
+Driver function for adding all film listeners.
+
+	- BrowserWindow and ipc provide the means to operate the Electron app.
+	- path and fs provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
+	- dev is a boolean representing whether the app is being run in a development mode.
+	- tools provides a collection of local functions.
+	- mainWindow is an object referencing the primary window of the Electron app.
+	- dataPath is the current path to the local user data.
+	- originalPath is the original path to the local user data.
+	- secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
+
+*/
+exports.addFilmListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+	// Handles the search of a string through all possible film listings on imdb.
+	ipc.on("filmSearch", (event, submission) => {
+		require("./filmTools").filmSearch(log, require("imdb-scrapper"), event, submission);
+	});
+
+	// Handles the fetching of details for a given film via its name.
+	ipc.on("filmFetchDetails", (event, submission) => {
+		require("./filmTools").filmFetchDetails(log, require("movier"), tools, event, submission);
+	});
+
+	// // Handles the fetching of anime releases based on the season.
+	// ipc.on("animeFetchSeason", (event, submissionArr) => {
+	// 	require("./animeTools").animeFetchSeason(log, require("mal-scraper"), event, submissionArr);
+	// });
+
+	// // Handles the fetching of anime releases based on a query search.
+	// ipc.on("animeFetchSearch", (event, submission) => {
+	// 	require("./animeTools").animeFetchSearch(log, require("mal-scraper"), event, submission);
+	// });
+
+	// // Handles the fetching of an anime synopsis.
+	// ipc.on("animeSynopsisFetch", (event, submission) => {
+	// 	require("./animeTools").animeSynopsisFetch(log, require("mal-scraper"), event, submission);
+	// });
+
+	// // Handles the opening of the addRecord.html page to load an anime record based on a season or query search.
+	// ipc.on("animeRecordRequest", (event, submission) => {
+	// 	let animeRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  	// 	animeRecordWindow.webContents.on("did-finish-load", () => {
+  	// 		animeRecordWindow.webContents.send("searchRecordStart", "Anime");
+  	// 		require("./animeTools").animeRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("mal-scraper"), tools, mainWindow, animeRecordWindow, dataPath, submission);
+  	// 	});
+	// });
 };
 
 
@@ -579,6 +633,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	exports.addAnimeListeners(BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to book records.
 	exports.addBookListeners(BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+	// Add the listeners associated to film records.
+	exports.addFilmListeners(BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to manga records.
 	exports.addMangaListeners(BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to exporting and importing data.
