@@ -2,6 +2,7 @@
 
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page.
 
+    - imgButtons: Adds the functionality for all image buttons based on the category currently chosen.
     - navReset: Resets the top nav to correspond to the clicked category.
     - formatRunningTime: Formats a string to be in the format "XXX m" in order to represent a record runtime.
     - setFetchedImages: Updates a record's image input based upon fetched data.
@@ -22,6 +23,124 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*
+
+Adds the functionality for all image buttons based on the category currently chosen.
+
+   - favLink is the link corresponding to the favorite image button.
+   - prevBtn is the button corresponding to the previous image.
+   - addBtn is the button corresponding to the action of adding an image.
+   - addInput is the input activated on the click of the add button.
+   - remBtn is the button corresponding to the action of removing an image.
+   - nextBtn is the button corresponding to the next image.
+   - recordImg is the image tag associated to the currently selected record category.
+   - favColor is the application's primary color.
+
+*/
+var imgButtons = (favLink, prevBtn, addBtn, addInput, remBtn, nextBtn, recordImg, favColor) => {
+    // Define the default color which will be applied to the favorite image icon.
+    const btnColorDefault = newSwitchBackground = "#" + addAlpha(rgba2hex(getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor).substring(1), 0.4);
+    // Listen for a click event on the favorite image button in order to redefine the favorite image for a record.
+    favLink.addEventListener("click", e => {
+        if(rgba2hex(favLink.style.color) == btnColorDefault) {
+            let imgArr = recordImg.getAttribute("list").split(","),
+                imgArrIndex = imgArr.indexOf(recordImg.getAttribute("src"));
+            arrayMove(imgArr, imgArrIndex, 0);
+            recordImg.setAttribute("list", imgArr.join(","));
+            favLink.style.color = favColor;
+            favLink.style.cursor = "initial";
+        }
+    });
+    // Listen for a click event on the previous image button.
+    prevBtn.addEventListener("click", e => {
+        let curListArr = recordImg.getAttribute("list").split(","),
+            index = curListArr.indexOf(recordImg.getAttribute("src"));
+        // Change the image source to the previous one in the list, wrapping around if necessary.
+        if(curListArr.length > 1) {
+            recordImg.setAttribute("src", index == 0 ? curListArr[curListArr.length - 1] : curListArr[index - 1]);
+            if(curListArr[0] == (index == 0 ? curListArr[curListArr.length - 1] : curListArr[index - 1])) {
+                favLink.style.color = favColor;
+                favLink.style.cursor = "initial";
+            }
+            else {
+                favLink.style.color = btnColorDefault;
+                favLink.style.cursor = "pointer";
+            }
+        }
+    });
+    // Listen for a click event on the add image button.
+    addBtn.addEventListener("click", e => { addInput.click(); });
+    // Listen for a submission on the add image input.
+    addInput.addEventListener("change", e => {
+        let curList = recordImg.getAttribute("list"),
+            newList = Array.from(e.target.files),
+            newStr = curList;
+        // Iterate through the submitted files and add them to the list if they are not already included.
+        newList.forEach(fle => {
+            if(newStr == "") {
+                recordImg.setAttribute("src", fle.path);
+                newStr = fle.path;
+            }
+            else if(!curList.includes(fle.path)) {
+                newStr += "," + fle.path;
+            }
+        });
+        recordImg.setAttribute("list", newStr);
+        favLink.style.visibility = "visible";
+        favLink.click();
+    });
+    // Listen for a click event on the remove image button.
+    remBtn.addEventListener("click", e => {
+        let curListArr = recordImg.getAttribute("list").split(","),
+            remItem = recordImg.getAttribute("src"),
+            index = curListArr.indexOf(remItem),
+            next = "";
+        if(curListArr.length > 0) {
+            // If the list of images has more than one image then set the current image to the next one.
+            if(curListArr.length > 1) {
+                if(index == curListArr.length - 1) { next = curListArr[0]; }
+                else { next = curListArr[index + 1]; }
+                recordImg.setAttribute("src", next);
+            }
+            // If the list of images only has the image about to be deleted then set the current image to the default one.
+            else {
+                recordImg.setAttribute("src", recordImg.getAttribute("default"));
+                favLink.style.visibility = "hidden";
+            }
+            // Remove the image from the list.
+            curListArr.splice(index, 1);
+            recordImg.setAttribute("list", curListArr.join(","));
+            if(curListArr[0] == recordImg.getAttribute("src")) {
+                favLink.style.color = favColor;
+                favLink.style.cursor = "initial";
+            }
+            else {
+                favLink.style.color = btnColorDefault;
+                favLink.style.cursor = "pointer";
+            }
+        }
+    });
+    // Listen for a click event on the next image button.
+    nextBtn.addEventListener("click", e => {
+        let curListArr = recordImg.getAttribute("list").split(","),
+            index = curListArr.indexOf(recordImg.getAttribute("src"));
+        // Change the image source to the previous one in the list, wrapping around if necessary.
+        if(curListArr.length > 1) {
+            recordImg.setAttribute("src", index == curListArr.length - 1 ? curListArr[0] : curListArr[index + 1]);
+            if(curListArr[0] == (index == curListArr.length - 1 ? curListArr[0] : curListArr[index + 1])) {
+                favLink.style.color = favColor;
+                favLink.style.cursor = "initial";
+            }
+            else {
+                favLink.style.color = btnColorDefault;
+                favLink.style.cursor = "pointer";
+            }
+        }
+    });
+};
 
 
 
