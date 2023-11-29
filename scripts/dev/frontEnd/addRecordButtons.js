@@ -2,15 +2,9 @@
 
 BASIC DETAILS: This file handles all buttons on the addRecord.html page.
 
-    - navReset: Resets the top nav to correspond to the clicked category.
     - imgButtons: Adds the functionality for all image buttons based on the category currently chosen.
-    - animeModalButtons: Listen for click events on the related content anime modal buttons.
-    - mangaModalButtons: Listen for click events on the related content manga modal buttons.
-    - animeSave: Processes the information required to save an anime record.
     - bookSave: Processes the information required to save a book record.
     - filmSave: Processes the information required to save a film record.
-    - mangaSave: Processes the information required to save a manga record.
-    - otherGenresReset: Hides and shows the appropriate inputs on the genresModal.
     - recordChoicesButtons: Listen for click events on the record choices.
 
 */
@@ -18,34 +12,6 @@ BASIC DETAILS: This file handles all buttons on the addRecord.html page.
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/
-
-
-
-/*
-
-Resets the top nav to correspond to the clicked category.
-
-   - def is the div corresponding to the default message shown prior to any record category being chosen.
-   - divs is the collection of page divs corresponding to the different category content.
-   - links is the collection of page links corresponding to the different categories.
-   - choiceDiv is the content div which should be shown for the desired category.
-   - choiceLink is the link on the top nav corresponding to which category should be shown.
-
-*/
-var navReset = (def, divs, links, choiceDiv, choiceLink) => {
-    // Hide the default content.
-    if(def.style.display != "none") {
-        def.style.display = "none";
-    }
-    // Hide all page content by default if the anime content is not shown.
-    else if(!choiceLink.parentNode.classList.contains("active")) {
-        Array.from(divs).forEach(div => div.style.display = "none");
-        Array.from(links).forEach(link => link.parentNode.classList.remove("active"));
-    }
-    // Show the desired content and highlight the associated tab on the navbar.
-    choiceLink.parentNode.classList.add("active");
-    choiceDiv.style.display = "initial";
-};
 
 
 
@@ -162,171 +128,6 @@ var imgButtons = (favLink, prevBtn, addBtn, addInput, remBtn, nextBtn, recordImg
                 favLink.style.cursor = "pointer";
             }
         }
-    });
-};
-
-
-
-/*
-
-Listen for click events on the related content anime modal buttons.
-
-*/
-var animeModalButtons = () => {
-    // Define the buttons for all actions.
-    const animeAddSingle = document.getElementById("animeAddSingle"),
-        animeAddSeason = document.getElementById("animeAddSeason");
-    // Listen for a click event on the anime related content film/ONA/OVA creation button.
-    animeAddSingle.addEventListener("click", e => {
-        e.preventDefault();
-        // Add a table item for the new film/ONA/OVA.
-        clearTooltips();
-        singleAddition();
-        relatedContentFinisher();
-        resetAnimeContentCounters();
-    });
-    // Listen for a click event on the anime related content season creation button.
-    animeAddSeason.addEventListener("click", e => {
-        e.preventDefault();
-        // Add a table item for the new season.
-        clearTooltips();
-        seasonAddition();
-        relatedContentFinisher();
-        resetAnimeContentCounters();
-    });
-};
-
-
-
-/*
-
-Listen for click events on the related content manga modal buttons.
-
-*/
-var mangaModalButtons = () => {
-    // Define the buttons for all actions.
-    const mangaAddVolume = document.getElementById("mangaAddVolume"),
-        mangaAddChapter = document.getElementById("mangaAddChapter"),
-        mangaModalSwitch = document.getElementById("mangaModalSwitch"),
-        mangaList = document.getElementById("mangaList");
-    // Listen for a change in the related content type to change the content accordingly.
-    const originalSwitchBackground = "#00000061",
-        newSwitchBackground = "#" + addAlpha(rgba2hex(getComputedStyle(mangaAddVolume).backgroundColor).substring(1), 0.6);
-    mangaModalSwitch.addEventListener("change", e => {
-        if(e.target.checked == true) {
-            mangaAddVolume.style.display = "none";
-            mangaAddChapter.style.display = "inline-block";
-            Array.from(mangaList.children).forEach(li => li.style.display = (li.getAttribute("id").split("_")[2] == "Chapter" ? "list-item" : "none"));
-            document.querySelector("#mangaModalSwitchDiv label input[type=checkbox]:checked+.lever").style.backgroundColor = newSwitchBackground;
-        }
-        else {
-            mangaAddVolume.style.display = "inline-block";
-            mangaAddChapter.style.display = "none";
-            Array.from(mangaList.children).forEach(li => li.style.display = (li.getAttribute("id").split("_")[2] == "Volume" ? "list-item" : "none"));
-            document.querySelector("#mangaModalSwitchDiv label .lever").style.backgroundColor = originalSwitchBackground;
-        }
-    });
-    // Listen for a click event on the manga related content chapter creation button.
-    mangaAddChapter.addEventListener("click", e => {
-        e.preventDefault();
-        // Add a table item for the new chapter.
-        clearTooltips();
-        mangaItemAddition("Chapter");
-        relatedContentFinisher();
-        resetMangaContentCounters();
-    });
-    // Listen for a click event on the manga related content volume creation button.
-    mangaAddVolume.addEventListener("click", e => {
-        e.preventDefault();
-        // Add a table item for the new volume.
-        clearTooltips();
-        mangaItemAddition("Volume");
-        relatedContentFinisher();
-        resetMangaContentCounters();
-    });
-};
-
-
-
-/*
-
-Processes the information required to save an anime record.
-
-*/
-var animeSave = () => {
-    // Define the page save button.
-    const animeSaveBtn = document.getElementById("animeSave");
-    // Listen for a click on the save button.
-    animeSaveBtn.addEventListener("click", e => {
-        e.preventDefault();
-        // Define the page components which will contain all associated details.
-        const animeList = document.getElementById("animeList"),
-            animeName = document.getElementById("animeName").value,
-            animeJapaneseName = document.getElementById("animeJapaneseName").value,
-            animeReview = document.getElementById("animeReview").value,
-            animeDirectors = document.getElementById("animeDirectors").value,
-            animeProducers = document.getElementById("animeProducers").value,
-            animeWriters = document.getElementById("animeWriters").value,
-            animeMusicians = document.getElementById("animeMusicians").value,
-            animeStudio = document.getElementById("animeStudio").value,
-            animeLicense = document.getElementById("animeLicense").value,
-            animeSynopsis = document.getElementById("animeSynopsis").value,
-            animeImg = document.getElementById("addRecordAnimeImg").getAttribute("list").split(","),
-            animeFiles = Array.from(document.getElementById("animeAddRecordFiles").files).map(elem => elem.path),
-            otherGenres = document.getElementById("animeOtherGenres").value.split(",").map(elem => elem.trim()),
-            genresLst = genreList("Anime"),
-            genres = [],
-            content = [];
-        // Check to see that at least one name was provided.
-        if(animeName != "" || animeJapaneseName != "") {
-            // Save all information about the genres.
-            for(let p = 0; p < genresLst.length; p++) {
-                genres.push(document.getElementById("animeGenre" + genresLst[p]).checked);
-            }
-            // For each table item in the related content table process the associated information.
-            for(let q = 1; q < animeList.children.length + 1; q++) {
-                let animeListChild = animeList.children[q - 1],
-                    animeListChildCondition = animeListChild.id.split("_")[2],
-                    curContent = [];
-                // Attain the details on a film/ONA/OVA.
-                if(animeListChildCondition == "Single") {
-                    let singleName = document.getElementById("li_" + q + "_Single_Name").value,
-                        singleType = document.getElementById("li_" + q + "_Single_Type").value,
-                        singleRelease = document.getElementById("li_" + q + "_Single_Release").value,
-                        singleLastWatched = document.getElementById("li_" + q + "_Single_LastWatched").value,
-                        singleRating = document.getElementById("li_" + q + "_Single_Rating").value,
-                        singleReview = document.getElementById("li_" + q + "_Single_Review").value;
-                    curContent.push("Single", singleName, singleType, singleRelease, singleLastWatched, singleRating, singleReview);
-                }
-                // Attain the details on a season and its episodes.
-                else if(animeListChildCondition == "Season") {
-                    let seasonName = document.getElementById("li_" + q + "_Season_Name").value,
-                        seasonStart = document.getElementById("li_" + q + "_Season_Start").value,
-                        seasonEnd = document.getElementById("li_" + q + "_Season_End").value,
-                        seasonStatus = document.getElementById("li_" + q + "_Season_Status").value,
-                        seasonEpisodes = [];
-                    for(let r = 1; r < animeListChild.children[1].children[0].children.length + 1; r++) {
-                        let seasonEpisodeName = document.getElementById("li_" + q + "_Episode_Name_" + r).value,
-                            seasonEpisodeLastWatched = document.getElementById("li_" + q + "_Episode_LastWatched_" + r).value,
-                            seasonEpisodeRating = document.getElementById("li_" + q + "_Episode_Rating_" + r).value,
-                            seasonEpisodeReview = document.getElementById("li_" + q + "_Episode_Review_" + r).value;
-                        seasonEpisodes.push([seasonEpisodeName, seasonEpisodeLastWatched, seasonEpisodeRating, seasonEpisodeReview]);
-                    }
-                    curContent.push("Season", seasonName, seasonStart, seasonEnd, seasonStatus, seasonEpisodes);
-                }
-                // Push the table item information into the array holding all related content details.
-                content.push(curContent);
-            }
-            const ogName = document.getElementById("animeName").getAttribute("oldName"),
-                oldTitle = ogName !== null ? ogName : animeName;
-            // Send the request to the back-end portion of the app.
-            const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers, animeWriters,
-                animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres, otherGenres], content, animeSynopsis,
-                [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), animeImg], oldTitle];
-            ipcRenderer.send("performSave", submissionMaterial);
-        }
-        // If no name has been provided then notify the user.
-        else { M.toast({"html": "An anime record requires that either an English or Japanese name is provided.", "classes": "rounded"}); }
     });
 };
 
@@ -470,92 +271,6 @@ var filmSave = () => {
 
 /*
 
-Processes the information required to save a manga record.
-
-*/
-var mangaSave = () => {
-    // Define the page save button.
-    const mangaSaveBtn = document.getElementById("mangaSave");
-    // Listen for a click on the save button.
-    mangaSaveBtn.addEventListener("click", e => {
-        e.preventDefault();
-        // Define the page components which will contain all associated details.
-        const mangaList = document.getElementById("mangaList"),
-            mangaName = document.getElementById("mangaName").value,
-            mangaJapaneseName = document.getElementById("mangaJapaneseName").value,
-            mangaReview = document.getElementById("mangaReview").value,
-            mangaPublisher = document.getElementById("mangaPublisher").value,
-            mangaJapanesePublisher = document.getElementById("mangaJapanesePublisher").value,
-            mangaWriters = document.getElementById("mangaWriters").value,
-            mangaIllustrator = document.getElementById("mangaIllustrator").value,
-            mangaDemographic = document.getElementById("mangaDemographic").value,
-            mangaStart = document.getElementById("mangaStartDate").value,
-            mangaEnd = document.getElementById("mangaEndDate").value,
-            mangaSynopsis = document.getElementById("mangaSynopsis").value,
-            mangaImg = document.getElementById("addRecordMangaImg").getAttribute("list").split(","),
-            mangaFiles = Array.from(document.getElementById("mangaAddRecordFiles").files).map(elem => elem.path),
-            otherGenres = document.getElementById("mangaOtherGenres").value.split(",").map(elem => elem.trim()),
-            genresLst = genreList("Manga"),
-            genres = [],
-            content = [];
-        // Check to see that at least one name was provided.
-        if(mangaName != "" || mangaJapaneseName != "") {
-            // Save all information about the genres.
-            for(let p = 0; p < genresLst.length; p++) {
-                genres.push(document.getElementById("mangaGenre" + genresLst[p]).checked);
-            }
-            // For each table item in the related content table process the associated information.
-            for(let q = 1; q < mangaList.children.length + 1; q++) {
-                let mangaListChild = mangaList.children[q - 1],
-                    mangaListChildCondition = mangaListChild.id.split("_")[2],
-                    curContent = [];
-                // Define the related content details.
-                let singleName = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_Name").value,
-                    singleRelease = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_Release").value,
-                    singleLastRead = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_LastRead").value,
-                    singleRating = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_Rating").value,
-                    singleReview = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_Review").value;
-                // Push the related content item details into a collection.
-                if(mangaListChildCondition == "Chapter") {
-                    curContent.push("Chapter", singleName, singleRelease, singleLastRead, singleRating, singleReview);
-                }
-                else if(mangaListChildCondition == "Volume") {
-                    let singleISBN = document.getElementById("li_" + q + "_Volume_ISBN").value.replace(/-/g, ""),
-                        singleSynopsis = document.getElementById("li_" + q + "_Volume_Synopsis").value;
-                    curContent.push("Volume", singleName, singleRelease, singleLastRead, singleRating, singleReview, singleISBN, singleSynopsis);
-                }
-                // Push the table item information into the array holding all related content details.
-                content.push(curContent);
-            }
-            const ogName = document.getElementById("mangaName").getAttribute("oldName"),
-                oldTitle = ogName !== null ? ogName : mangaName;
-            // Send the request to the back-end portion of the app.
-            const submissionMaterial = ["Manga", mangaName, mangaJapaneseName, mangaReview, mangaWriters, mangaIllustrator, mangaPublisher, mangaJapanesePublisher,
-                mangaDemographic, mangaStart, mangaFiles, mangaEnd, content, [genresLst, genres, otherGenres], mangaSynopsis,
-                [document.getElementById("addRecordMangaImg").getAttribute("list") == document.getElementById("addRecordMangaImg").getAttribute("previous"), mangaImg], oldTitle];
-            ipcRenderer.send("performSave", submissionMaterial);
-        }
-        // If no name has been provided then notify the user.
-        else { M.toast({"html": "A manga record requires that a name be provided.", "classes": "rounded"}); }
-    });
-};
-
-
-
-/*
-
-Hides and shows the appropriate inputs on the genresModal.
-
-*/
-var otherGenresReset = mode => {
-    Array.from(document.getElementsByClassName("otherGenresDiv")).forEach(div => div.style.display = "none");
-    document.getElementById(mode.toLowerCase() + "OtherGenresDiv").style.display = "block";
-};
-
-
-
-/*
-
 Listen for click events on the record choices.
 
 */
@@ -595,8 +310,7 @@ var recordChoicesButtons = () => {
         // Display the correct input associated to the anime other genres/tags.
         otherGenresReset("Anime");
         // Initialize the dragging of the related content.
-        let drake = dragula({"containers": [document.querySelector("#animeList")]});
-        drake.on("dragend", () => { animeListReorganize(); });
+        dragInit("Anime");
         // Define all image buttons.
         const animePreviousImgBtn = document.getElementById("animePreviousImgBtn"),
             animeAddImgBtn = document.getElementById("animeAddImgBtn"),
@@ -609,13 +323,7 @@ var recordChoicesButtons = () => {
         // Define the portions of the page associated to the autocomplete.
         const animeName = document.getElementById("animeName"),
             animePreloader = document.getElementById("animePreloader"),
-            animeNameAutocomplete = M.Autocomplete.init(animeName, {
-                "sortFunction": (a, b) => a.localeCompare(b),
-                "onAutocomplete": txt => {
-                    animePreloader.style.visibility = "visible";
-                    ipcRenderer.send("animeFetchDetails", txt);
-                }
-            }),
+            animeNameAutocomplete = autoCompleteInit("Anime", animeName, animePreloader),
             animeNameUL = animeName.nextElementSibling,
             animeMoreBtn = document.getElementById("animeMoreDetailsBtn"),
             animeFetchBtn = document.getElementById("animeFetchDetailsBtn"),
@@ -624,44 +332,17 @@ var recordChoicesButtons = () => {
             animeSynopsis = document.getElementById("animeSynopsis"),
             animeReview = document.getElementById("animeReview");
         // Listen for changes in the book description in order to hide/show a vertical scroll.
-        animeSynopsis.addEventListener("input", e => {
-            parseInt(animeSynopsis.style.height) > parseInt(getComputedStyle(animeSynopsis).maxHeight) ? animeSynopsis.style.overflowY = "scroll" : animeSynopsis.style.overflowY = "hidden";
-        });
+        animeSynopsis.addEventListener("input", e => textAreaFunc(animeSynopsis));
         // Listen for changes in the book comments/review in order to hide/show a vertical scroll.
-        animeReview.addEventListener("input", e => {
-            parseInt(animeReview.style.height) > parseInt(getComputedStyle(animeReview).maxHeight) ? animeReview.style.overflowY = "scroll" : animeReview.style.overflowY = "hidden";
-        });
+        animeReview.addEventListener("input", e => textAreaFunc(animeReview));
         // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
-        animeFetchBtn.addEventListener("click", e => {
-            if(animeName.value.length > 2) {
-                animePreloader.style.visibility = "visible";
-                ipcRenderer.send("animeFetchDetails", animeName.value);
-            }
-            else {
-                M.toast({"html": "The name is too short to fetch details from MyAnimeList.", "classes": "rounded"});
-            }
-        });
+        animeFetchBtn.addEventListener("click", e => nameFetchFunc("Anime", animeName, animePreloader));
         // Define the autocomplete previous input and character max count for display purposes.
-        let previousName = "",
-            maxCharCount = 0;
+        let previousName = "";
         // Listen for an input change in the anime name in order to fetch autocomplete options from myanimelist.
-        animeName.addEventListener("input", e => {
-            // Only fetch myanimelist options if the anime name is of at least three characters.
-            if(e.target.value.length > 2) {
-                ipcRenderer.send("animeSearch", [previousName, e.target.value]);
-            }
-            else { animeNameAutocomplete.updateData({}); }
-            // Set the previous search value to the current one.
-            previousName = e.target.value;
-        });
+        animeName.addEventListener("input", e => previousName = nameAutoCompleteFunc("Anime", e.target, previousName, animeNameAutocomplete, true));
         // Listen for a click event on the anime name in order to trigger a fetch of autocomplete options from myanimelist.
-        animeName.addEventListener("click", e => {
-            // Only fetch myanimelist options if the anime name is of at least three characters.
-            if(e.target.value.length > 2) {
-                ipcRenderer.send("animeSearch", [previousName, e.target.value]);
-            }
-            else { animeNameAutocomplete.updateData({}); }
-        });
+        animeName.addEventListener("click", e => nameAutoCompleteFunc("Anime", e.target, previousName, animeNameAutocomplete, false));
         // Provide the autocomplete listener associated to anime records.
         autoCompleteListener("Anime", animeName, animeNameUL, animeNameAutocomplete);
         // Update the page accordingly based on the fetched anime details.
@@ -675,20 +356,7 @@ var recordChoicesButtons = () => {
                 jnameInput.classList.add("valid");
                 jnameInput.nextElementSibling.classList.add("active");
             }
-            // Update the anime image if available.
-            if(newResponse[2][1].length > 0) {
-                const animeImg = document.getElementById("addRecordAnimeImg"),
-                    animeFavImgLink = document.getElementById("animeFavoriteImageLink");
-                animeImg.setAttribute("list", "");
-                for(let t = 0; t < newResponse[2][1].length; t++) {
-                    if(!animeImg.getAttribute("list").includes(newResponse[2][1][t])) {
-                        animeImg.getAttribute("list") == "" ? animeImg.setAttribute("list", newResponse[2][1][t]) : animeImg.setAttribute("list", animeImg.getAttribute("list") + "," + newResponse[2][1][t]);
-                    }
-                }
-                animeImg.setAttribute("src", newResponse[2][0]);
-                animeFavImgLink.style.visibility = "visible";
-                animeFavImgLink.style.color = btnColorFavorite;
-            }
+            setFetchedImages("Anime", btnColorFavorite, newResponse[2]);
             // Update the anime studios if available.
             if(newResponse[8] != "" && newResponse[8] != "None found, add some") {
                 const studioInput = document.getElementById("animeStudio");
@@ -847,62 +515,24 @@ var recordChoicesButtons = () => {
         const bookTitle = document.getElementById("bookTitle"),
             bookISBN = document.getElementById("bookISBN"),
             bookPreloader = document.getElementById("bookPreloader"),
-            bookTitleAutocomplete = M.Autocomplete.init(bookTitle, {
-                "sortFunction": (a, b) => a.localeCompare(b),
-                "onAutocomplete": txt => {
-                    bookPreloader.style.visibility = "visible";
-                    ipcRenderer.send("bookFetchDetailsByName", txt);
-                }
-            }),
+            bookTitleAutocomplete = autoCompleteInit("Book", bookTitle, bookPreloader),
             bookTitleUL = bookTitle.nextElementSibling,
             bookFetchBtn = document.getElementById("bookFetchDetailsBtn"),
             bookSave = document.getElementById("bookSave");
         // Listen for changes in the book ISBN in order to format it properly.
         bookISBN.addEventListener("input", e => formatISBN(bookISBN));
         // Listen for changes in the book description in order to hide/show a vertical scroll.
-        bookSynopsis.addEventListener("input", e => {
-            parseInt(bookSynopsis.style.height) > parseInt(getComputedStyle(bookSynopsis).maxHeight) ? bookSynopsis.style.overflowY = "scroll" : bookSynopsis.style.overflowY = "hidden";
-        });
+        bookSynopsis.addEventListener("input", e => textAreaFunc(bookSynopsis));
         // Listen for changes in the book comments/review in order to hide/show a vertical scroll.
-        bookReview.addEventListener("input", e => {
-            parseInt(bookReview.style.height) > parseInt(getComputedStyle(bookReview).maxHeight) ? bookReview.style.overflowY = "scroll" : bookReview.style.overflowY = "hidden";
-        });
+        bookReview.addEventListener("input", e => textAreaFunc(bookReview));
         // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
-        bookFetchBtn.addEventListener("click", e => {
-            const submissionISBN = bookISBN.value.replace(/\W/g,"");
-            if(submissionISBN.length == 10) {
-                bookPreloader.style.visibility = "visible";
-                ipcRenderer.send("bookFetchDetailsByASIN", submissionISBN);
-            }
-            else if(submissionISBN.length == 13) {
-                bookPreloader.style.visibility = "visible";
-                ipcRenderer.send("bookFetchDetailsByISBN", submissionISBN);
-            }
-            else {
-                M.toast({"html": "The provided ISBN is not valid to fetch details from GoodReads.", "classes": "rounded"});
-            }
-        });
+        bookFetchBtn.addEventListener("click", e => valueFetchFunc("Book", bookISBN, bookPreloader));
         // Define the autocomplete previous input and character max count for display purposes.
-        let previousName = "",
-            maxCharCount = 0;
+        let previousName = "";
         // Listen for an input change in the book title in order to fetch autocomplete options from goodreads.
-        bookTitle.addEventListener("input", e => {
-            // Only fetch goodreads options if the book title is of at least three characters.
-            if(e.target.value.length > 2) {
-                ipcRenderer.send("bookSearch", [previousName, e.target.value]);
-            }
-            else { bookTitleAutocomplete.updateData({}); }
-            // Set the previous search value to the current one.
-            previousName = e.target.value;
-        });
+        bookTitle.addEventListener("input", e => previousName = nameAutoCompleteFunc("Book", e.target, previousName, bookTitleAutocomplete, true));
         // Listen for a click event on the book title in order to trigger a fetch of autocomplete options from goodreads.
-        bookTitle.addEventListener("click", e => {
-            // Only fetch goodreads options if the book title is of at least three characters.
-            if(e.target.value.length > 2) {
-                ipcRenderer.send("bookSearch", [previousName, e.target.value]);
-            }
-            else { bookTitleAutocomplete.updateData({}); }
-        });
+        bookTitle.addEventListener("click", e => nameAutoCompleteFunc("Book", e.target, previousName, bookTitleAutocomplete, false));
         // Provide the autocomplete listener associated to book records.
         autoCompleteListener("Book", bookTitle, bookTitleUL, bookTitleAutocomplete);
         // Update the page accordingly based on the fetched book details.
@@ -932,14 +562,7 @@ var recordChoicesButtons = () => {
                 bookOriginalTitle.value = "";
                 bookOriginalTitle.classList.remove("valid");
             }
-            if(newResponse[2] !== null) {
-                const bookImg = document.getElementById("addRecordBookImg"),
-                    bookFavImgLink = document.getElementById("bookFavoriteImageLink");
-                bookImg.setAttribute("list", newResponse[2]);
-                bookImg.setAttribute("src", newResponse[2]);
-                bookFavImgLink.style.visibility = "visible";
-                bookFavImgLink.style.color = btnColorFavorite;
-            }
+            setFetchedImages("Book", btnColorFavorite, [newResponse[2], [newResponse[2]]]);
             if(newResponse[3] !== null) {
                 const bookISBN = document.getElementById("bookISBN");
                 bookISBN.value = newResponse[3];
@@ -1092,63 +715,31 @@ var recordChoicesButtons = () => {
         // Define the portions of the page associated to the autocomplete.
         const filmName = document.getElementById("filmName"),
             filmPreloader = document.getElementById("filmPreloader"),
-            filmNameAutocomplete = M.Autocomplete.init(filmName, {
-                "sortFunction": (a, b) => a.localeCompare(b),
-                "onAutocomplete": txt => {
-                    filmPreloader.style.visibility = "visible";
-                    ipcRenderer.send("filmFetchDetails", txt);
-                }
-            }),
+            filmNameAutocomplete = autoCompleteInit("Film", filmName, filmPreloader),
             filmNameUL = filmName.nextElementSibling,
             filmMoreBtn = document.getElementById("filmMoreDetailsBtn"),
             filmFetchBtn = document.getElementById("filmFetchDetailsBtn"),
             filmSave = document.getElementById("filmSave"),
             filmSynopsis = document.getElementById("filmSynopsis"),
-            filmReview = document.getElementById("filmReview");
+            filmReview = document.getElementById("filmReview"),
+            filmRunTimeInput = document.getElementById("filmRunningTime");
         // Listen for changes in the book description in order to hide/show a vertical scroll.
-        filmSynopsis.addEventListener("input", e => {
-            parseInt(filmSynopsis.style.height) > parseInt(getComputedStyle(filmSynopsis).maxHeight) ? filmSynopsis.style.overflowY = "scroll" : filmSynopsis.style.overflowY = "hidden";
-        });
+        filmSynopsis.addEventListener("input", e => textAreaFunc(filmSynopsis));
         // Listen for changes in the book comments/review in order to hide/show a vertical scroll.
-        filmReview.addEventListener("input", e => {
-            parseInt(filmReview.style.height) > parseInt(getComputedStyle(filmReview).maxHeight) ? filmReview.style.overflowY = "scroll" : filmReview.style.overflowY = "hidden";
-        });
+        filmReview.addEventListener("input", e => textAreaFunc(filmReview));
         // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
-        filmFetchBtn.addEventListener("click", e => {
-            if(filmName.value.length > 2) {
-                filmPreloader.style.visibility = "visible";
-                ipcRenderer.send("filmFetchDetails", filmName.value);
-            }
-            else {
-                M.toast({"html": "The name is too short to fetch details from IMDB.", "classes": "rounded"});
-            }
-        });
+        filmFetchBtn.addEventListener("click", e => nameFetchFunc("Film", filmName, filmPreloader));
         // Define the autocomplete previous input and character max count for display purposes.
-        let previousName = "",
-            maxCharCount = 0;
+        let previousName = "";
         // Listen for an input change in the film name in order to fetch autocomplete options from imdb.
-        filmName.addEventListener("input", e => {
-            // Only fetch imdb options if the film name is of at least three characters.
-            if(e.target.value.length > 2) {
-                ipcRenderer.send("filmSearch", [previousName, e.target.value]);
-            }
-            else { filmNameAutocomplete.updateData({}); }
-            // Set the previous search value to the current one.
-            previousName = e.target.value;
-        });
+        filmName.addEventListener("input", e => previousName = nameAutoCompleteFunc("Film", e.target, previousName, filmNameAutocomplete, true));
         // Listen for a click event on the film name in order to trigger a fetch of autocomplete options from imdb.
-        filmName.addEventListener("click", e => {
-            // Only fetch myanimelist options if the film name is of at least three characters.
-            if(e.target.value.length > 2) {
-                ipcRenderer.send("filmSearch", [previousName, e.target.value]);
-            }
-            else { filmNameAutocomplete.updateData({}); }
-        });
+        filmName.addEventListener("click", e => nameAutoCompleteFunc("Film", e.target, previousName, filmNameAutocomplete, false));
         // Provide the autocomplete listener associated to film records.
         autoCompleteListener("Film", filmName, filmNameUL, filmNameAutocomplete);
+        filmRunTimeInput.addEventListener("input", e => e.target.value = formatRunningTime(e.target.value));
         // Update the page accordingly based on the fetched film details.
         ipcRenderer.on("filmFetchDetailsResult", (newEve, newResponse) => {
-            console.log(newResponse);
             const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none";
             // Update the film alternate name if available.
             if(newResponse[1] !== null && newResponse[1] != "") {
@@ -1160,20 +751,7 @@ var recordChoicesButtons = () => {
                 filmAlternateName.value = "";
                 filmAlternateName.classList.remove("valid");
             }
-            // Update the film image if available.
-            if(newResponse[2][1].length > 0) {
-                const filmImg = document.getElementById("addRecordFilmImg"),
-                    filmFavImgLink = document.getElementById("filmFavoriteImageLink");
-                filmImg.setAttribute("list", "");
-                for(let t = 0; t < newResponse[2][1].length; t++) {
-                    if(!filmImg.getAttribute("list").includes(newResponse[2][1][t])) {
-                        filmImg.getAttribute("list") == "" ? filmImg.setAttribute("list", newResponse[2][1][t]) : filmImg.setAttribute("list", filmImg.getAttribute("list") + "," + newResponse[2][1][t]);
-                    }
-                }
-                filmImg.setAttribute("src", newResponse[2][0]);
-                filmFavImgLink.style.visibility = "visible";
-                filmFavImgLink.style.color = btnColorFavorite;
-            }
+            setFetchedImages("Film", btnColorFavorite, newResponse[2]);
             // Update the film release date if available.
             if(newResponse[3] !== null && newResponse[3] != "") {
                 const filmReleaseDate = document.getElementById("filmReleaseDate");
@@ -1186,8 +764,7 @@ var recordChoicesButtons = () => {
             }
             // Update the film runtime if available.
             if(newResponse[4] != "") {
-                const filmRunTimeInput = document.getElementById("filmRunningTime");
-                updateDetector == true ? filmRunTimeInput.value += (filmRunTimeInput.value == "" ? newResponse[8] : ", " + newResponse[8]) : filmRunTimeInput.value = newResponse[8];
+                updateDetector == true ? filmRunTimeInput.value += (filmRunTimeInput.value == "" ? formatRunningTime(newResponse[4]) : ", " + formatRunningTime(newResponse[4])) : filmRunTimeInput.value = formatRunningTime(newResponse[4]);
                 filmRunTimeInput.classList.add("valid");
                 filmRunTimeInput.nextElementSibling.classList.add("active");
             }
@@ -1301,8 +878,7 @@ var recordChoicesButtons = () => {
         // Display the correct input associated to the manga other genres/tags.
         otherGenresReset("Manga");
         // Initialize the dragging of the related content.
-        let drake = dragula({"containers": [document.querySelector("#mangaList")]});
-        drake.on("dragend", () => { mangaListReorganize(); });
+        dragInit("Manga");
         // Define all image buttons.
         const mangaPreviousImgBtn = document.getElementById("mangaPreviousImgBtn"),
             mangaAddImgBtn = document.getElementById("mangaAddImgBtn"),
@@ -1316,14 +892,7 @@ var recordChoicesButtons = () => {
         const mangaName = document.getElementById("mangaName"),
             mangaPreloader = document.getElementById("mangaPreloader"),
             volumeFetchPreloader = document.getElementById("volumeFetchPreloader"),
-            mangaNameAutocomplete = M.Autocomplete.init(mangaName, {
-                "sortFunction": (a, b) => a.localeCompare(b),
-                "onAutocomplete": txt => {
-                    mangaPreloader.style.visibility = "visible";
-                    volumeFetchPreloader.style.visibility = "visible";
-                    ipcRenderer.send("mangaFetchDetails", txt);
-                }
-            }),
+            mangaNameAutocomplete = autoCompleteInit("Manga", mangaName, mangaPreloader, volumeFetchPreloader),
             mangaNameUL = animeName.nextElementSibling,
             mangaMoreBtn = document.getElementById("mangaMoreDetailsBtn"),
             mangaFetchBtn = document.getElementById("mangaFetchDetailsBtn"),
@@ -1332,45 +901,17 @@ var recordChoicesButtons = () => {
             mangaSynopsis = document.getElementById("mangaSynopsis"),
             mangaReview = document.getElementById("mangaReview");
         // Listen for changes in the manga description in order to hide/show a vertical scroll.
-        mangaSynopsis.addEventListener("input", e => {
-            parseInt(mangaSynopsis.style.height) > parseInt(getComputedStyle(mangaSynopsis).maxHeight) ? mangaSynopsis.style.overflowY = "scroll" : mangaSynopsis.style.overflowY = "hidden";
-        });
+        mangaSynopsis.addEventListener("input", e => textAreaFunc(mangaSynopsis));
         // Listen for changes in the manga comments/review in order to hide/show a vertical scroll.
-        mangaReview.addEventListener("input", e => {
-            parseInt(mangaReview.style.height) > parseInt(getComputedStyle(mangaReview).maxHeight) ? mangaReview.style.overflowY = "scroll" : mangaReview.style.overflowY = "hidden";
-        });
+        mangaReview.addEventListener("input", e => textAreaFunc(mangaReview));
         // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
-        mangaFetchBtn.addEventListener("click", e => {
-            if(mangaName.value.length > 2) {
-                mangaPreloader.style.visibility = "visible";
-                volumeFetchPreloader.style.visibility = "visible";
-                ipcRenderer.send("mangaFetchDetails", mangaName.value);
-            }
-            else {
-                M.toast({"html": "The name is too short to fetch details from MyAnimeList.", "classes": "rounded"});
-            }
-        });
+        mangaFetchBtn.addEventListener("click", e => nameFetchFunc("Manga", mangaName, mangaPreloader, volumeFetchPreloader));
         // Define the autocomplete previous input and character max count for display purposes.
-        let previousName = "",
-            maxCharCount = 0;
+        let previousName = "";
         // Listen for an input change in the manga name in order to fetch autocomplete options from myanimelist.
-        mangaName.addEventListener("input", e => {
-            // Only fetch myanimelist options if the manga name is of at least three characters.
-            if(e.target.value.length > 2) {
-                ipcRenderer.send("mangaSearch", [previousName, e.target.value]);
-            }
-            else { mangaNameAutocomplete.updateData({}); }
-            // Set the previous search value to the current one.
-            previousName = e.target.value;
-        });
+        mangaName.addEventListener("input", e => previousName = nameAutoCompleteFunc("Manga", e.target, previousName, mangaNameAutocomplete, true));
         // Listen for a click event on the manga name in order to trigger a fetch of autocomplete options from myanimelist.
-        mangaName.addEventListener("click", e => {
-            // Only fetch myanimelist options if the manga name is of at least three characters.
-            if(e.target.value.length > 2) {
-                ipcRenderer.send("mangaSearch", [previousName, e.target.value]);
-            }
-            else { mangaNameAutocomplete.updateData({}); }
-        });
+        mangaName.addEventListener("click", e => nameAutoCompleteFunc("Manga", e.target, previousName, mangaNameAutocomplete, false));
         // Provide the autocomplete listener associated to manga records.
         autoCompleteListener("Manga", mangaName, mangaNameUL, mangaNameAutocomplete);
         // Update the page accordingly based on the fetched anime details.
@@ -1390,20 +931,7 @@ var recordChoicesButtons = () => {
                 jnameInput.classList.add("valid");
                 jnameInput.nextElementSibling.classList.add("active");
             }
-            // Update the manga image if available.
-            if(newResponse[2][1].length > 0) {
-                const mangaImg = document.getElementById("addRecordMangaImg"),
-                    mangaFavImgLink = document.getElementById("mangaFavoriteImageLink");
-                mangaImg.setAttribute("list", "");
-                for(let t = 0; t < newResponse[2][1].length; t++) {
-                    if(!mangaImg.getAttribute("list").includes(newResponse[2][1][t])) {
-                        mangaImg.getAttribute("list") == "" ? mangaImg.setAttribute("list", newResponse[2][1][t]) : mangaImg.setAttribute("list", mangaImg.getAttribute("list") + "," + newResponse[2][1][t]);
-                    }
-                }
-                mangaImg.setAttribute("src", newResponse[2][0]);
-                mangaFavImgLink.style.visibility = "visible";
-                mangaFavImgLink.style.color = btnColorFavorite;
-            }
+            setFetchedImages("Manga", btnColorFavorite, newResponse[2]);
             // Update the manga start date if available.
             if(newResponse[3] !== null && newResponse[3] != "" && newResponse[3] != " ?") {
                 const mangaStartDate = document.getElementById("mangaStartDate");

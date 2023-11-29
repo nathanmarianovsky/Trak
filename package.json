@@ -19,8 +19,10 @@
         "fs-extra": "^11.1.1",
         "goodreads-scraper": "^1.4.4",
         "html-minifier": "^4.0.0",
+        "imdb-scrapper": "^2.3.1",
         "is-valid-path": "^0.1.1",
         "mal-scraper": "^2.13.1",
+        "movier": "^3.0.6",
         "node-minify": "^3.6.0",
         "semver": "^7.5.4",
         "zip-local": "^0.3.5"

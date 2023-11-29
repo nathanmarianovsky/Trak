@@ -230,7 +230,7 @@ exports.addBookListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainW
 	});
 
 	// Handles the fetching of details for a given book via its name.
-	ipc.on("bookFetchDetailsByName", (event, submission) => {
+	ipc.on("bookFetchDetails", (event, submission) => {
 		require("./bookTools").bookFetchDetailsByName(log, require("goodreads-scraper"), event, submission);
 	});
 
@@ -240,7 +240,7 @@ exports.addBookListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainW
 	});
 
 	// Handles the fetching of details for a given book via its ASIN.
-	ipc.on("bookFetchDetailsByASIN", (event, asin) => {
+	ipc.on("bookFetchDetailsByASIN", (event, submission) => {
 		require("./bookTools").bookFetchDetailsByName(log, require("goodreads-scraper"), event, submission, 0);
 	});
 

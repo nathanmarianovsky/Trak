@@ -160,12 +160,14 @@ Handles the fetching of a book record from goodreads based on a name.
 */
 exports.bookFetchDetailsByName = (log, GoodReadsScraper, ev, name, index = -1) => {
     // Fetch book search results.
+    log.info("Searching for book records based on the name " + name + ".");
     GoodReadsScraper.searchBooks({ "q": name }).then(bookSearchData => {
         // Define the item in the search results matching the name provided.
         let bookLst = bookSearchData.books.map(elem => elem.title),
             bookLstItem = bookSearchData.books[index == -1 ? bookLst.indexOf(name) : index];
         // Fetch book details.
         GoodReadsScraper.getBook({ "url": "https://www.goodreads.com/en/book/show/" + bookLstItem.id }).then(bookData => {
+            log.info("GoodReads-Scraper has finished getting the details for the name " + name + ".");
             ev.sender.send("bookFetchDetailsResult", [bookData.title, bookData.originalTitle, bookData.coverLarge,
                 (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
                 bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres]);
@@ -187,7 +189,9 @@ Handles the fetching of a book record from goodreads based on a name.
 */
 exports.bookFetchDetailsByISBN = (log, GoodReadsScraper, ev, isbn) => {
     // Fetch book details.
+    log.info("Searching for book records based on the ISBN " + isbn + ".");
     GoodReadsScraper.getBook({ "isbn": isbn }).then(bookData => {
+        log.info("GoodReads-Scraper has finished getting the details for the ISBN " + isbn + ".");
         ev.sender.send("bookFetchDetailsResult", [bookData.title, bookData.originalTitle, bookData.coverLarge,
             (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
             bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres]);
@@ -230,6 +234,7 @@ exports.bookFetchSearch = (log, GoodReadsScraper, ev, search) => {
         });
         // Once all book results have the necessary details send the list of books to the front-end.
         itemPromise.then(() => {
+            log.info("GoodReads-Scraper has finished getting the search results for the search query " + search[0] + ".");
             ev.sender.send("fetchResult", [resultsArr, false, "Book", search[1] == 1]);
         }).catch(err => log.error("There was an issue resolving the promise associated to grabbing book details based on the search query " + search[0] + "."));
     }).catch(err => {
