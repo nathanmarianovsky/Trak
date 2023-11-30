@@ -26,6 +26,60 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
 
 
 
+var updateFetchedDataString = (elem, data, updateCheck, callback) => {
+    // Update the record data if available.
+    if(data !== null && data != ""  && data != "None found, add some") {
+        updateCheck == true ? elem.value += (elem.value == "" ? data : ", " + data) : elem.value = data;
+        elem.classList.add("valid");
+        if(elem.nextElementSibling !== null) {
+            elem.nextElementSibling.classList.add("active");
+        }
+    }
+    else {
+        elem.value = "";
+        elem.classList.remove("valid");
+        if(elem.nextElementSibling !== null) {
+            elem.nextElementSibling.classList.remove("active");
+        }
+    }
+    if(callback) { callback(elem); }
+};
+
+
+
+var updateFetchedDataTextArea = (elem, data) => {
+    if(data !== null && data != "" && data != "None found, add some") {
+        let textHolder = data.replace("[Written by MAL Rewrite]", "");
+        if(textHolder.includes("(Source:")) {
+            textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
+        }
+        elem.value = textHolder.trim();
+        elem.classList.add("valid");
+        elem.nextElementSibling.classList.add("active");
+    }
+    else {
+        elem.value = "";
+        elem.classList.remove("valid");
+        elem.nextElementSibling.classList.remove("active");
+    }
+    M.textareaAutoResize(elem);
+};
+
+
+
+var updateFetchedDataDate = (elem, data) => {
+    if(data !== null && data != "" && data != " ?") {
+        elem.value = new Date(data).toISOString().split("T")[0];
+        elem.classList.add("valid");
+    }
+    else {
+        elem.value = "";
+        elem.classList.remove("valid");
+    }
+};
+
+
+
 /*
 
 Adds the functionality for all image buttons based on the category currently chosen.

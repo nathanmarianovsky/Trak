@@ -32,7 +32,8 @@ var recordChoicesButtons = () => {
         categoryAnimeDiv = document.getElementById("categoryAnimeDiv"),
         categoryBookDiv = document.getElementById("categoryBookDiv"),
         categoryFilmDiv = document.getElementById("categoryFilmDiv"),
-        categoryMangaDiv = document.getElementById("categoryMangaDiv");
+        categoryMangaDiv = document.getElementById("categoryMangaDiv"),
+        updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none";
     // Define the color which will be applied to the favorite image icon.
     const btnColorFavorite = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor;
     let introAnimeHolder = false,
@@ -90,63 +91,20 @@ var recordChoicesButtons = () => {
         autoCompleteListener("Anime", animeName, animeNameUL, animeNameAutocomplete);
         // Update the page accordingly based on the fetched anime details.
         ipcRenderer.on("animeFetchDetailsResult", (newEve, newResponse) => {
-            const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none";
-            // Update the anime japanese name if available.
-            if(newResponse[1] != "" && newResponse[1] != "None found, add some") {
-                const jnameInput = document.getElementById("animeJapaneseName");
-                updateDetector == true ? jnameInput.value += newResponse[1] : jnameInput.value = newResponse[1];
-                jnameInput.value = newResponse[1];
-                jnameInput.classList.add("valid");
-                jnameInput.nextElementSibling.classList.add("active");
-            }
+            const jnameInput = document.getElementById("animeJapaneseName"),
+                studioInput = document.getElementById("animeStudio"),
+                directorsInput = document.getElementById("animeDirectors"),
+                producersInput = document.getElementById("animeProducers"),
+                writersInput = document.getElementById("animeWriters"),
+                musicInput = document.getElementById("animeMusicians");
+            updateFetchedDataString(jnameInput, newResponse[1], updateDetector);
             setFetchedImages("Anime", btnColorFavorite, newResponse[2]);
-            // Update the anime studios if available.
-            if(newResponse[8] != "" && newResponse[8] != "None found, add some") {
-                const studioInput = document.getElementById("animeStudio");
-                updateDetector == true ? studioInput.value += (studioInput.value == "" ? newResponse[8] : ", " + newResponse[8]) : studioInput.value = newResponse[8];
-                studioInput.classList.add("valid");
-                studioInput.nextElementSibling.classList.add("active");
-            }
-            // Update the anime directors if available.
-            if(newResponse[9].length > 0 && newResponse[9][0] != "None found, add some") {
-                const directorsInput = document.getElementById("animeDirectors");
-                updateDetector == true ? directorsInput.value += (directorsInput.value == "" ? newResponse[9].join(", ") : ", " + newResponse[9].join(", ")) : directorsInput.value = newResponse[9].join(", ");
-                directorsInput.classList.add("valid");
-                directorsInput.nextElementSibling.classList.add("active");
-            }
-            // Update the anime producers if available.
-            if(newResponse[10].length > 0 && newResponse[10][0] != "None found, add some") {
-                const producersInput = document.getElementById("animeProducers");
-                updateDetector == true ? producersInput.value += (producersInput.value == "" ? newResponse[10].join(", ") : ", " + newResponse[10].join(", ")) : producersInput.value = newResponse[10].join(", ");
-                producersInput.classList.add("valid");
-                producersInput.nextElementSibling.classList.add("active");
-            }
-            // Update the anime writers if available.
-            if(newResponse[11].length > 0 && newResponse[11][0] != "None found, add some") {
-                const writersInput = document.getElementById("animeWriters");
-                updateDetector == true ? writersInput.value += (writersInput.value == "" ? newResponse[11].join(", ") : ", " + newResponse[11].join(", ")) : writersInput.value = newResponse[11].join(", ");
-                writersInput.classList.add("valid");
-                writersInput.nextElementSibling.classList.add("active");
-            }
-            // Update the anime musicians if available.
-            if(newResponse[12].length > 0 && newResponse[12][0] != "None found, add some") {
-                const musicInput = document.getElementById("animeMusicians");
-                updateDetector == true ? musicInput.value += (musicInput.value == "" ? newResponse[12].join(", ") : ", " + newResponse[12].join(", ")) : musicInput.value = newResponse[12].join(", ");
-                musicInput.classList.add("valid");
-                musicInput.nextElementSibling.classList.add("active");
-            }
-            // Update the anime synopsis if available.
-            if(newResponse[13] != "" && newResponse[13] != "None found, add some") {
-                let textHolder = newResponse[13].replace("[Written by MAL Rewrite]", "");
-                if(textHolder.includes("(Source:")) {
-                    textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
-                }
-                textHolder = textHolder.trim();
-                animeSynopsis.value = textHolder;
-                animeSynopsis.classList.add("valid");
-                animeSynopsis.nextElementSibling.classList.add("active");
-                M.textareaAutoResize(animeSynopsis);
-            }
+            updateFetchedDataString(studioInput, newResponse[8], updateDetector);
+            updateFetchedDataString(directorsInput, newResponse[9], updateDetector);
+            updateFetchedDataString(producersInput, newResponse[10].join(", "), updateDetector);
+            updateFetchedDataString(writersInput, newResponse[11].join(", "), updateDetector);
+            updateFetchedDataString(musicInput, newResponse[12].join(", "), updateDetector);
+            updateFetchedDataTextArea(animeSynopsis, newResponse[13]);
             // Update the anime genres if available.
             genreFill("Anime", newResponse[7]);
             setTimeout(() => {
@@ -280,110 +238,21 @@ var recordChoicesButtons = () => {
         autoCompleteListener("Book", bookTitle, bookTitleUL, bookTitleAutocomplete);
         // Update the page accordingly based on the fetched book details.
         ipcRenderer.on("bookFetchDetailsResult", (newEve, newResponse) => {
-            if(newResponse[0] != "") {
-                const bookTitle = document.getElementById("bookTitle");
-                bookTitle.value = newResponse[0];
-                if(newResponse[0] != "") {
-                    bookTitle.classList.add("valid");
-                    bookTitle.nextElementSibling.nextElementSibling.classList.add("active");
-                }
-                else {
-                    bookTitle.classList.remove("valid");
-                    bookTitle.nextElementSibling.nextElementSibling.classList.remove("active");
-                }
-            }
-            else {
-                bookTitle.value = "";
-                bookTitle.classList.remove("valid");
-            }
-            if(newResponse[1] !== null) {
-                const bookOriginalTitle = document.getElementById("bookOriginalTitle");
-                bookOriginalTitle.value = newResponse[1];
-                newResponse[1] != "" ? bookOriginalTitle.classList.add("valid") : bookOriginalTitle.classList.remove("valid");
-            }
-            else {
-                bookOriginalTitle.value = "";
-                bookOriginalTitle.classList.remove("valid");
-            }
+            const bookTitle = document.getElementById("bookTitle"),
+                bookOriginalTitle = document.getElementById("bookOriginalTitle"),
+                bookISBN = document.getElementById("bookISBN"),
+                bookAuthor = document.getElementById("bookAuthor"),
+                bookPublisher = document.getElementById("bookPublisher"),
+                bookPublicationDate = document.getElementById("bookPublicationDate"),
+                bookPages = document.getElementById("bookPages");
+            updateFetchedDataString(bookTitle, newResponse[0], updateDetector);
+            updateFetchedDataString(bookOriginalTitle, newResponse[1], updateDetector);
             setFetchedImages("Book", btnColorFavorite, [newResponse[2], [newResponse[2]]]);
-            if(newResponse[3] !== null) {
-                const bookISBN = document.getElementById("bookISBN");
-                bookISBN.value = newResponse[3];
-                if(newResponse[3] != "") {
-                    bookISBN.classList.add("valid");
-                    bookISBN.nextElementSibling.classList.add("active");
-                }
-                else {
-                    bookISBN.classList.remove("valid");
-                    bookISBN.nextElementSibling.classList.remove("active");
-                }
-                formatISBN(bookISBN);
-            }
-            else {
-                bookISBN.value = "";
-                bookISBN.classList.remove("valid");
-                bookISBN.nextElementSibling.classList.remove("active");
-            }
-            if(newResponse[4] !== null) {
-                const bookAuthor = document.getElementById("bookAuthor");
-                bookAuthor.value = newResponse[4];
-                if(newResponse[4] != "") {
-                    bookAuthor.classList.add("valid");
-                    bookAuthor.nextElementSibling.classList.add("active");
-                }
-                else {
-                    bookAuthor.classList.remove("valid");
-                    bookAuthor.nextElementSibling.classList.remove("active");
-                }
-            }
-            else {
-                bookAuthor.value = "";
-                bookAuthor.classList.remove("valid");
-                bookAuthor.nextElementSibling.classList.remove("active");
-            }
-            if(newResponse[5] !== null) {
-                const bookPublisher = document.getElementById("bookPublisher");
-                bookPublisher.value = newResponse[5];
-                if(newResponse[5] != "") {
-                    bookPublisher.classList.add("valid");
-                    bookPublisher.nextElementSibling.classList.add("active");
-                }
-                else {
-                    bookPublisher.classList.remove("valid");
-                    bookPublisher.nextElementSibling.classList.remove("active");
-                }
-            }
-            else {
-                bookAuthor.value = "";
-                bookAuthor.classList.remove("valid");
-                bookAuthor.nextElementSibling.classList.remove("active");
-            }
-            if(newResponse[6] !== null && newResponse[6] != "") {
-                const bookPublicationDate = document.getElementById("bookPublicationDate");
-                bookPublicationDate.value = new Date(newResponse[6]).toISOString().split("T")[0];
-                bookPublicationDate.classList.add("valid");
-            }
-            else {
-                bookPublicationDate.value = "";
-                bookPublicationDate.classList.remove("valid");
-            }
-            if(newResponse[7] !== null) {
-                const bookPages = document.getElementById("bookPages");
-                bookPages.value = newResponse[7];
-                if(newResponse[7] != "") {
-                    bookPages.classList.add("valid");
-                    bookPages.nextElementSibling.classList.add("active");
-                }
-                else {
-                    bookPages.classList.remove("valid");
-                    bookPages.nextElementSibling.classList.remove("active");
-                }
-            }
-            else {
-                bookPages.value = "";
-                bookPages.classList.remove("valid");
-                bookPages.nextElementSibling.classList.remove("active");
-            }
+            updateFetchedDataString(bookISBN, newResponse[3], updateDetector, formatISBN);
+            updateFetchedDataString(bookAuthor, newResponse[4], updateDetector);
+            updateFetchedDataString(bookPublisher, newResponse[5], updateDetector);
+            updateFetchedDataDate(bookPublicationDate, newResponse[6]);
+            updateFetchedDataString(bookPages, newResponse[7], updateDetector);
             if(newResponse[8] !== null) {
                 const bookMediaType = document.getElementById("bookMediaType"),
                     checkVal = newResponse[8].toLowerCase();
@@ -400,24 +269,8 @@ var recordChoicesButtons = () => {
                     bookMediaType.value = "audiobook";
                 }
             }
-            if(newResponse[9] !== null) {
-                bookSynopsis.value = newResponse[9];
-                if(newResponse[9] != "") {
-                    bookSynopsis.classList.add("valid");
-                    bookSynopsis.nextElementSibling.classList.add("active");
-                }
-                else {
-                    bookSynopsis.classList.remove("valid");
-                    bookSynopsis.nextElementSibling.classList.remove("active");
-                }
-            }
-            else {
-                bookSynopsis.value = "";
-                bookSynopsis.classList.remove("valid");
-                bookSynopsis.nextElementSibling.classList.remove("active");
-            }
-            M.textareaAutoResize(bookSynopsis);
-            parseInt(bookSynopsis.style.height) > parseInt(getComputedStyle(bookSynopsis).maxHeight) ? bookSynopsis.style.overflowY = "scroll" : bookSynopsis.style.overflowY = "hidden";
+            updateFetchedDataTextArea(bookSynopsis, newResponse[9]);
+            textAreaFunc(bookSynopsis);
             // Update the book genres if available.
             genreFill("Book", newResponse[10]);
             // Hide the preloader now that everything has been loaded and show the buttons if necessary.
@@ -483,115 +336,27 @@ var recordChoicesButtons = () => {
         filmRunTimeInput.addEventListener("input", e => e.target.value = formatRunningTime(e.target.value));
         // Update the page accordingly based on the fetched film details.
         ipcRenderer.on("filmFetchDetailsResult", (newEve, newResponse) => {
-            const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none";
+            const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none",
+                filmAlternateName = document.getElementById("filmAlternateName"),
+                filmReleaseDate = document.getElementById("filmReleaseDate"),
+                directorsInput = document.getElementById("filmDirectors"),
+                writersInput = document.getElementById("filmWriters"),
+                distributorsInput = document.getElementById("filmDistributors"),
+                producersInput = document.getElementById("filmProducers"),
+                productionCompaniesInput = document.getElementById("filmProductionCompanies"),
+                starsInput = document.getElementById("filmStarring");
             // Update the film alternate name if available.
-            if(newResponse[1] !== null && newResponse[1] != "") {
-                const filmAlternateName = document.getElementById("filmAlternateName");
-                updateDetector == true ? filmAlternateName.value += (filmAlternateName.value == "" ? newResponse[1] : ", " + newResponse[1]) : filmAlternateName.value = newResponse[1];
-                newResponse[1] != "" ? filmAlternateName.classList.add("valid") : filmAlternateName.classList.remove("valid");
-            }
-            else {
-                filmAlternateName.value = "";
-                filmAlternateName.classList.remove("valid");
-            }
+            updateFetchedDataString(filmAlternateName, newResponse[1], updateDetector);
             setFetchedImages("Film", btnColorFavorite, newResponse[2]);
-            // Update the film release date if available.
-            if(newResponse[3] !== null && newResponse[3] != "") {
-                const filmReleaseDate = document.getElementById("filmReleaseDate");
-                filmReleaseDate.value = new Date(newResponse[3]).toISOString().split("T")[0];
-                filmReleaseDate.classList.add("valid");
-            }
-            else {
-                filmReleaseDate.value = "";
-                filmReleaseDate.classList.remove("valid");
-            }
-            // Update the film runtime if available.
-            if(newResponse[4] != "") {
-                updateDetector == true ? filmRunTimeInput.value += (filmRunTimeInput.value == "" ? formatRunningTime(newResponse[4]) : ", " + formatRunningTime(newResponse[4])) : filmRunTimeInput.value = formatRunningTime(newResponse[4]);
-                filmRunTimeInput.classList.add("valid");
-                filmRunTimeInput.nextElementSibling.classList.add("active");
-            }
-            else {
-                filmRunTimeInput.value = "";
-                filmRunTimeInput.classList.remove("valid");
-            }
-            // Update the film directors if available.
-            if(newResponse[6] != "") {
-                const directorsInput = document.getElementById("filmDirectors");
-                updateDetector == true ? directorsInput.value += (directorsInput.value == "" ? newResponse[6].join(", ") : ", " + newResponse[6].join(", ")) : directorsInput.value = newResponse[6].join(", ");
-                directorsInput.classList.add("valid");
-                directorsInput.nextElementSibling.classList.add("active");
-            }
-            else {
-                directorsInput.value = "";
-                directorsInput.classList.remove("valid");
-            }
-            // Update the film writers if available.
-            if(newResponse[7] != "") {
-                const writersInput = document.getElementById("filmWriters");
-                updateDetector == true ? writersInput.value += (writersInput.value == "" ? newResponse[7].join(", ") : ", " + newResponse[7].join(", ")) : writersInput.value = newResponse[7].join(", ");
-                writersInput.classList.add("valid");
-                writersInput.nextElementSibling.classList.add("active");
-            }
-            else {
-                writersInput.value = "";
-                writersInput.classList.remove("valid");
-            }
-            // Update the film distributors if available.
-            if(newResponse[8] != "") {
-                const distributorsInput = document.getElementById("filmDistributors");
-                updateDetector == true ? distributorsInput.value += (distributorsInput.value == "" ? newResponse[8].join(", ") : ", " + newResponse[8].join(", ")) : distributorsInput.value = newResponse[8].join(", ");
-                distributorsInput.classList.add("valid");
-                distributorsInput.nextElementSibling.classList.add("active");
-            }
-            else {
-                distributorsInput.value = "";
-                distributorsInput.classList.remove("valid");
-            }
-            // Update the film producers if available.
-            if(newResponse[9] != "") {
-                const producersInput = document.getElementById("filmProducers");
-                updateDetector == true ? producersInput.value += (producersInput.value == "" ? newResponse[9].join(", ") : ", " + newResponse[9].join(", ")) : producersInput.value = newResponse[9].join(", ");
-                producersInput.classList.add("valid");
-                producersInput.nextElementSibling.classList.add("active");
-            }
-            else {
-                producersInput.value = "";
-                producersInput.classList.remove("valid");
-            }
-            // Update the film production companies if available.
-            if(newResponse[10] != "") {
-                const productionCompaniesInput = document.getElementById("filmProductionCompanies");
-                updateDetector == true ? productionCompaniesInput.value += (productionCompaniesInput.value == "" ? newResponse[10].join(", ") : ", " + newResponse[10].join(", ")) : productionCompaniesInput.value = newResponse[10].join(", ");
-                productionCompaniesInput.classList.add("valid");
-                productionCompaniesInput.nextElementSibling.classList.add("active");
-            }
-            else {
-                productionCompaniesInput.value = "";
-                productionCompaniesInput.classList.remove("valid");
-            }
-            // Update the film stars if available.
-            if(newResponse[11] != "") {
-                const starsInput = document.getElementById("filmStarring");
-                updateDetector == true ? starsInput.value += (starsInput.value == "" ? newResponse[11].join(", ") : ", " + newResponse[11].join(", ")) : starsInput.value = newResponse[11].join(", ");
-                starsInput.classList.add("valid");
-                starsInput.nextElementSibling.classList.add("active");
-            }
-            else {
-                starsInput.value = "";
-                starsInput.classList.remove("valid");
-            }
-            // Update the film plot if available.
-            if(newResponse[12] != "") {
-                filmSynopsis.value = newResponse[12].trim();
-                filmSynopsis.classList.add("valid");
-                filmSynopsis.nextElementSibling.classList.add("active");
-                M.textareaAutoResize(filmSynopsis);
-            }
-            else {
-                filmSynopsis.value = "";
-                filmSynopsis.classList.remove("valid");
-            }
+            updateFetchedDataDate(filmReleaseDate, newResponse[3]);
+            updateFetchedDataString(filmRunTimeInput, formatRunningTime(newResponse[4]), updateDetector);
+            updateFetchedDataString(directorsInput, newResponse[6].join(", "), updateDetector);
+            updateFetchedDataString(writersInput, newResponse[7].join(", "), updateDetector);
+            updateFetchedDataString(distributorsInput, newResponse[8].join(", "), updateDetector);
+            updateFetchedDataString(producersInput, newResponse[9].join(", "), updateDetector);
+            updateFetchedDataString(productionCompaniesInput, newResponse[10].join(", "), updateDetector);
+            updateFetchedDataString(starsInput, newResponse[11].join(", "), updateDetector);
+            updateFetchedDataTextArea(filmSynopsis, newResponse[12]);
             // Update the film genres if available.
             genreFill("Film", newResponse[5]);
             // Hide the preloader now that everything has been loaded and show the buttons if necessary.
@@ -659,62 +424,18 @@ var recordChoicesButtons = () => {
         autoCompleteListener("Manga", mangaName, mangaNameUL, mangaNameAutocomplete);
         // Update the page accordingly based on the fetched anime details.
         ipcRenderer.on("mangaFetchDetailsResult", (newEve, newResponse) => {
-            const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none";
-            if(newResponse[0] != "" && newResponse[0] != "None found, add some") {
-                updateDetector == true ? mangaName.value += newResponse[0] : mangaName.value = newResponse[0];
-                mangaName.value = newResponse[0];
-                mangaName.classList.add("valid");
-                mangaName.parentNode.children[2].classList.add("active");
-            }
-            // Update the manga japanese name if available.
-            if(newResponse[1] != "" && newResponse[1] != "None found, add some") {
-                const jnameInput = document.getElementById("mangaJapaneseName");
-                updateDetector == true ? jnameInput.value += newResponse[1] : jnameInput.value = newResponse[1];
-                jnameInput.value = newResponse[1];
-                jnameInput.classList.add("valid");
-                jnameInput.nextElementSibling.classList.add("active");
-            }
+            const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none",
+                jnameInput = document.getElementById("mangaJapaneseName"),
+                mangaStartDate = document.getElementById("mangaStartDate"),
+                mangaEndDate = document.getElementById("mangaEndDate"),
+                writersInput = document.getElementById("mangaWriters");
+            updateFetchedDataString(mangaName, newResponse[0], updateDetector);
+            updateFetchedDataString(jnameInput, newResponse[1], updateDetector);
             setFetchedImages("Manga", btnColorFavorite, newResponse[2]);
-            // Update the manga start date if available.
-            if(newResponse[3] !== null && newResponse[3] != "" && newResponse[3] != " ?") {
-                const mangaStartDate = document.getElementById("mangaStartDate");
-                mangaStartDate.value = new Date(newResponse[3]).toISOString().split("T")[0];
-                mangaStartDate.classList.add("valid");
-            }
-            else {
-                mangaStartDate.value = "";
-                mangaStartDate.classList.remove("valid");
-            }
-            // Update the manga end date if available.
-            if(newResponse[4] !== null && newResponse[4] != "" && newResponse[4] != " ?") {
-                const mangaEndDate = document.getElementById("mangaEndDate");
-                mangaEndDate.value = new Date(newResponse[4]).toISOString().split("T")[0];
-                mangaEndDate.classList.add("valid");
-            }
-            else {
-                mangaEndDate.value = "";
-                mangaEndDate.classList.remove("valid");
-            }
-            // Update the manga writers if available.
-            if(newResponse[8].length > 0) {
-                const writersInput = document.getElementById("mangaWriters"),
-                    writerStr = newResponse[8].map(writer => writer.split(", ").reverse().join(" ")).join(", ");
-                updateDetector == true ? writersInput.value += (writersInput.value == "" ? writerStr : ", " + writerStr) : writersInput.value = writerStr;
-                writersInput.classList.add("valid");
-                writersInput.nextElementSibling.classList.add("active");
-            }
-            // Update the manga synopsis if available.
-            if(newResponse[9] != "" && newResponse[9] != "None found, add some") {
-                let textHolder = newResponse[9].replace("[Written by MAL Rewrite]", "");
-                if(textHolder.includes("(Source:")) {
-                    textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
-                }
-                textHolder = textHolder.trim();
-                mangaSynopsis.value = textHolder;
-                mangaSynopsis.classList.add("valid");
-                mangaSynopsis.nextElementSibling.classList.add("active");
-                M.textareaAutoResize(mangaSynopsis);
-            }
+            updateFetchedDataDate(mangaStartDate, newResponse[3]);
+            updateFetchedDataDate(mangaEndDate, newResponse[4]);
+            updateFetchedDataString(writersInput, newResponse[8].map(writer => writer.split(", ").reverse().join(" ")).join(", "), updateDetector);
+            updateFetchedDataTextArea(mangaSynopsis, newResponse[9]);
             // Update the manga genres if available.
             genreFill("Manga", newResponse[7]);
             setTimeout(() => {
