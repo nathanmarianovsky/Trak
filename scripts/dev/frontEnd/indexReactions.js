@@ -411,6 +411,11 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             tdNameDiv.textContent = recordData.name != "" ? recordData.name : formatISBNString(recordData.isbn);
             if(recordData.category == "Book") { counters[1]++; }
         }
+        else if(recordData.category == "Film" || recordData.category == "Show") {
+            tdNameDiv.textContent = recordData.name;
+            if(recordData.category == "Film") { counters[2]++; }
+            if(recordData.category == "Show") { counters[4]++; }
+        }
         tdNameDiv.classList.add("recordsNameRowDiv");
         tdName.classList.add("left");
         tdNameOuterDiv.classList.add("recordsNameContainer");
@@ -518,15 +523,16 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 synopsisPreloader.style.display = "block";
                 fs.readFile(e.target.parentNode.getAttribute("path"), "UTF8", (err, synopsisFile) => {
                     if(err) {
-                        if(recordData.category == "Anime") {
-                            M.toast({"html": "There was an issue reading the data file associated to the anime " + e.parentNode.parentNode.parentNode.getAttribute("name") + ".", "classes": "rounded"});
+                        if(recordData.category == "Anime" || recordData.category == "Manga") {
+                            M.toast({"html": "There was an issue reading the data file associated to the " + recordData.category.toLowerCase() + " "
+                                + (e.parentNode.parentNode.parentNode.getAttribute("name") != "" ? e.parentNode.parentNode.parentNode.getAttribute("name") : e.parentNode.parentNode.parentNode.getAttribute("jname")) + ".", "classes": "rounded"});
                         }
                         else if(recordData.category == "Book") {
                             M.toast({"html": "There was an issue reading the data file associated to the book " +
                                 (e.parentNode.parentNode.parentNode.getAttribute("name") != "" ? e.parentNode.parentNode.parentNode.getAttribute("name") : e.parentNode.parentNode.parentNode.getAttribute("isbn")) + ".", "classes": "rounded"});
                         }
-                        else if(recordData.category == "Manga") {
-                            M.toast({"html": "There was an issue reading the data file associated to the manga " + e.parentNode.parentNode.parentNode.getAttribute("name") + ".", "classes": "rounded"});
+                        else if(recordData.category == "Film" || recordData.category == "Show") {
+                            M.toast({"html": "There was an issue reading the data file associated to the " + recordData.category.toLowerCase() + " " + e.parentNode.parentNode.parentNode.getAttribute("name")+ ".", "classes": "rounded"});
                         }
                     }
                     else {
@@ -568,7 +574,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             if(displayRatingArr.length > 0) { displayRating = (displayRatingArr.reduce((accum, cur) => accum + cur, 0) / displayRatingArr.length).toFixed(2); }
             tdRatingDiv.textContent = displayRating;
         }
-        else if(recordData.category == "Book") {
+        else if(recordData.category == "Book" || recordData.category == "Film") {
             tdRatingDiv.textContent = recordData.rating != "" ? parseInt(recordData.rating).toFixed(2) : "N/A";
         }
         else if(recordData.category == "Manga") {
@@ -676,6 +682,21 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             tr.setAttribute("pages", recordData.pages);
             tr.setAttribute("media", recordData.media);
             tr.setAttribute("lastRead", recordData.lastRead);
+        }
+        if(recordData.category == "Film") {
+            tr.setAttribute("alternateName", recordData.alternateName);
+            tr.setAttribute("releaseDate", recordData.release);
+            tr.setAttribute("runningTime", recordData.runTime);
+            tr.setAttribute("directors", recordData.directors);
+            tr.setAttribute("musicians", recordData.musicians);
+            tr.setAttribute("producers", recordData.producers);
+            tr.setAttribute("distributors", recordData.distributors);
+            tr.setAttribute("editors", recordData.editors);
+            tr.setAttribute("cinematographers", recordData.cinematographers);
+            tr.setAttribute("productionCompanies", recordData.productionCompanies);
+            tr.setAttribute("writers", recordData.writers);
+            tr.setAttribute("stars", recordData.stars);
+            tr.setAttribute("lastWatched", recordData.lastWatched);
         }
         else if(recordData.category == "Manga") {
             tr.setAttribute("jname", recordData.jname);

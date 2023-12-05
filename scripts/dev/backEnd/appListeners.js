@@ -114,6 +114,9 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
 				else if(submission[0] == "Book") {
 					require("./bookTools").bookSave(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
 				}
+				else if(submission[0] == "Film") {
+					require("./filmTools").filmSave(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
+				}
 				else if(submission[0] == "Manga") {
 	  				require("./mangaTools").mangaSave(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
 				}
@@ -133,6 +136,9 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
   				else if(submission[0] == "Book") {
   					require("./bookTools").bookUpdate(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
   				}
+  				else if(submission[0] == "Film") {
+					require("./filmTools").filmUpdate(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
+				}
   				else if(submission[0] == "Manga") {
   					require("./mangaTools").mangaUpdate(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
   				}
