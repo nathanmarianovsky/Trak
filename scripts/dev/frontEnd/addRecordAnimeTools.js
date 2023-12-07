@@ -143,7 +143,13 @@ Resets the page counters for an anime record's related content.
 
 */
 var resetAnimeContentCounters = () => {
-    const itemList = Array.from(document.getElementById("animeList").children);
+    const itemList = Array.from(document.getElementById("animeList").children),
+        animeMovieCount = document.getElementById("animeMovieCount"),
+        animeONACount = document.getElementById("animeONACount"),
+        animeOVACount = document.getElementById("animeOVACount"),
+        animeSpecialCount = document.getElementById("animeSpecialCount"),
+        animeSeasonCount = document.getElementById("animeSeasonCount"),
+        animeEpisodeCount = document.getElementById("animeEpisodeCount");
     let movieCount = 0, onaCount = 0, ovaCount = 0, specialCount = 0, unclassifiedCount = 0, seasonCount = 0, episodeCount = 0;
     for(let w = 0; w < itemList.length; w++) {
         let scenario = itemList[w].getAttribute("id").split("_")[2];
@@ -167,12 +173,12 @@ var resetAnimeContentCounters = () => {
             episodeCount += itemList[w].children[1].children[0].children.length;
         }
     }
-    document.getElementById("animeMovieCount").value = movieCount;
-    document.getElementById("animeONACount").value = onaCount;
-    document.getElementById("animeOVACount").value = ovaCount;
-    document.getElementById("animeSpecialCount").value = specialCount;
-    document.getElementById("animeSeasonCount").value = seasonCount;
-    document.getElementById("animeEpisodeCount").value = episodeCount;
+    counterAssignment(animeMovieCount, movieCount);
+    counterAssignment(animeONACount, onaCount);
+    counterAssignment(animeOVACount, ovaCount);
+    counterAssignment(animeSpecialCount, specialCount);
+    counterAssignment(animeSeasonCount, seasonCount);
+    counterAssignment(animeEpisodeCount, episodeCount);
 };
 
 

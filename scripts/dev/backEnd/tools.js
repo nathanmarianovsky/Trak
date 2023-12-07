@@ -258,10 +258,12 @@ exports.genreList = recType => {
             "Mythology", "Nonfiction", "Romance", "Satire", "Sci-Fi", "Thriller", "Tragedy", "Western"];
     }
     else if(recType == "Film") {
-    	genArr = ["Action", "Adventure", "Amateur", "Animation", "Biopic", "Comedy", "Crime", "Cyberpunk", "Docudrama",
-    		"Documentary", "Drama", "Dystopian", "Fantasy", "Gangster", "Historical", "Horror", "Military", "Musical",
-    		"Mystery", "Nature", "Post-Apocalyptic", "Psychological", "Reality", "Religious", "Romance", "Satire",
-    		"Sci-Fi", "Sports", "Spy", "Superhero", "Thriller", "Utopian", "Western", "Zombie"]
+    	genArr = ["Action", "Adventure", "AlternateHistory", "Amateur", "Animation", "Anthology", "Art", "Biopic", "Comedy",
+    		"Crime", "Cyberpunk", "Detective", "Docudrama", "Documentary", "Drama", "Dystopian", "Fantasy", "Gangster", "Ghost",
+    		"Gore", "Gothic", "Heist", "Historical", "Holiday", "Horror", "Instructional", "Military", "Monster", "Musical",
+            "Mystery", "Nature", "Paranormal", "Parody", "Political", "PostApocalyptic", "Psychological", "Reality", "Religious",
+            "Revisionist", "Romance", "Satire", "SciFi", "Space", "SpaceOpera", "Sports", "Spy", "StopMotion", "Superhero",
+            "Thriller", "Utopian", "Vampire", "Vigilante", "Western", "Zombie"];
     }
     else if(recType == "Manga") {
     	genArr = ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
@@ -275,54 +277,6 @@ exports.genreList = recType => {
     }
     return genArr;
 };
-
-
-
-// /*
-
-// Provides the list of all genres/tags that can be selected on the addRecord.html page for an anime record.
-
-// */
-// exports.animeGenreList = () => {
-//     return ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
-//             "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
-//             "Hentai", "Historical", "Horror", "Isekai", "Josei", "Kids", "Medical", "Mystery", "Magic",
-//             "MagicalSexShift", "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police",
-//             "PostApocalyptic", "Psychological", "Racing", "Reincarnation", "ReverseHarem", "Romance", "Samurai",
-//             "School", "SciFi", "Seinen", "Shoujo", "Shounen", "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame",
-//             "SuperPower", "Supernatural", "Survival", "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy",
-//             "Vampire", "VideoGame", "War", "Western", "Workplace", "Yaoi", "Yuri"];
-// };
-
-
-
-// /*
-
-// Provides the list of all genres/tags that can be selected on the addRecord.html page for a book record.
-
-// */
-// exports.bookGenreList = () => {
-//     return ["Action", "Adventure", "Comedy", "Crime", "Dystopian", "Fantasy", "Fiction", "Historical", "Horror", "Mystery",
-//             "Mythology", "Nonfiction", "Romance", "Satire", "Sci-Fi", "Thriller", "Tragedy", "Western"];
-// };
-
-
-
-// /*
-
-// Provides the list of all genres/tags that can be selected on the addRecord.html page for a manga record.
-
-// */
-// exports.mangaGenreList = () => {
-//     return ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
-//             "Cyberpunk", "Demon", "Drama", "Ecchi", "Erotica", "Fantasy", "Game", "Gore", "Gourmet", "Harem",
-//             "Hentai", "Historical", "Horror", "Isekai", "Kids", "Medical", "Mystery", "Magic", "MagicalSexShift",
-//             "MartialArts", "Mecha", "Military", "Music", "OrganizedCrime", "Parody", "Police", "PostApocalyptic",
-//             "Psychological", "Racing", "Reincarnation", "ReverseHarem", "Romance", "Samurai", "School", "SciFi",
-//             "SliceOfLife", "Space", "Sports", "Spy", "StrategyGame", "SuperPower", "Supernatural", "Survival",
-//             "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy", "Vampire", "VideoGame", "War", "Western",
-//             "Workplace", "Yaoi", "Yuri"];
-// };
 
 
 

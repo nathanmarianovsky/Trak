@@ -346,10 +346,12 @@ var genreList = (type = "All") => {
             "Mythology", "Nonfiction", "Romance", "Satire", "Sci-Fi", "Thriller", "Tragedy", "Western"];
     }
     else if(type == "Film") {
-        genArr = ["Action", "Adventure", "AlternateHistory", "Amateur", "Animation", "Biopic", "Comedy", "Crime", "Cyberpunk", "Detective", "Docudrama",
-            "Documentary", "Drama", "Dystopian", "Fantasy", "Gangster", "Gore", "Gothic", "Heist", "Historical", "Horror", "Military", "Musical",
-            "Mystery", "Nature", "Parody", "Political", "PostApocalyptic", "Psychological", "Reality", "Religious", "Romance", "Satire",
-            "SciFi", "Space", "SpaceOpera", "Sports", "Spy", "Superhero", "Thriller", "Utopian", "Vampire", "Western", "Zombie"];
+        genArr = ["Action", "Adventure", "AlternateHistory", "Amateur", "Animation", "Anthology", "Art", "Biopic", "Comedy",
+            "Crime", "Cyberpunk", "Detective", "Docudrama", "Documentary", "Drama", "Dystopian", "Fantasy", "Gangster", "Ghost",
+            "Gore", "Gothic", "Heist", "Historical", "Holiday", "Horror", "Instructional", "Military", "Monster", "Musical",
+            "Mystery", "Nature", "Paranormal", "Parody", "Political", "PostApocalyptic", "Psychological", "Reality", "Religious",
+            "Revisionist", "Romance", "Satire", "SciFi", "Space", "SpaceOpera", "Sports", "Spy", "StopMotion", "Superhero",
+            "Thriller", "Utopian", "Vampire", "Vigilante", "Western", "Zombie"];
     }
     else if(type == "Manga") {
         genArr = ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",

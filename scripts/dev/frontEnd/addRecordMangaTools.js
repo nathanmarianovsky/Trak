@@ -148,7 +148,9 @@ Resets the page counters for a manga record's related content.
 
 */
 var resetMangaContentCounters = () => {
-    const itemList = Array.from(document.getElementById("mangaList").children);
+    const itemList = Array.from(document.getElementById("mangaList").children),
+        mangaChapterCount = document.getElementById("mangaChapterCount"),
+        mangaVolumeCount = document.getElementById("mangaVolumeCount");
     let chapterCount = 0, volumeCount = 0;
     for(let w = 0; w < itemList.length; w++) {
         let scenario = itemList[w].getAttribute("id").split("_")[2];
@@ -159,8 +161,8 @@ var resetMangaContentCounters = () => {
             volumeCount++;
         }
     }
-    document.getElementById("mangaChapterCount").value = chapterCount;
-    document.getElementById("mangaVolumeCount").value = volumeCount;
+    counterAssignment(mangaChapterCount, chapterCount);
+    counterAssignment(mangaVolumeCount, volumeCount);
 };
 
 

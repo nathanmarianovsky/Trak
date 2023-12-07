@@ -99,12 +99,12 @@ var recordChoicesButtons = () => {
                 musicInput = document.getElementById("animeMusicians");
             updateFetchedDataString(jnameInput, newResponse[1], updateDetector);
             setFetchedImages("Anime", btnColorFavorite, newResponse[2]);
-            updateFetchedDataString(studioInput, newResponse[8], updateDetector);
-            updateFetchedDataString(directorsInput, newResponse[9], updateDetector);
+            updateFetchedDataString(studioInput, newResponse[8].join(", "), updateDetector);
+            updateFetchedDataString(directorsInput, newResponse[9].join(", "), updateDetector);
             updateFetchedDataString(producersInput, newResponse[10].join(", "), updateDetector);
             updateFetchedDataString(writersInput, newResponse[11].join(", "), updateDetector);
             updateFetchedDataString(musicInput, newResponse[12].join(", "), updateDetector);
-            updateFetchedDataTextArea(animeSynopsis, newResponse[13]);
+            updateFetchedDataTextArea(animeSynopsis, newResponse[13], updateDetector);
             // Update the anime genres if available.
             genreFill("Anime", newResponse[7]);
             setTimeout(() => {
@@ -248,10 +248,10 @@ var recordChoicesButtons = () => {
             updateFetchedDataString(bookTitle, newResponse[0], updateDetector);
             updateFetchedDataString(bookOriginalTitle, newResponse[1], updateDetector);
             setFetchedImages("Book", btnColorFavorite, [newResponse[2], [newResponse[2]]]);
-            updateFetchedDataString(bookISBN, newResponse[3], updateDetector, formatISBN);
+            updateFetchedDataString(bookISBN, newResponse[3], updateDetector, false, formatISBN);
             updateFetchedDataString(bookAuthor, newResponse[4], updateDetector);
             updateFetchedDataString(bookPublisher, newResponse[5], updateDetector);
-            updateFetchedDataDate(bookPublicationDate, newResponse[6]);
+            updateFetchedDataDate(bookPublicationDate, newResponse[6], updateDetector);
             updateFetchedDataString(bookPages, newResponse[7], updateDetector);
             if(newResponse[8] !== null) {
                 const bookMediaType = document.getElementById("bookMediaType"),
@@ -269,7 +269,7 @@ var recordChoicesButtons = () => {
                     bookMediaType.value = "audiobook";
                 }
             }
-            updateFetchedDataTextArea(bookSynopsis, newResponse[9]);
+            updateFetchedDataTextArea(bookSynopsis, newResponse[9], updateDetector);
             textAreaFunc(bookSynopsis);
             // Update the book genres if available.
             genreFill("Book", newResponse[10]);
@@ -348,7 +348,7 @@ var recordChoicesButtons = () => {
             // Update the film alternate name if available.
             updateFetchedDataString(filmAlternateName, newResponse[1], updateDetector);
             setFetchedImages("Film", btnColorFavorite, newResponse[2]);
-            updateFetchedDataDate(filmReleaseDate, newResponse[3]);
+            updateFetchedDataDate(filmReleaseDate, newResponse[3], updateDetector);
             updateFetchedDataString(filmRunTimeInput, formatRunningTime(newResponse[4]), updateDetector);
             updateFetchedDataString(directorsInput, newResponse[6].join(", "), updateDetector);
             updateFetchedDataString(writersInput, newResponse[7].join(", "), updateDetector);
@@ -356,7 +356,7 @@ var recordChoicesButtons = () => {
             updateFetchedDataString(producersInput, newResponse[9].join(", "), updateDetector);
             updateFetchedDataString(productionCompaniesInput, newResponse[10].join(", "), updateDetector);
             updateFetchedDataString(starsInput, newResponse[11].join(", "), updateDetector);
-            updateFetchedDataTextArea(filmSynopsis, newResponse[12]);
+            updateFetchedDataTextArea(filmSynopsis, newResponse[12], updateDetector);
             // Update the film genres if available.
             genreFill("Film", newResponse[5]);
             // Hide the preloader now that everything has been loaded and show the buttons if necessary.
@@ -432,10 +432,10 @@ var recordChoicesButtons = () => {
             updateFetchedDataString(mangaName, newResponse[0], updateDetector);
             updateFetchedDataString(jnameInput, newResponse[1], updateDetector);
             setFetchedImages("Manga", btnColorFavorite, newResponse[2]);
-            updateFetchedDataDate(mangaStartDate, newResponse[3]);
-            updateFetchedDataDate(mangaEndDate, newResponse[4]);
+            updateFetchedDataDate(mangaStartDate, newResponse[3], updateDetector);
+            updateFetchedDataDate(mangaEndDate, newResponse[4], updateDetector);
             updateFetchedDataString(writersInput, newResponse[8].map(writer => writer.split(", ").reverse().join(" ")).join(", "), updateDetector);
-            updateFetchedDataTextArea(mangaSynopsis, newResponse[9]);
+            updateFetchedDataTextArea(mangaSynopsis, newResponse[9], updateDetector);
             // Update the manga genres if available.
             genreFill("Manga", newResponse[7]);
             setTimeout(() => {

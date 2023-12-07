@@ -2,6 +2,10 @@
 
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page.
 
+    - counterAssignment: Updates a record counter on the addRecord page associated a record's related content.
+    - updateFetchedDataString: Updates a page text input.
+    - updateFetchedDataTextArea: Updates a page textarea input.
+    - updateFetchedDataDate: Updates a page date input.
     - imgButtons: Adds the functionality for all image buttons based on the category currently chosen.
     - navReset: Resets the top nav to correspond to the clicked category.
     - formatRunningTime: Formats a string to be in the format "XXX m" in order to represent a record runtime.
@@ -26,19 +30,84 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
 
 
 
-var updateFetchedDataString = (elem, data, updateCheck, callback) => {
+var updateGenreLoad = (category, otherGenres, genreData) => {
+    for(let v = 0; v < genreData[0].length; v++) {
+        document.getElementById(category.toLowerCase() + "Genre" + genreData[0][v]).checked = genreData[1][v];
+    }
+    let otherGenresDiv = document.getElementById(category.toLowerCase() + "OtherGenresDiv");
+    otherGenresDiv.style.display = "block";
+    otherGenres.value = genreData[2].join(", ");
+    if(otherGenres.value.trim() != "") { otherGenres.nextElementSibling.classList.add("active"); }
+    otherGenres.setAttribute("lastValue", genreData[2].join(", "));
+};
+
+
+
+var updateImgLoad = (category, imgElem, imgData) => {
+    imgElem.setAttribute("list", imgData.join(","));
+    imgElem.setAttribute("previous", imgData.join(","));
+    imgElem.setAttribute("src", imgData.length > 0 && imgData[0] != "" ? imgData[0] : imgElem.getAttribute("default"));
+    const favImgLink = document.getElementById(category.toLowerCase() + "FavoriteImageLink");
+    if(!imgElem.getAttribute("src").includes("imgDef.png")) {
+        favImgLink.style.visibility = "visible";
+    }
+    favImgLink.style.color = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor;
+};
+
+
+
+/*
+
+Updates a record counter on the addRecord page associated a record's related content.
+
+   - elem is the page element corresponding to a text input.
+   - counter is an integer corresponding to the number of items available in the record's related content of the input's specific type.
+
+*/
+var counterAssignment = (elem, counter) => {
+    elem.value = counter;
+    counter > 0 ? elem.classList.add("valid") : elem.classList.remove("valid");
+};
+
+
+
+/*
+
+Updates a page text input.
+
+   - elem is the page element corresponding to a text input.
+   - data is the string representing the value of the text input.
+   - updateCheck is a boolean representing whether the data is being provided for a record's creation or update.
+   - nameCheck is a boolean representing whether the text input corresponds to a name input for which there is an autocomplete portion attached.
+   - callback is a function meant to be called after updating the text input.
+
+*/
+var updateFetchedDataString = (elem, data, updateCheck, nameCheck = false, callback) => {
     // Update the record data if available.
-    if(data !== null && data != ""  && data != "None found, add some") {
-        updateCheck == true ? elem.value += (elem.value == "" ? data : ", " + data) : elem.value = data;
+    if(data !== null && data.trim() != ""  && data != "None found, add some") {
+        if(updateCheck == true) {
+            elem.value += (elem.value == "" ? data : ", " + data);
+            elem.setAttribute("lastValue", elem.value);
+        }
+        else {
+            elem.value = data;
+        }
+        // updateCheck == true ? elem.value += (elem.value == "" ? data : ", " + data) : elem.value = data;
         elem.classList.add("valid");
-        if(elem.nextElementSibling !== null) {
+        if(nameCheck == true) {
+            elem.nextElementSibling.nextElementSibling.classList.add("active");
+        }
+        else if(elem.nextElementSibling !== null) {
             elem.nextElementSibling.classList.add("active");
         }
     }
     else {
         elem.value = "";
         elem.classList.remove("valid");
-        if(elem.nextElementSibling !== null) {
+        if(nameCheck == true) {
+            elem.nextElementSibling.nextElementSibling.classList.remove("active");
+        }
+        else if(elem.nextElementSibling !== null) {
             elem.nextElementSibling.classList.remove("active");
         }
     }
@@ -47,8 +116,17 @@ var updateFetchedDataString = (elem, data, updateCheck, callback) => {
 
 
 
-var updateFetchedDataTextArea = (elem, data) => {
-    if(data !== null && data != "" && data != "None found, add some") {
+/*
+
+Updates a page textarea input.
+
+   - elem is the page element corresponding to a textarea input.
+   - data is the string representing the value of the textarea input.
+   - updateCheck is a boolean representing whether the data is being provided for a record's creation or update.
+
+*/
+var updateFetchedDataTextArea = (elem, data, updateCheck) => {
+    if(data !== null && data.trim() != "" && data != "None found, add some") {
         let textHolder = data.replace("[Written by MAL Rewrite]", "");
         if(textHolder.includes("(Source:")) {
             textHolder = textHolder.substring(0, textHolder.indexOf("(Source:"));
@@ -56,6 +134,9 @@ var updateFetchedDataTextArea = (elem, data) => {
         elem.value = textHolder.trim();
         elem.classList.add("valid");
         elem.nextElementSibling.classList.add("active");
+        if(updateCheck == true) {
+            elem.setAttribute("lastValue", elem.value);
+        }
     }
     else {
         elem.value = "";
@@ -67,10 +148,22 @@ var updateFetchedDataTextArea = (elem, data) => {
 
 
 
-var updateFetchedDataDate = (elem, data) => {
-    if(data !== null && data != "" && data != " ?") {
+/*
+
+Updates a page date input.
+
+   - elem is the page element corresponding to a date input.
+   - data is the string representing the value of the date input.
+   - updateCheck is a boolean representing whether the data is being provided for a record's creation or update.
+
+*/
+var updateFetchedDataDate = (elem, data, updateCheck) => {
+    if(data !== null && data.trim() != "" && data != " ?") {
         elem.value = new Date(data).toISOString().split("T")[0];
         elem.classList.add("valid");
+        if(updateCheck == true) {
+            elem.setAttribute("lastValue", elem.value);
+        }
     }
     else {
         elem.value = "";
