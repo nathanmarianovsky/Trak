@@ -302,7 +302,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     animeFetchDetailsBtn.style.visibility = "visible";
                     // Hide the anime preloader to indicate that the related content has finished loading.
                     updateAnimePreloader.style.visibility = "hidden";
-                }, 500)
+                }, 500);
                 animeName.setAttribute("oldName", recordData.name != "" ? recordData.name : recordData.jname);
             }
             // If a record is of category type book then proceed.
@@ -350,8 +350,79 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 updateImgLoad("Book", bookImg, recordData.img);
                 updateGenreLoad("Book", bookOtherGenres, recordData.genres);
                 relatedContentListeners(bookOtherGenres);
+                const updateBookPreloader = document.getElementById("bookPreloader");
+                updateBookPreloader.style.top = "-32px";
                 bookTitle.setAttribute("oldISBN", recordData.isbn);
                 bookTitle.setAttribute("oldName", recordData.name);
+                // Initialize the select tags.
+                initSelect();
+            }
+            // If the record is of category type film then proceed.
+            else if(recordData.category == "Film") {
+                const filmSave = document.getElementById("filmSave"),
+                    filmMoreDetailsBtn = document.getElementById("filmMoreDetailsBtn"),
+                    filmFetchDetailsBtn = document.getElementById("filmFetchDetailsBtn");
+                // Define the relevant film record inputs.
+                const filmName = document.getElementById("filmName"),
+                    filmAlternateName = document.getElementById("filmAlternateName"),
+                    filmReleaseDate = document.getElementById("filmReleaseDate"),
+                    filmRunningTime = document.getElementById("filmRunningTime"),
+                    filmLastWatched = document.getElementById("filmLastWatched"),
+                    filmSynopsis = document.getElementById("filmSynopsis"),
+                    filmRating = document.getElementById("filmRating"),
+                    filmReview = document.getElementById("filmReview"),
+                    filmDirectors = document.getElementById("filmDirectors"),
+                    filmWriters = document.getElementById("filmWriters"),
+                    filmMusicians = document.getElementById("filmMusicians"),
+                    filmProducers = document.getElementById("filmProducers"),
+                    filmEditors = document.getElementById("filmEditors"),
+                    filmCinematographers = document.getElementById("filmCinematographers"),
+                    filmDistributors = document.getElementById("filmDistributors"),
+                    filmProductionCompanies = document.getElementById("filmProductionCompanies"),
+                    filmStarring = document.getElementById("filmStarring"),
+                    filmImg = document.getElementById("addRecordFilmImg"),
+                    filmOtherGenres = document.getElementById("filmOtherGenres");
+                // Load the film record portion of the addRecord page.
+                document.getElementById("categoryFilm").click();
+                document.getElementById("categoryFilmDiv").children[0].style.marginTop = "3%";
+                // Populate the film record page with the saved data.
+                updateFetchedDataString(filmName, recordData.name, true, true);
+                relatedContentListeners(filmName);
+                updateFetchedDataString(filmAlternateName, recordData.alternateName, true);
+                relatedContentListeners(filmAlternateName);
+                updateFetchedDataTextArea(filmReview, recordData.review, true);
+                relatedContentListeners(filmReview);
+                updateFetchedDataTextArea(filmSynopsis, recordData.synopsis, true);
+                relatedContentListeners(filmSynopsis);
+                updateFetchedDataString(filmReleaseDate, recordData.release, true);
+                relatedContentListeners(filmReleaseDate);
+                updateFetchedDataString(filmLastWatched, recordData.lastWatched, true);
+                relatedContentListeners(filmLastWatched);
+                updateFetchedDataString(filmDirectors, recordData.directors, true);
+                relatedContentListeners(filmDirectors);
+                updateFetchedDataString(filmWriters, recordData.writers, true);
+                relatedContentListeners(filmWriters);
+                updateFetchedDataString(filmMusicians, recordData.musicians, true);
+                relatedContentListeners(filmMusicians);
+                updateFetchedDataString(filmProducers, recordData.producers, true);
+                relatedContentListeners(filmProducers);
+                updateFetchedDataString(filmEditors, recordData.editors, true);
+                relatedContentListeners(filmEditors);
+                updateFetchedDataString(filmCinematographers, recordData.cinematographers, true);
+                relatedContentListeners(filmCinematographers);
+                updateFetchedDataString(filmDistributors, recordData.distributors, true);
+                relatedContentListeners(filmDistributors);
+                updateFetchedDataString(filmProductionCompanies, recordData.productionCompanies, true);
+                relatedContentListeners(filmProductionCompanies);
+                updateFetchedDataString(filmStarring, recordData.stars, true);
+                relatedContentListeners(filmStarring);
+                filmRating.value = recordData.rating + " m";
+                updateImgLoad("Film", filmImg, recordData.img);
+                updateGenreLoad("Film", filmOtherGenres, recordData.genres);
+                relatedContentListeners(filmOtherGenres);
+                const updateFilmPreloader = document.getElementById("filmPreloader");
+                updateFilmPreloader.style.top = "-32px";
+                filmName.setAttribute("oldName", recordData.name);
                 // Initialize the select tags.
                 initSelect();
             }
@@ -464,7 +535,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     mangaFetchDetailsBtn.style.visibility = "visible";
                     // Hide the manga preloader to indicate that the related content has finished loading.
                     updateMangaPreloader.style.visibility = "hidden";
-                }, 500)
+                }, 500);
                 mangaName.setAttribute("oldName", recordData.name != "" ? recordData.name : recordData.jname);
             }
         }
