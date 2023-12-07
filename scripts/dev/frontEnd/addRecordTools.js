@@ -86,7 +86,7 @@ var updateFetchedDataString = (elem, data, updateCheck, nameCheck = false, callb
     // Update the record data if available.
     if(data !== null && data.trim() != ""  && data != "None found, add some") {
         if(updateCheck == true) {
-            elem.value += (elem.value == "" ? data : ", " + data);
+            elem.value += (elem.value.trim() == "" ? data : ", " + data);
             elem.setAttribute("lastValue", elem.value);
         }
         else {
