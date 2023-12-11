@@ -120,6 +120,7 @@ exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, 
 	else if(info[0] == "Film" || info[0] == "Show") {
 		fldr = info[0] + "-" + exports.formatFolderName(info[1]);
 	}
+	if(mode == "U") { writeData.img = writeData.img.map(file => path.join(savePath, "Trak", "data", fldr, "assets", path.basename(file))); }
 	fs.writeFile(path.join(savePath, "Trak", "data", fldr, "data.json"), JSON.stringify(writeData), "UTF8", err => {
 		// If there was an error in writing to the data file, then notify the user.
 		if(err) {
@@ -487,29 +488,36 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 			// Define the anime worksheet.
 			const animeWorksheet = workbook.addWorksheet("Category-Anime"),
 				bookWorksheet = workbook.addWorksheet("Category-Book"),
+				filmWorksheet = workbook.addWorksheet("Category-Film"),
 				mangaWorksheet = workbook.addWorksheet("Category-Manga");
-			animeWorksheet.views = [{"state": "frozen", "xSplit": 1, "ySplit": 1, "activeCell": "A2"}];
-			bookWorksheet.views = [{"state": "frozen", "xSplit": 1, "ySplit": 1, "activeCell": "A2"}];
-			mangaWorksheet.views = [{"state": "frozen", "xSplit": 1, "ySplit": 1, "activeCell": "A2"}];
+			// Define the default views, alignment, border styles, and font parameter objects.
+			const viewsParameters = {"state": "frozen", "xSplit": 1, "ySplit": 1, "activeCell": "A2"},
+				alignmentParameters = { "vertical": "middle", "horizontal": "center" },
+				fontParameters = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true },
+				styleObj = { "top": { "style": "thin" }, "left": { "style": "thin" }, "bottom": { "style": "thin" }, "right": { "style": "thin" }};
+			animeWorksheet.views = [viewsParameters];
+			bookWorksheet.views = [viewsParameters];
+			filmWorksheet.views = [viewsParameters];
+			filmWorksheet.views = [viewsParameters];
+			mangaWorksheet.views = [viewsParameters];
 			// Update the style of the first row.
 			animeWorksheet.getRow(1).height = 20;
 			bookWorksheet.getRow(1).height = 20;
+			filmWorksheet.getRow(1).height = 20;
 			mangaWorksheet.getRow(1).height = 20;
-			animeWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
-			bookWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
-			mangaWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
-			const styleObj = {
-				"top": { "style": "thin" },
-				"left": { "style": "thin" },
-				"bottom": { "style": "thin" },
-				"right": { "style": "thin" }
-			};
+			animeWorksheet.getRow(1).alignment = alignmentParameters;
+			bookWorksheet.getRow(1).alignment = alignmentParameters;
+			filmWorksheet.getRow(1).alignment = alignmentParameters;
+			mangaWorksheet.getRow(1).alignment = alignmentParameters;
+			// Define the default border styles object.
 			animeWorksheet.getRow(1).border = styleObj;
 			bookWorksheet.getRow(1).border = styleObj;
+			filmWorksheet.getRow(1).border = styleObj;
 			mangaWorksheet.getRow(1).border = styleObj;
-			animeWorksheet.getRow(1).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
-			bookWorksheet.getRow(1).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
-			mangaWorksheet.getRow(1).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
+			animeWorksheet.getRow(1).font = fontParameters;
+			bookWorksheet.getRow(1).font = fontParameters;
+			filmWorksheet.getRow(1).font = fontParameters;
+			mangaWorksheet.getRow(1).font = fontParameters;
 			// Construct the column headers.
 			animeWorksheet.columns = [
 			  	{ "header": "Name", "width": 40},
@@ -541,6 +549,26 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 			  	{ "header": "Last Read Date", "width": 25 },
 			  	{ "header": "Genres", "width": 40 },
 			];
+			filmWorksheet.columns = [
+			  	{ "header": "Name", "width": 40},
+			  	{ "header": "Alternate Name", "width": 30 },
+			  	{ "header": "Rating", "width": 10 },
+			  	{ "header": "Comments/Review", "width": 125 },
+			  	{ "header": "Plot", "width": 125 },
+			  	{ "header": "Runtime", "width": 25 },
+			  	{ "header": "Directors", "width": 30 },
+			  	{ "header": "Editors", "width": 30 },
+			  	{ "header": "Writers", "width": 30 },
+			  	{ "header": "Cinematographers", "width": 30 },
+			  	{ "header": "Music Directors", "width": 30 },
+			  	{ "header": "Distributors", "width": 30 },
+			  	{ "header": "Producers", "width": 30 },
+			  	{ "header": "Production Companies", "width": 30 },
+			  	{ "header": "Starring", "width": 30 },
+			  	{ "header": "Release Date", "width": 25 },
+			  	{ "header": "Last Watched Date", "width": 25 },
+			  	{ "header": "Genres", "width": 40 },
+			];
 			mangaWorksheet.columns = [
 			  	{ "header": "Name", "width": 40},
 			  	{ "header": "Japanese Name", "width": 30 },
@@ -559,19 +587,23 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 			// Iterate through all records the user desires to export.
 			let animeRowCounter = 0,
 				bookRowCounter = 0,
+				filmRowCounter = 0,
 				mangaRowCounter = 0;
+			const worksheetItemName = (sheet, counter, val) => {
+				sheet.getRow(counter + 2).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
+				sheet.getRow(counter + 2).height = 75;
+				sheet.getRow(counter + 2).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
+				sheet.getCell("A" + (counter + 2)).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
+				sheet.getCell("A" + (counter + 2)).border = { "top": { "style": "thin" }, "left": { "style": "thin" }, "bottom": { "style": "thin" }, "right": { "style": "thin" } };
+				sheet.getCell("A" + (counter + 2)).value = val;
+			};
 			for(let x = 0; x < records.length; x++) {
 				// Define the data associated to a record.
 				let iterData = JSON.parse(fs.readFileSync(path.join(dataPath, records[x], "data.json"), "UTF8"));
 				// Generate the worksheets associated to anime library records.
 				if(iterData.category == "Anime") {
 					// Update each row with the relevant anime record details on the anime worksheet.
-					animeWorksheet.getRow(animeRowCounter + 2).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
-					animeWorksheet.getRow(animeRowCounter + 2).height = 75;
-					animeWorksheet.getRow(animeRowCounter + 2).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
-					animeWorksheet.getCell("A" + (animeRowCounter + 2)).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
-					animeWorksheet.getCell("A" + (animeRowCounter + 2)).border = { "top": { "style": "thin" }, "left": { "style": "thin" }, "bottom": { "style": "thin" }, "right": { "style": "thin" } };
-					animeWorksheet.getCell("A" + (animeRowCounter + 2)).value = iterData.name;
+					worksheetItemName(animeWorksheet, animeRowCounter, iterData.name);
 					animeWorksheet.getCell("B" + (animeRowCounter + 2)).value = iterData.jname != "" ? iterData.jname : "N/A";
 					animeWorksheet.getCell("C" + (animeRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 					animeWorksheet.getCell("C" + (animeRowCounter + 2)).value = exports.calculateAnimeGlobalRating(iterData.content);
@@ -706,12 +738,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 				// Generate the worksheet associated to book library records.
 				else if(iterData.category == "Book") {
 					// Update each row with the relevant book record details on the book worksheet.
-					bookWorksheet.getRow(bookRowCounter + 2).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
-					bookWorksheet.getRow(bookRowCounter + 2).height = 75;
-					bookWorksheet.getRow(bookRowCounter + 2).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
-					bookWorksheet.getCell("A" + (bookRowCounter + 2)).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
-					bookWorksheet.getCell("A" + (bookRowCounter + 2)).border = { "top": { "style": "thin" }, "left": { "style": "thin" }, "bottom": { "style": "thin" }, "right": { "style": "thin" } };
-					bookWorksheet.getCell("A" + (bookRowCounter + 2)).value = iterData.name;
+					worksheetItemName(bookWorksheet, bookRowCounter, iterData.name);
 					bookWorksheet.getCell("B" + (bookRowCounter + 2)).value = iterData.originalName != "" ? iterData.originalName : "N/A";
 					bookWorksheet.getCell("C" + (bookRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 					bookWorksheet.getCell("C" + (bookRowCounter + 2)).value = iterData.rating != "" ? iterData.rating : "N/A";
@@ -759,15 +786,89 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					bookWorksheet.getCell("M" + (bookRowCounter + 2)).value = filterGenreStrArr.length > 0 ? filterGenreStrArr.filter(elem => elem.trim() != "").join(", ") : "N/A";
 					bookRowCounter++;
 				}
+
+				// filmWorksheet.columns = [
+				//   	{ "header": "Name", "width": 40},
+				//   	{ "header": "Alternate Name", "width": 30 },
+				//   	{ "header": "Rating", "width": 10 },
+				//   	{ "header": "Comments/Review", "width": 125 },
+				//   	{ "header": "Plot", "width": 125 },
+				//   	{ "header": "Runtime", "width": 25 },
+				//   	{ "header": "Directors", "width": 30 },
+				//   	{ "header": "Editors", "width": 30 },
+				//   	{ "header": "Writers", "width": 30 },
+				//   	{ "header": "Cinematographers", "width": 30 },
+				//   	{ "header": "Music Directors", "width": 30 },
+				//   	{ "header": "Distributors", "width": 30 },
+				//   	{ "header": "Producers", "width": 30 },
+				//   	{ "header": "Production Companies", "width": 30 },
+				//   	{ "header": "Starring", "width": 30 },
+				//   	{ "header": "Release Date", "width": 25 },
+				//   	{ "header": "Last Watched Date", "width": 25 },
+				//   	{ "header": "Genres", "width": 40 },
+				// ];
+
+				// Generate the worksheet associated to film library records.
+				else if(iterData.category == "Film") {
+					// Update each row with the relevant film record details on the film worksheet.
+					worksheetItemName(filmWorksheet, filmRowCounter, iterData.name);
+					filmWorksheet.getCell("B" + (filmRowCounter + 2)).value = iterData.alternateName != "" ? iterData.alternateName : "N/A";
+					filmWorksheet.getCell("C" + (filmRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					filmWorksheet.getCell("C" + (filmRowCounter + 2)).value = iterData.rating != "" ? iterData.rating : "N/A";
+					filmWorksheet.getCell("D" + (filmRowCounter + 2)).value = iterData.review != "" ? iterData.review : "N/A";
+					filmWorksheet.getCell("E" + (filmRowCounter + 2)).value = iterData.synopsis != "" ? iterData.synopsis : "N/A";
+					filmWorksheet.getCell("F" + (filmRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					filmWorksheet.getCell("F" + (filmRowCounter + 2)).value = iterData.runTime != "" ? exports.formatISBNString(iterData.runTime) : "N/A";
+					filmWorksheet.getCell("G" + (filmRowCounter + 2)).value = iterData.directors != "" ? iterData.directors : "N/A";
+					filmWorksheet.getCell("H" + (filmRowCounter + 2)).value = iterData.editors != "" ? iterData.editors : "N/A";
+					filmWorksheet.getCell("I" + (filmRowCounter + 2)).value = iterData.writers != "" ? iterData.writers : "N/A";
+					filmWorksheet.getCell("J" + (filmRowCounter + 2)).value = iterData.cinematographers != "" ? iterData.cinematographers : "N/A";
+					filmWorksheet.getCell("K" + (filmRowCounter + 2)).value = iterData.musicians != "" ? iterData.musicians : "N/A";
+					filmWorksheet.getCell("L" + (filmRowCounter + 2)).value = iterData.distributors != "" ? iterData.distributors : "N/A";
+					filmWorksheet.getCell("M" + (filmRowCounter + 2)).value = iterData.producers != "" ? iterData.producers : "N/A";
+					filmWorksheet.getCell("N" + (filmRowCounter + 2)).value = iterData.productionCompanies != "" ? iterData.productionCompanies : "N/A";
+					filmWorksheet.getCell("O" + (filmRowCounter + 2)).value = iterData.stars != "" ? iterData.stars : "N/A";
+					filmWorksheet.getCell("P" + (filmRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					let releaseDateArr = iterData.release.split("-");
+					filmWorksheet.getCell("P" + (filmRowCounter + 2)).value = releaseDateArr.length == 3 ? releaseDateArr[1] + "-" + releaseDateArr[2] + "-" + releaseDateArr[0] : "N/A";
+					filmWorksheet.getCell("Q" + (filmRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					let lastWatchedArr = iterData.lastWatched.split("-");
+					filmWorksheet.getCell("Q" + (filmRowCounter + 2)).value = lastWatchedArr.length == 3 ? lastWatchedArr[1] + "-" + lastWatchedArr[2] + "-" + lastWatchedArr[0] : "N/A";
+					let filterGenreStrArr = [];
+					for(let f = 0; f < iterData.genres[0].length; f++) {
+						if(iterData.genres[1][f] == true) {
+				            if(iterData.genres[0][f] == "CGDCT") {
+				                filterGenreStrArr.push("CGDCT");
+				            }
+				            else if(iterData.genres[0][f] == "ComingOfAge") {
+				                filterGenreStrArr.push("Coming-of-Age");
+				            }
+				            else if(iterData.genres[0][f] == "PostApocalyptic") {
+				                filterGenreStrArr.push("Post-Apocalyptic");
+				            }
+				            else if(iterData.genres[0][f] == "SciFi") {
+				                filterGenreStrArr.push("Sci-Fi");
+				            }
+				            else if(iterData.genres[0][f] == "SliceOfLife") {
+				                filterGenreStrArr.push("Slice of Life");
+				            }
+				            else {
+				                filterGenreStrArr.push(iterData.genres[0][f].split(/(?=[A-Z])/).join(" "));
+				            }
+						}
+					}
+					filterGenreStrArr = filterGenreStrArr.concat(iterData.genres[2]);
+					filterGenreStrArr.sort((a, b) => a.localeCompare(b));
+					filmWorksheet.getCell("R" + (filmRowCounter + 2)).value = filterGenreStrArr.length > 0 ? filterGenreStrArr.filter(elem => elem.trim() != "").join(", ") : "N/A";
+					filmRowCounter++;
+				}
+
+
+
 				// Generate the worksheet associated to manga library records.
 				else if(iterData.category == "Manga") {
 					// Update each row with the relevant manga record details on the manga worksheet.
-					mangaWorksheet.getRow(mangaRowCounter + 2).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
-					mangaWorksheet.getRow(mangaRowCounter + 2).height = 75;
-					mangaWorksheet.getRow(mangaRowCounter + 2).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
-					mangaWorksheet.getCell("A" + (mangaRowCounter + 2)).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
-					mangaWorksheet.getCell("A" + (mangaRowCounter + 2)).border = { "top": { "style": "thin" }, "left": { "style": "thin" }, "bottom": { "style": "thin" }, "right": { "style": "thin" } };
-					mangaWorksheet.getCell("A" + (mangaRowCounter + 2)).value = iterData.name;
+					worksheetItemName(mangaWorksheet, mangaRowCounter, iterData.name);
 					mangaWorksheet.getCell("B" + (mangaRowCounter + 2)).value = iterData.jname != "" ? iterData.jname : "N/A";
 					mangaWorksheet.getCell("C" + (mangaRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
 					mangaWorksheet.getCell("C" + (mangaRowCounter + 2)).value = exports.calculateMangaGlobalRating(iterData.content);
