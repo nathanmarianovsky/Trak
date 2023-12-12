@@ -298,11 +298,6 @@ exports.addFilmListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainW
 		require("./filmTools").filmFetchDetails(log, require("movier"), tools, event, submission);
 	});
 
-	// // Handles the fetching of anime releases based on the season.
-	// ipc.on("animeFetchSeason", (event, submissionArr) => {
-	// 	require("./animeTools").animeFetchSeason(log, require("mal-scraper"), event, submissionArr);
-	// });
-
 	// // Handles the fetching of anime releases based on a query search.
 	// ipc.on("animeFetchSearch", (event, submission) => {
 	// 	require("./animeTools").animeFetchSearch(log, require("mal-scraper"), event, submission);

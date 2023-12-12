@@ -492,8 +492,11 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 				mangaWorksheet = workbook.addWorksheet("Category-Manga");
 			// Define the default views, alignment, border styles, and font parameter objects.
 			const viewsParameters = {"state": "frozen", "xSplit": 1, "ySplit": 1, "activeCell": "A2"},
-				alignmentParameters = { "vertical": "middle", "horizontal": "center" },
-				fontParameters = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true },
+				alignmentMidCenParameters = { "vertical": "middle", "horizontal": "center" },
+				alignmentMidCenWrapParameters = { "vertical": "middle", "horizontal": "center", "wrapText": true },
+				alignmentMidLefWrapParameters = { "vertical": "middle", "horizontal": "left", "wrapText": true },
+				fontLargeBoldParameters = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true },
+				fontSmallParameters = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false },
 				styleObj = { "top": { "style": "thin" }, "left": { "style": "thin" }, "bottom": { "style": "thin" }, "right": { "style": "thin" }};
 			animeWorksheet.views = [viewsParameters];
 			bookWorksheet.views = [viewsParameters];
@@ -505,19 +508,19 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 			bookWorksheet.getRow(1).height = 20;
 			filmWorksheet.getRow(1).height = 20;
 			mangaWorksheet.getRow(1).height = 20;
-			animeWorksheet.getRow(1).alignment = alignmentParameters;
-			bookWorksheet.getRow(1).alignment = alignmentParameters;
-			filmWorksheet.getRow(1).alignment = alignmentParameters;
-			mangaWorksheet.getRow(1).alignment = alignmentParameters;
+			animeWorksheet.getRow(1).alignment = alignmentMidCenParameters;
+			bookWorksheet.getRow(1).alignment = alignmentMidCenParameters;
+			filmWorksheet.getRow(1).alignment = alignmentMidCenParameters;
+			mangaWorksheet.getRow(1).alignment = alignmentMidCenParameters;
 			// Define the default border styles object.
 			animeWorksheet.getRow(1).border = styleObj;
 			bookWorksheet.getRow(1).border = styleObj;
 			filmWorksheet.getRow(1).border = styleObj;
 			mangaWorksheet.getRow(1).border = styleObj;
-			animeWorksheet.getRow(1).font = fontParameters;
-			bookWorksheet.getRow(1).font = fontParameters;
-			filmWorksheet.getRow(1).font = fontParameters;
-			mangaWorksheet.getRow(1).font = fontParameters;
+			animeWorksheet.getRow(1).font = fontLargeBoldParameters;
+			bookWorksheet.getRow(1).font = fontLargeBoldParameters;
+			filmWorksheet.getRow(1).font = fontLargeBoldParameters;
+			mangaWorksheet.getRow(1).font = fontLargeBoldParameters;
 			// Construct the column headers.
 			animeWorksheet.columns = [
 			  	{ "header": "Name", "width": 40},
@@ -584,19 +587,54 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 			  	{ "header": "End Date", "width": 15 },
 			  	{ "header": "Genres", "width": 40 },
 			];
+			// Define the function which handles attaching a record's name to a worksheet.
+			const worksheetItemName = (sheet, counter, val) => {
+				sheet.getRow(counter + 2).alignment = alignmentMidLefWrapParameters;
+				sheet.getRow(counter + 2).height = 75;
+				sheet.getRow(counter + 2).font = fontSmallParameters;
+				sheet.getCell("A" + (counter + 2)).font = fontLargeBoldParameters;
+				sheet.getCell("A" + (counter + 2)).border = styleObj;
+				sheet.getCell("A" + (counter + 2)).value = val;
+			};
+			// Define the function which handles attaching a date item for a record to a worksheet.
+			const worksheetDateItem = (sheet, dateCell, counter, valArr) => {
+				sheet.getCell(dateCell + (counter + 2)).alignment = alignmentMidCenWrapParameters;
+				sheet.getCell(dateCell + (counter + 2)).value = valArr.length == 3 ? valArr[1] + "-" + valArr[2] + "-" + valArr[0] : "N/A";
+			};
+			// Define the function which handles attaching a record's genres/tags to a worksheet.
+			const genreCellFill = (sheet, genLst, genCell, counter) => {
+				let filterGenreStrArr = [];
+				for(let f = 0; f < genLst[0].length; f++) {
+					if(genLst[1][f] == true) {
+			            if(genLst[0][f] == "CGDCT") {
+			                filterGenreStrArr.push("CGDCT");
+			            }
+			            else if(genLst[0][f] == "ComingOfAge") {
+			                filterGenreStrArr.push("Coming-of-Age");
+			            }
+			            else if(genLst[0][f] == "PostApocalyptic") {
+			                filterGenreStrArr.push("Post-Apocalyptic");
+			            }
+			            else if(genLst[0][f] == "SciFi") {
+			                filterGenreStrArr.push("Sci-Fi");
+			            }
+			            else if(genLst[0][f] == "SliceOfLife") {
+			                filterGenreStrArr.push("Slice of Life");
+			            }
+			            else {
+			                filterGenreStrArr.push(genLst[0][f].split(/(?=[A-Z])/).join(" "));
+			            }
+					}
+				}
+				filterGenreStrArr = filterGenreStrArr.concat(genLst[2]);
+				filterGenreStrArr.sort((a, b) => a.localeCompare(b));
+				sheet.getCell(genCell + (counter + 2)).value = filterGenreStrArr.length > 0 ? filterGenreStrArr.filter(elem => elem.trim() != "").join(", ") : "N/A";
+			};
 			// Iterate through all records the user desires to export.
 			let animeRowCounter = 0,
 				bookRowCounter = 0,
 				filmRowCounter = 0,
 				mangaRowCounter = 0;
-			const worksheetItemName = (sheet, counter, val) => {
-				sheet.getRow(counter + 2).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
-				sheet.getRow(counter + 2).height = 75;
-				sheet.getRow(counter + 2).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
-				sheet.getCell("A" + (counter + 2)).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
-				sheet.getCell("A" + (counter + 2)).border = { "top": { "style": "thin" }, "left": { "style": "thin" }, "bottom": { "style": "thin" }, "right": { "style": "thin" } };
-				sheet.getCell("A" + (counter + 2)).value = val;
-			};
 			for(let x = 0; x < records.length; x++) {
 				// Define the data associated to a record.
 				let iterData = JSON.parse(fs.readFileSync(path.join(dataPath, records[x], "data.json"), "UTF8"));
@@ -605,7 +643,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					// Update each row with the relevant anime record details on the anime worksheet.
 					worksheetItemName(animeWorksheet, animeRowCounter, iterData.name);
 					animeWorksheet.getCell("B" + (animeRowCounter + 2)).value = iterData.jname != "" ? iterData.jname : "N/A";
-					animeWorksheet.getCell("C" + (animeRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					animeWorksheet.getCell("C" + (animeRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
 					animeWorksheet.getCell("C" + (animeRowCounter + 2)).value = exports.calculateAnimeGlobalRating(iterData.content);
 					animeWorksheet.getCell("D" + (animeRowCounter + 2)).value = iterData.review != "" ? iterData.review : "N/A";
 					animeWorksheet.getCell("E" + (animeRowCounter + 2)).value = iterData.synopsis != "" ? iterData.synopsis : "N/A";
@@ -615,35 +653,8 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					animeWorksheet.getCell("I" + (animeRowCounter + 2)).value = iterData.musicians != "" ? iterData.musicians : "N/A";
 					animeWorksheet.getCell("J" + (animeRowCounter + 2)).value = iterData.studio != "" ? iterData.studio : "N/A";
 					animeWorksheet.getCell("K" + (animeRowCounter + 2)).value = iterData.license != "" ? iterData.license : "N/A";
-					animeWorksheet.getCell("L" + (animeRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-					let dateArr = exports.calculateReleaseDate(iterData.content).split("-");
-					animeWorksheet.getCell("L" + (animeRowCounter + 2)).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-					let filterGenreStrArr = [];
-					for(let f = 0; f < iterData.genres[0].length; f++) {
-						if(iterData.genres[1][f] == true) {
-				            if(iterData.genres[0][f] == "CGDCT") {
-				                filterGenreStrArr.push("CGDCT");
-				            }
-				            else if(iterData.genres[0][f] == "ComingOfAge") {
-				                filterGenreStrArr.push("Coming-of-Age");
-				            }
-				            else if(iterData.genres[0][f] == "PostApocalyptic") {
-				                filterGenreStrArr.push("Post-Apocalyptic");
-				            }
-				            else if(iterData.genres[0][f] == "SciFi") {
-				                filterGenreStrArr.push("Sci-Fi");
-				            }
-				            else if(iterData.genres[0][f] == "SliceOfLife") {
-				                filterGenreStrArr.push("Slice of Life");
-				            }
-				            else {
-				                filterGenreStrArr.push(iterData.genres[0][f].split(/(?=[A-Z])/).join(" "));
-				            }
-						}
-					}
-					filterGenreStrArr = filterGenreStrArr.concat(iterData.genres[2]);
-					filterGenreStrArr.sort((a, b) => a.localeCompare(b));
-					animeWorksheet.getCell("M" + (animeRowCounter + 2)).value = filterGenreStrArr.length > 0 ? filterGenreStrArr.filter(elem => elem.trim() != "").join(", ") : "N/A";
+					worksheetDateItem(animeWorksheet, "L", animeRowCounter, exports.calculateReleaseDate(iterData.content).split("-"));
+					genreCellFill(animeWorksheet, iterData.genres, "M", animeRowCounter);
 					// If the user desires to export a detailed xlsx file then create a new worksheet for each anime record and populate it with the related content information.
 					if(detailed == true) {
 						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-");
@@ -652,14 +663,9 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
 						// Update the style of the first row.
 						detailedWorksheet.getRow(1).height = 20;
-						detailedWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
-						detailedWorksheet.getRow(1).border = {
-							"top": { "style": "thin" },
-							"left": { "style": "thin" },
-							"bottom": { "style": "thin" },
-							"right": { "style": "thin" }
-						};
-						detailedWorksheet.getRow(1).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
+						detailedWorksheet.getRow(1).alignment = alignmentMidCenParameters;
+						detailedWorksheet.getRow(1).border = styleObj;
+						detailedWorksheet.getRow(1).font = fontLargeBoldParameters;
 						// Construct the column headers.
 						detailedWorksheet.columns = [
 						  	{ "header": "Type", "width": 20},
@@ -680,22 +686,16 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 							// If the related content item corresponds to a season then add all associated episodes.
 							if(iterData.content[v].scenario == "Season") {
 								for(let t = 0; t < iterData.content[v].episodes.length; t++) {
-									detailedWorksheet.getRow(rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
-									detailedWorksheet.getRow(rowPos).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
+									detailedWorksheet.getRow(rowPos).font = fontSmallParameters;
+									detailedWorksheet.getRow(rowPos).alignment = alignmentMidLefWrapParameters;
 									detailedWorksheet.getRow(rowPos).height = 75;
 									detailedWorksheet.getCell("A" + rowPos).value = "Season";
 									detailedWorksheet.getCell("B" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
-									detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-									dateArr = iterData.content[v].start.split("-");
-									detailedWorksheet.getCell("C" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-									detailedWorksheet.getCell("D" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-									dateArr = iterData.content[v].end.split("-");
-									detailedWorksheet.getCell("D" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
+									worksheetDateItem(detailedWorksheet, "C", rowPos - 2, iterData.content[v].start.split("-"));
+									worksheetDateItem(detailedWorksheet, "D", rowPos - 2, iterData.content[v].end.split("-"));
 									detailedWorksheet.getCell("E" + rowPos).value = iterData.content[v].status != "" ? iterData.content[v].status : "N/A";
-									detailedWorksheet.getCell("F" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-									dateArr = iterData.content[v].episodes[t].watched.split("-");
-									detailedWorksheet.getCell("F" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-									detailedWorksheet.getCell("G" + rowPos).alignment = { "vertical": "middle", "horizontal": "center" };
+									worksheetDateItem(detailedWorksheet, "F", rowPos - 2, iterData.content[v].episodes[t].watched.split("-"));
+									detailedWorksheet.getCell("G" + rowPos).alignment = alignmentMidCenParameters;
 									detailedWorksheet.getCell("G" + rowPos).value = iterData.content[v].episodes[t].rating != "" ? iterData.content[v].episodes[t].rating : "N/A";
 									let maxCharCount = String(iterData.content[v].episodes.length).length;
 									detailedWorksheet.getCell("H" + rowPos).value = String(t + 1).length < maxCharCount ? new Array(maxCharCount - String(t + 1).length).fill("0").join("") + (t + 1) : t + 1;
@@ -706,21 +706,17 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 							}
 							// Otherwise if the related content item corresponds to a single listing then add a single episode.
 							else if(iterData.content[v].scenario == "Single") {
-								detailedWorksheet.getRow(rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
-								detailedWorksheet.getRow(rowPos).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
+								detailedWorksheet.getRow(rowPos).font = fontSmallParameters;
+								detailedWorksheet.getRow(rowPos).alignment = alignmentMidLefWrapParameters;
 								detailedWorksheet.getRow(rowPos).height = 75;
 								detailedWorksheet.getCell("A" + rowPos).value = iterData.content[v].type != "" ? iterData.content[v].type : "Single";
 								detailedWorksheet.getCell("B" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
-								detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-								dateArr = iterData.content[v].release.split("-");
-								detailedWorksheet.getCell("C" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-								detailedWorksheet.getCell("D" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+								worksheetDateItem(detailedWorksheet, "C", rowPos - 2, iterData.content[v].release.split("-"));
+								detailedWorksheet.getCell("D" + rowPos).alignment = alignmentMidCenWrapParameters;
 								detailedWorksheet.getCell("D" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
 								detailedWorksheet.getCell("E" + rowPos).value = "N/A";
-								detailedWorksheet.getCell("F" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-								dateArr = iterData.content[v].watched.split("-");
-								detailedWorksheet.getCell("F" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-								detailedWorksheet.getCell("G" + rowPos).alignment = { "vertical": "middle", "horizontal": "center" };
+								worksheetDateItem(detailedWorksheet, "F", rowPos - 2, iterData.content[v].watched.split("-"));
+								detailedWorksheet.getCell("G" + rowPos).alignment = alignmentMidCenParameters;
 								detailedWorksheet.getCell("G" + rowPos).value = iterData.content[v].rating != "" ? iterData.content[v].rating : "N/A";
 								detailedWorksheet.getCell("H" + rowPos).value = "1";
 								detailedWorksheet.getCell("I" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
@@ -740,84 +736,33 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					// Update each row with the relevant book record details on the book worksheet.
 					worksheetItemName(bookWorksheet, bookRowCounter, iterData.name);
 					bookWorksheet.getCell("B" + (bookRowCounter + 2)).value = iterData.originalName != "" ? iterData.originalName : "N/A";
-					bookWorksheet.getCell("C" + (bookRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					bookWorksheet.getCell("C" + (bookRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
 					bookWorksheet.getCell("C" + (bookRowCounter + 2)).value = iterData.rating != "" ? iterData.rating : "N/A";
 					bookWorksheet.getCell("D" + (bookRowCounter + 2)).value = iterData.review != "" ? iterData.review : "N/A";
 					bookWorksheet.getCell("E" + (bookRowCounter + 2)).value = iterData.synopsis != "" ? iterData.synopsis : "N/A";
-					bookWorksheet.getCell("F" + (bookRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					bookWorksheet.getCell("F" + (bookRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
 					bookWorksheet.getCell("F" + (bookRowCounter + 2)).value = iterData.isbn != "" ? exports.formatISBNString(iterData.isbn) : "N/A";
 					bookWorksheet.getCell("G" + (bookRowCounter + 2)).value = iterData.authors != "" ? iterData.authors : "N/A";
 					bookWorksheet.getCell("H" + (bookRowCounter + 2)).value = iterData.publisher != "" ? iterData.publisher : "N/A";
-					bookWorksheet.getCell("I" + (bookRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-					let publicationDateArr = iterData.publicationDate.split("-");
-					bookWorksheet.getCell("I" + (bookRowCounter + 2)).value = publicationDateArr.length == 3 ? publicationDateArr[1] + "-" + publicationDateArr[2] + "-" + publicationDateArr[0] : "N/A";
-					bookWorksheet.getCell("J" + (bookRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					worksheetDateItem(bookWorksheet, "I", bookRowCounter, iterData.publicationDate.split("-"));
+					bookWorksheet.getCell("J" + (bookRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
 					bookWorksheet.getCell("J" + (bookRowCounter + 2)).value = iterData.pages != "" ? iterData.pages : "N/A";
-					bookWorksheet.getCell("K" + (bookRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					bookWorksheet.getCell("K" + (bookRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
 					bookWorksheet.getCell("K" + (bookRowCounter + 2)).value = exports.formatMedia(iterData.media);
-					bookWorksheet.getCell("L" + (bookRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-					let lastReadArr = iterData.lastRead.split("-");
-					bookWorksheet.getCell("L" + (bookRowCounter + 2)).value = lastReadArr.length == 3 ? lastReadArr[1] + "-" + lastReadArr[2] + "-" + lastReadArr[0] : "N/A";
-					let filterGenreStrArr = [];
-					for(let f = 0; f < iterData.genres[0].length; f++) {
-						if(iterData.genres[1][f] == true) {
-				            if(iterData.genres[0][f] == "CGDCT") {
-				                filterGenreStrArr.push("CGDCT");
-				            }
-				            else if(iterData.genres[0][f] == "ComingOfAge") {
-				                filterGenreStrArr.push("Coming-of-Age");
-				            }
-				            else if(iterData.genres[0][f] == "PostApocalyptic") {
-				                filterGenreStrArr.push("Post-Apocalyptic");
-				            }
-				            else if(iterData.genres[0][f] == "SciFi") {
-				                filterGenreStrArr.push("Sci-Fi");
-				            }
-				            else if(iterData.genres[0][f] == "SliceOfLife") {
-				                filterGenreStrArr.push("Slice of Life");
-				            }
-				            else {
-				                filterGenreStrArr.push(iterData.genres[0][f].split(/(?=[A-Z])/).join(" "));
-				            }
-						}
-					}
-					filterGenreStrArr = filterGenreStrArr.concat(iterData.genres[2]);
-					filterGenreStrArr.sort((a, b) => a.localeCompare(b));
-					bookWorksheet.getCell("M" + (bookRowCounter + 2)).value = filterGenreStrArr.length > 0 ? filterGenreStrArr.filter(elem => elem.trim() != "").join(", ") : "N/A";
+					worksheetDateItem(bookWorksheet, "L", bookRowCounter, iterData.lastRead.split("-"));
+					genreCellFill(bookWorksheet, iterData.genres, "M", bookRowCounter);
 					bookRowCounter++;
 				}
-
-				// filmWorksheet.columns = [
-				//   	{ "header": "Name", "width": 40},
-				//   	{ "header": "Alternate Name", "width": 30 },
-				//   	{ "header": "Rating", "width": 10 },
-				//   	{ "header": "Comments/Review", "width": 125 },
-				//   	{ "header": "Plot", "width": 125 },
-				//   	{ "header": "Runtime", "width": 25 },
-				//   	{ "header": "Directors", "width": 30 },
-				//   	{ "header": "Editors", "width": 30 },
-				//   	{ "header": "Writers", "width": 30 },
-				//   	{ "header": "Cinematographers", "width": 30 },
-				//   	{ "header": "Music Directors", "width": 30 },
-				//   	{ "header": "Distributors", "width": 30 },
-				//   	{ "header": "Producers", "width": 30 },
-				//   	{ "header": "Production Companies", "width": 30 },
-				//   	{ "header": "Starring", "width": 30 },
-				//   	{ "header": "Release Date", "width": 25 },
-				//   	{ "header": "Last Watched Date", "width": 25 },
-				//   	{ "header": "Genres", "width": 40 },
-				// ];
-
 				// Generate the worksheet associated to film library records.
 				else if(iterData.category == "Film") {
 					// Update each row with the relevant film record details on the film worksheet.
 					worksheetItemName(filmWorksheet, filmRowCounter, iterData.name);
 					filmWorksheet.getCell("B" + (filmRowCounter + 2)).value = iterData.alternateName != "" ? iterData.alternateName : "N/A";
-					filmWorksheet.getCell("C" + (filmRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					filmWorksheet.getCell("C" + (filmRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
 					filmWorksheet.getCell("C" + (filmRowCounter + 2)).value = iterData.rating != "" ? iterData.rating : "N/A";
 					filmWorksheet.getCell("D" + (filmRowCounter + 2)).value = iterData.review != "" ? iterData.review : "N/A";
 					filmWorksheet.getCell("E" + (filmRowCounter + 2)).value = iterData.synopsis != "" ? iterData.synopsis : "N/A";
-					filmWorksheet.getCell("F" + (filmRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					filmWorksheet.getCell("F" + (filmRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
 					filmWorksheet.getCell("F" + (filmRowCounter + 2)).value = iterData.runTime != "" ? exports.formatISBNString(iterData.runTime) : "N/A";
 					filmWorksheet.getCell("G" + (filmRowCounter + 2)).value = iterData.directors != "" ? iterData.directors : "N/A";
 					filmWorksheet.getCell("H" + (filmRowCounter + 2)).value = iterData.editors != "" ? iterData.editors : "N/A";
@@ -828,49 +773,17 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					filmWorksheet.getCell("M" + (filmRowCounter + 2)).value = iterData.producers != "" ? iterData.producers : "N/A";
 					filmWorksheet.getCell("N" + (filmRowCounter + 2)).value = iterData.productionCompanies != "" ? iterData.productionCompanies : "N/A";
 					filmWorksheet.getCell("O" + (filmRowCounter + 2)).value = iterData.stars != "" ? iterData.stars : "N/A";
-					filmWorksheet.getCell("P" + (filmRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-					let releaseDateArr = iterData.release.split("-");
-					filmWorksheet.getCell("P" + (filmRowCounter + 2)).value = releaseDateArr.length == 3 ? releaseDateArr[1] + "-" + releaseDateArr[2] + "-" + releaseDateArr[0] : "N/A";
-					filmWorksheet.getCell("Q" + (filmRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-					let lastWatchedArr = iterData.lastWatched.split("-");
-					filmWorksheet.getCell("Q" + (filmRowCounter + 2)).value = lastWatchedArr.length == 3 ? lastWatchedArr[1] + "-" + lastWatchedArr[2] + "-" + lastWatchedArr[0] : "N/A";
-					let filterGenreStrArr = [];
-					for(let f = 0; f < iterData.genres[0].length; f++) {
-						if(iterData.genres[1][f] == true) {
-				            if(iterData.genres[0][f] == "CGDCT") {
-				                filterGenreStrArr.push("CGDCT");
-				            }
-				            else if(iterData.genres[0][f] == "ComingOfAge") {
-				                filterGenreStrArr.push("Coming-of-Age");
-				            }
-				            else if(iterData.genres[0][f] == "PostApocalyptic") {
-				                filterGenreStrArr.push("Post-Apocalyptic");
-				            }
-				            else if(iterData.genres[0][f] == "SciFi") {
-				                filterGenreStrArr.push("Sci-Fi");
-				            }
-				            else if(iterData.genres[0][f] == "SliceOfLife") {
-				                filterGenreStrArr.push("Slice of Life");
-				            }
-				            else {
-				                filterGenreStrArr.push(iterData.genres[0][f].split(/(?=[A-Z])/).join(" "));
-				            }
-						}
-					}
-					filterGenreStrArr = filterGenreStrArr.concat(iterData.genres[2]);
-					filterGenreStrArr.sort((a, b) => a.localeCompare(b));
-					filmWorksheet.getCell("R" + (filmRowCounter + 2)).value = filterGenreStrArr.length > 0 ? filterGenreStrArr.filter(elem => elem.trim() != "").join(", ") : "N/A";
+					worksheetDateItem(filmWorksheet, "P", filmRowCounter, iterData.release.split("-"));
+					worksheetDateItem(filmWorksheet, "Q", filmRowCounter, iterData.lastWatched.split("-"));
+					genreCellFill(filmWorksheet, iterData.genres, "R", filmRowCounter);
 					filmRowCounter++;
 				}
-
-
-
 				// Generate the worksheet associated to manga library records.
 				else if(iterData.category == "Manga") {
 					// Update each row with the relevant manga record details on the manga worksheet.
 					worksheetItemName(mangaWorksheet, mangaRowCounter, iterData.name);
 					mangaWorksheet.getCell("B" + (mangaRowCounter + 2)).value = iterData.jname != "" ? iterData.jname : "N/A";
-					mangaWorksheet.getCell("C" + (mangaRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					mangaWorksheet.getCell("C" + (mangaRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
 					mangaWorksheet.getCell("C" + (mangaRowCounter + 2)).value = exports.calculateMangaGlobalRating(iterData.content);
 					mangaWorksheet.getCell("D" + (mangaRowCounter + 2)).value = iterData.review != "" ? iterData.review : "N/A";
 					mangaWorksheet.getCell("E" + (mangaRowCounter + 2)).value = iterData.synopsis != "" ? iterData.synopsis : "N/A";
@@ -879,38 +792,11 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					mangaWorksheet.getCell("H" + (mangaRowCounter + 2)).value = iterData.publisher != "" ? iterData.publisher : "N/A";
 					mangaWorksheet.getCell("I" + (mangaRowCounter + 2)).value = iterData.jpublisher != "" ? iterData.jpublisher : "N/A";
 					mangaWorksheet.getCell("J" + (mangaRowCounter + 2)).value = iterData.demographic != "" ? iterData.demographic : "N/A";
-					mangaWorksheet.getCell("K" + (mangaRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-					let dateArr = iterData.start.split("-");
-					mangaWorksheet.getCell("K" + (mangaRowCounter + 2)).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-					mangaWorksheet.getCell("L" + (mangaRowCounter + 2)).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+					worksheetDateItem(mangaWorksheet, "K", mangaRowCounter, iterData.start.split("-"));
+					mangaWorksheet.getCell("L" + (mangaRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
 					dateArr = iterData.end.split("-");
 					mangaWorksheet.getCell("L" + (mangaRowCounter + 2)).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-					let filterGenreStrArr = [];
-					for(let f = 0; f < iterData.genres[0].length; f++) {
-						if(iterData.genres[1][f] == true) {
-				            if(iterData.genres[0][f] == "CGDCT") {
-				                filterGenreStrArr.push("CGDCT");
-				            }
-				            else if(iterData.genres[0][f] == "ComingOfAge") {
-				                filterGenreStrArr.push("Coming-of-Age");
-				            }
-				            else if(iterData.genres[0][f] == "PostApocalyptic") {
-				                filterGenreStrArr.push("Post-Apocalyptic");
-				            }
-				            else if(iterData.genres[0][f] == "SciFi") {
-				                filterGenreStrArr.push("Sci-Fi");
-				            }
-				            else if(iterData.genres[0][f] == "SliceOfLife") {
-				                filterGenreStrArr.push("Slice of Life");
-				            }
-				            else {
-				                filterGenreStrArr.push(iterData.genres[0][f].split(/(?=[A-Z])/).join(" "));
-				            }
-						}
-					}
-					filterGenreStrArr = filterGenreStrArr.concat(iterData.genres[2]);
-					filterGenreStrArr.sort((a, b) => a.localeCompare(b));
-					mangaWorksheet.getCell("M" + (mangaRowCounter + 2)).value = filterGenreStrArr.length > 0 ? filterGenreStrArr.filter(elem => elem.trim() != "").join(", ") : "N/A";
+					genreCellFill(mangaWorksheet, iterData.genres, "M", mangaRowCounter);
 					// If the user desires to export a detailed xlsx file then create a new worksheet for each manga record and populate it with the related content information.
 					if(detailed == true) {
 						// Define the worksheet associated to the manga record.
@@ -919,9 +805,9 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
 						// Update the style of the first row.
 						detailedWorksheet.getRow(1).height = 20;
-						detailedWorksheet.getRow(1).alignment = { "vertical": "middle", "horizontal": "center" };
+						detailedWorksheet.getRow(1).alignment = alignmentMidCenParameters;
 						detailedWorksheet.getRow(1).border = styleObj;
-						detailedWorksheet.getRow(1).font = { "size": 12, "name": "Arial", "family": 2, "scheme": "minor", "bold": true };
+						detailedWorksheet.getRow(1).font = fontLargeBoldParameters;
 						// Construct the column headers.
 						detailedWorksheet.columns = [
 						  	{ "header": "Type", "width": 20},
@@ -937,19 +823,15 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 						let rowPos = 2;
 						// Iterate through the related content of a manga record.
 						for(let v = 0; v < iterData.content.length; v++) {
-							detailedWorksheet.getRow(rowPos).font = { "size": 10, "name": "Arial", "family": 2, "scheme": "minor", "bold": false };
-							detailedWorksheet.getRow(rowPos).alignment = { "vertical": "middle", "horizontal": "left", "wrapText": true };
+							detailedWorksheet.getRow(rowPos).font = fontSmallParameters;
+							detailedWorksheet.getRow(rowPos).alignment = alignmentMidLefWrapParameters;
 							detailedWorksheet.getRow(rowPos).height = 75;
 							detailedWorksheet.getCell("A" + rowPos).value = iterData.content[v].scenario
 							detailedWorksheet.getCell("B" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
-							detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-							detailedWorksheet.getCell("D" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-							dateArr = iterData.content[v].release.split("-");
-							detailedWorksheet.getCell("D" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-							detailedWorksheet.getCell("E" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
-							dateArr = iterData.content[v].read.split("-");
-							detailedWorksheet.getCell("E" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
-							detailedWorksheet.getCell("F" + rowPos).alignment = { "vertical": "middle", "horizontal": "center" };
+							detailedWorksheet.getCell("C" + rowPos).alignment = alignmentMidCenWrapParameters;
+							worksheetDateItem(detailedWorksheet, "D", rowPos - 2, iterData.content[v].release.split("-"));
+							worksheetDateItem(detailedWorksheet, "E", rowPos - 2, iterData.content[v].read.split("-"));
+							detailedWorksheet.getCell("F" + rowPos).alignment = alignmentMidCenParameters;
 							detailedWorksheet.getCell("F" + rowPos).value = iterData.content[v].rating != "" ? iterData.content[v].rating : "N/A";
 							detailedWorksheet.getCell("H" + rowPos).value = iterData.content[v].review != "" ? iterData.content[v].review : "N/A";
 							// If the related content item corresponds to a chapter listing then update the appropriate columns.
@@ -959,7 +841,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 							}
 							// Otherwise if the related content item corresponds to a volume listing then update the appropriate columns.
 							else if(iterData.content[v].scenario == "Volume") {
-								detailedWorksheet.getCell("C" + rowPos).alignment = { "vertical": "middle", "horizontal": "center", "wrapText": true };
+								detailedWorksheet.getCell("C" + rowPos).alignment = alignmentMidCenWrapParameters;
 								detailedWorksheet.getCell("C" + rowPos).value = iterData.content[v].isbn != "" ? exports.formatISBNString(iterData.content[v].isbn) : "N/A";
 								detailedWorksheet.getCell("G" + rowPos).value = iterData.content[v].synopsis != "" ? iterData.content[v].synopsis : "N/A";
 							}
