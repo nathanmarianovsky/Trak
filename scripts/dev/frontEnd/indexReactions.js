@@ -681,7 +681,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             tr.setAttribute("publicationDate", recordData.publicationDate);
             tr.setAttribute("pages", recordData.pages);
             tr.setAttribute("media", recordData.media);
-            tr.setAttribute("lastRead", recordData.lastRead);
+            tr.setAttribute("read", recordData.lastRead);
         }
         if(recordData.category == "Film") {
             tr.setAttribute("alternateName", recordData.alternateName);
@@ -696,7 +696,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             tr.setAttribute("productionCompanies", recordData.productionCompanies);
             tr.setAttribute("writers", recordData.writers);
             tr.setAttribute("stars", recordData.stars);
-            tr.setAttribute("lastWatched", recordData.lastWatched);
+            tr.setAttribute("lastWatched", recordData.watched);
         }
         else if(recordData.category == "Manga") {
             tr.setAttribute("jname", recordData.jname);

@@ -45,7 +45,7 @@ exports.bookObjCreation = (path, fs, https, tools, dir, providedData) => {
         "publisher": providedData[5],
         "publicationDate": providedData[6],
         "pages": providedData[7],
-        "lastRead": providedData[8],
+        "read": providedData[8],
         "media": providedData[9],
         "synopsis": providedData[11],
         "rating": providedData[12],

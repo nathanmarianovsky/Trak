@@ -749,7 +749,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					bookWorksheet.getCell("J" + (bookRowCounter + 2)).value = iterData.pages != "" ? iterData.pages : "N/A";
 					bookWorksheet.getCell("K" + (bookRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
 					bookWorksheet.getCell("K" + (bookRowCounter + 2)).value = exports.formatMedia(iterData.media);
-					worksheetDateItem(bookWorksheet, "L", bookRowCounter, iterData.lastRead.split("-"));
+					worksheetDateItem(bookWorksheet, "L", bookRowCounter, iterData.read.split("-"));
 					genreCellFill(bookWorksheet, iterData.genres, "M", bookRowCounter);
 					bookRowCounter++;
 				}
@@ -774,7 +774,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					filmWorksheet.getCell("N" + (filmRowCounter + 2)).value = iterData.productionCompanies != "" ? iterData.productionCompanies : "N/A";
 					filmWorksheet.getCell("O" + (filmRowCounter + 2)).value = iterData.stars != "" ? iterData.stars : "N/A";
 					worksheetDateItem(filmWorksheet, "P", filmRowCounter, iterData.release.split("-"));
-					worksheetDateItem(filmWorksheet, "Q", filmRowCounter, iterData.lastWatched.split("-"));
+					worksheetDateItem(filmWorksheet, "Q", filmRowCounter, iterData.watched.split("-"));
 					genreCellFill(filmWorksheet, iterData.genres, "R", filmRowCounter);
 					filmRowCounter++;
 				}
@@ -1313,7 +1313,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 										"publicationDate": "",
 										"pages": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "",
 										"media": elem.getCell("K" + q).value != "N/A" ? elem.getCell("K" + q).value : "",
-										"lastRead": "",
+										"read": "",
 										"genres": [genreLst, new Array(genreLst.length).fill(false), []],
 										"img": []
 									};
@@ -1325,7 +1325,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 									// Update the last read date of the book record object.
 									if(elem.getCell("L" + q).value != "" && elem.getCell("L" + q).value != "N/A") {
 										relDateArr = elem.getCell("L" + q).value.split("-");
-										bookObj.lastRead = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+										bookObj.read = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 									}
 									// Update the genres of the anime record object.
 									let genresCellList = elem.getCell("M" + q).value.split(",").map(elem => elem.trim());
@@ -1390,7 +1390,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 										"productionCompanies": elem.getCell("N" + q).value != "N/A" ? elem.getCell("N" + q).value : "",
 										"stars": elem.getCell("O" + q).value != "N/A" ? elem.getCell("O" + q).value : "",
 										"release": "",
-										"lastWatched": "",
+										"watched": "",
 										"genres": [genreLst, new Array(genreLst.length).fill(false), []],
 										"img": []
 									};
@@ -1402,7 +1402,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 									// Update the last watched date of the film record object.
 									if(elem.getCell("Q" + q).value != "" && elem.getCell("Q" + q).value != "N/A") {
 										relDateArr = elem.getCell("Q" + q).value.split("-");
-										filmObj.lastWatched = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+										filmObj.watched = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 									}
 									// Update the genres of the film record object.
 									let genresCellList = elem.getCell("R" + q).value.split(",").map(elem => elem.trim());

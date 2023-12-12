@@ -344,7 +344,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 relatedContentListeners(bookPublicationDate);
                 updateFetchedDataString(bookPages, recordData.pages, true);
                 relatedContentListeners(bookPages);
-                updateFetchedDataDate(bookLastRead, recordData.lastRead, true);
+                updateFetchedDataDate(bookLastRead, recordData.read, true);
                 relatedContentListeners(bookLastRead);
                 bookMediaType.value = recordData.media;
                 updateImgLoad("Book", bookImg, recordData.img);
@@ -396,7 +396,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 relatedContentListeners(filmSynopsis);
                 updateFetchedDataString(filmReleaseDate, recordData.release, true);
                 relatedContentListeners(filmReleaseDate);
-                updateFetchedDataString(filmLastWatched, recordData.lastWatched, true);
+                updateFetchedDataString(filmLastWatched, recordData.watched, true);
                 relatedContentListeners(filmLastWatched);
                 updateFetchedDataString(filmDirectors, recordData.directors, true);
                 relatedContentListeners(filmDirectors);
