@@ -1145,7 +1145,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 					const workbookPromise = new Promise((resolve, reject) => {
 						// Iterate through all workbook worksheets.
 						wb.worksheets.forEach(elem => {
-							// Handle the import of simple anime records.
+							// Handle the import of anime records.
 							if(elem.name == "Category-Anime") {
 								log.info("Importing the anime records.");
 								// Get the list of anime genres.
@@ -1364,7 +1364,87 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 									if(q == elem.rowCount) { resolve(); }
 								}
 							}
-							// Handle the import of simple manga records.
+							// Handle the import of film records.
+							else if(elem.name == "Category-Film") {
+								log.info("Importing the film records.");
+								// Get the list of film genres.
+								let genreLst = exports.genreList("Film");
+								// Iterate through all the rows of the film worksheet.
+								for(let q = 2; q < elem.rowCount + 1; q++) {
+									// Define the object which will correspond to a film record.
+									let filmObj = {
+										"category": "Film",
+										"name": elem.getCell("A" + q).value,
+										"alternateName": elem.getCell("B" + q).value != "N/A" ? elem.getCell("B" + q).value : "", 
+										"rating": elem.getCell("C" + q).value != "N/A" && elem.getCell("C" + q).value != "" ? parseInt(elem.getCell("C" + q).value) : "",
+										"review": elem.getCell("D" + q).value != "N/A" ? elem.getCell("D" + q).value : "",
+										"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "",
+										"runTime": elem.getCell("F" + q).value != "N/A" ? String(parseInt(elem.getCell("F" + q).value)) : "",
+										"directors": elem.getCell("G" + q).value != "N/A" ? elem.getCell("G" + q).value : "",
+										"editors": elem.getCell("H" + q).value != "N/A" ? elem.getCell("H" + q).value : "",
+										"writers": elem.getCell("I" + q).value != "N/A" ? elem.getCell("I" + q).value : "",
+										"cinematographers": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "",
+										"musicians": elem.getCell("K" + q).value != "N/A" ? elem.getCell("K" + q).value : "",
+										"distributors": elem.getCell("L" + q).value != "N/A" ? elem.getCell("L" + q).value : "",
+										"producers": elem.getCell("M" + q).value != "N/A" ? elem.getCell("M" + q).value : "",
+										"productionCompanies": elem.getCell("N" + q).value != "N/A" ? elem.getCell("N" + q).value : "",
+										"stars": elem.getCell("O" + q).value != "N/A" ? elem.getCell("O" + q).value : "",
+										"release": "",
+										"lastWatched": "",
+										"genres": [genreLst, new Array(genreLst.length).fill(false), []],
+										"img": []
+									};
+									// Update the release date of the film record object.
+									if(elem.getCell("P" + q).value != "" && elem.getCell("P" + q).value != "N/A") {
+										relDateArr = elem.getCell("P" + q).value.split("-");
+										filmObj.releaseDate = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+									}
+									// Update the last watched date of the film record object.
+									if(elem.getCell("Q" + q).value != "" && elem.getCell("Q" + q).value != "N/A") {
+										relDateArr = elem.getCell("Q" + q).value.split("-");
+										filmObj.lastWatched = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+									}
+									// Update the genres of the film record object.
+									let genresCellList = elem.getCell("R" + q).value.split(",").map(elem => elem.trim());
+									for(let p = 0; p < genresCellList.length; p++) {
+										let compare = genresCellList[p];
+										if(compare == "Post-Apocalyptic") {
+											compare = "PostApocalyptic";
+										}
+										else if(compare == "Sci-Fi") {
+											compare = "SciFi";
+										}
+										let genreIndex = genreLst.indexOf(compare);
+										if(genreIndex == -1) {
+											filmObj.genres[2].push(compare);
+										}
+										else {
+											filmObj.genres[1][genreIndex] = true;
+										}
+									}
+									let fldrName = exports.formatFolderName(filmObj.name);
+									// Check the assets that were imported from the associated zip file and add the images to the film record object.
+									let assetsFolder = path.join(dir, "Trak", "importTemp", "Film-" + fldrName, "assets");
+									if(fs.existsSync(assetsFolder)) {
+										log.info("Copying over the record assets for " + filmObj.name + ".");
+										fs.readdirSync(assetsFolder).forEach(asset => {
+											if(imgExtArr.includes(path.extname(asset))) {
+												filmObj.img.push(path.join(fileData, "Film-" + fldrName, "assets", asset));
+											}
+										});
+									}
+									// Otherwise if no assets were found then create the assets folder.
+									else {
+										log.info("Creating the record assets folder associated to the film " + filmObj.name);
+										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Film-" + fldrName, "assets"), { "recursive": true });
+									}
+									// Write data.json file associated to the film record.
+									log.info("Writing the data file associated to the film " + filmObj.name);
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Film-" + fldrName, "data.json"), JSON.stringify(filmObj), "UTF8");
+									if(q == elem.rowCount) { resolve(); }
+								}
+							}
+							// Handle the import of manga records.
 							if(elem.name == "Category-Manga") {
 								log.info("Importing the manga records.");
 								// Get the list of manga genres.
