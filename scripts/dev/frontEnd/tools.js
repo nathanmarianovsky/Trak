@@ -450,7 +450,7 @@ Fades out an element on a page.
 var fadeOut = el => {
     el.style.opacity = 1;
     const fade = () => {
-        if((el.style.opacity -= .005) < 0) {
+        if((el.style.opacity -= .02) < 0) {
             el.style.display = "none";
         }
         else { requestAnimationFrame(fade); }

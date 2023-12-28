@@ -193,7 +193,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 }
 
 #add, #animeSearchSubmission, #bookSearchSubmission,
-#mangaSearchSubmission {
+#filmSearchSubmission, #mangaSearchSubmission {
 	position: fixed;
   	bottom: 23px;
   	right: 23px;

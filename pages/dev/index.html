@@ -177,7 +177,7 @@
             <ul class="tabs tabs-fixed-width z-depth-1">
                 <li class="tab"><a class="tabSearchLink" href="#animeSearchDiv">Anime</a></li>
                 <li class="tab"><a class="tabSearchLink" href="#bookSearchDiv">Book</a></li>
-                <li class="tab disabled"><a class="tabSearchLink" href="#filmSearchDiv">Film</a></li>
+                <li class="tab"><a class="tabSearchLink" href="#filmSearchDiv">Film</a></li>
                 <li class="tab"><a class="tabSearchLink" href="#mangaSearchDiv">Manga</a></li>
                 <li class="tab disabled"><a class="tabSearchLink" href="#showSearchDiv">Show</a></li>
             </ul>
@@ -286,6 +286,32 @@
                 </div>
                 <a id="bookSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
                 <div id="bookSearchContainer"></div>
+            </div>
+            <div id="filmSearchDiv" class="tabDiv">
+                <div id="filmNameSearchInnerDiv1" class="row">
+                    <form class="col s9">
+                        <div id="filmNameSearchInnerDiv2" class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">search</i>
+                                <input id="filmSearchBar" type="text" class="validate">
+                                <label for="filmSearchBar">Search for Films:</label>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="input-field col s3">
+                        <select id="filmNameSearchSort">
+                            <option value="" disabled selected>Sort by:</option>
+                            <option value="alphabetical">Alphabetical</option>
+                            <option value="reverseAlphabetical">Reverse Alphabetical</option>
+                            <option value="rating">Rating</option>
+                            <option value="reverseRating">Reverse Rating</option>
+                            <option value="random">Random</option>
+                        </select>
+                        <label>Sort:</label>
+                    </div>
+                </div>
+                <a id="filmSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
+                <div id="filmSearchContainer"></div>
             </div>
             <div id="mangaSearchDiv" class="tabDiv">
                 <div id="mangaNameSearchInnerDiv1" class="row">

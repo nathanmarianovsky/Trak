@@ -182,113 +182,64 @@ exports.filmFetchDetails = (log, movier, tools, ev, name) => {
 
 
 
-// /*
+/*
 
-// Handles the fetching of records for an anime season from myanimelist.
+Handles the search of imdb film records based on a query in order to provide a film content search.
 
-//    - log provides the means to create application logs to keep track of what is going on.
-//    - malScraper provides the means to attain anime and manga records from myanimelist.
-//    - ev provides the means to interact with the front-end of the Electron app.
-//    - seasonInfo is an array containing the year, season, and an array of anime release types.
+   - log provides the means to create application logs to keep track of what is going on.
+   - movier provides the means to attain film records from imdb.
+   - ev provides the means to interact with the front-end of the Electron app.
+   - search is an array of a string corresponding to the query used for a search and a page number.
+   - path provides the means to work with local files.
 
-// */
-// exports.animeFetchSeason = (log, malScraper, ev, seasonInfo) => {
-//     // Fetch the season releases.
-//     malScraper.getSeason(seasonInfo[0], seasonInfo[1]).then(data => {
-//         let seasonContent = [];
-//         // If a user does not choose a filter then show all types of releases by default.
-//         if(seasonInfo[2].length == 0) {
-//             const attributes = ["TV", "OVAs", "ONAs", "Movies", "Specials"];
-//             for(let a = 0; a < attributes.length; a++) {
-//                 seasonContent = seasonContent.concat(data[attributes[a]]);
-//             }
-//         }
-//         // Otherwise only add the releases which adhere to the filters set by the user.
-//         else {
-//             for(let a = 0; a < seasonInfo[2].length; a++) {
-//                 seasonContent = seasonContent.concat(data[seasonInfo[2][a]]);
-//             }
-//         }
-//         seasonContent.forEach(item => {
-//             item.genres = item.genres[0].split("\n").map(str => {
-//                 str = str.trim();
-//                 if(str == "Coming-of-Age") {
-//                     str = "ComingOfAge";
-//                 }
-//                 else if(str == "Post-Apocalyptic") {
-//                     str = "PostApocalyptic";
-//                 }
-//                 else if(str == "Sci-Fi") {
-//                     str = "SciFi";
-//                 }
-//                 else if(str == "Slice of Life") {
-//                     str = "SliceOfLife";
-//                 }
-//                 return str;
-//             }).filter(str => str != "");
-//         });
-//         // Send the list of anime releases for the season to the front-end.
-//         ev.sender.send("fetchResult", [seasonContent.map(elem => [elem.title, elem.picture, elem.link, elem.score, elem.genres]), true, "Anime"]);
-//     }).catch(err => log.error("There was an issue in obtaining the releases for the anime season " + seasonInfo[0] + " " + seasonInfo[1].charAt(0).toUpperCase() + seasonInfo[1].slice(1) + "."));
-// };
-
-
-
-// /*
-
-// Handles the search of myanimelist anime records based on a query in order to provide an anime content search.
-
-//    - log provides the means to create application logs to keep track of what is going on.
-//    - malScraper provides the means to attain anime and manga records from myanimelist.
-//    - ev provides the means to interact with the front-end of the Electron app.
-//    - search is an array of a string corresponding to the query used for a search and a page number.
-
-// */
-// exports.animeFetchSearch = (log, malScraper, ev, search) => {
-//     // Fetch the search results.
-//     log.info("Searching for anime records based on the query " + search[0] + ".");
-//     malScraper.search.search("anime", { "term": search[0], "has": (search[1] - 1) * 50 }).then(results => {
-//         const resultsArr = [];
-//         // Define a promise which will resolve only once a picture has been attained for each search result.
-//         const picPromise = new Promise((resolve, reject) => {
-//             // Iterate through the search results.
-//             results.forEach(elem => {
-//                 // Fetch the anime details based on the URL.
-//                 malScraper.getInfoFromURL(elem.url).then(elemData => {
-//                     elemData.genres = elemData.genres.map(str => {
-//                         if(str == "Coming-of-Age") {
-//                         str = "ComingOfAge";
-//                     }
-//                     else if(str == "Post-Apocalyptic") {
-//                         str = "PostApocalyptic";
-//                     }
-//                     else if(str == "Sci-Fi") {
-//                         str = "SciFi";
-//                     }
-//                     else if(str == "Slice of Life") {
-//                         str = "SliceOfLife";
-//                     }
-//                     return str;
-//                     });
-//                     // Push the anime details into the overall collection.
-//                     resultsArr.push([elem.title, elem.thumbnail.replace("/r/100x140", ""), elem.url, elem.score, elemData.genres]);
-//                     if(resultsArr.length == results.length) { resolve(); }
-//                 }).catch(err => {
-//                     log.error("There was an issue getting the anime details based on the url " + elem.url + ".");
-//                     resultsArr.push([elem.title, elem.thumbnail.replace("/r/100x140", ""), elem.url, elem.score, []]);
-//                     if(resultsArr.length == results.length) { resolve(); }
-//                 });
-//             })
-//         });
-//         // Once all anime results have an associated picture send the list of anime releases to the front-end.
-//         picPromise.then(() => {
-//             ev.sender.send("fetchResult", [resultsArr, false, "Anime", search[1] == 1]);
-//         }).catch(err => log.error("There was an issue resolving the promise associated to grabbing anime release pictures based on the search query " + search[0] + "."));
-//     }).catch(err => {
-//         log.warn("There was an issue obtaining the anime releases based on the query " + search[0] + ". Returning an empty collection.");
-//         ev.sender.send("fetchResult", [[], false, "Anime", search[1] == 1]);
-//     });
-// };
+*/
+exports.filmFetchSearch = (log, movier, ev, search, path) => {
+    if(search[1] == 1) {
+        // Fetch the search results.
+        log.info("Searching for film records based on the query " + search[0] + ".");
+        movier.searchTitleByName(search[0]).then(results => {
+            // console.log(results);
+            results = results.filter(elem => elem.titleType == "movie");
+            const resultsArr = [];
+            // Define a promise which will resolve only once all details have been attained for each search result.
+            const detPromise = new Promise((resolve, reject) => {
+                // Iterate through the search results.
+                results.forEach(elem => {
+                    // Fetch the film details based on the URL.
+                    movier.getTitleDetailsByUrl(elem.url).then(elemData => {
+                        elemData.genres = elemData.genres.map(str => {
+                            if(str == "Post-Apocalyptic") {
+                                str = "PostApocalyptic";
+                            }
+                            else if(str == "Sci-Fi") {
+                                str = "SciFi";
+                            }
+                            return str;
+                        });
+                        // Push the film details into the overall collection.
+                        resultsArr.push([elem.name, (elem.thumbnailImageUrl != "" ? elem.thumbnailImageUrl.split("V1_")[0] + "V1_" + path.extname(elem.thumbnailImageUrl) : elemData.posterImage.url), elem.url, (elemData.mainRate.votesCount != 0 ? elemData.mainRate.rate : "N/A"), elemData.genres]);
+                        if(resultsArr.length == results.length) { resolve(); }
+                    }).catch(err => {
+                        log.error("There was an issue getting the film details based on the url " + elem.url + ".");
+                        resultsArr.push([elem.name, elem.thumbnailImageUrl.split("V1_")[0] + "V1_" + path.extname(elem.thumbnailImageUrl), elem.url, "N/A", []]);
+                        if(resultsArr.length == results.length) { resolve(); }
+                    });
+                })
+            });
+            // Once all anime results have an associated picture send the list of anime releases to the front-end.
+            detPromise.then(() => {
+                // console.log(resultsArr);
+                ev.sender.send("fetchResult", [resultsArr, false, "Film", search[1] == 1]);
+            }).catch(err => log.error("There was an issue resolving the promise associated to grabbing film details based on the search query " + search[0] + "."));
+        }).catch(err => {
+            log.warn("There was an issue obtaining the film releases based on the query " + search[0] + ". Returning an empty collection.");
+            ev.sender.send("fetchResult", [[], false, "Film", search[1] == 1]);
+        });
+    }
+    else {
+        ev.sender.send("fetchResult", [[], false, "Film", false]);
+    }
+};
 
 
 

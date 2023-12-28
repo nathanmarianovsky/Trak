@@ -58,9 +58,11 @@ Provides the request to load more chunks, if available, on a content search when
 
    - animeSearch is the search bar input for anime content searches.
    - bookSearch is the search bar input for book content searches.
+   - filmSearchBar is the search bar input for film content searches.
+   - mangaSearchBar is the search bar input for manga content searches.
 
 */
-var bottomScrollRequest = (animeSearch, bookSearch) => {
+var bottomScrollRequest = (animeSearch, bookSearch, filmSearch, mangaSearch) => {
     window.addEventListener("scroll", ev => {
         if((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight) {
             let tabs = Array.from(document.getElementsByClassName("tabSearchLink")).filter(elem => elem.classList.contains("active")),
@@ -76,8 +78,11 @@ var bottomScrollRequest = (animeSearch, bookSearch) => {
                     else if(type == "Book" && chunkPreloader.getAttribute("bookCheck") == "0") {
                         ipcRenderer.send("bookFetchSearch", [bookSearch.value, Math.floor(document.getElementById("bookSearchContainer").children.length / 20) + 1]);
                     }
+                    else if(type == "Film" && chunkPreloader.getAttribute("filmCheck") == "0") {
+                        ipcRenderer.send("filmFetchSearch", [filmSearch.value, document.getElementById("filmSearchContainer").children.length > 0 ? 2 : 1]);
+                    }
                     else if(type == "Manga" && chunkPreloader.getAttribute("mangaCheck") == "0") {
-                        ipcRenderer.send("mangaFetchSearch", [animeSearch.value, Math.floor(document.getElementById("mangaSearchContainer").children.length / 50) + 1]);
+                        ipcRenderer.send("mangaFetchSearch", [mangaSearch.value, Math.floor(document.getElementById("mangaSearchContainer").children.length / 50) + 1]);
                     }
                 }
             }
@@ -116,6 +121,7 @@ window.addEventListener("load", () => {
         animeSearchSwitch = document.getElementById("animeSearchSwitch"),
         tabSearchLinks = Array.from(document.getElementsByClassName("tabSearchLink")),
         bookSearchSubmission = document.getElementById("bookSearchSubmission"),
+        filmSearchSubmission = document.getElementById("filmSearchSubmission"),
         mangaSearchSubmission = document.getElementById("mangaSearchSubmission");
     // Define all page components which will be utilized.
     const tableBody = document.getElementById("tableBody"),
@@ -246,7 +252,7 @@ window.addEventListener("load", () => {
                 ipcRenderer.send("animeFetchSearch", [animeSearchBar.value, 1]);
             }
             // If no query has been provided notify the user.
-            else { M.toast({"html": "In order to search for anime based on a written query the query has to be of non-zero length.", "classes": "rounded"}); }
+            else { M.toast({"html": "In order to search for anime based on a written query it has to be of non-zero length.", "classes": "rounded"}); }
         }
         // Reset the genres/tags filter.
         clearFilter.click();
@@ -300,7 +306,30 @@ window.addEventListener("load", () => {
             ipcRenderer.send("bookFetchSearch", [bookSearchBar.value, 1]);
         }
         // If no query has been provided notify the user.
-        else { M.toast({"html": "In order to search for books based on a written query the query has to be of non-zero length.", "classes": "rounded"}); }
+        else { M.toast({"html": "In order to search for books based on a written query it has to be of non-zero length.", "classes": "rounded"}); }
+        // Reset the genres/tags filter.
+        clearFilter.click();
+    });
+    // Listen for a click event on the film search submission button.
+    filmSearchSubmission.addEventListener("click", e => {
+        // Define the film search container.
+        const filmResultsContainer = document.getElementById("filmSearchContainer");
+        // Proceed only if the query is non-empty.
+        if(filmSearchBar.value.length > 0) {
+            // Reset the film search container.
+            filmResultsContainer.innerHTML = "";
+            // Reset the sort select tag.
+            document.getElementById("filmNameSearchSort").value = "";
+            initSelect();
+            window.scrollTo(0, 0);
+            // Display the preloader.
+            preloader.style.display = "block";
+            chunkLoad.setAttribute("filmCheck", "0");
+            // Send a request to the back-end in order to retrieve the search results for the provided query.
+            ipcRenderer.send("filmFetchSearch", [filmSearchBar.value, 1]);
+        }
+        // If no query has been provided notify the user.
+        else { M.toast({"html": "In order to search for films based on a written query it has to be of non-zero length.", "classes": "rounded"}); }
         // Reset the genres/tags filter.
         clearFilter.click();
     });
@@ -323,7 +352,7 @@ window.addEventListener("load", () => {
             ipcRenderer.send("mangaFetchSearch", [mangaSearchBar.value, 1]);
         }
         // If no query has been provided notify the user.
-        else { M.toast({"html": "In order to search for manga based on a written query the query has to be of non-zero length.", "classes": "rounded"}); }
+        else { M.toast({"html": "In order to search for manga based on a written query it has to be of non-zero length.", "classes": "rounded"}); }
         // Reset the genres/tags filter.
         clearFilter.click();
     });
@@ -835,5 +864,5 @@ window.addEventListener("load", () => {
     // Initialize all select tags.
     initSelect();
     // Listen for a scroll to the bottom in order to load chunks, if available, for any type of content search.
-    bottomScrollRequest(animeSearchBar, bookSearchBar);
+    bottomScrollRequest(animeSearchBar, bookSearchBar, filmSearchBar, mangaSearchBar);
 });

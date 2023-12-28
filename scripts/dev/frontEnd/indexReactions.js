@@ -891,12 +891,14 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
     // Define the search content container and search inputs.
     const animeContainer = document.getElementById("animeSearchContainer"),
         bookContainer = document.getElementById("bookSearchContainer"),
+        filmContainer = document.getElementById("filmSearchContainer"),
         mangaContainer = document.getElementById("mangaSearchContainer"),
         preloaderIcon = document.getElementById("synopsisPreloader"),
         synopsisContent = document.getElementById("synopsisModalContent"),
         animeSortSeasonSelect = document.getElementById("animeSeasonSearchSort"),
         animeSortNameSelect = document.getElementById("animeNameSearchSort"),
         bookSortNameSelect = document.getElementById("bookNameSearchSort"),
+        filmSortNameSelect = document.getElementById("filmNameSearchSort"),
         mangaSortNameSelect = document.getElementById("mangaNameSearchSort");
     // Define the array which will contain the search content results.
     let contentArr = [];
@@ -917,6 +919,12 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
     else if(submissionArr[2] == "Book" && submissionArr[3] == true) {
         bookContainer.innerHTML = "";
     }
+    else if(submissionArr[2] == "Film" && submissionArr[3] == true) {
+        filmContainer.innerHTML = "";
+    }
+    else if(submissionArr[2] == "Manga" && submissionArr[3] == true) {
+        mangaContainer.innerHTML = "";
+    }
     // Randomly shuffle the content only on an anime season search for the default display.
     submissionArr[1] == true ? contentArr = shuffle(submissionArr[0]) : contentArr = submissionArr[0];
     // Iterate through the anime search results.
@@ -936,7 +944,7 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
         itemText.setAttribute("data-position", "bottom");
         itemText.setAttribute("data-tooltip", contentArr[n][0]);
         itemImg.classList.add("seasonItemImage");
-        itemImg.setAttribute("src", contentArr[n][1]);
+        itemImg.setAttribute("src", contentArr[n][1] != "" ? contentArr[n][1] : "");
         itemImg.setAttribute("link", contentArr[n][2]);
         itemImg.setAttribute("type", submissionArr[2]);
         itemText.textContent = contentArr[n][0];
@@ -955,6 +963,9 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
         }
         else if(submissionArr[2] == "Book") {
             bookContainer.append(itemContainer);
+        }
+        else if(submissionArr[2] == "Film") {
+            filmContainer.append(itemContainer);
         }
         else if(submissionArr[2] == "Manga") {
             mangaContainer.append(itemContainer);
@@ -1003,6 +1014,9 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
         else if(submissionArr[2] == "Book") {
             sortedArr = Array.from(bookContainer.children);
         }
+        else if(submissionArr[2] == "Film") {
+            sortedArr = Array.from(filmContainer.children);
+        }
         else if(submissionArr[2] == "Manga") {
             sortedArr = Array.from(mangaContainer.children);
         }
@@ -1045,6 +1059,9 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
             else if(submissionArr[2] == "Book") {
                 bookSortNameSelect.value = "";
             }
+            else if(submissionArr[2] == "Film") {
+                filmSortNameSelect.value = "";
+            }
             else if(submissionArr[2] == "Manga") {
                 mangaSortNameSelect.value = "";
             }
@@ -1057,6 +1074,9 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
         else if(submissionArr[2] == "Book") {
             bookContainer.innerHTML = "";
         }
+        else if(submissionArr[2] == "Film") {
+            filmContainer.innerHTML = "";
+        }
         else if(submissionArr[2] == "Manga") {
             mangaContainer.innerHTML = "";
         }
@@ -1067,6 +1087,9 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
             }
             else if(submissionArr[2] == "Book") {
                 bookContainer.append(sortedArr[k]);
+            }
+            else if(submissionArr[2] == "Film") {
+                filmContainer.append(sortedArr[k]);
             }
             else if(submissionArr[2] == "Manga") {
                 mangaContainer.append(sortedArr[k]);
@@ -1080,6 +1103,9 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
     }
     else if(submissionArr[2] == "Book") {
         bookSortNameSelect.addEventListener("change", ev => sortFunc(ev));
+    }
+    else if(submissionArr[2] == "Film") {
+        filmSortNameSelect.addEventListener("change", ev => sortFunc(ev));
     }
     else if(submissionArr[2] == "Manga") {
         mangaSortNameSelect.addEventListener("change", ev => sortFunc(ev));
