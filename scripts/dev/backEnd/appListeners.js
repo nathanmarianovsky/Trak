@@ -303,10 +303,10 @@ exports.addFilmListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainW
 		require("./filmTools").filmFetchSearch(log, require("movier"), event, submission, path);
 	});
 
-	// // Handles the fetching of an anime synopsis.
-	// ipc.on("animeSynopsisFetch", (event, submission) => {
-	// 	require("./animeTools").animeSynopsisFetch(log, require("mal-scraper"), event, submission);
-	// });
+	// Handles the fetching of a film synopsis.
+	ipc.on("filmSynopsisFetch", (event, submission) => {
+		require("./filmTools").filmSynopsisFetch(log, require("movier"), event, submission);
+	});
 
 	// // Handles the opening of the addRecord.html page to load an anime record based on a season or query search.
 	// ipc.on("animeRecordRequest", (event, submission) => {

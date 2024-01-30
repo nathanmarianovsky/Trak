@@ -198,7 +198,6 @@ exports.filmFetchSearch = (log, movier, ev, search, path) => {
         // Fetch the search results.
         log.info("Searching for film records based on the query " + search[0] + ".");
         movier.searchTitleByName(search[0]).then(results => {
-            // console.log(results);
             results = results.filter(elem => elem.titleType == "movie");
             const resultsArr = [];
             // Define a promise which will resolve only once all details have been attained for each search result.
@@ -243,23 +242,23 @@ exports.filmFetchSearch = (log, movier, ev, search, path) => {
 
 
 
-// /*
+/*
 
-// Handles the fetching of a synopsis associated to an anime record from myanimelist.
+Handles the fetching of a synopsis associated to a film record from imdb.
 
-//    - log provides the means to create application logs to keep track of what is going on.
-//    - malScraper provides the means to attain anime and manga records from myanimelist.
-//    - ev provides the means to interact with the front-end of the Electron app.
-//    - link is a string representing the URL of an anime record on myanimelist.
+   - log provides the means to create application logs to keep track of what is going on.
+   - movier provides the means to attain film records from imdb.
+   - ev provides the means to interact with the front-end of the Electron app.
+   - link is a string representing the URL of a film record on imdb.
 
-// */
-// exports.animeSynopsisFetch = (log, malScraper, ev, link) => {
-//     // Fetch the anime details based on the URL.
-//     malScraper.getInfoFromURL(link).then(data => {
-//         // Provide the anime synopsis to the front-end.
-//         ev.sender.send("animeSynopsisFetchResult", data.synopsis);
-//     }).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
-// };
+*/
+exports.filmSynopsisFetch = (log, movier, ev, link) => {
+    // Fetch the film details based on the URL.
+    movier.getTitleDetailsByUrl(link).then(data => {
+        // Provide the film synopsis to the front-end.
+        ev.sender.send("filmSynopsisFetchResult", data.plot);
+    }).catch(err => log.error("There was an issue getting the film synopsis based on the url " + link + "."));
+};
 
 
 
