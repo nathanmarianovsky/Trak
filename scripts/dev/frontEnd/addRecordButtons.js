@@ -245,14 +245,14 @@ var recordChoicesButtons = () => {
                 bookPublisher = document.getElementById("bookPublisher"),
                 bookPublicationDate = document.getElementById("bookPublicationDate"),
                 bookPages = document.getElementById("bookPages");
-            updateFetchedDataString(bookTitle, newResponse[0], updateDetector);
+            updateFetchedDataString(bookTitle, newResponse[0], updateDetector, true);
             updateFetchedDataString(bookOriginalTitle, newResponse[1], updateDetector);
             setFetchedImages("Book", btnColorFavorite, [newResponse[2], [newResponse[2]]]);
-            updateFetchedDataString(bookISBN, newResponse[3], updateDetector, false, formatISBN);
+            updateFetchedDataString(bookISBN, String(newResponse[3]), updateDetector, false, formatISBN);
             updateFetchedDataString(bookAuthor, newResponse[4], updateDetector);
             updateFetchedDataString(bookPublisher, newResponse[5], updateDetector);
             updateFetchedDataDate(bookPublicationDate, newResponse[6], updateDetector);
-            updateFetchedDataString(bookPages, newResponse[7], updateDetector);
+            updateFetchedDataString(bookPages, String(newResponse[7]), updateDetector);
             if(newResponse[8] !== null) {
                 const bookMediaType = document.getElementById("bookMediaType"),
                     checkVal = newResponse[8].toLowerCase();
@@ -288,10 +288,6 @@ var recordChoicesButtons = () => {
             }, 500);
         }
     });
-
-
-
-
     // Listen for a click event on the categoryFilm button on the top bar to display the form corresponding to a film record.
     categoryFilm.addEventListener("click", e => {
         e.preventDefault();
@@ -337,6 +333,7 @@ var recordChoicesButtons = () => {
         // Update the page accordingly based on the fetched film details.
         ipcRenderer.on("filmFetchDetailsResult", (newEve, newResponse) => {
             const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none",
+                filmName = document.getElementById("filmName"),
                 filmAlternateName = document.getElementById("filmAlternateName"),
                 filmReleaseDate = document.getElementById("filmReleaseDate"),
                 directorsInput = document.getElementById("filmDirectors"),
@@ -345,7 +342,7 @@ var recordChoicesButtons = () => {
                 producersInput = document.getElementById("filmProducers"),
                 productionCompaniesInput = document.getElementById("filmProductionCompanies"),
                 starsInput = document.getElementById("filmStarring");
-            // Update the film alternate name if available.
+            updateFetchedDataString(filmName, newResponse[0], updateDetector, true);
             updateFetchedDataString(filmAlternateName, newResponse[1], updateDetector);
             setFetchedImages("Film", btnColorFavorite, newResponse[2]);
             updateFetchedDataDate(filmReleaseDate, newResponse[3], updateDetector);
@@ -361,6 +358,7 @@ var recordChoicesButtons = () => {
             genreFill("Film", newResponse[5]);
             // Hide the preloader now that everything has been loaded and show the buttons if necessary.
             filmPreloader.style.visibility = "hidden";
+            filmMoreBtn.style.visibility = "visible";
             filmFetchBtn.style.visibility = "visible";
             filmSave.style.visibility = "visible";
             initSelect();
@@ -374,10 +372,6 @@ var recordChoicesButtons = () => {
             }, 500);
         }
     });
-
-
-
-
     // Listen for a click event on the categoryManga button on the top bar to display the form corresponding to a manga record.
     categoryManga.addEventListener("click", e => {
         e.preventDefault();

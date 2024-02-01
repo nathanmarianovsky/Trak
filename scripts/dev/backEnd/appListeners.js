@@ -308,14 +308,14 @@ exports.addFilmListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainW
 		require("./filmTools").filmSynopsisFetch(log, require("movier"), event, submission);
 	});
 
-	// // Handles the opening of the addRecord.html page to load an anime record based on a season or query search.
-	// ipc.on("animeRecordRequest", (event, submission) => {
-	// 	let animeRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
-  	// 	animeRecordWindow.webContents.on("did-finish-load", () => {
-  	// 		animeRecordWindow.webContents.send("searchRecordStart", "Anime");
-  	// 		require("./animeTools").animeRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("mal-scraper"), tools, mainWindow, animeRecordWindow, dataPath, submission);
-  	// 	});
-	// });
+	// Handles the opening of the addRecord.html page to load a film record based on a query search.
+	ipc.on("filmRecordRequest", (event, submission) => {
+		let filmRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  		filmRecordWindow.webContents.on("did-finish-load", () => {
+  			filmRecordWindow.webContents.send("searchRecordStart", "Film");
+  			require("./filmTools").filmRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("movier"), tools, mainWindow, filmRecordWindow, dataPath, submission);
+  		});
+	});
 };
 
 

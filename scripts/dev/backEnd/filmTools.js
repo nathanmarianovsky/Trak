@@ -225,9 +225,8 @@ exports.filmFetchSearch = (log, movier, ev, search, path) => {
                     });
                 })
             });
-            // Once all anime results have an associated picture send the list of anime releases to the front-end.
+            // Once all film results have an associated picture send the list of film releases to the front-end.
             detPromise.then(() => {
-                // console.log(resultsArr);
                 ev.sender.send("fetchResult", [resultsArr, false, "Film", search[1] == 1]);
             }).catch(err => log.error("There was an issue resolving the promise associated to grabbing film details based on the search query " + search[0] + "."));
         }).catch(err => {
@@ -262,76 +261,41 @@ exports.filmSynopsisFetch = (log, movier, ev, link) => {
 
 
 
-// /*
+/*
 
-// Provides the front-end with anime details associated to an item clicked in the anime content search.
+Provides the front-end with film details associated to an item clicked in the film content search.
 
-//    - BrowserWindow and ipc provide the means to operate the Electron app.
-//    - path and fs provide the means to work with local files.
-//    - log provides the means to create application logs to keep track of what is going on.
-//    - https provides the means to download files.
-//    - malScraper provides the means to attain anime and manga records from myanimelist.
-//    - tools provides a collection of local functions.
-//    - globalWin is an object representing the primary window of the Electron app.
-//    - win is an object representing the addRecord window of the Electron app.
-//    - usrDataPath is the current path to the local user data.
-//    - link is a string representing the URL of an anime record on myanimelist.
+   - BrowserWindow and ipc provide the means to operate the Electron app.
+   - path and fs provide the means to work with local files.
+   - log provides the means to create application logs to keep track of what is going on.
+   - https provides the means to download files.
+   - movier provides the means to attain film records from imdb.
+   - tools provides a collection of local functions.
+   - globalWin is an object representing the primary window of the Electron app.
+   - win is an object representing the addRecord window of the Electron app.
+   - usrDataPath is the current path to the local user data.
+   - link is a string representing the URL of a film record on imdb.
 
-// */
-// exports.animeRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScraper, tools, globalWin, win, usrDataPath, link) => {
-//     // Fetch anime details.
-//     malScraper.getInfoFromURL(link).then(animeData => {
-//         // Define the parameters which will be passed to the front-end based on the details received.
-//         let startDate = "",
-//             endDate = "";
-//         const directorsArr = [],
-//             producersArr = [],
-//             writersArr = [],
-//             musicArr = [];
-//         // Properly define the start and end date of an anime listing on myanimelist.
-//         if(animeData.aired != undefined) {
-//             let splitArr = animeData.aired.split("to");
-//             startDate = splitArr[0];
-//             if(splitArr.length > 1) {
-//                 endDate = splitArr[1];
-//             }
-//         }
-//         // Properly define the lists of directors, producers, writers, and music directors associated to the anime listing on myanimelist.
-//         animeData.staff.forEach(person => {
-//             person.role.split(", ").forEach(personRole => {
-//                 if(personRole.toLowerCase().includes("director") && !personRole.toLowerCase().includes("sound")) {
-//                     directorsArr.push(person.name.split(", ").reverse().join(" "));
-//                 }
-//                 if(personRole.toLowerCase().includes("producer")) {
-//                     producersArr.push(person.name.split(", ").reverse().join(" "));
-//                 }
-//                 if(personRole.toLowerCase().includes("storyboard")) {
-//                     writersArr.push(person.name.split(", ").reverse().join(" "));
-//                 }
-//                 if(personRole.toLowerCase().includes("sound") || person.role.toLowerCase().includes("music")) {
-//                     musicArr.push(person.name.split(", ").reverse().join(" "));
-//                 }
-//             });
-//         });
-//         win.webContents.send("animeFetchDetailsResultName", animeData.title);
-//         // Fetch all possible images associated to the anime record.
-//         malScraper.getPictures({ "name": animeData.title, "id": animeData.id }).then(malImgArr => {
-//             // Send the attained data to the front-end.
-//             log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + animeData.title + ".");
-//             let allImgArr = malImgArr.map(pic => pic.imageLink);
-//             tools.arrayMove(allImgArr, allImgArr.indexOf(animeData.picture), 0);
-//             win.webContents.send("animeFetchDetailsResult", [
-//                 animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, allImgArr], startDate, endDate,
-//                 animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
-//                 animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
-//             ]);
-//             ipc.once("performSave", (event, submission) => {
-//                 // Save the corresponding data.
-//                 exports.animeSave(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission);
-//             });
-//         }).catch(err => log.error("There was an issue getting the pictures associated to the anime " + animeData.title + "."));
-//     }).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
-// };
+*/
+exports.filmRecordRequest = (BrowserWindow, ipc, path, fs, log, https, movier, tools, globalWin, win, usrDataPath, link) => {
+    // Fetch film details.
+    movier.getTitleDetailsByUrl(link).then(filmData => {
+        log.info("Movier has finished getting the details associated to the film " + filmData.name + ".");
+        const runtimeArr = filmData.runtime.title.split(" ");
+        // Send the attained data to the front-end.
+        win.webContents.send("filmFetchDetailsResult", [
+            filmData.name, filmData.otherNames.join(", "), [filmData.posterImage.url, filmData.allImages.map(elem => elem.url)], String(filmData.dates.startDate),
+            (parseInt(runtimeArr[0]) * 60) + parseInt(runtimeArr[runtimeArr.length - 2]), filmData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),
+            filmData.directors.map(director => director.name), filmData.writers.map(director => director.name),
+            filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), filmData.producers.map(producers => producers.name),
+            filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name), filmData.casts.map(star => star.name), filmData.plot
+        ]);
+        ipc.once("performSave", (event, submission) => {
+            // Save the corresponding data.
+            exports.filmSave(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission);
+        });
+    }).catch(err => {console.log(err); log.error("There was an issue getting the film details based on the url " + link + ".")} );
+};
 
 
 

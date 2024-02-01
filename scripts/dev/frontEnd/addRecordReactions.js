@@ -100,16 +100,20 @@ ipcRenderer.on("searchRecordStart", (event, type) => {
     // Define the addRecord preloader and display it while the data is being fetched and page is populated with the associated data.
     const animeRecordPreloader = document.getElementById("animePreloader"),
         bookRecordPreloader = document.getElementById("bookPreloader"),
+        filmRecordPreloader = document.getElementById("filmPreloader"),
         mangaRecordPreloader = document.getElementById("mangaPreloader"),
         animeRecordSave = document.getElementById("animeSave"),
         bookRecordSave = document.getElementById("bookSave"),
+        filmRecordSave = document.getElementById("filmSave"),
         mangaRecordSave = document.getElementById("mangaSave"),
         animeRecordOptions = document.getElementById("animeOptions"),
         mangaRecordOptions = document.getElementById("mangaOptions"),
         animeRecordMoreDetailsBtn = document.getElementById("animeMoreDetailsBtn"),
+        filmRecordMoreDetailsBtn = document.getElementById("filmMoreDetailsBtn"),
         mangaRecordMoreDetailsBtn = document.getElementById("mangaMoreDetailsBtn"),
         animeRecordFetchDetailsBtn = document.getElementById("animeFetchDetailsBtn"),
-        bookRecordFetchDetailsBtn = document.getElementById("bookFetchDetailsBtn");
+        bookRecordFetchDetailsBtn = document.getElementById("bookFetchDetailsBtn"),
+        filmRecordFetchDetailsBtn = document.getElementById("filmFetchDetailsBtn"),
         mangaRecordFetchDetailsBtn = document.getElementById("mangaFetchDetailsBtn");
     if(type == "Anime") {
         // Hide the page buttons until all data has loaded in.
@@ -132,6 +136,17 @@ ipcRenderer.on("searchRecordStart", (event, type) => {
         // Load the book record portion of the addRecord page.
         document.getElementById("categoryBook").click();
         document.getElementById("categoryBookDiv").children[0].style.marginTop = "3%";
+    }
+    else if(type == "Film") {
+        // Hide the page buttons until all data has loaded in.
+        filmRecordPreloader.style.top = "-32px";
+        filmRecordPreloader.style.visibility = "visible";
+        filmRecordSave.style.visibility = "hidden";
+        filmRecordMoreDetailsBtn.style.visibility = "hidden";
+        filmRecordFetchDetailsBtn.style.visibility = "hidden";
+        // Load the film record portion of the addRecord page.
+        document.getElementById("categoryFilm").click();
+        document.getElementById("categoryFilmDiv").children[0].style.marginTop = "3%";
     }
     else if(type == "Manga") {
         // Hide the page buttons until all data has loaded in.
