@@ -1004,7 +1004,7 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
     // Clear and initialize the page tooltips.
     clearTooltips();
     initTooltips();
-    // Define the function which will handle the sorting of anime search content.
+    // Define the function which will handle the sorting of search content.
     let sortFunc = e => {
         // Grab the items to sort.
         let sortedArr = [];

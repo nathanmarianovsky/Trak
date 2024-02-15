@@ -22,7 +22,8 @@ var recordChoicesButtons = () => {
     const categoryAnime = document.getElementById("categoryAnime"),
         categoryBook = document.getElementById("categoryBook"),
         categoryFilm = document.getElementById("categoryFilm"),
-        categoryManga = document.getElementById("categoryManga");
+        categoryManga = document.getElementById("categoryManga"),
+        categoryShow = document.getElementById("categoryShow");
     // Define the relevant portions of the page that are in the rotation of record forms.
     const directionsTitle = document.getElementById("directionsTitle"),
         directionsText = document.getElementById("directionsText"),
@@ -33,18 +34,21 @@ var recordChoicesButtons = () => {
         categoryBookDiv = document.getElementById("categoryBookDiv"),
         categoryFilmDiv = document.getElementById("categoryFilmDiv"),
         categoryMangaDiv = document.getElementById("categoryMangaDiv"),
+        categoryShowDiv = document.getElementById("categoryShowDiv"),
         updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none";
     // Define the color which will be applied to the favorite image icon.
     const btnColorFavorite = getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor;
     let introAnimeHolder = false,
         introBookHolder = false,
         introFilmHolder = false,
-        introMangaHolder = false;
+        introMangaHolder = false,
+        introShowHolder = false;
     ipcRenderer.on("addIntroduction", event => {
         introAnimeHolder = true;
         introBookHolder = true;
         introFilmHolder = true;
         introMangaHolder = true;
+        introShowHolder = true;
     });
     // Listen for a click event on the categoryAnime button on the top bar to display the form corresponding to an anime record.
     categoryAnime.addEventListener("click", e => {
@@ -293,7 +297,7 @@ var recordChoicesButtons = () => {
         e.preventDefault();
         // Reset the top nav accordingly.
         navReset(categoryInitial, categoryDivs, categoryLinks, categoryFilmDiv, categoryFilm);
-        // Display the correct input associated to the anime other genres/tags.
+        // Display the correct input associated to the film other genres/tags.
         otherGenresReset("Film");
         // Define all image buttons.
         const filmPreviousImgBtn = document.getElementById("filmPreviousImgBtn"),
@@ -315,9 +319,9 @@ var recordChoicesButtons = () => {
             filmSynopsis = document.getElementById("filmSynopsis"),
             filmReview = document.getElementById("filmReview"),
             filmRunTimeInput = document.getElementById("filmRunningTime");
-        // Listen for changes in the book description in order to hide/show a vertical scroll.
+        // Listen for changes in the film description in order to hide/show a vertical scroll.
         filmSynopsis.addEventListener("input", e => textAreaFunc(filmSynopsis));
-        // Listen for changes in the book comments/review in order to hide/show a vertical scroll.
+        // Listen for changes in the film comments/review in order to hide/show a vertical scroll.
         filmReview.addEventListener("input", e => textAreaFunc(filmReview));
         // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
         filmFetchBtn.addEventListener("click", e => nameFetchFunc("Film", filmName, filmPreloader));
@@ -532,6 +536,90 @@ var recordChoicesButtons = () => {
                 }, 500);
             }});
             setTimeout(() => { instancesTapMangaSave.open(); }, 500);
+        }
+    });
+    // Listen for a click event on the categoryShow button on the top bar to display the form corresponding to a show record.
+    categoryShow.addEventListener("click", e => {
+        e.preventDefault();
+        // Reset the top nav accordingly.
+        navReset(categoryInitial, categoryDivs, categoryLinks, categoryShowDiv, categoryShow);
+        // Display the correct input associated to the show other genres/tags.
+        otherGenresReset("Show");
+        // Define all image buttons.
+        const showPreviousImgBtn = document.getElementById("showPreviousImgBtn"),
+            showAddImgBtn = document.getElementById("showAddImgBtn"),
+            showAddImgInput = document.getElementById("showAddImgInput"),
+            showRemoveImgBtn = document.getElementById("showRemoveImgBtn"),
+            showNextImgBtn = document.getElementById("showNextImgBtn"),
+            addRecordShowImg = document.getElementById("addRecordShowImg"),
+            showFavoriteImageLink = document.getElementById("showFavoriteImageLink");
+        imgButtons(showFavoriteImageLink, showPreviousImgBtn, showAddImgBtn, showAddImgInput, showRemoveImgBtn, showNextImgBtn, addRecordShowImg, btnColorFavorite);
+        // Define the portions of the page associated to the autocomplete.
+        const showName = document.getElementById("showName"),
+            showPreloader = document.getElementById("showPreloader"),
+            showNameAutocomplete = autoCompleteInit("Show", showName, showPreloader),
+            showNameUL = showName.nextElementSibling,
+            showMoreBtn = document.getElementById("showMoreDetailsBtn"),
+            showFetchBtn = document.getElementById("showFetchDetailsBtn"),
+            showSave = document.getElementById("showSave"),
+            showSynopsis = document.getElementById("showSynopsis"),
+            showReview = document.getElementById("showReview"),
+            showRunTimeInput = document.getElementById("showRunningTime");
+        // Listen for changes in the show description in order to hide/show a vertical scroll.
+        showSynopsis.addEventListener("input", e => textAreaFunc(showSynopsis));
+        // Listen for changes in the show comments/review in order to hide/show a vertical scroll.
+        showReview.addEventListener("input", e => textAreaFunc(showReview));
+        // Listen for a click event on the fetch details button in order to display a preloader and send a request to the back-end for data.
+        showFetchBtn.addEventListener("click", e => nameFetchFunc("Show", showName, showPreloader));
+        // Define the autocomplete previous input and character max count for display purposes.
+        let previousName = "";
+        // Listen for an input change in the show name in order to fetch autocomplete options from imdb.
+        showName.addEventListener("input", e => previousName = nameAutoCompleteFunc("Show", e.target, previousName, showNameAutocomplete, true));
+        // Listen for a click event on the show name in order to trigger a fetch of autocomplete options from imdb.
+        showName.addEventListener("click", e => nameAutoCompleteFunc("Show", e.target, previousName, showNameAutocomplete, false));
+        // Provide the autocomplete listener associated to show records.
+        autoCompleteListener("Show", showName, showNameUL, showNameAutocomplete);
+        showRunTimeInput.addEventListener("input", e => e.target.value = formatRunningTime(e.target.value));
+        // Update the page accordingly based on the fetched show details.
+        ipcRenderer.on("showFetchDetailsResult", (newEve, newResponse) => {
+            const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none",
+                showName = document.getElementById("showName"),
+                showAlternateName = document.getElementById("showAlternateName"),
+                showReleaseDate = document.getElementById("showReleaseDate"),
+                directorsInput = document.getElementById("showDirectors"),
+                writersInput = document.getElementById("showWriters"),
+                distributorsInput = document.getElementById("showDistributors"),
+                producersInput = document.getElementById("showProducers"),
+                productionCompaniesInput = document.getElementById("showProductionCompanies"),
+                starsInput = document.getElementById("showStarring");
+            updateFetchedDataString(showName, newResponse[0], updateDetector, true);
+            updateFetchedDataString(showAlternateName, newResponse[1], updateDetector);
+            setFetchedImages("Show", btnColorFavorite, newResponse[2]);
+            updateFetchedDataDate(showReleaseDate, newResponse[3], updateDetector);
+            updateFetchedDataString(showRunTimeInput, formatRunningTime(newResponse[4]), updateDetector);
+            updateFetchedDataString(directorsInput, newResponse[6].join(", "), updateDetector);
+            updateFetchedDataString(writersInput, newResponse[7].join(", "), updateDetector);
+            updateFetchedDataString(distributorsInput, newResponse[8].join(", "), updateDetector);
+            updateFetchedDataString(producersInput, newResponse[9].join(", "), updateDetector);
+            updateFetchedDataString(productionCompaniesInput, newResponse[10].join(", "), updateDetector);
+            updateFetchedDataString(starsInput, newResponse[11].join(", "), updateDetector);
+            updateFetchedDataTextArea(showSynopsis, newResponse[12], updateDetector);
+            // Update the show genres if available.
+            genreFill("Show", newResponse[5]);
+            // Hide the preloader now that everything has been loaded and show the buttons if necessary.
+            showPreloader.style.visibility = "hidden";
+            showMoreBtn.style.visibility = "visible";
+            showFetchBtn.style.visibility = "visible";
+            showSave.style.visibility = "visible";
+            initSelect();
+        });
+        // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
+        if(introShowHolder == true) {
+            const instancesTapShowSave = M.TapTarget.init(document.getElementById("introductionTargetShowSave"));
+            setTimeout(() => {
+                instancesTapShowSave.open();
+                introShowHolder = false;
+            }, 500);
         }
     });
 };

@@ -51,6 +51,7 @@ textarea.materialize-textarea.valid {
 #bookNameSearchInnerDiv1 .input-field .prefix.active,
 #filmNameSearchInnerDiv1 .input-field .prefix.active,
 #mangaNameSearchInnerDiv1 .input-field .prefix.active,
+#showNameSearchInnerDiv1 .input-field .prefix.active,
 input[type="text"]:not(.browser-default):focus:not([readonly])+label,
 input[type="date"]:not(.browser-default):focus:not([readonly])+label,
 textarea.materialize-textarea:focus:not([readonly])+label,
@@ -194,7 +195,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 }
 
 #add, #animeSearchSubmission, #bookSearchSubmission,
-#filmSearchSubmission, #mangaSearchSubmission {
+#filmSearchSubmission, #mangaSearchSubmission, #showSearchSubmission {
 	position: fixed;
   	bottom: 23px;
   	right: 23px;
@@ -789,7 +790,7 @@ footer {
     text-align: center;
 }
 
-#animeSave, #mangaSave {
+#animeSave, #mangaSave, #showSave {
 	position: fixed;
 	right: 23px;
 	bottom: 92px;
@@ -864,7 +865,7 @@ footer {
 	left: 50%;
 }
 
-#filmMoreDetailsModal {
+#filmMoreDetailsModal, #showMoreDetailsModal {
 	max-height: 75%;
 	height: 75%;
 }

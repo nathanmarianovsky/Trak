@@ -383,9 +383,6 @@
                 </div>
             </div>
         </div>
-
-
-
         <div id="categoryFilmDiv" class="categoryDiv">
             <div id="filmPreloader" class="preloader-wrapper active recordPreloader">
                 <div class="spinner-layer">
@@ -567,10 +564,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
         <div id="categoryMangaDiv" class="categoryDiv">
             <div id="mangaPreloader" class="preloader-wrapper active recordPreloader">
                 <div class="spinner-layer">
@@ -770,6 +763,202 @@
                 </div>
             </div>
         </div>
+
+
+
+
+        <div id="categoryShowDiv" class="categoryDiv">
+            <div id="showPreloader" class="preloader-wrapper active recordPreloader">
+                <div class="spinner-layer">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <h2>Directions:</h2>
+            <div class="text formInfo">
+                The only field required to add a record is the name. All other fields are optional.
+            </div>
+            <div class="row addRecordDiv">
+                <div id="addRecordShowImageDiv" class="left addRecordImageDiv">
+                    <a id="showFavoriteImageLink" class="recordFavoriteImageLink"><i class="material-icons">favorite</i></a>
+                    <img id="addRecordShowImg" class="addRecordImg" src="../../assets/imgDef.png" list="" default="../../assets/imgDef.png">
+                    <div id="addRecordShowImgBtnDiv" class="addRecordImgBtnDiv">
+                        <div class="addRecordShowImgBtnContainer"><a id="showPreviousImgBtn" class="addRecordImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_before</i></a></div>
+                        <div class="addRecordShowImgBtnContainer"><a id="showAddImgBtn" class="addRecordImgBtn waves-effect waves-light btn"><i class="material-icons">add</i></a></div>
+                        <div class="addRecordShowImgBtnContainer"><a id="showRemoveImgBtn" class="addRecordImgBtn waves-effect waves-light btn"><i class="material-icons">remove</i></a></div>
+                        <div class="addRecordShowImgBtnContainer"><a id="showNextImgBtn" class="addRecordImgBtn waves-effect waves-light btn"><i class="material-icons">navigate_next</i></a></div>
+                    </div>
+                    <input id="showAddImgInput" class="recordAddImgInput" type="file" multiple>
+                </div>
+                <form id="categoryShowForm1" class="categoryTopForm col s8">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input id="showName" type="text" class="validate left autocomplete">
+                            <label for="showName">Name: <a class="modal-trigger" href="#showAlternateNameModal"><i class="material-icons infoIcon">info</i></a></label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s4">
+                            <input id="showReleaseDate" type="date" class="validate left">
+                            <label for="showReleaseDate">Release Date:</label>
+                        </div>
+                        <div class="input-field col s4">
+                            <input id="showRunningTime" type="text" class="validate left">
+                            <label for="showRunningTime">Running Time:</label>
+                        </div>
+                        <div class="input-field col s4">
+                            <input id="showLastWatched" type="date" class="validate left">
+                            <label for="showLastWatched">Last Watched Read:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea id="showSynopsis" class="validate materialize-textarea" maxlength="1000"></textarea>
+                            <label for="showSynopsis">Plot:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s2 selectShortVerticalScroll">
+                            <select id="showRating">
+                                <option value="" disabled selected>N/A</option>
+                                <option value="0">0/10</option>
+                                <option value="1">1/10</option>
+                                <option value="2">2/10</option>
+                                <option value="3">3/10</option>
+                                <option value="4">4/10</option>
+                                <option value="5">5/10</option>
+                                <option value="6">6/10</option>
+                                <option value="7">7/10</option>
+                                <option value="8">8/10</option>
+                                <option value="9">9/10</option>
+                                <option value="10">10/10</option>
+                            </select>
+                            <label>Rating:</label>
+                        </div>
+                        <div class="input-field col s10">
+                            <textarea id="showReview" class="validate materialize-textarea" maxlength="1000"></textarea>
+                            <label for="showReview">Comments/Review:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <a id="showMoreDetailsBtn" class="waves-effect waves-light btn addRecordBtn modal-trigger" href="#showMoreDetailsModal"><i class="material-icons right">add</i>More Details</a>
+                        <a id="showFetchDetailsBtn" class="waves-effect waves-light btn addRecordBtn"><i class="material-icons right">refresh</i>Fetch Details</a>
+                    </div>
+                </form>
+                <div id="showMoreDetailsModal" class="modal modal-fixed-footer recordMoreDetailsModal">
+                    <div class="modal-content">
+                        <h4 class="center">More Details</h4>
+                        <form id="showAnimeForm3" class="categoryMoreDetailsForm col s12">
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="showDirectors" type="text" class="validate left">
+                                    <label for="showDirectors">Directed By:</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="showEditors" type="text" class="validate left">
+                                    <label for="showEditors">Edited By:</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="showWriters" type="text" class="validate left">
+                                    <label for="showWriters">Written By:</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="showCinematographers" type="text" class="validate left">
+                                    <label for="showCinematographers">Cinematography By:</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="showMusicians" type="text" class="validate left">
+                                    <label for="showMusicians">Music By:</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="showDistributors" type="text" class="validate left">
+                                    <label for="showDistributors">Distributed By:</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input id="showProducers" type="text" class="validate left">
+                                    <label for="showProducers">Produced By:</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input id="showProductionCompanies" type="text" class="validate left">
+                                    <label for="showProductionCompanies">Production Companies:</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="showStarring" type="text" class="validate left">
+                                    <label for="showStarring">Starring:</label>
+                                </div>
+                            </div>
+                            <div id="showAddRecordFilesOuterDiv" class="file-field input-field">
+                                <div id="showAddRecordFilesDiv" class="btn addRecordFilesDiv">
+                                    <span>
+                                        File<i class="material-icons right">add</i>
+                                    </span>
+                                    <input id="showAddRecordFiles" type="file" multiple>
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input id="showAddRecordFilesText" class="file-path validate" type="text">
+                                    <label for="showAddRecordFilesText">Upload one or more files.</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                    </div>
+                </div>
+            </div>
+            <h2 id="showGenresTitle" class="recordGenresTitle">Genres/Tags: <a class="modal-trigger" href="#genresModal"><i class="material-icons infoIcon genresIcon">add_circle</i></a></h2>
+            <div class="row addRecordDiv">
+                <form id="categoryShowForm2" class="col s12 categoryBottomForm"></form>
+            </div>
+            <a id="showSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
+            <div id="introductionTargetShowSave" class="tap-target" data-target="showSave">
+                <div class="tap-target-content">
+                    <p>Use this button to save the show record.</p>
+                </div>
+            </div>
+            <div class="fixed-action-btn">
+                <a id="showOptions" class="btn-floating btn-large waves-effect waves-light"><i class="large material-icons">add</i></a>
+                <div id="introductionTargetShowOptions" class="tap-target" data-target="showOptions">
+                    <div class="tap-target-content">
+                        <p>Use the options to add associated content.</p>
+                    </div>
+                </div>
+                <ul>
+                    <li><a id="showSeasons" href="#showModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
+                </ul>
+            </div>
+            <div id="showAlternateNameModal" class="modal infoModal">
+                <div class="modal-content">
+                    <h4 class="center">Alternate Name</h4>
+                    <p>Provide an alternate name for the show, if available:</p>
+                    <form class="col s10">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="showAlternateName" type="text" class="validate left autocomplete">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                </div>
+            </div>
+        </div>
         <div id="genresModal" class="modal modal-fixed-footer">
             <div class="modal-content">
                 <h4 class="center">Extra</h4>
@@ -797,6 +986,12 @@
                         <div class="input-field col s12">
                             <input id="mangaOtherGenres" type="text" class="validate left">
                             <label for="mangaOtherGenres">Genres/Tags:</label>
+                        </div>
+                    </div>
+                    <div id="showOtherGenresDiv" class="row otherGenresDiv">
+                        <div class="input-field col s12">
+                            <input id="showOtherGenres" type="text" class="validate left">
+                            <label for="showOtherGenres">Genres/Tags:</label>
                         </div>
                     </div>
                 </form>
