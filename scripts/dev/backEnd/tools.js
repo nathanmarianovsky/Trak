@@ -276,6 +276,14 @@ exports.genreList = recType => {
             "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy", "Vampire", "VideoGame", "War", "Western",
             "Workplace", "Yaoi", "Yuri"];
     }
+    else if(recType == "Show") {
+    	genArr = ["Action", "Adventure", "AlternateHistory", "Amateur", "Animation", "Anthology", "Art", "Biopic", "Comedy",
+            "CookingShow", "Crime", "Cyberpunk", "Detective", "Docudrama", "Documentary", "Drama", "Dystopian", "Fantasy", "GameShow",
+            "Gangster", "Ghost", "Gore", "Gothic", "Heist", "Historical", "Holiday", "Horror", "Instructional", "Military", "Monster",
+            "Musical", "Mystery", "Nature", "Paranormal", "Parody", "Political", "PostApocalyptic", "Psychological", "Reality",
+            "Religious", "Revisionist", "Romance", "Satire", "SciFi", "Space", "SpaceOpera", "Sports", "Spy", "StopMotion",
+            "Superhero", "TalkShow", "Thriller", "Utopian", "Vampire", "Vigilante", "Western", "Zombie"];
+    }
     return genArr;
 };
 

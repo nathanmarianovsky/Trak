@@ -102,19 +102,24 @@ ipcRenderer.on("searchRecordStart", (event, type) => {
         bookRecordPreloader = document.getElementById("bookPreloader"),
         filmRecordPreloader = document.getElementById("filmPreloader"),
         mangaRecordPreloader = document.getElementById("mangaPreloader"),
+        showRecordPreloader = document.getElementById("showPreloader"),
         animeRecordSave = document.getElementById("animeSave"),
         bookRecordSave = document.getElementById("bookSave"),
         filmRecordSave = document.getElementById("filmSave"),
         mangaRecordSave = document.getElementById("mangaSave"),
+        showRecordSave = document.getElementById("showSave"),
         animeRecordOptions = document.getElementById("animeOptions"),
         mangaRecordOptions = document.getElementById("mangaOptions"),
+        showRecordOptions = document.getElementById("showOptions"),
         animeRecordMoreDetailsBtn = document.getElementById("animeMoreDetailsBtn"),
         filmRecordMoreDetailsBtn = document.getElementById("filmMoreDetailsBtn"),
         mangaRecordMoreDetailsBtn = document.getElementById("mangaMoreDetailsBtn"),
+        showRecordMoreDetailsBtn = document.getElementById("showMoreDetailsBtn"),
         animeRecordFetchDetailsBtn = document.getElementById("animeFetchDetailsBtn"),
         bookRecordFetchDetailsBtn = document.getElementById("bookFetchDetailsBtn"),
         filmRecordFetchDetailsBtn = document.getElementById("filmFetchDetailsBtn"),
-        mangaRecordFetchDetailsBtn = document.getElementById("mangaFetchDetailsBtn");
+        mangaRecordFetchDetailsBtn = document.getElementById("mangaFetchDetailsBtn"),
+        showRecordFetchDetailsBtn = document.getElementById("showFetchDetailsBtn");
     if(type == "Anime") {
         // Hide the page buttons until all data has loaded in.
         animeRecordPreloader.style.top = "-32px";
@@ -159,6 +164,17 @@ ipcRenderer.on("searchRecordStart", (event, type) => {
         // Load the anime record portion of the addRecord page.
         document.getElementById("categoryManga").click();
         document.getElementById("categoryMangaDiv").children[0].style.marginTop = "3%";
+    }
+    else if(type == "Show") {
+        // Hide the page buttons until all data has loaded in.
+        showRecordPreloader.style.top = "-32px";
+        showRecordPreloader.style.visibility = "visible";
+        showRecordSave.style.visibility = "hidden";
+        showRecordMoreDetailsBtn.style.visibility = "hidden";
+        showRecordFetchDetailsBtn.style.visibility = "hidden";
+        // Load the film record portion of the addRecord page.
+        document.getElementById("categoryShow").click();
+        document.getElementById("categoryShowDiv").children[0].style.marginTop = "3%";
     }
 });
 
@@ -575,7 +591,7 @@ window.addEventListener("load", () => {
     initCollapsible();
     // Add the listeners corresponding to the record choices.
     recordChoicesButtons();
-    const categories = ["Anime", "Book", "Film", "Manga"];
+    const categories = ["Anime", "Book", "Film", "Manga", "Show"];
     categories.forEach(category => {
         // Fill the record page with the associated genre options.
         genreListLoad(category, 6);

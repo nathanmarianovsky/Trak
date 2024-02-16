@@ -363,6 +363,14 @@ var genreList = (type = "All") => {
             "Suspense", "Teaching", "Thriller", "TimeTravel", "Tragedy", "Vampire", "VideoGame", "War", "Western",
             "Workplace", "Yaoi", "Yuri"];
     }
+    else if(type == "Show") {
+        genArr = ["Action", "Adventure", "AlternateHistory", "Amateur", "Animation", "Anthology", "Art", "Biopic", "Comedy",
+            "CookingShow", "Crime", "Cyberpunk", "Detective", "Docudrama", "Documentary", "Drama", "Dystopian", "Fantasy", "GameShow",
+            "Gangster", "Ghost", "Gore", "Gothic", "Heist", "Historical", "Holiday", "Horror", "Instructional", "Military", "Monster",
+            "Musical", "Mystery", "Nature", "Paranormal", "Parody", "Political", "PostApocalyptic", "Psychological", "Reality",
+            "Religious", "Revisionist", "Romance", "Satire", "SciFi", "Space", "SpaceOpera", "Sports", "Spy", "StopMotion",
+            "Superhero", "TalkShow", "Thriller", "Utopian", "Vampire", "Vigilante", "Western", "Zombie"];
+    }
     else if(type == "All") {
         genArr = [...new Set([].concat.apply([], [genreList("Anime"), genreList("Book"), genreList("Film"), genreList("Manga"), genreList("Show")]))];
         genArr.sort((a, b) => a.localeCompare(b));
