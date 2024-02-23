@@ -424,7 +424,6 @@ Driver function designed to add a season table item in the related content secti
 
 */
 var showSeasonAddition = () => {
-    console.log("hello");
     // Define and construct all components needed to attach a show season to the related content table.
     const showList = document.getElementById("showList"),
         itemLI = document.createElement("li"),

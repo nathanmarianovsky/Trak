@@ -401,10 +401,10 @@ Driver function for adding all show listeners.
 
 */
 exports.addShowListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
-	// // Handles the search of a string through all possible show listings on imdb.
-	// ipc.on("showSearch", (event, submission) => {
-	// 	require("./showTools").showSearch(log, require("imdb-scrapper"), event, submission);
-	// });
+	// Handles the search of a string through all possible show listings on imdb.
+	ipc.on("showSearch", (event, submission) => {
+		require("./showTools").showSearch(log, require("imdb-scrapper"), event, submission);
+	});
 
 	// // Handles the fetching of details for a given show via its name.
 	// ipc.on("showFetchDetails", (event, submission) => {
