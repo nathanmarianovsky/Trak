@@ -598,7 +598,7 @@ window.addEventListener("load", () => {
         // Add the listeners corresponding to the record save.
         window[category.toLowerCase() + "Save"]();
         // Add the listeners corresponding to the related content options.
-        if(category == "Anime" || category == "Manga") {
+        if(category == "Anime" || category == "Manga" || category == "Show") {
             window[category.toLowerCase() + "ModalButtons"]();
         }
         // Initialize the observer for the review.

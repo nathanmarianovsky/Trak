@@ -545,6 +545,8 @@ var recordChoicesButtons = () => {
         navReset(categoryInitial, categoryDivs, categoryLinks, categoryShowDiv, categoryShow);
         // Display the correct input associated to the show other genres/tags.
         otherGenresReset("Show");
+        // Initialize the dragging of the related content.
+        dragInit("Show");
         // Define all image buttons.
         const showPreviousImgBtn = document.getElementById("showPreviousImgBtn"),
             showAddImgBtn = document.getElementById("showAddImgBtn"),

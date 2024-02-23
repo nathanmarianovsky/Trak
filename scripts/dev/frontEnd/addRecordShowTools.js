@@ -54,7 +54,8 @@ var showSave = () => {
             showFiles = Array.from(document.getElementById("showAddRecordFiles").files).map(elem => elem.path),
             otherGenres = document.getElementById("showOtherGenres").value.split(",").map(elem => elem.trim()),
             genresLst = genreList("Show"),
-            genres = [];
+            genres = [],
+            content = [];
         // Check to see that a name was provided.
         if(showName != "") {
             // Save all information about the genres.
@@ -423,6 +424,7 @@ Driver function designed to add a season table item in the related content secti
 
 */
 var showSeasonAddition = () => {
+    console.log("hello");
     // Define and construct all components needed to attach a show season to the related content table.
     const showList = document.getElementById("showList"),
         itemLI = document.createElement("li"),
