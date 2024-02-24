@@ -55,24 +55,23 @@ exports.showObjCreation = (path, fs, https, tools, dir, providedData) => {
         "rating": providedData[16],
         "release": providedData[17],
         "runTime": providedData[18],
-        "watched": providedData[19],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]), providedData[20])
+        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]), providedData[19])
     };
-    for(let m = 0; m < providedData[21].length; m++) {
+    for(let m = 0; m < providedData[20].length; m++) {
         let showSeasonObj = {
-            "scenario": providedData[21][m][0],
-            "name": providedData[21][m][1],
-            "start": providedData[21][m][2],
-            "end": providedData[21][m][3],
-            "status": providedData[21][m][4],
+            "scenario": providedData[20][m][0],
+            "name": providedData[20][m][1],
+            "start": providedData[20][m][2],
+            "end": providedData[20][m][3],
+            "status": providedData[20][m][4],
             "episodes": []
         };
-        for(let n = 0; n < providedData[21][m][5].length; n++) {
+        for(let n = 0; n < providedData[20][m][5].length; n++) {
             showSeasonObj.episodes.push({
-                "name": providedData[21][m][5][n][0],
-                "watched": providedData[21][m][5][n][1],
-                "rating": providedData[21][m][5][n][2],
-                "review": providedData[21][m][5][n][3]
+                "name": providedData[20][m][5][n][0],
+                "watched": providedData[20][m][5][n][1],
+                "rating": providedData[20][m][5][n][2],
+                "review": providedData[20][m][5][n][3]
             });
         }
         animeObj.content.push(animeSeasonObj);

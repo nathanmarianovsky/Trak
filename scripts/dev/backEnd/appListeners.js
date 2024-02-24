@@ -108,22 +108,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
   			}
   			addWindow.webContents.send("addRecordInitialMessage");
   			ipc.once("performSave", (event, submission) => {
-				// If the record is an anime then save the corresponding data.
-				if(submission[0] == "Anime") {
-	  				require("./animeTools").animeSave(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
-				}
-				else if(submission[0] == "Book") {
-					require("./bookTools").bookSave(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
-				}
-				else if(submission[0] == "Film") {
-					require("./filmTools").filmSave(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
-				}
-				else if(submission[0] == "Manga") {
-	  				require("./mangaTools").mangaSave(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
-				}
-				else if(submission[0] == "Show") {
-					require("./showTools").showSave(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
-				}
+  				require("./" + submission[0].toLowerCase() + "Tools")[submission[0].toLowerCase() + "Save"](BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
   			});
   		});
   	});
@@ -134,21 +119,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
   		recordUpdateWindow.webContents.on("did-finish-load", () => {
   			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
   			ipc.once("performSave", (event, submission) => {
-				if(submission[0] == "Anime") {
-  					require("./animeTools").animeUpdate(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
-  				}
-  				else if(submission[0] == "Book") {
-  					require("./bookTools").bookUpdate(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
-  				}
-  				else if(submission[0] == "Film") {
-					require("./filmTools").filmUpdate(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
-				}
-  				else if(submission[0] == "Manga") {
-  					require("./mangaTools").mangaUpdate(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
-  				}
-  				else if(submission[0] == "Show") {
-					require("./showTools").showUpdate(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
-				}
+  				require("./" + submission[0].toLowerCase() + "Tools")[submission[0].toLowerCase() + "Update"](BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
   			});
   		});
   	});
@@ -164,6 +135,22 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
 		log.info("The application successfully opened the folder directory " + path.join(dataPath, "Trak", "data", params[0], "assets") + ".");
 		event.sender.send("recordFilesSuccess", params[1]);
 	});
+
+	const categoryArr = ["anime", "book", "film", "manga", "show"];
+	const requireObj = {
+		"tools": category => require("./" + category + "Tools"),
+		"animeLib": val => require("mal-scraper"),
+		"bookLib": val => require("goodreads-scraper"),
+		"filmLib": val => val == true ? require("imdb-scrapper") : require("movier"),
+		"mangaLib": val => require("mal-scraper"),
+		"showLib": val => val == true ? require("imdb-scrapper") : require("movier")
+	};
+	for(let w = 0; w < categoryArr.length; w++) {
+		// Handles the search of a string through all possible records listings on a database.
+		ipc.on(categoryArr[w] + "Search", (event, submission) => {
+			requireObj["tools"](categoryArr[w])[categoryArr[w] + "Search"](log, requireObj[categoryArr[w] + "Lib"](true), event, submission);
+		});
+	}
 };
 
 
@@ -184,11 +171,6 @@ Driver function for adding all anime listeners.
 
 */
 exports.addAnimeListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
-	// Handles the search of a string through all possible anime listings on myanimelist.
-	ipc.on("animeSearch", (event, submission) => {
-		require("./animeTools").animeSearch(log, require("mal-scraper"), event, submission);
-	});
-
 	// Handles the fetching of details for a given anime via its name.
 	ipc.on("animeFetchDetails", (event, submission) => {
 		require("./animeTools").animeFetchDetails(log, require("mal-scraper"), tools, event, submission);
@@ -237,11 +219,6 @@ Driver function for adding all book listeners.
 
 */
 exports.addBookListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
-	// Handles the search of a string through all possible book listings on goodreads.
-	ipc.on("bookSearch", (event, submission) => {
-		require("./bookTools").bookSearch(log, require("goodreads-scraper"), event, submission);
-	});
-
 	// Handles the fetching of details for a given book via its name.
 	ipc.on("bookFetchDetails", (event, submission) => {
 		require("./bookTools").bookFetchDetailsByName(log, require("goodreads-scraper"), event, submission);
@@ -295,11 +272,6 @@ Driver function for adding all film listeners.
 
 */
 exports.addFilmListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
-	// Handles the search of a string through all possible film listings on imdb.
-	ipc.on("filmSearch", (event, submission) => {
-		require("./filmTools").filmSearch(log, require("imdb-scrapper"), event, submission);
-	});
-
 	// Handles the fetching of details for a given film via its name.
 	ipc.on("filmFetchDetails", (event, submission) => {
 		require("./filmTools").filmFetchDetails(log, require("movier"), tools, event, submission);
@@ -343,11 +315,6 @@ Driver function for adding all manga listeners.
 
 */
 exports.addMangaListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
-	// Handles the search of a string through all possible manga listings on myanimelist.
-	ipc.on("mangaSearch", (event, submission) => {
-		require("./mangaTools").mangaSearch(log, require("mal-scraper"), event, submission);
-	});
-
 	// Handles the fetching of details for a given manga via its name.
 	ipc.on("mangaFetchDetails", (event, submission) => {
 		require("./mangaTools").mangaFetchDetails(log, require("mal-scraper"), require("goodreads-scraper"), tools, event, submission);
@@ -401,11 +368,6 @@ Driver function for adding all show listeners.
 
 */
 exports.addShowListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
-	// Handles the search of a string through all possible show listings on imdb.
-	ipc.on("showSearch", (event, submission) => {
-		require("./showTools").showSearch(log, require("imdb-scrapper"), event, submission);
-	});
-
 	// Handles the fetching of details for a given show via its name.
 	ipc.on("showFetchDetails", (event, submission) => {
 		require("./showTools").showFetchDetails(log, require("movier"), tools, event, submission);

@@ -49,7 +49,6 @@ var showSave = () => {
             showRating = document.getElementById("showRating").value,
             showReleaseDate = document.getElementById("showReleaseDate").value,
             showRunningTime = document.getElementById("showRunningTime").value,
-            showLastWatched = document.getElementById("showLastWatched").value,
             showImg = document.getElementById("addRecordShowImg").getAttribute("list").split(","),
             showFiles = Array.from(document.getElementById("showAddRecordFiles").files).map(elem => elem.path),
             otherGenres = document.getElementById("showOtherGenres").value.split(",").map(elem => elem.trim()),
@@ -89,7 +88,7 @@ var showSave = () => {
             // Send the request to the back-end portion of the app.
             const submissionMaterial = ["Show", showName, showAlternateName, showReview, showDirectors, showProducers, showWriters, showMusicians, showEditors,
                 showCinematographers, showFiles, showDistributors, showProductionCompanies, showStarring, [genresLst, genres, otherGenres], showSynopsis, showRating, showReleaseDate, showRunningTime,
-                showLastWatched, [document.getElementById("addRecordShowImg").getAttribute("list") == document.getElementById("addRecordShowImg").getAttribute("previous"), showImg], content, oldTitle];
+                [document.getElementById("addRecordShowImg").getAttribute("list") == document.getElementById("addRecordShowImg").getAttribute("previous"), showImg], content, oldTitle];
             ipcRenderer.send("performSave", submissionMaterial);
         }
         // If no name has been provided then notify the user.
