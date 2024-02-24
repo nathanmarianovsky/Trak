@@ -168,11 +168,11 @@ exports.filmFetchDetails = (log, movier, tools, ev, name) => {
     // Fetch film details.
     movier.getTitleDetailsByName(name).then(filmData => {
         log.info("Movier has finished getting the details associated to the film " + name + ".");
-        const runtimeArr = filmData.runtime.title.split(" ");
+        const runtimeNum = parseInt(filmData.runtime.seconds / 60);
         // Send the attained data to the front-end.
         ev.sender.send("filmFetchDetailsResult", [
-            filmData.name, filmData.otherNames.join(", "), [filmData.posterImage.url, filmData.allImages.map(elem => elem.url)], String(filmData.dates.startDate),
-            (parseInt(runtimeArr[0]) * 60) + parseInt(runtimeArr[runtimeArr.length - 2]), filmData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),
+            filmData.name, filmData.otherNames.join(", "), [filmData.posterImage.url, filmData.allImages.map(elem => elem.url)],
+            String(filmData.dates.startDate), runtimeNum, filmData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),
             filmData.directors.map(director => director.name), filmData.writers.map(director => director.name),
             filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), filmData.producers.map(producers => producers.name),
             filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name), filmData.casts.map(star => star.name), filmData.plot

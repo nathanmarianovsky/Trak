@@ -406,10 +406,10 @@ exports.addShowListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainW
 		require("./showTools").showSearch(log, require("imdb-scrapper"), event, submission);
 	});
 
-	// // Handles the fetching of details for a given show via its name.
-	// ipc.on("showFetchDetails", (event, submission) => {
-	// 	require("./showTools").showFetchDetails(log, require("movier"), tools, event, submission);
-	// });
+	// Handles the fetching of details for a given show via its name.
+	ipc.on("showFetchDetails", (event, submission) => {
+		require("./showTools").showFetchDetails(log, require("movier"), tools, event, submission);
+	});
 
 	// // Handles the fetching of anime releases based on a query search.
 	// ipc.on("filmFetchSearch", (event, submission) => {

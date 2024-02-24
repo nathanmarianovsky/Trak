@@ -173,32 +173,32 @@ exports.showSearch = (log, imdbScraper, ev, search) => {
 
 
 
-// /*
+/*
 
-// Handles the fetching of a film record from imdb based on a name.
+Handles the fetching of a show record from imdb based on a name.
 
-//    - log provides the means to create application logs to keep track of what is going on.
-//    - movier provides the means to attain film records from imdb.
-//    - tools provides a collection of local functions.
-//    - ev provides the means to interact with the front-end of the Electron app.
-//    - name is a string representing the title of a film record.
+   - log provides the means to create application logs to keep track of what is going on.
+   - movier provides the means to attain show records from imdb.
+   - tools provides a collection of local functions.
+   - ev provides the means to interact with the front-end of the Electron app.
+   - name is a string representing the title of a show record.
 
-// */
-// exports.filmFetchDetails = (log, movier, tools, ev, name) => {
-//     // Fetch film details.
-//     movier.getTitleDetailsByName(name).then(filmData => {
-//         log.info("Movier has finished getting the details associated to the film " + name + ".");
-//         const runtimeArr = filmData.runtime.title.split(" ");
-//         // Send the attained data to the front-end.
-//         ev.sender.send("filmFetchDetailsResult", [
-//             filmData.name, filmData.otherNames.join(", "), [filmData.posterImage.url, filmData.allImages.map(elem => elem.url)], String(filmData.dates.startDate),
-//             (parseInt(runtimeArr[0]) * 60) + parseInt(runtimeArr[runtimeArr.length - 2]), filmData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),
-//             filmData.directors.map(director => director.name), filmData.writers.map(director => director.name),
-//             filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), filmData.producers.map(producers => producers.name),
-//             filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name), filmData.casts.map(star => star.name), filmData.plot
-//         ]);
-//     }).catch(err => log.error("There was an issue in obtaining the details associated to the film name " + name + "."));
-// };
+*/
+exports.showFetchDetails = (log, movier, tools, ev, name) => {
+    // Fetch show details.
+    movier.getTitleDetailsByName(name).then(showData => {
+        log.info("Movier has finished getting the details associated to the show " + name + ".");
+        const runtimeNum = parseInt(showData.runtime.seconds / 60);
+        // Send the attained data to the front-end.
+        ev.sender.send("showFetchDetailsResult", [
+            showData.name, showData.otherNames.join(", "), [showData.posterImage.url, showData.allImages.map(elem => elem.url)],
+            String(showData.dates.startDate), runtimeNum, showData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),
+            showData.directors.map(director => director.name), showData.writers.map(director => director.name),
+            showData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), showData.producers.map(producers => producers.name),
+            showData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name), showData.casts.map(star => star.name), showData.plot
+        ]);
+    }).catch(err => log.error("There was an issue in obtaining the details associated to the show name " + name + "."));
+};
 
 
 
