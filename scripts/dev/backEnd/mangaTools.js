@@ -387,15 +387,15 @@ Provides the front-end with manga details associated to an item clicked in the m
    - log provides the means to create application logs to keep track of what is going on.
    - https provides the means to download files.
    - malScraper provides the means to attain anime and manga records from myanimelist.
-   - GoodReadsScraper provides the means to attain book records from goodreads.
    - tools provides a collection of local functions.
    - globalWin is an object representing the primary window of the Electron app.
    - win is an object representing the addRecord window of the Electron app.
    - usrDataPath is the current path to the local user data.
    - link is a string representing the URL of a manga record on myanimelist.
+   - GoodReadsScraper provides the means to attain book records from goodreads.
 
 */
-exports.mangaRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScraper, GoodReadsScraper, tools, globalWin, win, usrDataPath, link) => {
+exports.mangaRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScraper, tools, globalWin, win, usrDataPath, link, GoodReadsScraper) => {
     // Fetch anime details.
     malScraper.getInfoFromURL(link).then(mangaData => {
         // Define the parameters which will be passed to the front-end based on the details received.

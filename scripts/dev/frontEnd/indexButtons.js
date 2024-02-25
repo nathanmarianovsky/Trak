@@ -60,9 +60,10 @@ Provides the request to load more chunks, if available, on a content search when
    - bookSearch is the search bar input for book content searches.
    - filmSearchBar is the search bar input for film content searches.
    - mangaSearchBar is the search bar input for manga content searches.
+   - showSearchBar is the search bar input for film content searches.
 
 */
-var bottomScrollRequest = (animeSearch, bookSearch, filmSearch, mangaSearch) => {
+var bottomScrollRequest = (animeSearch, bookSearch, filmSearch, mangaSearch, showSearch) => {
     window.addEventListener("scroll", ev => {
         if((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight) {
             let tabs = Array.from(document.getElementsByClassName("tabSearchLink")).filter(elem => elem.classList.contains("active")),
@@ -83,6 +84,9 @@ var bottomScrollRequest = (animeSearch, bookSearch, filmSearch, mangaSearch) => 
                     }
                     else if(type == "Manga" && chunkPreloader.getAttribute("mangaCheck") == "0") {
                         ipcRenderer.send("mangaFetchSearch", [mangaSearch.value, Math.floor(document.getElementById("mangaSearchContainer").children.length / 50) + 1]);
+                    }
+                    else if(type == "Show" && chunkPreloader.getAttribute("showCheck") == "0") {
+                        ipcRenderer.send("showFetchSearch", [showSearch.value, document.getElementById("showSearchContainer").children.length > 0 ? 2 : 1]);
                     }
                 }
             }
@@ -140,11 +144,13 @@ window.addEventListener("load", () => {
         animeSeasonSearchInnerDiv = document.getElementById("animeSeasonSearchInnerDiv"),
         filterModalGenreHeading = document.getElementById("filterModalGenreHeading"),
         filterModalGenreHeadingSiblings = filterModalGenreHeading.parentNode.children,
-        animeSearchBar = document.getElementById("animeSearchBar"),
         defaultSearchDiv = document.getElementById("defaultSearchDiv"),
         tabDivs = Array.from(document.getElementsByClassName("tabDiv")),
+        animeSearchBar = document.getElementById("animeSearchBar"),
         bookSearchBar = document.getElementById("bookSearchBar"),
+        filmSearchBar = document.getElementById("filmSearchBar"),
         mangaSearchBar = document.getElementById("mangaSearchBar"),
+        showSearchBar = document.getElementById("showSearchBar"),
         databaseModalExit = document.getElementById("databaseModalExit"),
         exportPath = document.getElementById("exportPath"),
         databaseTabs = document.getElementById("databaseTabs"),
@@ -353,6 +359,29 @@ window.addEventListener("load", () => {
         }
         // If no query has been provided notify the user.
         else { M.toast({"html": "In order to search for manga based on a written query it has to be of non-zero length.", "classes": "rounded"}); }
+        // Reset the genres/tags filter.
+        clearFilter.click();
+    });
+    // Listen for a click event on the show search submission button.
+    showSearchSubmission.addEventListener("click", e => {
+        // Define the show search container.
+        const showResultsContainer = document.getElementById("showSearchContainer");
+        // Proceed only if the query is non-empty.
+        if(showSearchBar.value.length > 0) {
+            // Reset the show search container.
+            showResultsContainer.innerHTML = "";
+            // Reset the sort select tag.
+            document.getElementById("showNameSearchSort").value = "";
+            initSelect();
+            window.scrollTo(0, 0);
+            // Display the preloader.
+            preloader.style.display = "block";
+            chunkLoad.setAttribute("showCheck", "0");
+            // Send a request to the back-end in order to retrieve the search results for the provided query.
+            ipcRenderer.send("showFetchSearch", [showSearchBar.value, 1]);
+        }
+        // If no query has been provided notify the user.
+        else { M.toast({"html": "In order to search for shows based on a written query it has to be of non-zero length.", "classes": "rounded"}); }
         // Reset the genres/tags filter.
         clearFilter.click();
     });
@@ -864,5 +893,5 @@ window.addEventListener("load", () => {
     // Initialize all select tags.
     initSelect();
     // Listen for a scroll to the bottom in order to load chunks, if available, for any type of content search.
-    bottomScrollRequest(animeSearchBar, bookSearchBar, filmSearchBar, mangaSearchBar);
+    bottomScrollRequest(animeSearchBar, bookSearchBar, filmSearchBar, mangaSearchBar, showSearchBar);
 });

@@ -150,6 +150,25 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
 		ipc.on(categoryArr[w] + "Search", (event, submission) => {
 			requireObj["tools"](categoryArr[w])[categoryArr[w] + "Search"](log, requireObj[categoryArr[w] + "Lib"](true), event, submission);
 		});
+
+		// Handles the fetching of record releases based on a query search.
+		ipc.on(categoryArr[w] + "FetchSearch", (event, submission) => {
+			requireObj["tools"](categoryArr[w])[categoryArr[w] + "FetchSearch"](log, requireObj[categoryArr[w] + "Lib"](false), event, submission, path);
+		});
+
+		// Handles the fetching of a record synopsis.
+		ipc.on(categoryArr[w] + "SynopsisFetch", (event, submission) => {
+			requireObj["tools"](categoryArr[w])[categoryArr[w] + "SynopsisFetch"](log, requireObj[categoryArr[w] + "Lib"](false), event, submission);
+		});
+
+		// Handles the opening of the addRecord.html page to load a record based on a season or query search.
+		ipc.on(categoryArr[w] + "RecordRequest", (event, submission) => {
+			let recordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+	  		recordWindow.webContents.on("did-finish-load", () => {
+	  			recordWindow.webContents.send("searchRecordStart", categoryArr[w].charAt(0).toUpperCase() + categoryArr[w].substring(1));
+	  			requireObj["tools"](categoryArr[w])[categoryArr[w] + "RecordRequest"](BrowserWindow, ipc, path, fs, log, require("https"), requireObj[categoryArr[w] + "Lib"](false), tools, mainWindow, recordWindow, dataPath, submission, requireObj["bookLib"](false));
+	  		});
+		});
 	}
 };
 
@@ -181,24 +200,24 @@ exports.addAnimeListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, main
 		require("./animeTools").animeFetchSeason(log, require("mal-scraper"), event, submissionArr);
 	});
 
-	// Handles the fetching of anime releases based on a query search.
-	ipc.on("animeFetchSearch", (event, submission) => {
-		require("./animeTools").animeFetchSearch(log, require("mal-scraper"), event, submission);
-	});
+	// // Handles the fetching of anime releases based on a query search.
+	// ipc.on("animeFetchSearch", (event, submission) => {
+	// 	require("./animeTools").animeFetchSearch(log, require("mal-scraper"), event, submission);
+	// });
 
-	// Handles the fetching of an anime synopsis.
-	ipc.on("animeSynopsisFetch", (event, submission) => {
-		require("./animeTools").animeSynopsisFetch(log, require("mal-scraper"), event, submission);
-	});
+	// // Handles the fetching of an anime synopsis.
+	// ipc.on("animeSynopsisFetch", (event, submission) => {
+	// 	require("./animeTools").animeSynopsisFetch(log, require("mal-scraper"), event, submission);
+	// });
 
-	// Handles the opening of the addRecord.html page to load an anime record based on a season or query search.
-	ipc.on("animeRecordRequest", (event, submission) => {
-		let animeRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
-  		animeRecordWindow.webContents.on("did-finish-load", () => {
-  			animeRecordWindow.webContents.send("searchRecordStart", "Anime");
-  			require("./animeTools").animeRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("mal-scraper"), tools, mainWindow, animeRecordWindow, dataPath, submission);
-  		});
-	});
+	// // Handles the opening of the addRecord.html page to load an anime record based on a season or query search.
+	// ipc.on("animeRecordRequest", (event, submission) => {
+	// 	let animeRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  	// 	animeRecordWindow.webContents.on("did-finish-load", () => {
+  	// 		animeRecordWindow.webContents.send("searchRecordStart", "Anime");
+  	// 		require("./animeTools").animeRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("mal-scraper"), tools, mainWindow, animeRecordWindow, dataPath, submission);
+  	// 	});
+	// });
 };
 
 
@@ -234,24 +253,24 @@ exports.addBookListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainW
 		require("./bookTools").bookFetchDetailsByName(log, require("goodreads-scraper"), event, submission, 0);
 	});
 
-	// Handles the fetching of books based on a query search.
-	ipc.on("bookFetchSearch", (event, submission) => {
-		require("./bookTools").bookFetchSearch(log, require("goodreads-scraper"), event, submission);
-	});
+	// // Handles the fetching of books based on a query search.
+	// ipc.on("bookFetchSearch", (event, submission) => {
+	// 	require("./bookTools").bookFetchSearch(log, require("goodreads-scraper"), event, submission);
+	// });
 
-	// Handles the fetching of a book synopsis.
-	ipc.on("bookSynopsisFetch", (event, submission) => {
-		require("./bookTools").bookSynopsisFetch(log, GoodReadsScraper, event, submission);
-	});
+	// // Handles the fetching of a book synopsis.
+	// ipc.on("bookSynopsisFetch", (event, submission) => {
+	// 	require("./bookTools").bookSynopsisFetch(log, require("goodreads-scraper"), event, submission);
+	// });
 
-	// Handles the opening of the addRecord.html page to load a book record based on a query search.
-	ipc.on("bookRecordRequest", (event, submission) => {
-		let bookRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
-  		bookRecordWindow.webContents.on("did-finish-load", () => {
-  			bookRecordWindow.webContents.send("searchRecordStart", "Book");
-  			require("./bookTools").bookRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("goodreads-scraper"), tools, mainWindow, bookRecordWindow, dataPath, submission);
-  		});
-	});
+	// // Handles the opening of the addRecord.html page to load a book record based on a query search.
+	// ipc.on("bookRecordRequest", (event, submission) => {
+	// 	let bookRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  	// 	bookRecordWindow.webContents.on("did-finish-load", () => {
+  	// 		bookRecordWindow.webContents.send("searchRecordStart", "Book");
+  	// 		require("./bookTools").bookRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("goodreads-scraper"), tools, mainWindow, bookRecordWindow, dataPath, submission);
+  	// 	});
+	// });
 };
 
 
@@ -277,24 +296,24 @@ exports.addFilmListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainW
 		require("./filmTools").filmFetchDetails(log, require("movier"), tools, event, submission);
 	});
 
-	// Handles the fetching of anime releases based on a query search.
-	ipc.on("filmFetchSearch", (event, submission) => {
-		require("./filmTools").filmFetchSearch(log, require("movier"), event, submission, path);
-	});
+	// // Handles the fetching of anime releases based on a query search.
+	// ipc.on("filmFetchSearch", (event, submission) => {
+	// 	require("./filmTools").filmFetchSearch(log, require("movier"), event, submission, path);
+	// });
 
-	// Handles the fetching of a film synopsis.
-	ipc.on("filmSynopsisFetch", (event, submission) => {
-		require("./filmTools").filmSynopsisFetch(log, require("movier"), event, submission);
-	});
+	// // Handles the fetching of a film synopsis.
+	// ipc.on("filmSynopsisFetch", (event, submission) => {
+	// 	require("./filmTools").filmSynopsisFetch(log, require("movier"), event, submission);
+	// });
 
-	// Handles the opening of the addRecord.html page to load a film record based on a query search.
-	ipc.on("filmRecordRequest", (event, submission) => {
-		let filmRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
-  		filmRecordWindow.webContents.on("did-finish-load", () => {
-  			filmRecordWindow.webContents.send("searchRecordStart", "Film");
-  			require("./filmTools").filmRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("movier"), tools, mainWindow, filmRecordWindow, dataPath, submission);
-  		});
-	});
+	// // Handles the opening of the addRecord.html page to load a film record based on a query search.
+	// ipc.on("filmRecordRequest", (event, submission) => {
+	// 	let filmRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  	// 	filmRecordWindow.webContents.on("did-finish-load", () => {
+  	// 		filmRecordWindow.webContents.send("searchRecordStart", "Film");
+  	// 		require("./filmTools").filmRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("movier"), tools, mainWindow, filmRecordWindow, dataPath, submission);
+  	// 	});
+	// });
 };
 
 
@@ -330,24 +349,24 @@ exports.addMangaListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, main
 		require("./mangaTools").mangaVolumeFetchDetailsByName(log, require("goodreads-scraper"), event, submission[0], submission[1]);
 	});
 
-	// Handles the fetching of manga releases based on a query search.
-	ipc.on("mangaFetchSearch", (event, submission) => {
-		require("./mangaTools").mangaFetchSearch(log, require("mal-scraper"), event, submission);
-	});
+	// // Handles the fetching of manga releases based on a query search.
+	// ipc.on("mangaFetchSearch", (event, submission) => {
+	// 	require("./mangaTools").mangaFetchSearch(log, require("mal-scraper"), event, submission);
+	// });
 
-	// Handles the fetching of a manga synopsis.
-	ipc.on("mangaSynopsisFetch", (event, submission) => {
-		require("./mangaTools").mangaSynopsisFetch(log, require("mal-scraper"), event, submission);
-	});
+	// // Handles the fetching of a manga synopsis.
+	// ipc.on("mangaSynopsisFetch", (event, submission) => {
+	// 	require("./mangaTools").mangaSynopsisFetch(log, require("mal-scraper"), event, submission);
+	// });
 
-	// Handles the opening of the addRecord.html page to load a manga record based on a season or query search.
-	ipc.on("mangaRecordRequest", (event, submission) => {
-		let mangaRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
-  		mangaRecordWindow.webContents.on("did-finish-load", () => {
-  			mangaRecordWindow.webContents.send("searchRecordStart", "Manga");
-  			require("./mangaTools").mangaRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("mal-scraper"), require("goodreads-scraper"), tools, mainWindow, mangaRecordWindow, dataPath, submission);
-  		});
-	});
+	// // Handles the opening of the addRecord.html page to load a manga record based on a season or query search.
+	// ipc.on("mangaRecordRequest", (event, submission) => {
+	// 	let mangaRecordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  	// 	mangaRecordWindow.webContents.on("did-finish-load", () => {
+  	// 		mangaRecordWindow.webContents.send("searchRecordStart", "Manga");
+  	// 		require("./mangaTools").mangaRecordRequest(BrowserWindow, ipc, path, fs, log, require("https"), require("mal-scraper"), require("goodreads-scraper"), tools, mainWindow, mangaRecordWindow, dataPath, submission);
+  	// 	});
+	// });
 };
 
 

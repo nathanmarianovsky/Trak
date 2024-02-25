@@ -201,120 +201,120 @@ exports.showFetchDetails = (log, movier, tools, ev, name) => {
 
 
 
-// /*
+/*
 
-// Handles the search of imdb film records based on a query in order to provide a film content search.
+Handles the search of imdb show records based on a query in order to provide a show content search.
 
-//    - log provides the means to create application logs to keep track of what is going on.
-//    - movier provides the means to attain film records from imdb.
-//    - ev provides the means to interact with the front-end of the Electron app.
-//    - search is an array of a string corresponding to the query used for a search and a page number.
-//    - path provides the means to work with local files.
+   - log provides the means to create application logs to keep track of what is going on.
+   - movier provides the means to attain show records from imdb.
+   - ev provides the means to interact with the front-end of the Electron app.
+   - search is an array of a string corresponding to the query used for a search and a page number.
+   - path provides the means to work with local files.
 
-// */
-// exports.filmFetchSearch = (log, movier, ev, search, path) => {
-//     if(search[1] == 1) {
-//         // Fetch the search results.
-//         log.info("Searching for film records based on the query " + search[0] + ".");
-//         movier.searchTitleByName(search[0]).then(results => {
-//             results = results.filter(elem => elem.titleType == "movie");
-//             const resultsArr = [];
-//             // Define a promise which will resolve only once all details have been attained for each search result.
-//             const detPromise = new Promise((resolve, reject) => {
-//                 // Iterate through the search results.
-//                 results.forEach(elem => {
-//                     // Fetch the film details based on the URL.
-//                     movier.getTitleDetailsByUrl(elem.url).then(elemData => {
-//                         elemData.genres = elemData.genres.map(str => {
-//                             if(str == "Post-Apocalyptic") {
-//                                 str = "PostApocalyptic";
-//                             }
-//                             else if(str == "Sci-Fi") {
-//                                 str = "SciFi";
-//                             }
-//                             return str;
-//                         });
-//                         // Push the film details into the overall collection.
-//                         resultsArr.push([elem.name, (elem.thumbnailImageUrl != "" ? elem.thumbnailImageUrl.split("V1_")[0] + "V1_" + path.extname(elem.thumbnailImageUrl) : elemData.posterImage.url), elem.url, (elemData.mainRate.votesCount != 0 ? elemData.mainRate.rate : "N/A"), elemData.genres]);
-//                         if(resultsArr.length == results.length) { resolve(); }
-//                     }).catch(err => {
-//                         log.error("There was an issue getting the film details based on the url " + elem.url + ".");
-//                         resultsArr.push([elem.name, elem.thumbnailImageUrl.split("V1_")[0] + "V1_" + path.extname(elem.thumbnailImageUrl), elem.url, "N/A", []]);
-//                         if(resultsArr.length == results.length) { resolve(); }
-//                     });
-//                 })
-//             });
-//             // Once all film results have an associated picture send the list of film releases to the front-end.
-//             detPromise.then(() => {
-//                 ev.sender.send("fetchResult", [resultsArr, false, "Film", search[1] == 1]);
-//             }).catch(err => log.error("There was an issue resolving the promise associated to grabbing film details based on the search query " + search[0] + "."));
-//         }).catch(err => {
-//             log.warn("There was an issue obtaining the film releases based on the query " + search[0] + ". Returning an empty collection.");
-//             ev.sender.send("fetchResult", [[], false, "Film", search[1] == 1]);
-//         });
-//     }
-//     else {
-//         ev.sender.send("fetchResult", [[], false, "Film", false]);
-//     }
-// };
-
-
-
-// /*
-
-// Handles the fetching of a synopsis associated to a film record from imdb.
-
-//    - log provides the means to create application logs to keep track of what is going on.
-//    - movier provides the means to attain film records from imdb.
-//    - ev provides the means to interact with the front-end of the Electron app.
-//    - link is a string representing the URL of a film record on imdb.
-
-// */
-// exports.filmSynopsisFetch = (log, movier, ev, link) => {
-//     // Fetch the film details based on the URL.
-//     movier.getTitleDetailsByUrl(link).then(data => {
-//         // Provide the film synopsis to the front-end.
-//         ev.sender.send("filmSynopsisFetchResult", data.plot);
-//     }).catch(err => log.error("There was an issue getting the film synopsis based on the url " + link + "."));
-// };
+*/
+exports.showFetchSearch = (log, movier, ev, search, path) => {
+    if(search[1] == 1) {
+        // Fetch the search results.
+        log.info("Searching for show records based on the query " + search[0] + ".");
+        movier.searchTitleByName(search[0]).then(results => {
+            results = results.filter(elem => elem.titleType == "series");
+            const resultsArr = [];
+            // Define a promise which will resolve only once all details have been attained for each search result.
+            const detPromise = new Promise((resolve, reject) => {
+                // Iterate through the search results.
+                results.forEach(elem => {
+                    // Fetch the show details based on the URL.
+                    movier.getTitleDetailsByUrl(elem.url).then(elemData => {
+                        elemData.genres = elemData.genres.map(str => {
+                            if(str == "Post-Apocalyptic") {
+                                str = "PostApocalyptic";
+                            }
+                            else if(str == "Sci-Fi") {
+                                str = "SciFi";
+                            }
+                            return str;
+                        });
+                        // Push the show details into the overall collection.
+                        resultsArr.push([elem.name, (elem.thumbnailImageUrl != "" ? elem.thumbnailImageUrl.split("V1_")[0] + "V1_" + path.extname(elem.thumbnailImageUrl) : elemData.posterImage.url), elem.url, (elemData.mainRate.votesCount != 0 ? elemData.mainRate.rate : "N/A"), elemData.genres]);
+                        if(resultsArr.length == results.length) { resolve(); }
+                    }).catch(err => {
+                        log.error("There was an issue getting the show details based on the url " + elem.url + ".");
+                        resultsArr.push([elem.name, elem.thumbnailImageUrl.split("V1_")[0] + "V1_" + path.extname(elem.thumbnailImageUrl), elem.url, "N/A", []]);
+                        if(resultsArr.length == results.length) { resolve(); }
+                    });
+                })
+            });
+            // Once all show results have an associated picture send the list of show releases to the front-end.
+            detPromise.then(() => {
+                ev.sender.send("fetchResult", [resultsArr, false, "Show", search[1] == 1]);
+            }).catch(err => log.error("There was an issue resolving the promise associated to grabbing show details based on the search query " + search[0] + "."));
+        }).catch(err => {
+            log.warn("There was an issue obtaining the show releases based on the query " + search[0] + ". Returning an empty collection.");
+            ev.sender.send("fetchResult", [[], false, "Show", search[1] == 1]);
+        });
+    }
+    else {
+        ev.sender.send("fetchResult", [[], false, "Show", false]);
+    }
+};
 
 
 
-// /*
+/*
 
-// Provides the front-end with film details associated to an item clicked in the film content search.
+Handles the fetching of a synopsis associated to a show record from imdb.
 
-//    - BrowserWindow and ipc provide the means to operate the Electron app.
-//    - path and fs provide the means to work with local files.
-//    - log provides the means to create application logs to keep track of what is going on.
-//    - https provides the means to download files.
-//    - movier provides the means to attain film records from imdb.
-//    - tools provides a collection of local functions.
-//    - globalWin is an object representing the primary window of the Electron app.
-//    - win is an object representing the addRecord window of the Electron app.
-//    - usrDataPath is the current path to the local user data.
-//    - link is a string representing the URL of a film record on imdb.
+   - log provides the means to create application logs to keep track of what is going on.
+   - movier provides the means to attain show records from imdb.
+   - ev provides the means to interact with the front-end of the Electron app.
+   - link is a string representing the URL of a show record on imdb.
 
-// */
-// exports.filmRecordRequest = (BrowserWindow, ipc, path, fs, log, https, movier, tools, globalWin, win, usrDataPath, link) => {
-//     // Fetch film details.
-//     movier.getTitleDetailsByUrl(link).then(filmData => {
-//         log.info("Movier has finished getting the details associated to the film " + filmData.name + ".");
-//         const runtimeArr = filmData.runtime.title.split(" ");
-//         // Send the attained data to the front-end.
-//         win.webContents.send("filmFetchDetailsResult", [
-//             filmData.name, filmData.otherNames.join(", "), [filmData.posterImage.url, filmData.allImages.map(elem => elem.url)], String(filmData.dates.startDate),
-//             (parseInt(runtimeArr[0]) * 60) + parseInt(runtimeArr[runtimeArr.length - 2]), filmData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),
-//             filmData.directors.map(director => director.name), filmData.writers.map(director => director.name),
-//             filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), filmData.producers.map(producers => producers.name),
-//             filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name), filmData.casts.map(star => star.name), filmData.plot
-//         ]);
-//         ipc.once("performSave", (event, submission) => {
-//             // Save the corresponding data.
-//             exports.filmSave(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission);
-//         });
-//     }).catch(err => {console.log(err); log.error("There was an issue getting the film details based on the url " + link + ".")} );
-// };
+*/
+exports.showSynopsisFetch = (log, movier, ev, link) => {
+    // Fetch the show details based on the URL.
+    movier.getTitleDetailsByUrl(link).then(data => {
+        // Provide the show synopsis to the front-end.
+        ev.sender.send("showSynopsisFetchResult", data.plot);
+    }).catch(err => log.error("There was an issue getting the show synopsis based on the url " + link + "."));
+};
+
+
+
+/*
+
+Provides the front-end with show details associated to an item clicked in the show content search.
+
+   - BrowserWindow and ipc provide the means to operate the Electron app.
+   - path and fs provide the means to work with local files.
+   - log provides the means to create application logs to keep track of what is going on.
+   - https provides the means to download files.
+   - movier provides the means to attain show records from imdb.
+   - tools provides a collection of local functions.
+   - globalWin is an object representing the primary window of the Electron app.
+   - win is an object representing the addRecord window of the Electron app.
+   - usrDataPath is the current path to the local user data.
+   - link is a string representing the URL of a show record on imdb.
+
+*/
+exports.showRecordRequest = (BrowserWindow, ipc, path, fs, log, https, movier, tools, globalWin, win, usrDataPath, link) => {
+    // Fetch show details.
+    movier.getTitleDetailsByUrl(link).then(showData => {
+        log.info("Movier has finished getting the details associated to the show " + showData.name + ".");
+        const runtimeNum = parseInt(showData.runtime.seconds / 60);
+        // Send the attained data to the front-end.
+        win.webContents.send("showFetchDetailsResult", [
+            showData.name, showData.otherNames.join(", "), [showData.posterImage.url, showData.allImages.map(elem => elem.url)],
+            String(showData.dates.startDate), runtimeNum, showData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),
+            showData.directors.map(director => director.name), showData.writers.map(director => director.name),
+            showData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), showData.producers.map(producers => producers.name),
+            showData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name), showData.casts.map(star => star.name), showData.plot
+        ]);
+        ipc.once("performSave", (event, submission) => {
+            // Save the corresponding data.
+            exports.showSave(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission);
+        });
+    }).catch(err => {console.log(err); log.error("There was an issue getting the show details based on the url " + link + ".")} );
+};
 
 
 

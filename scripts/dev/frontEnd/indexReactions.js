@@ -893,13 +893,15 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
         bookContainer = document.getElementById("bookSearchContainer"),
         filmContainer = document.getElementById("filmSearchContainer"),
         mangaContainer = document.getElementById("mangaSearchContainer"),
+        showContainer = document.getElementById("showSearchContainer"),
         preloaderIcon = document.getElementById("synopsisPreloader"),
         synopsisContent = document.getElementById("synopsisModalContent"),
         animeSortSeasonSelect = document.getElementById("animeSeasonSearchSort"),
         animeSortNameSelect = document.getElementById("animeNameSearchSort"),
         bookSortNameSelect = document.getElementById("bookNameSearchSort"),
         filmSortNameSelect = document.getElementById("filmNameSearchSort"),
-        mangaSortNameSelect = document.getElementById("mangaNameSearchSort");
+        mangaSortNameSelect = document.getElementById("mangaNameSearchSort"),
+        showSortNameSelect = document.getElementById("showNameSearchSort");
     // Define the array which will contain the search content results.
     let contentArr = [];
     // Hide the preloader.
@@ -924,6 +926,9 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
     }
     else if(submissionArr[2] == "Manga" && submissionArr[3] == true) {
         mangaContainer.innerHTML = "";
+    }
+    else if(submissionArr[2] == "Show" && submissionArr[3] == true) {
+        showContainer.innerHTML = "";
     }
     // Randomly shuffle the content only on an anime season search for the default display.
     submissionArr[1] == true ? contentArr = shuffle(submissionArr[0]) : contentArr = submissionArr[0];
@@ -969,6 +974,9 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
         }
         else if(submissionArr[2] == "Manga") {
             mangaContainer.append(itemContainer);
+        }
+        else if(submissionArr[2] == "Show") {
+            showContainer.append(itemContainer);
         }
         // Listen for a click event on the synopsis icon in order to load the associated synopsis content on the synopsisModal.
         itemInfoIcon.addEventListener("click", e => {
@@ -1020,6 +1028,9 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
         else if(submissionArr[2] == "Manga") {
             sortedArr = Array.from(mangaContainer.children);
         }
+        else if(submissionArr[2] == "Show") {
+            sortedArr = Array.from(showContainer.children);
+        }
         // Sort the items by alphabetical order.
         if(e.target.value == "alphabetical") {
             sortedArr = sortedArr.sort((a, b) => a.getAttribute("name").localeCompare(b.getAttribute("name")));
@@ -1065,6 +1076,9 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
             else if(submissionArr[2] == "Manga") {
                 mangaSortNameSelect.value = "";
             }
+            else if(submissionArr[2] == "Show") {
+                showSortNameSelect.value = "";
+            }
             initSelect();
         }
         // Clear the container for the content search items.
@@ -1080,6 +1094,9 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
         else if(submissionArr[2] == "Manga") {
             mangaContainer.innerHTML = "";
         }
+        else if(submissionArr[2] == "Show") {
+            showContainer.innerHTML = "";
+        }
         // Reattach the content search items now that they have been sorted.
         for(let k = 0; k < sortedArr.length; k++) {
             if(submissionArr[2] == "Anime") {
@@ -1093,6 +1110,9 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
             }
             else if(submissionArr[2] == "Manga") {
                 mangaContainer.append(sortedArr[k]);
+            }
+            else if(submissionArr[2] == "Show") {
+                showContainer.append(sortedArr[k]);
             }
         }
     };
@@ -1109,5 +1129,8 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
     }
     else if(submissionArr[2] == "Manga") {
         mangaSortNameSelect.addEventListener("change", ev => sortFunc(ev));
+    }
+    else if(submissionArr[2] == "Show") {
+        showSortNameSelect.addEventListener("change", ev => sortFunc(ev));
     }
 });
