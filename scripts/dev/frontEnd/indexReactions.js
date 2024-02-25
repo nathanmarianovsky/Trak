@@ -595,6 +595,25 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 + (displayRatingArr[1].length == 0 ? 0 : (displayRatingArr[1].reduce((accum, cur) => accum + cur, 0) / displayRatingArr[1].length))) / (displayRatingArr[0].length != 0 && displayRatingArr[1].length != 0 ? 2 : 1)).toFixed(2);
             tdRatingDiv.textContent = displayRating;
         }
+        if(recordData.category == "Show") {
+            let displayRating = "N/A",
+                displayRatingArr = [];
+            for(let a = 0; a < recordData.content.length; a++) {
+                let ratingHolder = 0,
+                    ratingHolderArr = [];
+                for(let b = 0; b < recordData.content[a].episodes.length; b++) {
+                    if(recordData.content[a].episodes[b].rating != "") {
+                        ratingHolderArr.push(parseInt(recordData.content[a].episodes[b].rating));
+                    }
+                }
+                if(ratingHolderArr.length > 0) {
+                    ratingHolder = (ratingHolderArr.reduce((accum, cur) => accum + cur, 0) / ratingHolderArr.length).toFixed(2);
+                    displayRatingArr.push(ratingHolder);
+                }
+            }
+            if(displayRatingArr.length > 0) { displayRating = (displayRatingArr.reduce((accum, cur) => accum + cur, 0) / displayRatingArr.length).toFixed(2); }
+            tdRatingDiv.textContent = displayRating;
+        }
         tdRatingDiv.classList.add("recordsRowDiv", "left");
         tdRating.append(tdRatingDiv);
         // Modify the genres portion.
@@ -707,6 +726,20 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             tr.setAttribute("writers", recordData.writers);
             tr.setAttribute("start", recordData.start);
             tr.setAttribute("end", recordData.end);
+        }
+        if(recordData.category == "Show") {
+            tr.setAttribute("alternateName", recordData.alternateName);
+            tr.setAttribute("releaseDate", recordData.release);
+            tr.setAttribute("runningTime", recordData.runTime);
+            tr.setAttribute("directors", recordData.directors);
+            tr.setAttribute("musicians", recordData.musicians);
+            tr.setAttribute("producers", recordData.producers);
+            tr.setAttribute("distributors", recordData.distributors);
+            tr.setAttribute("editors", recordData.editors);
+            tr.setAttribute("cinematographers", recordData.cinematographers);
+            tr.setAttribute("productionCompanies", recordData.productionCompanies);
+            tr.setAttribute("writers", recordData.writers);
+            tr.setAttribute("stars", recordData.stars);
         }
         tr.append(tdCheck, tdName, tdCategory, tdRating, tdGenres, tdFiles);
         tableBody.append(tr);

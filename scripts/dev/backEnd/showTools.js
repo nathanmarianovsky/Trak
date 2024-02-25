@@ -32,7 +32,7 @@ Creates an object associated to a show record in order to save/update.
    - https provides the means to download files.
    - tools provides a collection of local functions.
    - dir is the path to the local user data.
-   - providedData is the data provided by the front-end user submission for anime record save/update.
+   - providedData is the data provided by the front-end user submission for show record save/update.
 
 */
 exports.showObjCreation = (path, fs, https, tools, dir, providedData) => {
@@ -55,8 +55,10 @@ exports.showObjCreation = (path, fs, https, tools, dir, providedData) => {
         "rating": providedData[16],
         "release": providedData[17],
         "runTime": providedData[18],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]), providedData[19])
+        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]), providedData[19]),
+        "content": []
     };
+    console.log(providedData[20][0][5]);
     for(let m = 0; m < providedData[20].length; m++) {
         let showSeasonObj = {
             "scenario": providedData[20][m][0],
@@ -74,7 +76,7 @@ exports.showObjCreation = (path, fs, https, tools, dir, providedData) => {
                 "review": providedData[20][m][5][n][3]
             });
         }
-        animeObj.content.push(animeSeasonObj);
+        showObj.content.push(showSeasonObj);
     }
     return showObj;
 };

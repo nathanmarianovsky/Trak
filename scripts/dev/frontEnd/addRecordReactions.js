@@ -569,6 +569,133 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 }, 500);
                 mangaName.setAttribute("oldName", recordData.name != "" ? recordData.name : recordData.jname);
             }
+            // If the record is of category type show then proceed.
+            else if(recordData.category == "Show") {
+                const showSave = document.getElementById("showSave"),
+                    showMoreDetailsBtn = document.getElementById("showMoreDetailsBtn"),
+                    showFetchDetailsBtn = document.getElementById("showFetchDetailsBtn");
+                // Define the relevant show record inputs.
+                const showName = document.getElementById("showName"),
+                    showAlternateName = document.getElementById("showAlternateName"),
+                    showReleaseDate = document.getElementById("showReleaseDate"),
+                    showRunningTime = document.getElementById("showRunningTime"),
+                    showSynopsis = document.getElementById("showSynopsis"),
+                    showRating = document.getElementById("showRating"),
+                    showReview = document.getElementById("showReview"),
+                    showDirectors = document.getElementById("showDirectors"),
+                    showWriters = document.getElementById("showWriters"),
+                    showMusicians = document.getElementById("showMusicians"),
+                    showProducers = document.getElementById("showProducers"),
+                    showEditors = document.getElementById("showEditors"),
+                    showCinematographers = document.getElementById("showCinematographers"),
+                    showDistributors = document.getElementById("showDistributors"),
+                    showProductionCompanies = document.getElementById("showProductionCompanies"),
+                    showStarring = document.getElementById("showStarring"),
+                    showImg = document.getElementById("addRecordShowImg"),
+                    showOtherGenres = document.getElementById("showOtherGenres");
+                // Load the show record portion of the addRecord page.
+                document.getElementById("categoryShow").click();
+                document.getElementById("categoryShowDiv").children[0].style.marginTop = "3%";
+                // Populate the show record page with the saved data.
+                updateFetchedDataString(showName, recordData.name, true, true);
+                relatedContentListeners(showName);
+                updateFetchedDataString(showAlternateName, recordData.alternateName, true);
+                relatedContentListeners(showAlternateName);
+                updateFetchedDataTextArea(showReview, recordData.review, true);
+                relatedContentListeners(showReview);
+                updateFetchedDataTextArea(showSynopsis, recordData.synopsis, true);
+                relatedContentListeners(showSynopsis);
+                updateFetchedDataString(showReleaseDate, recordData.release, true);
+                relatedContentListeners(showReleaseDate);
+                updateFetchedDataString(showDirectors, recordData.directors, true);
+                relatedContentListeners(showDirectors);
+                updateFetchedDataString(showWriters, recordData.writers, true);
+                relatedContentListeners(showWriters);
+                updateFetchedDataString(showMusicians, recordData.musicians, true);
+                relatedContentListeners(showMusicians);
+                updateFetchedDataString(showProducers, recordData.producers, true);
+                relatedContentListeners(showProducers);
+                updateFetchedDataString(showEditors, recordData.editors, true);
+                relatedContentListeners(showEditors);
+                updateFetchedDataString(showCinematographers, recordData.cinematographers, true);
+                relatedContentListeners(showCinematographers);
+                updateFetchedDataString(showDistributors, recordData.distributors, true);
+                relatedContentListeners(showDistributors);
+                updateFetchedDataString(showProductionCompanies, recordData.productionCompanies, true);
+                relatedContentListeners(showProductionCompanies);
+                updateFetchedDataString(showStarring, recordData.stars, true);
+                relatedContentListeners(showStarring);
+                showRating.value = recordData.rating + " m";
+                updateImgLoad("Show", showImg, recordData.img);
+                updateGenreLoad("Show", showOtherGenres, recordData.genres);
+                relatedContentListeners(showOtherGenres);
+                // const updateShowPreloader = document.getElementById("showPreloader");
+                // updateShowPreloader.style.top = "-32px";
+                // showName.setAttribute("oldName", recordData.name);
+                // // Initialize the select tags.
+                // initSelect();
+                // Display a preloader to indicate that the page is still loading the show related content. This can take a bit of time depending on the amount to be loaded.
+                const updateShowPreloader = document.getElementById("showPreloader");
+                updateShowPreloader.style.top = "-32px";
+                updateShowPreloader.style.visibility = "visible";
+                setTimeout(() => {
+                    // Define the collection of ratings to be used in calculating the global average rating of a show.
+                    const rtngList = [];
+                    // Iterate through the saved related content and add a page item for each.
+                    clearTooltips();
+                    for(let u = 1; u < recordData.content.length + 1; u++) {
+                        showSeasonAddition();
+                        let curName = document.getElementById("li_" + u + "_ShowSeason_Name"),
+                            curStart = document.getElementById("li_" + u + "_ShowSeason_Start"),
+                            curEnd = document.getElementById("li_" + u + "_ShowSeason_End"),
+                            curStatus = document.getElementById("li_" + u + "_ShowSeason_Status");
+                        updateFetchedDataString(curName, recordData.content[u-1].name, true);
+                        relatedContentListeners(curName);
+                        updateFetchedDataDate(curStart, recordData.content[u-1].start, true);
+                        relatedContentListeners(curStart);
+                        updateFetchedDataDate(curEnd, recordData.content[u-1].end, true);
+                        relatedContentListeners(curEnd);
+                        curStatus.value = recordData.content[u-1].status;
+                        let seasonRatingList = [];
+                        // Iterate through the season episodes and add a listing for each within the season populated with the saved data.
+                        for(let w = 1; w < recordData.content[u-1].episodes.length + 1; w++) {
+                            showEpisodeAddition(document.getElementById("li_" + u + "_ShowSeason"));
+                            let curEpisodeName = document.getElementById("li_" + u + "_ShowEpisode_Name_" + w),
+                                curEpisodeWatched = document.getElementById("li_" + u + "_ShowEpisode_LastWatched_" + w),
+                                curEpisodeRating = document.getElementById("li_" + u + "_ShowEpisode_Rating_" + w),
+                                curEpisodeReview = document.getElementById("li_" + u + "_ShowEpisode_Review_" + w);
+                            updateFetchedDataString(curEpisodeName, recordData.content[u-1].episodes[w-1].name, true);
+                            relatedContentListeners(curEpisodeName);
+                            updateFetchedDataDate(curEpisodeWatched, recordData.content[u-1].episodes[w-1].watched, true);
+                            relatedContentListeners(curEpisodeWatched);
+                            curEpisodeRating.value = recordData.content[u-1].episodes[w-1].rating;
+                            updateFetchedDataTextArea(curEpisodeReview, recordData.content[u-1].episodes[w-1].review, true);
+                            relatedContentListeners(curEpisodeReview);
+                            if(recordData.content[u-1].episodes[w-1].rating != "") { seasonRatingList.push(parseInt(recordData.content[u-1].episodes[w-1].rating)); }
+                        }
+                        // Push the corresponding item rating to the associated list.
+                        let seasonRating = seasonRatingList.length > 0 ? (seasonRatingList.reduce((accum, cur) => accum + cur, 0) / seasonRatingList.length).toFixed(2) : "N/A";
+                        document.getElementById("li_" + u + "_ShowSeason_AverageRating").value = seasonRating;
+                        if(seasonRating != "N/A") { rtngList.push(parseFloat(seasonRating)); }
+                        // Initialize the select tags.
+                        initSelect();
+                        // Initialize the observer for the select tags.
+                        initSelectObservers();
+                    }
+                    relatedContentFinisher();
+                    resetShowContentCounters();
+                    // Write the global average rating of the show record on the page.
+                    const showRtng = rtngList.length > 0 ? (rtngList.reduce((accum, cur) => accum + cur, 0) / rtngList.length).toFixed(2) : "N/A";
+                    document.getElementById("showRating").value = showRtng;
+                    // Display all page buttons now that all data has loaded.
+                    showSave.style.visibility = "visible";
+                    showOptions.style.visibility = "visible";
+                    showMoreDetailsBtn.style.visibility = "visible";
+                    showFetchDetailsBtn.style.visibility = "visible";
+                    // Hide the show preloader to indicate that the related content has finished loading.
+                    updateShowPreloader.style.visibility = "hidden";
+                }, 500);
+            }
         }
         // Hide the addRecord preloader once the file data has been added.
         updateRecordPreloader.style.display = "none";
