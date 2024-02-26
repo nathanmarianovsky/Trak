@@ -497,7 +497,8 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 			const animeWorksheet = workbook.addWorksheet("Category-Anime"),
 				bookWorksheet = workbook.addWorksheet("Category-Book"),
 				filmWorksheet = workbook.addWorksheet("Category-Film"),
-				mangaWorksheet = workbook.addWorksheet("Category-Manga");
+				mangaWorksheet = workbook.addWorksheet("Category-Manga"),
+				showWorksheet = workbook.addWorksheet("Category-Show");
 			// Define the default views, alignment, border styles, and font parameter objects.
 			const viewsParameters = {"state": "frozen", "xSplit": 1, "ySplit": 1, "activeCell": "A2"},
 				alignmentMidCenParameters = { "vertical": "middle", "horizontal": "center" },
@@ -509,26 +510,30 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 			animeWorksheet.views = [viewsParameters];
 			bookWorksheet.views = [viewsParameters];
 			filmWorksheet.views = [viewsParameters];
-			filmWorksheet.views = [viewsParameters];
 			mangaWorksheet.views = [viewsParameters];
+			showWorksheet.views = [viewsParameters];
 			// Update the style of the first row.
 			animeWorksheet.getRow(1).height = 20;
 			bookWorksheet.getRow(1).height = 20;
 			filmWorksheet.getRow(1).height = 20;
 			mangaWorksheet.getRow(1).height = 20;
+			showWorksheet.getRow(1).height = 20;
 			animeWorksheet.getRow(1).alignment = alignmentMidCenParameters;
 			bookWorksheet.getRow(1).alignment = alignmentMidCenParameters;
 			filmWorksheet.getRow(1).alignment = alignmentMidCenParameters;
 			mangaWorksheet.getRow(1).alignment = alignmentMidCenParameters;
+			showWorksheet.getRow(1).alignment = alignmentMidCenParameters;
 			// Define the default border styles object.
 			animeWorksheet.getRow(1).border = styleObj;
 			bookWorksheet.getRow(1).border = styleObj;
 			filmWorksheet.getRow(1).border = styleObj;
 			mangaWorksheet.getRow(1).border = styleObj;
+			showWorksheet.getRow(1).border = styleObj;
 			animeWorksheet.getRow(1).font = fontLargeBoldParameters;
 			bookWorksheet.getRow(1).font = fontLargeBoldParameters;
 			filmWorksheet.getRow(1).font = fontLargeBoldParameters;
 			mangaWorksheet.getRow(1).font = fontLargeBoldParameters;
+			showWorksheet.getRow(1).font = fontLargeBoldParameters;
 			// Construct the column headers.
 			animeWorksheet.columns = [
 			  	{ "header": "Name", "width": 40},
@@ -595,6 +600,25 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 			  	{ "header": "End Date", "width": 15 },
 			  	{ "header": "Genres", "width": 40 },
 			];
+			showWorksheet.columns = [
+			  	{ "header": "Name", "width": 40},
+			  	{ "header": "Alternate Name", "width": 30 },
+			  	{ "header": "Rating", "width": 10 },
+			  	{ "header": "Comments/Review", "width": 125 },
+			  	{ "header": "Plot", "width": 125 },
+			  	{ "header": "Runtime", "width": 25 },
+			  	{ "header": "Directors", "width": 30 },
+			  	{ "header": "Editors", "width": 30 },
+			  	{ "header": "Writers", "width": 30 },
+			  	{ "header": "Cinematographers", "width": 30 },
+			  	{ "header": "Music Directors", "width": 30 },
+			  	{ "header": "Distributors", "width": 30 },
+			  	{ "header": "Producers", "width": 30 },
+			  	{ "header": "Production Companies", "width": 30 },
+			  	{ "header": "Starring", "width": 30 },
+			  	{ "header": "Release Date", "width": 25 },
+			  	{ "header": "Genres", "width": 40 },
+			];
 			// Define the function which handles attaching a record's name to a worksheet.
 			const worksheetItemName = (sheet, counter, val) => {
 				sheet.getRow(counter + 2).alignment = alignmentMidLefWrapParameters;
@@ -642,7 +666,8 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 			let animeRowCounter = 0,
 				bookRowCounter = 0,
 				filmRowCounter = 0,
-				mangaRowCounter = 0;
+				mangaRowCounter = 0,
+				showRowCounter = 0;
 			for(let x = 0; x < records.length; x++) {
 				// Define the data associated to a record.
 				let iterData = JSON.parse(fs.readFileSync(path.join(dataPath, records[x], "data.json"), "UTF8"));
@@ -861,6 +886,80 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 						mangaWorksheet.getCell("A" + (mangaRowCounter + 2)).font.color = { "argb": "FF0000FF" };
 					}
 					mangaRowCounter++;
+				}
+				// Generate the worksheet associated to show library records.
+				else if(iterData.category == "Show") {
+					// Update each row with the relevant show record details on the show worksheet.
+					worksheetItemName(showWorksheet, showRowCounter, iterData.name);
+					showWorksheet.getCell("B" + (showRowCounter + 2)).value = iterData.alternateName != "" ? iterData.alternateName : "N/A";
+					showWorksheet.getCell("C" + (showRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
+					showWorksheet.getCell("C" + (showRowCounter + 2)).value = iterData.rating != "" ? iterData.rating : "N/A";
+					showWorksheet.getCell("D" + (showRowCounter + 2)).value = iterData.review != "" ? iterData.review : "N/A";
+					showWorksheet.getCell("E" + (showRowCounter + 2)).value = iterData.synopsis != "" ? iterData.synopsis : "N/A";
+					showWorksheet.getCell("F" + (showRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
+					showWorksheet.getCell("F" + (showRowCounter + 2)).value = iterData.runTime != "" ? exports.formatISBNString(iterData.runTime) : "N/A";
+					showWorksheet.getCell("G" + (showRowCounter + 2)).value = iterData.directors != "" ? iterData.directors : "N/A";
+					showWorksheet.getCell("H" + (showRowCounter + 2)).value = iterData.editors != "" ? iterData.editors : "N/A";
+					showWorksheet.getCell("I" + (showRowCounter + 2)).value = iterData.writers != "" ? iterData.writers : "N/A";
+					showWorksheet.getCell("J" + (showRowCounter + 2)).value = iterData.cinematographers != "" ? iterData.cinematographers : "N/A";
+					showWorksheet.getCell("K" + (showRowCounter + 2)).value = iterData.musicians != "" ? iterData.musicians : "N/A";
+					showWorksheet.getCell("L" + (showRowCounter + 2)).value = iterData.distributors != "" ? iterData.distributors : "N/A";
+					showWorksheet.getCell("M" + (showRowCounter + 2)).value = iterData.producers != "" ? iterData.producers : "N/A";
+					showWorksheet.getCell("N" + (showRowCounter + 2)).value = iterData.productionCompanies != "" ? iterData.productionCompanies : "N/A";
+					showWorksheet.getCell("O" + (showRowCounter + 2)).value = iterData.stars != "" ? iterData.stars : "N/A";
+					worksheetDateItem(showWorksheet, "P", showRowCounter, iterData.release.split("-"));
+					genreCellFill(showWorksheet, iterData.genres, "Q", showRowCounter);
+					// If the user desires to export a detailed xlsx file then create a new worksheet for each show record and populate it with the related content information.
+					if(detailed == true) {
+						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-");
+						// Define the worksheet associated to the show record.
+						let detailedWorksheet = workbook.addWorksheet("Show-" + detailedWorksheetName);
+						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
+						// Update the style of the first row.
+						detailedWorksheet.getRow(1).height = 20;
+						detailedWorksheet.getRow(1).alignment = alignmentMidCenParameters;
+						detailedWorksheet.getRow(1).border = styleObj;
+						detailedWorksheet.getRow(1).font = fontLargeBoldParameters;
+						// Construct the column headers.
+						detailedWorksheet.columns = [
+						  	{ "header": "Season Name", "width": 40 },
+						  	{ "header": "Start Date", "width": 15 },
+						  	{ "header": "End Date", "width": 15 },
+						  	{ "header": "Status", "width": 30 },
+						  	{ "header": "Last Watched", "width": 15 },
+						  	{ "header": "Rating", "width": 10 },
+						  	{ "header": "Episode #", "width": 15 },
+						  	{ "header": "Episode Name", "width": 30 },
+						  	{ "header": "Comments/Review", "width": 125 }
+						];
+						// Keep track of the row position in the worksheet.
+						let rowPos = 2;
+						// Iterate through the related content of a show record.
+						for(let v = 0; v < iterData.content.length; v++) {
+							for(let t = 0; t < iterData.content[v].episodes.length; t++) {
+								detailedWorksheet.getRow(rowPos).font = fontSmallParameters;
+								detailedWorksheet.getRow(rowPos).alignment = alignmentMidLefWrapParameters;
+								detailedWorksheet.getRow(rowPos).height = 75;
+								detailedWorksheet.getCell("A" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
+								worksheetDateItem(detailedWorksheet, "B", rowPos - 2, iterData.content[v].start.split("-"));
+								worksheetDateItem(detailedWorksheet, "C", rowPos - 2, iterData.content[v].end.split("-"));
+								detailedWorksheet.getCell("D" + rowPos).value = iterData.content[v].status != "" ? iterData.content[v].status : "N/A";
+								worksheetDateItem(detailedWorksheet, "E", rowPos - 2, iterData.content[v].episodes[t].watched.split("-"));
+								detailedWorksheet.getCell("F" + rowPos).alignment = alignmentMidCenParameters;
+								detailedWorksheet.getCell("F" + rowPos).value = iterData.content[v].episodes[t].rating != "" ? iterData.content[v].episodes[t].rating : "N/A";
+								let maxCharCount = String(iterData.content[v].episodes.length).length;
+								detailedWorksheet.getCell("G" + rowPos).value = String(t + 1).length < maxCharCount ? new Array(maxCharCount - String(t + 1).length).fill("0").join("") + (t + 1) : t + 1;
+								detailedWorksheet.getCell("H" + rowPos).value = iterData.content[v].episodes[t].name != "" ? iterData.content[v].episodes[t].name : "N/A";
+								detailedWorksheet.getCell("I" + rowPos).value = iterData.content[v].episodes[t].review != "" ? iterData.content[v].episodes[t].review : "N/A";
+								rowPos++;
+							}
+						}
+						// For a detailed xlsx export the names on the show worksheet become hyperlinks to their respective worksheet.
+						showWorksheet.getCell("A" + (showRowCounter + 2)).value = { hyperlink: "#\'Show-" + detailedWorksheetName + "\'!A2", text: iterData.name }
+						showWorksheet.getCell("A" + (showRowCounter + 2)).font.underline = true;
+						showWorksheet.getCell("A" + (showRowCounter + 2)).font.color = { "argb": "FF0000FF" };
+					}
+					showRowCounter++;
 				}
 			}
 			// Write the xlsx file in the desired export location.
