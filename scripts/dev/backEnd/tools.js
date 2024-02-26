@@ -1504,7 +1504,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 									// Update the release date of the film record object.
 									if(elem.getCell("P" + q).value != "" && elem.getCell("P" + q).value != "N/A") {
 										relDateArr = elem.getCell("P" + q).value.split("-");
-										filmObj.releaseDate = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+										filmObj.release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 									}
 									// Update the last watched date of the film record object.
 									if(elem.getCell("Q" + q).value != "" && elem.getCell("Q" + q).value != "N/A") {
@@ -1552,7 +1552,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 								}
 							}
 							// Handle the import of manga records.
-							if(elem.name == "Category-Manga") {
+							else if(elem.name == "Category-Manga") {
 								log.info("Importing the manga records.");
 								// Get the list of manga genres.
 								let genreLst = exports.genreList("Manga");
@@ -1662,6 +1662,126 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 									// Write data.json file associated to the manga record.
 									log.info("Writing the data file associated to the manga " + mangaObj.name);
 									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Manga-" + fldrName, "data.json"), JSON.stringify(mangaObj), "UTF8");
+									if(q == elem.rowCount) { resolve(); }
+								}
+							}
+							// Handle the import of show records.
+							else if(elem.name == "Category-Show") {
+								log.info("Importing the show records.");
+								// Get the list of show genres.
+								let genreLst = exports.genreList("Show");
+								// Iterate through all the rows of the show worksheet.
+								for(let q = 2; q < elem.rowCount + 1; q++) {
+									// Define the object which will correspond to a show record.
+									let showObj = {
+										"category": "Show",
+										"name": (typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value,
+										"alternateName": elem.getCell("B" + q).value != "N/A" ? elem.getCell("B" + q).value : "", 
+										"rating": elem.getCell("C" + q).value != "N/A" && elem.getCell("C" + q).value != "" ? parseInt(elem.getCell("C" + q).value) : "",
+										"review": elem.getCell("D" + q).value != "N/A" ? elem.getCell("D" + q).value : "",
+										"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "",
+										"runTime": elem.getCell("F" + q).value != "N/A" ? String(parseInt(elem.getCell("F" + q).value)) : "",
+										"directors": elem.getCell("G" + q).value != "N/A" ? elem.getCell("G" + q).value : "",
+										"editors": elem.getCell("H" + q).value != "N/A" ? elem.getCell("H" + q).value : "",
+										"writers": elem.getCell("I" + q).value != "N/A" ? elem.getCell("I" + q).value : "",
+										"cinematographers": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "",
+										"musicians": elem.getCell("K" + q).value != "N/A" ? elem.getCell("K" + q).value : "",
+										"distributors": elem.getCell("L" + q).value != "N/A" ? elem.getCell("L" + q).value : "",
+										"producers": elem.getCell("M" + q).value != "N/A" ? elem.getCell("M" + q).value : "",
+										"productionCompanies": elem.getCell("N" + q).value != "N/A" ? elem.getCell("N" + q).value : "",
+										"stars": elem.getCell("O" + q).value != "N/A" ? elem.getCell("O" + q).value : "",
+										"release": "",
+										"genres": [genreLst, new Array(genreLst.length).fill(false), []],
+										"img": [],
+										"content": []
+									};
+									// Update the release date of the show record object.
+									if(elem.getCell("P" + q).value != "" && elem.getCell("P" + q).value != "N/A") {
+										relDateArr = elem.getCell("P" + q).value.split("-");
+										showObj.release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+									}
+									// Update the genres of the show record object.
+									let genresCellList = elem.getCell("Q" + q).value.split(",").map(elem => elem.trim());
+									for(let p = 0; p < genresCellList.length; p++) {
+										let compare = genresCellList[p];
+										if(compare == "Post-Apocalyptic") {
+											compare = "PostApocalyptic";
+										}
+										else if(compare == "Sci-Fi") {
+											compare = "SciFi";
+										}
+										let genreIndex = genreLst.indexOf(compare);
+										if(genreIndex == -1) {
+											showObj.genres[2].push(compare);
+										}
+										else {
+											showObj.genres[1][genreIndex] = true;
+										}
+									}
+									// If the user requests a detailed import then update the related content of the show record object.
+									if(full == true) {
+										// Iterate through all workbook worksheets.
+										wb.worksheets.forEach(newElem => {
+											// Detect the show record detailed worksheet by its name.
+											if(newElem.name == "Show-" + showObj.name.split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25)) {
+												showObj.content = [];
+												// Iterate through the detailed worksheet's rows.
+												for(let l = 2; l < newElem.rowCount + 1; l++) {
+													// Iterate through all corresponding rows and add the season as an object to the related content array.
+													let seasonContentObj = {
+														"scenario": "Season",
+														"name": newElem.getCell("A" + l).value != "N/A" ? newElem.getCell("A" + l).value : "",
+														"start": "",
+														"end": "",
+														"status": newElem.getCell("D" + l).value != "N/A" ? newElem.getCell("D" + l).value : "",
+														"episodes": []
+													};
+													if(newElem.getCell("B" + l).value != "" && newElem.getCell("B" + l).value != "N/A") {
+														relDateArr = newElem.getCell("B" + l).value.split("-");
+														seasonContentObj.start = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+													}
+													if(newElem.getCell("C" + l).value != "" && newElem.getCell("C" + l).value != "N/A") {
+														relDateArr = newElem.getCell("C" + l).value.split("-");
+														seasonContentObj.end = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+													}
+													while(newElem.getCell("A" + l).value == seasonContentObj.name) {
+														let episodeContentObj = {
+															"name": newElem.getCell("H" + l).value != "N/A" ? newElem.getCell("H" + l).value : "",
+															"watched": "",
+															"rating": newElem.getCell("F" + l).value != "N/A" ? parseInt(newElem.getCell("F" + l).value) : "",
+															"review": newElem.getCell("I" + l).value != "N/A" ? newElem.getCell("I" + l).value : ""
+														};
+														if(newElem.getCell("E" + l).value != "" && newElem.getCell("E" + l).value != "N/A") {
+															relDateArr = newElem.getCell("E" + l).value.split("-");
+															episodeContentObj.watched = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
+														}
+														seasonContentObj.episodes.push(episodeContentObj);
+														l++;
+													}
+													showObj.content.push(seasonContentObj);
+												}
+											}
+										});
+									}
+									let fldrName = exports.formatFolderName(showObj.name);
+									// Check the assets that were imported from the associated zip file and add the images to the show record object.
+									let assetsFolder = path.join(dir, "Trak", "importTemp", "Show-" + fldrName, "assets");
+									if(fs.existsSync(assetsFolder)) {
+										log.info("Copying over the record assets for " + showObj.name + ".");
+										fs.readdirSync(assetsFolder).forEach(asset => {
+											if(imgExtArr.includes(path.extname(asset))) {
+												showObj.img.push(path.join(fileData, "Show-" + fldrName, "assets", asset));
+											}
+										});
+									}
+									// Otherwise if no assets were found then create the assets folder.
+									else {
+										log.info("Creating the record assets folder associated to the show " + showObj.name);
+										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Show-" + fldrName, "assets"), { "recursive": true });
+									}
+									// Write data.json file associated to the show record.
+									log.info("Writing the data file associated to the show " + showObj.name);
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Show-" + fldrName, "data.json"), JSON.stringify(showObj), "UTF8");
 									if(q == elem.rowCount) { resolve(); }
 								}
 							}
