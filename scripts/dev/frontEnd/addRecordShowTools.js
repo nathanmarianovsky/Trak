@@ -275,6 +275,8 @@ var showSeasonContentButtons = (ratingSelect, delButton) => {
         }
         // Calculate and write the new show global rating.
         calculateShowRating();
+        // Reset the record page counters.
+        resetShowContentCounters();
     });
 };
 
@@ -407,11 +409,15 @@ var showContentSeasonButtons = (formName, formStartDate, formEndDate, formAverag
         showListReorganize();
         // Calculate and write the new show global rating.
         calculateShowRating();
+        // Reset the record page counters.
+        resetShowContentCounters();
     });
     // Listen for a click event on the add button for a season on the show associated modal to add an episode listing.
     addBtn.addEventListener("click", e => {
         // Add an episode to the associated show.
         showEpisodeAddition(e.target.parentNode.parentNode.parentNode.parentNode);
+        // Reset the record page counters.
+        resetShowContentCounters();
     });
 };
 
@@ -558,4 +564,6 @@ var showSeasonAddition = () => {
     showList.append(itemLI);
     // Add the button listeners associated to an show season.
     showContentSeasonButtons(inputName, inputStartDate, inputEndDate, inputAverageRating, iconAdd, iconDelete);
+    // Reset the record page counters.
+    resetShowContentCounters();
 };

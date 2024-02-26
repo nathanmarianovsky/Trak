@@ -355,6 +355,8 @@ var animeSeasonContentButtons = (ratingSelect, delButton) => {
         }
         // Calculate and write the new anime global rating.
         calculateAnimeRating();
+        // Reset the record page counters.
+        resetAnimeContentCounters();
     });
 };
 
@@ -389,6 +391,8 @@ var animeContentSingleButtons = (formSingleName, formSingleReleaseDate, formSing
         animeListReorganize();
         // Calculate and write the new anime global rating.
         calculateAnimeRating();
+        // Reset the record page counters.
+        resetAnimeContentCounters();
     });
     // Listen for a change in the rating of a film/ONA/OVA.
     formSingleRating.addEventListener("change", e => {
@@ -526,11 +530,15 @@ var animeContentSeasonButtons = (formName, formStartDate, formEndDate, formAvera
         animeListReorganize();
         // Calculate and write the new anime global rating.
         calculateAnimeRating();
+        // Reset the record page counters.
+        resetAnimeContentCounters();
     });
     // Listen for a click event on the add button for a season on the anime associated modal to add an episode listing.
     addBtn.addEventListener("click", e => {
         // Add an episode to the associated anime.
         animeEpisodeAddition(e.target.parentNode.parentNode.parentNode.parentNode);
+        // Reset the record page counters.
+        resetAnimeContentCounters();
     });
 };
 

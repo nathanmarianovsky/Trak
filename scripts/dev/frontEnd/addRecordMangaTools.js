@@ -290,6 +290,8 @@ var mangaContentSingleButtons = (formSingleName, formSingleISBN, formSingleRelea
         mangaListReorganize();
         // Calculate and write the new anime global rating.
         calculateMangaRating();
+        // Reset the record page counters.
+        resetMangaContentCounters();
     });
     // Listen for a change in the rating of a chapter/volume.
     formSingleRating.addEventListener("change", e => {
@@ -560,4 +562,6 @@ var mangaItemAddition = scenario => {
     mangaList.append(itemSingleLI);
     // Add the button listeners associated to a chapter/volume.
     mangaContentSingleButtons(inputSingleName, inputSingleISBN, inputSingleReleaseDate, inputSingleLastReadDate, selectSingleRating, iconSingleFetch, iconSingleDelete);
+    // Reset the record page counters.
+    resetMangaContentCounters();
 };

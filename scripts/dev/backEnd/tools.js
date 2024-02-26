@@ -1713,7 +1713,6 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 										"category": "Show",
 										"name": (typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value,
 										"alternateName": elem.getCell("B" + q).value != "N/A" ? elem.getCell("B" + q).value : "", 
-										"rating": elem.getCell("C" + q).value != "N/A" && elem.getCell("C" + q).value != "" ? parseInt(elem.getCell("C" + q).value) : "",
 										"review": elem.getCell("D" + q).value != "N/A" ? elem.getCell("D" + q).value : "",
 										"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "",
 										"runTime": elem.getCell("F" + q).value != "N/A" ? String(parseInt(elem.getCell("F" + q).value)) : "",

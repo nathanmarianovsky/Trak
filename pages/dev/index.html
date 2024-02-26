@@ -449,7 +449,7 @@
                         <li class="tab"><a class="tabSearchLink" href="#bookImportDiv">Book</a></li>
                         <li class="tab"><a class="tabSearchLink" href="#filmImportDiv">Film</a></li>
                         <li class="tab"><a class="tabSearchLink" href="#mangaImportDiv">Manga</a></li>
-                        <li class="tab disabled"><a class="tabSearchLink" href="#showImportDiv">Show</a></li>
+                        <li class="tab"><a class="tabSearchLink" href="#showImportDiv">Show</a></li>
                     </ul>
                 </div>
                 <div id="databaseExportContainer" class="databaseContainer">
@@ -524,6 +524,22 @@
                             <span class="center textFocus">| Type | Name | ASIN/ISBN | Release Date | Last Read | Rating | Synopsis | Comments/Review |</span>
                             <br>
                             The first row should be used for column headers with data starting on the second row. Furthermore, the value of a record's related content type can be either a "Chapter" or "Volume". Select the xlsx files which contain the data and click to import. A sample can be found <a id="importSampleDetailedXLSX" class="hyperlink">here</a>.
+                        </p>
+                    </div>
+                    <div id="showImportDiv" class="importDiv">
+                        <p class="importXLSXContentSimple">
+                            To import show records into the library via a simple xlsx file there should be a worksheet titled "Category-Show" whose columns are expected to be in the order:
+                            <br><br>
+                            <span class="center textFocus">| Name | Alternate Name | Rating | Comments/Review | Plot | Runtime | Directors | Editors |<br>| Writers | Cinematographers | Music Directors | Distributors | Producers |<br>| Production Companies | Starring | Release Date | Last Watched Date | Genres |</span>
+                            <br>
+                            The first row should be used for column headers with data starting on the second row whose entries can consist of a comma separated list for multiple values in a single entry. Select the xlsx files which contain the data and click to import. A sample can be found <a id="importSampleSimpleXLSX" class="hyperlink">here</a>.
+                        </p>
+                        <p class="importXLSXContentDetailed">
+                            To import show records into the library via a detailed xlsx file multiple worksheets are expected to be provided where the first worksheet corresponds to the same data as with a simple xlsx import. All other worksheets are expected to be titled in the format "Show-FormattedName" where FormattedName is the value in the first column of the "Category-Show" worksheet whose words all start with a capital letter and has all whitespaces removed. The columns for these same worksheets are expected to be in the order:
+                            <br><br>
+                            <span class="center textFocus">| Season Name | Start Date | End Date | Status | Last Watched |<br>| Rating | Episode # | Episode Name | Comments/Review |</span>
+                            <br>
+                            The first row should be used for column headers with data starting on the second row. Furthermore, status can take on one of five values "Watching", "Completed", "On-Hold", "Dropped", or "Plan To Watch". Select the xlsx files which contain the data and click to import. A sample can be found <a id="importSampleDetailedXLSX" class="hyperlink">here</a>.
                         </p>
                     </div>
                     <div class="row databaseImportDiv">
