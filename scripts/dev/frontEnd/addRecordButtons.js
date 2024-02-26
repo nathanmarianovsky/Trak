@@ -121,7 +121,7 @@ var recordChoicesButtons = () => {
                 clearTooltips();
                 if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
                     // Attach a season.
-                    seasonAddition();
+                    animeSeasonAddition();
                     const seasonName = document.getElementById("li_" + listNum + "_Season_Name");
                     // If the start date is provided then set it as the value for the season start date input. 
                     if(newResponse[3] != "") {
@@ -156,7 +156,7 @@ var recordChoicesButtons = () => {
                 }
                 else {
                     // Attach a single film/ona/ova.
-                    singleAddition();
+                    animeSingleAddition();
                     const singleName = document.getElementById("li_" + listNum + "_Single_Name"),
                         singleType = document.getElementById("li_" + listNum + "_Single_Type");
                     // If the release date is provided then set it as the value for the single release date input. 

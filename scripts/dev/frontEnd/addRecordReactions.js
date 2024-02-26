@@ -261,7 +261,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     for(let u = 1; u < recordData.content.length + 1; u++) {
                         // If the iterated item is of type single then proceed accordingly.
                         if(recordData.content[u-1].scenario == "Single") {
-                            singleAddition();
+                            animeSingleAddition();
                             let curName = document.getElementById("li_" + u + "_Single_Name"),
                                 curType = document.getElementById("li_" + u + "_Single_Type"),
                                 curRelease = document.getElementById("li_" + u + "_Single_Release"),
@@ -282,7 +282,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                         }
                         // If the iterated item is of type season then proceed accordingly.
                         else if(recordData.content[u-1].scenario == "Season") {
-                            seasonAddition();
+                            animeSeasonAddition();
                             let curName = document.getElementById("li_" + u + "_Season_Name"),
                                 curStart = document.getElementById("li_" + u + "_Season_Start"),
                                 curEnd = document.getElementById("li_" + u + "_Season_End"),
@@ -297,7 +297,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                             let seasonRatingList = [];
                             // Iterate through the season episodes and add a listing for each within the season populated with the saved data.
                             for(let w = 1; w < recordData.content[u-1].episodes.length + 1; w++) {
-                                episodeAddition(document.getElementById("li_" + u + "_Season"));
+                                animeEpisodeAddition(document.getElementById("li_" + u + "_Season"));
                                 let curEpisodeName = document.getElementById("li_" + u + "_Episode_Name_" + w),
                                     curEpisodeWatched = document.getElementById("li_" + u + "_Episode_LastWatched_" + w),
                                     curEpisodeRating = document.getElementById("li_" + u + "_Episode_Rating_" + w),
@@ -629,11 +629,6 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 updateImgLoad("Show", showImg, recordData.img);
                 updateGenreLoad("Show", showOtherGenres, recordData.genres);
                 relatedContentListeners(showOtherGenres);
-                // const updateShowPreloader = document.getElementById("showPreloader");
-                // updateShowPreloader.style.top = "-32px";
-                // showName.setAttribute("oldName", recordData.name);
-                // // Initialize the select tags.
-                // initSelect();
                 // Display a preloader to indicate that the page is still loading the show related content. This can take a bit of time depending on the amount to be loaded.
                 const updateShowPreloader = document.getElementById("showPreloader");
                 updateShowPreloader.style.top = "-32px";

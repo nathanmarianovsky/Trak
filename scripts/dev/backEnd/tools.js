@@ -11,6 +11,7 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
    - calculateReleaseDate: Calculate the earliest release date of an anime record based on the related content information.
    - calculateAnimeGlobalRating: Calculate the average rating of an anime record based on the related content information.
    - calculateMangaGlobalRating: Calculate the average rating of a manga record based on the related content information.
+   - calculateShowGlobalRating: Calculate the average rating of a show record based on the related content information.
    - formatMedia: Formats the media type of a book record.
    - formatISBNString: Formats a string into a proper ISBN by adding hyphens.
    - exportDataXLSX: Create a xlsx file containing the exported library records along with a zip of the associated assets.
@@ -386,9 +387,44 @@ exports.calculateMangaGlobalRating = contentArr => {
 			volumeArr.push(parseInt(contentArr[r].rating));
 		}
 	}
-	// Return the anime record global rating if the count is non-zero, otherwise provide N/A.
+	// Return the manga record global rating if the count is non-zero, otherwise provide N/A.
 	return chapterArr.length + volumeArr.length == 0 ? "N/A" : (((chapterArr.length == 0 ? 0 : (chapterArr.reduce((accum, cur) => accum + cur, 0) / chapterArr.length))
         + (volumeArr.length == 0 ? 0 : (volumeArr.reduce((accum, cur) => accum + cur, 0) / volumeArr.length))) / (chapterArr.length != 0 && volumeArr.length != 0 ? 2 : 1)).toFixed(2);
+};
+
+
+
+/*
+
+Calculate the average rating of a show record based on the related content information.
+
+	- contentArr is an array containing the related content details for a library record.
+
+*/ 
+exports.calculateShowGlobalRating = contentArr => {
+	// Define the sum of all related content ratings and count of how many are used in the sum.
+	let overallSum = 0,
+		overallCount = 0;
+	// Iterate through all record related content.
+	for(let r = 0; r < contentArr.length; r++) {
+		// Calculate the average rating of the season and count it towards the sum and count.
+		if(contentArr[r].episodes.length > 0) {
+			let seasonSum = 0,
+				seasonCount = 0;
+			for(let s = 0; s < contentArr[r].episodes.length; s++) {
+				if(contentArr[r].episodes[s].rating != "") {
+					seasonSum += parseInt(contentArr[r].episodes[s].rating);
+					seasonCount++;
+				}
+			}
+			if(seasonCount > 0) {
+				overallSum += (seasonSum / seasonCount);
+				overallCount++;
+			}
+		}
+	}
+	// Return the show record global rating if the count is non-zero, otherwise provide N/A.
+	return overallCount != 0 ? String((overallSum / overallCount).toFixed(2)) : "N/A";
 };
 
 
@@ -893,7 +929,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					worksheetItemName(showWorksheet, showRowCounter, iterData.name);
 					showWorksheet.getCell("B" + (showRowCounter + 2)).value = iterData.alternateName != "" ? iterData.alternateName : "N/A";
 					showWorksheet.getCell("C" + (showRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
-					showWorksheet.getCell("C" + (showRowCounter + 2)).value = iterData.rating != "" ? iterData.rating : "N/A";
+					showWorksheet.getCell("C" + (showRowCounter + 2)).value = exports.calculateShowGlobalRating(iterData.content);
 					showWorksheet.getCell("D" + (showRowCounter + 2)).value = iterData.review != "" ? iterData.review : "N/A";
 					showWorksheet.getCell("E" + (showRowCounter + 2)).value = iterData.synopsis != "" ? iterData.synopsis : "N/A";
 					showWorksheet.getCell("F" + (showRowCounter + 2)).alignment = alignmentMidCenWrapParameters;

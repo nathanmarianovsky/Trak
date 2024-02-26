@@ -9,10 +9,10 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
     - animeListReorganize: Reorganize the list items in the associated anime modal.
     - animeSeasonContentButtons: Listen for change and click events on the related content anime episode table items.
     - animeContentSingleButtons: Listen for click events on the related content anime film/ONA/OVA table items.
-    - episodeAddition: Add an episode to an anime related content season.
+    - animeEpisodeAddition: Add an episode to an anime related content season.
     - animeContentSeasonButtons: Listen for click events on the related content anime season table items.
-    - singleAddition: Driver function designed to add a film/ONA/OVA table item in the related content section of an anime record.
-    - seasonAddition: Driver function designed to add a season table item in the related content section of an anime record.
+    - animeSingleAddition: Driver function designed to add a film/ONA/OVA table item in the related content section of an anime record.
+    - animeSeasonAddition: Driver function designed to add a season table item in the related content section of an anime record.
 
 */
 
@@ -120,7 +120,7 @@ var animeModalButtons = () => {
         e.preventDefault();
         // Add a table item for the new film/ONA/OVA.
         clearTooltips();
-        singleAddition();
+        animeSingleAddition();
         relatedContentFinisher();
         resetAnimeContentCounters();
     });
@@ -129,7 +129,7 @@ var animeModalButtons = () => {
         e.preventDefault();
         // Add a table item for the new season.
         clearTooltips();
-        seasonAddition();
+        animeSeasonAddition();
         relatedContentFinisher();
         resetAnimeContentCounters();
     });
@@ -406,7 +406,7 @@ Add an episode to an anime related content season.
     - tgt is the document element corresponding to the season table item.
 
 */
-var episodeAddition = tgt => {
+var animeEpisodeAddition = tgt => {
     // Remove the tooltips.
     clearTooltips();
     // Define the list item id.
@@ -530,7 +530,7 @@ var animeContentSeasonButtons = (formName, formStartDate, formEndDate, formAvera
     // Listen for a click event on the add button for a season on the anime associated modal to add an episode listing.
     addBtn.addEventListener("click", e => {
         // Add an episode to the associated anime.
-        episodeAddition(e.target.parentNode.parentNode.parentNode.parentNode);
+        animeEpisodeAddition(e.target.parentNode.parentNode.parentNode.parentNode);
     });
 };
 
@@ -541,7 +541,7 @@ var animeContentSeasonButtons = (formName, formStartDate, formEndDate, formAvera
 Driver function designed to add a film/ONA/OVA table item in the related content section of an anime record.
 
 */
-var singleAddition = () => {
+var animeSingleAddition = () => {
     // Define and construct all components needed to attach an anime film to the related content table.
     const animeList = document.getElementById("animeList"),
         itemSingleLI = document.createElement("li"),
@@ -686,7 +686,7 @@ var singleAddition = () => {
 Driver function designed to add a season table item in the related content section of an anime record.
 
 */
-var seasonAddition = () => {
+var animeSeasonAddition = () => {
     // Define and construct all components needed to attach an anime season to the related content table.
     const animeList = document.getElementById("animeList"),
         itemLI = document.createElement("li"),
