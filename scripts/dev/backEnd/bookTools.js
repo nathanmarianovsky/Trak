@@ -154,11 +154,12 @@ Handles the fetching of a book record from goodreads based on a name.
 
    - log provides the means to create application logs to keep track of what is going on.
    - GoodReadsScraper provides the means to attain book records from goodreads.
+   - tools provides a collection of local functions.
    - ev provides the means to interact with the front-end of the Electron app.
    - name is a string representing the title of a book record.
 
 */
-exports.bookFetchDetailsByName = (log, GoodReadsScraper, ev, name, index = -1) => {
+exports.bookFetchDetailsByName = (log, GoodReadsScraper, tools, ev, name, index = -1) => {
     // Fetch book search results.
     log.info("Searching for book records based on the name " + name + ".");
     GoodReadsScraper.searchBooks({ "q": name }).then(bookSearchData => {

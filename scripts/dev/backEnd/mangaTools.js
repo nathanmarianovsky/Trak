@@ -180,13 +180,13 @@ Handles the fetching of a manga record from myanimelist based on a name.
 
    - log provides the means to create application logs to keep track of what is going on.
    - malScraper provides the means to attain anime and manga records from myanimelist.
-   - GoodReadsScraper provides the means to attain book records from goodreads.
    - tools provides a collection of local functions.
    - ev provides the means to interact with the front-end of the Electron app.
    - name is a string representing the title of an anime record.
+   - GoodReadsScraper provides the means to attain book records from goodreads.
 
 */
-exports.mangaFetchDetails = (log, malScraper, GoodReadsScraper, tools, ev, name) => {
+exports.mangaFetchDetails = (log, malScraper, tools, ev, name, GoodReadsScraper) => {
     // Fetch anime details.
     malScraper.getInfoFromName(name, true, "manga").then(mangaData => {
         // Define the parameters which will be passed to the front-end based on the details received.

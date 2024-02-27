@@ -38,8 +38,8 @@
         "devStart": "node ./minifier.js && electron . --dev",
         "distStart": "node ./minifier.js && electron .",
         "packageWindows-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the EXE File: && npm exec electron-packager . Trak --platform=win32 --arch=x64",
-        "buildWindows-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the EXE File: && npm exec electron-packager . Trak --platform=win32 --arch=x64 && echo Building the MSI Package: && node build.js -amd64Windows",
-        "buildLinux-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the Executable File: && npm exec electron-packager . --platform=linux --arch=x64 && echo Building the Debian Package: && node build.js -amd64Debian",
+        "buildWindows-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the EXE File: && npm exec electron-packager . Trak --platform=win32 --arch=x64 && echo Building the MSI Package: && node build.js -amdWindows",
+        "buildLinux-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the Executable File: && npm exec electron-packager . --platform=linux --arch=x64 && echo Building the Debian Package: && node build.js -amdDebian",
         "buildLinux-arm64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the Executable File: && npm exec electron-packager . --platform=linux --arch=arm && echo Building the Debian Package: && node build.js -armDebian"
     }
 }

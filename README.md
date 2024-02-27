@@ -11,14 +11,13 @@ This application was motivated by the simple thought that there is no such dedic
 ## Future Features
 
 The following is a list of features that are in the plans for future releases prior to a beta release:
-* Addition/Export/Import/Removal/Update of Show Records.
+* Design a notification system that can update the user on any record that has an upcoming release date.
 
 The following is a list of features that are in the plans for future releases prior to a full release:
 * Application Logo.
 * Create application splash screen.
 * Addition/Removal/Update of Record Associations.
 	* A record association is meant to link two or more items across multiple categories. In example, an anime can typically be associated to light novels and manga.
-* Design a notification system that can update the user on any record that has an upcoming release date.
 
 
 ## Application Files

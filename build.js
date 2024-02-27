@@ -77,7 +77,7 @@ var debBuild = arch => {
 // Build all of the desired installers.
 for(var i = 0; i < process.argv.length; i++) {
     var current = process.argv[i];
-    if(current == "-amd64Windows") { windowsBuild(); }
-    else if(current == "-amd64Debian") { debBuild("amd64"); }
+    if(current == "-amdWindows") { windowsBuild(); }
+    else if(current == "-amdDebian") { debBuild("amd64"); }
     else if(current == "-armDebian") { debBuild("arm64"); }
 }
