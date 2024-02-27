@@ -58,7 +58,6 @@ exports.showObjCreation = (path, fs, https, tools, dir, providedData) => {
         "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]), providedData[19]),
         "content": []
     };
-    console.log(providedData[20][0][5]);
     for(let m = 0; m < providedData[20].length; m++) {
         let showSeasonObj = {
             "scenario": providedData[20][m][0],
@@ -192,7 +191,7 @@ exports.showFetchDetails = (log, movier, tools, ev, name) => {
         const runtimeNum = parseInt(showData.runtime.seconds / 60);
         // Send the attained data to the front-end.
         ev.sender.send("showFetchDetailsResult", [
-            showData.name, showData.otherNames.join(", "), [showData.posterImage.url, showData.allImages.map(elem => elem.url)],
+            showData.name, showData.otherNames.join(", "), [showData.posterImage.url, showData.allImages.slice(0, 10).map(elem => elem.url)],
             String(showData.dates.startDate), runtimeNum, showData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),
             showData.directors.map(director => director.name), showData.writers.map(director => director.name),
             showData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), showData.producers.map(producers => producers.name),
@@ -305,7 +304,7 @@ exports.showRecordRequest = (BrowserWindow, ipc, path, fs, log, https, movier, t
         const runtimeNum = parseInt(showData.runtime.seconds / 60);
         // Send the attained data to the front-end.
         win.webContents.send("showFetchDetailsResult", [
-            showData.name, showData.otherNames.join(", "), [showData.posterImage.url, showData.allImages.map(elem => elem.url)],
+            showData.name, showData.otherNames.join(", "), [showData.posterImage.url, showData.allImages.slice(0, 10).map(elem => elem.url)],
             String(showData.dates.startDate), runtimeNum, showData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),
             showData.directors.map(director => director.name), showData.writers.map(director => director.name),
             showData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), showData.producers.map(producers => producers.name),
@@ -315,7 +314,7 @@ exports.showRecordRequest = (BrowserWindow, ipc, path, fs, log, https, movier, t
             // Save the corresponding data.
             exports.showSave(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission);
         });
-    }).catch(err => {console.log(err); log.error("There was an issue getting the show details based on the url " + link + ".")} );
+    }).catch(err => log.error("There was an issue getting the show details based on the url " + link + "."));
 };
 
 

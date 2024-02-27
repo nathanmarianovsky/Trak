@@ -171,7 +171,7 @@ exports.filmFetchDetails = (log, movier, tools, ev, name) => {
         const runtimeNum = parseInt(filmData.runtime.seconds / 60);
         // Send the attained data to the front-end.
         ev.sender.send("filmFetchDetailsResult", [
-            filmData.name, filmData.otherNames.join(", "), [filmData.posterImage.url, filmData.allImages.map(elem => elem.url)],
+            filmData.name, filmData.otherNames.join(", "), [filmData.posterImage.url, filmData.allImages.slice(0, 10).map(elem => elem.url)],
             String(filmData.dates.startDate), runtimeNum, filmData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),
             filmData.directors.map(director => director.name), filmData.writers.map(director => director.name),
             filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), filmData.producers.map(producers => producers.name),
@@ -284,7 +284,7 @@ exports.filmRecordRequest = (BrowserWindow, ipc, path, fs, log, https, movier, t
         const runtimeArr = filmData.runtime.title.split(" ");
         // Send the attained data to the front-end.
         win.webContents.send("filmFetchDetailsResult", [
-            filmData.name, filmData.otherNames.join(", "), [filmData.posterImage.url, filmData.allImages.map(elem => elem.url)], String(filmData.dates.startDate),
+            filmData.name, filmData.otherNames.join(", "), [filmData.posterImage.url, filmData.allImages.slice(0, 10).map(elem => elem.url)], String(filmData.dates.startDate),
             (parseInt(runtimeArr[0]) * 60) + parseInt(runtimeArr[runtimeArr.length - 2]), filmData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),
             filmData.directors.map(director => director.name), filmData.writers.map(director => director.name),
             filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), filmData.producers.map(producers => producers.name),
@@ -294,7 +294,7 @@ exports.filmRecordRequest = (BrowserWindow, ipc, path, fs, log, https, movier, t
             // Save the corresponding data.
             exports.filmSave(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission);
         });
-    }).catch(err => {console.log(err); log.error("There was an issue getting the film details based on the url " + link + ".")} );
+    }).catch(err => log.error("There was an issue getting the film details based on the url " + link + "."));
 };
 
 

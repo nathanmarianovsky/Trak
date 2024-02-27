@@ -427,6 +427,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 relatedContentListeners(filmSynopsis);
                 updateFetchedDataString(filmReleaseDate, recordData.release, true);
                 relatedContentListeners(filmReleaseDate);
+                updateFetchedDataString(filmRunningTime, recordData.runTime, true);
+                relatedContentListeners(filmRunningTime);
                 updateFetchedDataString(filmLastWatched, recordData.watched, true);
                 relatedContentListeners(filmLastWatched);
                 updateFetchedDataString(filmDirectors, recordData.directors, true);
@@ -607,6 +609,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 relatedContentListeners(showSynopsis);
                 updateFetchedDataString(showReleaseDate, recordData.release, true);
                 relatedContentListeners(showReleaseDate);
+                updateFetchedDataString(showRunningTime, recordData.runTime, true);
+                relatedContentListeners(showRunningTime);
                 updateFetchedDataString(showDirectors, recordData.directors, true);
                 relatedContentListeners(showDirectors);
                 updateFetchedDataString(showWriters, recordData.writers, true);

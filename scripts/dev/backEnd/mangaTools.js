@@ -456,7 +456,7 @@ exports.mangaRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScrap
             log.info("GoodReads-Scraper has finished getting the details associated to the manga volumes of " + mangaData.englishTitle + ".");
             win.webContents.send("mangaVolumeFetchDetailsResult", results);
         });
-    }).catch(err => {log.error("There was an issue getting the manga details based on the url " + link + "."); console.log(err);});
+    }).catch(err => log.error("There was an issue getting the manga details based on the url " + link + "."));
 };
 
 

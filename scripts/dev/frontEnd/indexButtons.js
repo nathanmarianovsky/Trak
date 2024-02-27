@@ -117,8 +117,8 @@ window.addEventListener("load", () => {
         typeSwitch = document.getElementById("databaseSwitch"),
         XLSXTypeSwitch = document.getElementById("XLSXTypeSwitch"),
         importSampleZIP = document.getElementById("importSampleZIP"),
-        importSampleSimpleXLSX = document.getElementById("importSampleSimpleXLSX"),
-        importSampleDetailedXLSX = document.getElementById("importSampleDetailedXLSX"),
+        importSampleSimpleXLSX = document.getElementsByClassName("importSampleSimpleXLSX"),
+        importSampleDetailedXLSX = document.getElementsByClassName("importSampleDetailedXLSX"),
         contentSearch = document.getElementById("contentSearch"),
         indexHome = document.getElementById("indexHome"),
         animeSearchSubmission = document.getElementById("animeSearchSubmission"),
@@ -751,16 +751,20 @@ window.addEventListener("load", () => {
         e.preventDefault();
         ipcRenderer.send("importSampleZIP");
     });
-     // Listen for a click event on the importSampleSimpleXLSX button in the import section in order to open a folder to it.
-    importSampleSimpleXLSX.addEventListener("click", e => {
-        e.preventDefault();
-        ipcRenderer.send("importSampleSimpleXLSX");
-    });
-     // Listen for a click event on the importSampleDetailedXLSX button in the import section in order to open a folder to it.
-    importSampleDetailedXLSX.addEventListener("click", e => {
-        e.preventDefault();
-        ipcRenderer.send("importSampleDetailedXLSX");
-    });
+    // Listen for a click event on the importSampleSimpleXLSX button in the import section in order to open a folder to it.
+    for(let y = 0; y < importSampleSimpleXLSX.length; y++) {
+        importSampleSimpleXLSX[y].addEventListener("click", e => {
+            e.preventDefault();
+            ipcRenderer.send("importSampleSimpleXLSX");
+        });
+    }
+    // Listen for a click event on the importSampleDetailedXLSX button in the import section in order to open a folder to it.
+    for(let z = 0; z < importSampleDetailedXLSX.length; z++) {
+        importSampleDetailedXLSX[z].addEventListener("click", e => {
+            e.preventDefault();
+            ipcRenderer.send("importSampleDetailedXLSX");
+        });
+    }
     // Listen for a click event on the database export button in order to process an export of the chosen library records.
     databaseExportBtn.addEventListener("click", e => {
         // Define the list of records which the user desires to export.
