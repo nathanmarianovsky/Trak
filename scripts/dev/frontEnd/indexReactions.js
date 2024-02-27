@@ -474,7 +474,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     tooltipStr += tooltipStr.length > 0 ? "<br>" + seasonStr : seasonStr;
                 }
                 else {
-                    tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "")
+                    tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "");
                 }
             }
             tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
@@ -499,6 +499,23 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             }
             if(volumeCount > 0) {
                 tooltipStr += tooltipStr.length > 0 ? " and " + volumeStr : volumeStr;
+            }
+            tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
+        }
+        else if(recordData.category == "Show" && recordData.content.length > 0) {
+            let seasonCount = 0, episodeCount = 0;
+            for(let t = 0; t < recordData.content.length; t++) {
+                seasonCount++;
+                episodeCount += recordData.content[t].episodes.length;
+            }
+            tdNameOuterDiv.classList.add("tooltipped");
+            tdNameOuterDiv.setAttribute("data-position", "right");
+            let seasonStr = (seasonCount == 1
+                    ? "1 Season with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")
+                    : seasonCount + " Seasons with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")),
+                tooltipStr = "";
+            if(seasonCount > 0) {
+                tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "");
             }
             tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
         }

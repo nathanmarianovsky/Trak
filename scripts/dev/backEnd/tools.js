@@ -726,7 +726,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					genreCellFill(animeWorksheet, iterData.genres, "M", animeRowCounter);
 					// If the user desires to export a detailed xlsx file then create a new worksheet for each anime record and populate it with the related content information.
 					if(detailed == true) {
-						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-");
+						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25);
 						// Define the worksheet associated to the anime record.
 						let detailedWorksheet = workbook.addWorksheet("Anime-" + detailedWorksheetName);
 						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
@@ -869,7 +869,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					// If the user desires to export a detailed xlsx file then create a new worksheet for each manga record and populate it with the related content information.
 					if(detailed == true) {
 						// Define the worksheet associated to the manga record.
-						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-");
+						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25);
 						let detailedWorksheet = workbook.addWorksheet("Manga-" + detailedWorksheetName);
 						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
 						// Update the style of the first row.
@@ -947,7 +947,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					genreCellFill(showWorksheet, iterData.genres, "Q", showRowCounter);
 					// If the user desires to export a detailed xlsx file then create a new worksheet for each show record and populate it with the related content information.
 					if(detailed == true) {
-						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-");
+						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25);
 						// Define the worksheet associated to the show record.
 						let detailedWorksheet = workbook.addWorksheet("Show-" + detailedWorksheetName);
 						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
@@ -1651,7 +1651,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 										// Iterate through all workbook worksheets.
 										wb.worksheets.forEach(newElem => {
 											// Detect the manga record detailed worksheet by its name.
-											if(newElem.name == "Anime-" + mangaObj.name.split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25)) {
+											if(newElem.name == "Manga-" + mangaObj.name.split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25)) {
 												// Iterate through the detailed worksheet's rows.
 												for(let l = 2; l < newElem.rowCount + 1; l++) {
 													let detailedObj = {
