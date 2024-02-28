@@ -174,7 +174,7 @@ var initSelectObservers = () => {
     let observer = new MutationObserver(mutations => {
         // Define the listed item target in the unordered list.
         let target = mutations[0].target.parentNode.parentNode.parentNode.parentNode;
-        // If this select tag is a desired target then hide the body of episodes associated to an anime season.
+        // If this select tag is a desired target then hide the body of episodes associated to a season item.
         if(target.classList.contains("dropzone")) {
             setTimeout(() => target.children[1].style.display = "none", 1);
         }
@@ -453,15 +453,46 @@ var genreListLoad = (type, cols, filterLoad = false) => {
 Fades out an element on a page.
 
    - el is the page element desired to fade out and eventually disappear.
+   - diff is the amount subtracted on each iteration of the opacity change.
 
 */
-var fadeOut = el => {
+var fadeOut = (el, diff) => {
     el.style.opacity = 1;
     const fade = () => {
-        if((el.style.opacity -= .02) < 0) {
+        if((el.style.opacity -= diff) < 0) {
             el.style.display = "none";
         }
         else { requestAnimationFrame(fade); }
     }
     fade();
+};
+
+
+
+var notificationCreation = (itemId, itemCategory, itemTitle, itemRelease, itemImg) => {
+    const outerLI = document.createElement("li"),
+        img = document.createElement("img"),
+        span = document.createElement("span"),
+        par = document.createElement("p"),
+        link = document.createElement("a"),
+        linkIcon = document.createElement("i");
+    outerLI.classList.add("collection-item", "avatar");
+    img.setAttribute("src", itemImg);
+    img.classList.add("circle");
+    span.classList.add("title", "recordsNameRowDiv");
+    span.textContent = itemTitle + " (" + itemCategory + ")";
+    span.setAttribute("id", itemId);
+    par.innerHTML = itemRelease;
+    link.classList.add("secondary-content");
+    linkIcon.classList.add("material-icons");
+    linkIcon.textContent = "close";
+    link.append(linkIcon);
+    outerLI.append(img, span, par, link);
+    document.getElementById("notificationsCollection").append(outerLI);
+    linkIcon.addEventListener("click", e => e.target.parentNode.parentNode.remove());
+    // Listen for a click on the name of a notification in order to open the update page.
+    span.addEventListener("click", e => {
+        e.preventDefault();
+        ipcRenderer.send("updateRecord", e.target.id);
+    });
 };

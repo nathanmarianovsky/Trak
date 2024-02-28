@@ -291,6 +291,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	display: none;
 }
 
+/*#updateAvailable, #notifications {*/
 #updateAvailable {
 	display: none;
 }
@@ -728,6 +729,22 @@ footer {
 	color: blue;
     text-decoration: underline;
     cursor: pointer;
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+/* Styling applicable for the notifications modal. */
+
+
+
+.secondary-content {
+	cursor: pointer;
+}
+
+.secondary-content i {
+	color: #2A2A8E !important
 }
 
 

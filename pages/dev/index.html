@@ -42,6 +42,9 @@
                         <li><a id="updateAvailable" class="waves-effect waves-light modal-trigger tooltipped pulse" data-position="bottom" data-tooltip="Update Available" href="#updateModal"><i class="material-icons">update</i></a></li>
                         <li>
                             <div class="topNavTapContainer">
+                                <a id="notifications" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Notifications" href="#notificationsModal"><i class="material-icons">notifications</i></a>
+                            </div>
+                            <div class="topNavTapContainer">
                                 <a id="openDatabase" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Export/Import" href="#databaseModal"><i class="material-icons">storage</i></a>
                                 <div id="introductionTargetDatabase" class="tap-target" data-target="openDatabase">
                                     <div class="tap-target-content">
@@ -429,6 +432,16 @@
             <div class="modal-footer">
                 <a id="filterModalClear" class="waves-effect waves-light btn-flat modalButtons left">Clear</a>
                 <a id="filterApply" class="modal-close waves-effect waves-light btn-flat modalButtons">Apply</a>
+            </div>
+        </div>
+        <div id="notificationsModal" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h4 class="center">Notifications</h4>
+                <ul id="notificationsCollection" class="collection"></ul>
+            </div>
+            <div class="modal-footer">
+                <a id="clearNotifications" class="modal-close waves-effect waves-light btn-flat modalButtons left">Clear All</a>
+                <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
             </div>
         </div>
         <div id="databaseModal" class="modal modal-fixed-footer">

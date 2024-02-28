@@ -126,7 +126,8 @@ window.addEventListener("load", () => {
         tabSearchLinks = Array.from(document.getElementsByClassName("tabSearchLink")),
         bookSearchSubmission = document.getElementById("bookSearchSubmission"),
         filmSearchSubmission = document.getElementById("filmSearchSubmission"),
-        mangaSearchSubmission = document.getElementById("mangaSearchSubmission");
+        mangaSearchSubmission = document.getElementById("mangaSearchSubmission"),
+        clearNotifications = document.getElementById("clearNotifications");
     // Define all page components which will be utilized.
     const tableBody = document.getElementById("tableBody"),
         XLSXTypeSwitchDiv = document.getElementById("XLSXTypeSwitchDiv"),
@@ -156,7 +157,8 @@ window.addEventListener("load", () => {
         databaseTabs = document.getElementById("databaseTabs"),
         importXLSXContent = document.getElementById("importXLSXContent"),
         databaseModal = document.getElementById("databaseModal"),
-        chunkLoad = document.getElementById("chunkPreloader");
+        chunkLoad = document.getElementById("chunkPreloader"),
+        notificationsCollection = document.getElementById("notificationsCollection");
     let submissionList = [],
         tabsLoader = false;
     // Listen for a click on any search tab in order to hide the default search div.
@@ -395,6 +397,8 @@ window.addEventListener("load", () => {
         const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
         ipcRenderer.send("removeRecords", checkAll.checked ? list.slice(1) : list);
     });
+    // Listen for a click event on the notifications clear all button in order to remove all active notifications.
+    clearNotifications.addEventListener("click", e => notificationsCollection.innerHTML = "");
     // Listen for an input change event on the search bar in order to filter the records table.
     searchBar.addEventListener("input", e => {
         // Define the collection of all record rows and the current string being searched.

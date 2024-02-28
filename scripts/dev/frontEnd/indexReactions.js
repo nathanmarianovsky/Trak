@@ -441,6 +441,24 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 else if(recordData.content[t].scenario == "Season") {
                     seasonCount++;
                     episodeCount += recordData.content[t].episodes.length;
+                    if((new Date()).getTime() < (new Date(recordData.content[t].start))) {
+                        let dateStr = "";
+                        if(recordData.content[t].start != "") {
+                            let dateArr = recordData.content[t].start.split("-");
+                            dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
+                        }
+                        notificationCreation(list[n], recordData.category, recordData.name, "Season<br>To Be Released: " + dateStr, recordData.img[0]);
+                    }
+                }
+                if(recordData.content[t].scenario == "Single") {
+                    if((new Date()).getTime() < (new Date(recordData.content[t].release))) {
+                        let dateStr = "";
+                        if(recordData.content[t].release != "") {
+                            let dateArr = recordData.content[t].release.split("-");
+                            dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
+                        }
+                        notificationCreation(list[n], recordData.category, recordData.name, recordData.content[t].type + "<br>To Be Released: " + dateStr, recordData.img[0]);
+                    }
                 }
             }
             tdNameOuterDiv.classList.add("tooltipped");
@@ -479,6 +497,26 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             }
             tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
         }
+        else if(recordData.category == "Book") {
+            if((new Date()).getTime() < (new Date(recordData.publicationDate))) {
+                let dateStr = "";
+                if(recordData.publicationDate != "") {
+                    let dateArr = recordData.publicationDate.split("-");
+                    dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
+                }
+                notificationCreation(list[n], recordData.category, recordData.name, "Book<br>To Be Released: " + dateStr, recordData.img[0]);
+            }
+        }
+        else if(recordData.category == "Film") {
+            if((new Date()).getTime() < (new Date(recordData.release))) {
+                let dateStr = "";
+                if(recordData.release != "") {
+                    let dateArr = recordData.release.split("-");
+                    dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
+                }
+                notificationCreation(list[n], recordData.category, recordData.name, "Film<br>To Be Released: " + dateStr, recordData.img[0]);
+            }
+        }
         else if(recordData.category == "Manga" && recordData.content.length > 0) {
             let chapterCount = 0, volumeCount = 0;
             for(let t = 0; t < recordData.content.length; t++) {
@@ -487,6 +525,14 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 }
                 else if(recordData.content[t].scenario == "Volume") {
                     volumeCount++;
+                }
+                if((new Date()).getTime() < (new Date(recordData.content[t].release))) {
+                    let dateStr = "";
+                    if(recordData.content[t].release != "") {
+                        let dateArr = recordData.content[t].release.split("-");
+                        dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
+                    }
+                    notificationCreation(list[n], recordData.category, recordData.name, recordData.content[t].scenario + "<br>To Be Released: " + dateStr, recordData.img[0]);
                 }
             }
             tdNameOuterDiv.classList.add("tooltipped");
@@ -507,6 +553,14 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             for(let t = 0; t < recordData.content.length; t++) {
                 seasonCount++;
                 episodeCount += recordData.content[t].episodes.length;
+                if((new Date()).getTime() < (new Date(recordData.content[t].start))) {
+                    let dateStr = "";
+                    if(recordData.content[t].start != "") {
+                        let dateArr = recordData.content[t].start.split("-");
+                        dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
+                    }
+                    notificationCreation(list[n], recordData.category, recordData.name, "Season<br>To Be Released: " + dateStr, recordData.img[0]);
+                }
             }
             tdNameOuterDiv.classList.add("tooltipped");
             tdNameOuterDiv.setAttribute("data-position", "right");
@@ -962,7 +1016,7 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
     if(submissionArr[0].length == 0) {
         chunkPreloader.setAttribute(submissionArr[2].toLowerCase() + "Check", "1");
         chunkCheck.style.display = "block";
-        setTimeout(() => fadeOut(chunkCheck), 1000);
+        setTimeout(() => fadeOut(chunkCheck, .035), 1000);
     }
     // Reset the appropriate search container.
     if(submissionArr[2] == "Anime" && submissionArr[3] == true) {
