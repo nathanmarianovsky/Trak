@@ -496,3 +496,7 @@ var notificationCreation = (itemId, itemCategory, itemTitle, itemRelease, itemIm
         ipcRenderer.send("updateRecord", e.target.id);
     });
 };
+
+
+
+var convertToDays = milli => milli / (1000 * 60 * 60 * 24);

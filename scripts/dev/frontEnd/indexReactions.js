@@ -351,7 +351,8 @@ ipcRenderer.on("introduction", (event, response) => {
 // Load all of the records as rows in the table once the page has loaded.
 ipcRenderer.on("loadRows", (event, tableDiff) => {
     // Define the path for all items and get a list of all available records.
-    const pathDir = path.join(localPath, "Trak", "data");
+    const pathDir = path.join(localPath, "Trak", "data"),
+        curTime = (new Date()).getTime();
     let list = [],
         counters = [0,0,0,0,0];
     fs.existsSync(pathDir) ? list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()) : list = [];
@@ -441,7 +442,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 else if(recordData.content[t].scenario == "Season") {
                     seasonCount++;
                     episodeCount += recordData.content[t].episodes.length;
-                    if((new Date()).getTime() < (new Date(recordData.content[t].start))) {
+                    if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].start)))) <= 14) {
                         let dateStr = "";
                         if(recordData.content[t].start != "") {
                             let dateArr = recordData.content[t].start.split("-");
@@ -451,7 +452,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     }
                 }
                 if(recordData.content[t].scenario == "Single") {
-                    if((new Date()).getTime() < (new Date(recordData.content[t].release))) {
+                    if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].release)))) <= 14) {
                         let dateStr = "";
                         if(recordData.content[t].release != "") {
                             let dateArr = recordData.content[t].release.split("-");
@@ -498,7 +499,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
         }
         else if(recordData.category == "Book") {
-            if((new Date()).getTime() < (new Date(recordData.publicationDate))) {
+            if(convertToDays(Math.abs(curTime - (new Date(recordData.publicationDate)))) <= 14) {
                 let dateStr = "";
                 if(recordData.publicationDate != "") {
                     let dateArr = recordData.publicationDate.split("-");
@@ -508,7 +509,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             }
         }
         else if(recordData.category == "Film") {
-            if((new Date()).getTime() < (new Date(recordData.release))) {
+            if(convertToDays(Math.abs(curTime - (new Date(recordData.release)))) <= 14) {
                 let dateStr = "";
                 if(recordData.release != "") {
                     let dateArr = recordData.release.split("-");
@@ -526,7 +527,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 else if(recordData.content[t].scenario == "Volume") {
                     volumeCount++;
                 }
-                if((new Date()).getTime() < (new Date(recordData.content[t].release))) {
+                if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].release)))) <= 14) {
                     let dateStr = "";
                     if(recordData.content[t].release != "") {
                         let dateArr = recordData.content[t].release.split("-");
@@ -553,7 +554,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             for(let t = 0; t < recordData.content.length; t++) {
                 seasonCount++;
                 episodeCount += recordData.content[t].episodes.length;
-                if((new Date()).getTime() < (new Date(recordData.content[t].start))) {
+                if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].start)))) <= 14) {
                     let dateStr = "";
                     if(recordData.content[t].start != "") {
                         let dateArr = recordData.content[t].start.split("-");
@@ -881,6 +882,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         bottomStr += ")";
     }
     document.getElementById("homeCounter").textContent = bottomStr;
+    if(document.getElementById("notificationsCollection").children.length > 0) { document.getElementById("notifications").style.display = "inline-block"; }
     // Initialize the tooltips.
     initTooltips();
     // Initialize the filter genres/tags list.

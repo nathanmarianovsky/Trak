@@ -291,8 +291,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	display: none;
 }
 
-/*#updateAvailable, #notifications {*/
-#updateAvailable {
+#updateAvailable, #notifications {
 	display: none;
 }
 
