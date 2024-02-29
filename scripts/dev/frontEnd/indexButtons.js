@@ -158,6 +158,7 @@ window.addEventListener("load", () => {
         importXLSXContent = document.getElementById("importXLSXContent"),
         databaseModal = document.getElementById("databaseModal"),
         chunkLoad = document.getElementById("chunkPreloader"),
+        notifications = document.getElementById("notifications"),
         notificationsCollection = document.getElementById("notificationsCollection");
     let submissionList = [],
         tabsLoader = false;
@@ -398,7 +399,11 @@ window.addEventListener("load", () => {
         ipcRenderer.send("removeRecords", checkAll.checked ? list.slice(1) : list);
     });
     // Listen for a click event on the notifications clear all button in order to remove all active notifications.
-    clearNotifications.addEventListener("click", e => notificationsCollection.innerHTML = "");
+    clearNotifications.addEventListener("click", e => {
+        notificationsCollection.innerHTML = "";
+        notifications.style.display = "none";
+        ipcRenderer.send("notificationsSave", {"html": ""})
+    });
     // Listen for an input change event on the search bar in order to filter the records table.
     searchBar.addEventListener("input", e => {
         // Define the collection of all record rows and the current string being searched.

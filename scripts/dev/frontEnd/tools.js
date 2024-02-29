@@ -22,6 +22,9 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - genreList: Provides the list of all genres/tags that can be selected from depending on the case.
     - genreListLoad: Appends all genre options as checkboxes.
     - fadeOut: Fades out an element on a page.
+    - notificationCreation: Creates a notification listing in the notifications modal.
+    - notificationsRemovalListeners: Adds the listeners associated to a record notification listing.
+    - convertToDays: Converts a length of time in milliseconds to days.
 
 */
 
@@ -469,34 +472,81 @@ var fadeOut = (el, diff) => {
 
 
 
-var notificationCreation = (itemId, itemCategory, itemTitle, itemRelease, itemImg) => {
+/*
+
+Creates a notification listing in the notifications modal.
+
+   - ipcElec provides the means to operate the Electron app.
+   - itemId is a string corresponding to the id of a record.
+   - itemCategory is a string corresponding to the category of a record.
+   - itemTitle is a string corresponding to the name of a record.
+   - itemRelease is a string corresponding to the release date text of a record notification.
+   - itemImg is a string corresponding to the notification image of a record.
+
+*/
+var notificationCreation = (ipcElec, itemId, itemCategory, itemTitle, itemRelease, itemImg) => {
+    // Define the portions of the notification listed item.
     const outerLI = document.createElement("li"),
         img = document.createElement("img"),
         span = document.createElement("span"),
         par = document.createElement("p"),
         link = document.createElement("a"),
         linkIcon = document.createElement("i");
+    // Modify the notification components appropriately.
     outerLI.classList.add("collection-item", "avatar");
     img.setAttribute("src", itemImg);
     img.classList.add("circle");
-    span.classList.add("title", "recordsNameRowDiv");
+    span.classList.add("title", "recordsNameRowDiv", "notificationsTitle");
     span.textContent = itemTitle + " (" + itemCategory + ")";
     span.setAttribute("id", itemId);
     par.innerHTML = itemRelease;
     link.classList.add("secondary-content");
-    linkIcon.classList.add("material-icons");
+    linkIcon.classList.add("material-icons", "notificationsRemoval");
     linkIcon.textContent = "close";
+    // Attach the notification to the notifications modal.
     link.append(linkIcon);
     outerLI.append(img, span, par, link);
     document.getElementById("notificationsCollection").append(outerLI);
-    linkIcon.addEventListener("click", e => e.target.parentNode.parentNode.remove());
+};
+
+
+
+/*
+
+Adds the listeners associated to a record notification listing.
+
+   - ipcElec provides the means to operate the Electron app.
+
+*/
+var notificationsRemovalListeners = ipcElec => {
+    const notificationsArr = document.getElementById("notificationsCollection");
+    // Listen for a click on the removal of a notification.
+    Array.from(document.getElementsByClassName("notificationsRemoval")).forEach(itemRemoval => {
+        itemRemoval.addEventListener("click", e => {
+            if(notificationsArr.children.length == 1) {
+                document.getElementById("notifications").style.display = "none";
+                document.getElementById("notificationsExit").click();
+            }
+            e.target.parentNode.parentNode.remove();
+            ipcElec.send("notificationsSave", {"html": notificationsArr.innerHTML});
+        });
+    });
     // Listen for a click on the name of a notification in order to open the update page.
-    span.addEventListener("click", e => {
-        e.preventDefault();
-        ipcRenderer.send("updateRecord", e.target.id);
+    Array.from(document.getElementsByClassName("notificationsTitle")).forEach(itemLink => {
+        itemLink.addEventListener("click", e => {
+            e.preventDefault();
+            ipcElec.send("updateRecord", e.target.id);
+        });
     });
 };
 
 
 
+/*
+
+Converts a length of time in milliseconds to days.
+
+   - milli is an integer representing the amount of milliseconds to be converted into days.
+
+*/
 var convertToDays = milli => milli / (1000 * 60 * 60 * 24);

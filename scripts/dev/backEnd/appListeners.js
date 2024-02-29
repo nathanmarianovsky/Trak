@@ -68,6 +68,10 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
     	app.quit();
     });
 
+    ipc.on("notificationsSave", (event, submissionContent) => {
+    	fs.writeFileSync(path.join(originalPath, "Trak", "config", "notifications.json"), JSON.stringify(submissionContent), "UTF8");
+    });
+
   	// Handle the load of the home page.
   	ipc.on("home", event => {
   		mainWindow.loadFile(path.join(originalPath, "Trak", "localPages", "index.html"));
