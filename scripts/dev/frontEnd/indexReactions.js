@@ -890,7 +890,11 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
     }
     else {
         notificationsArr.innerHTML = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "config", "notifications.json"), "UTF8")).html;
-        notificationsRemovalListeners(ipcRenderer);
+        Array.from(notificationsArr.children).forEach(oldItem => {
+            if(!list.join(",").includes(oldItem.children[1].getAttribute("id"))) {
+                oldItem.remove();
+            }
+        });
     }
     if(notificationsArr.children.length > 0) {
         document.getElementById("notifications").style.display = "inline-block";

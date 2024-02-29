@@ -68,6 +68,7 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
     	app.quit();
     });
 
+  	// Handle the writing of the notifications file.
     ipc.on("notificationsSave", (event, submissionContent) => {
     	fs.writeFileSync(path.join(originalPath, "Trak", "config", "notifications.json"), JSON.stringify(submissionContent), "UTF8");
     });
