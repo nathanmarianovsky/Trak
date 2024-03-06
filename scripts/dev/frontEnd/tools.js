@@ -5,6 +5,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - rgba2hex: Convert a RGBA color to hex.
     - addAlpha: Provides a hex representing a color with a certain opacity of the given hex color.
     - clearTooltips: Remove all tooltips on the page.
+    - initDropdown: Initialize the dropdowns on the page.
     - initTabs: Initialize the tabs on the page.
     - initFAB: Initialize the floating action button on the page.
     - initCollapsible: Initialize the collapsible divs on the page.
@@ -69,6 +70,19 @@ var clearTooltips = () => {
         instancesTooltips = M.Tooltip.init(elemsTooltips);
     // Destroy each tooltip.
     for(let j = 0; j < instancesTooltips.length; j++) { instancesTooltips[j].destroy(); }
+};
+
+
+
+/*
+
+Initialize the dropdowns on the page.
+
+*/
+var initDropdown = () => {
+    // Define the current instances of dropdowns found on the page.
+    let elems = document.querySelectorAll('.dropdown-trigger'),
+        instances = M.Dropdown.init(elems);
 };
 
 
@@ -488,24 +502,30 @@ var notificationCreation = (ipcElec, itemId, itemCategory, itemTitle, itemReleas
     // Define the portions of the notification listed item.
     const outerLI = document.createElement("li"),
         img = document.createElement("img"),
+        imgIcon = document.createElement("i"),
         span = document.createElement("span"),
         par = document.createElement("p"),
-        link = document.createElement("a"),
-        linkIcon = document.createElement("i");
+        link = document.createElement("div"),
+        linkLabel = document.createElement("label"),
+        linkInput = document.createElement("input");
     // Modify the notification components appropriately.
     outerLI.classList.add("collection-item", "avatar");
     img.setAttribute("src", itemImg);
     img.classList.add("circle");
+    imgIcon.classList.add("material-icons", "circle");
+    imgIcon.textContent = "notifications_active";
     span.classList.add("title", "recordsNameRowDiv", "notificationsTitle");
     span.textContent = itemTitle + " (" + itemCategory + ")";
     span.setAttribute("id", itemId);
     par.innerHTML = itemRelease;
-    link.classList.add("secondary-content");
-    linkIcon.classList.add("material-icons", "notificationsRemoval");
-    linkIcon.textContent = "close";
+    link.classList.add("secondary-content", "notificationsCheckDiv");
+    linkInput.setAttribute("type", "checkbox");
+    linkInput.setAttribute("id", "notificationCheck_" + itemId);
+    linkInput.classList.add("filled-in", "recordsChecks");
+    linkLabel.append(linkInput);
     // Attach the notification to the notifications modal.
-    link.append(linkIcon);
-    outerLI.append(img, span, par, link);
+    link.append(linkLabel);
+    outerLI.append(itemImg != "" ? img : imgIcon, span, par, link);
     document.getElementById("notificationsCollection").append(outerLI);
 };
 
@@ -519,18 +539,6 @@ Adds the listeners associated to a record notification listing.
 
 */
 var notificationsRemovalListeners = ipcElec => {
-    const notificationsArr = document.getElementById("notificationsCollection");
-    // Listen for a click on the removal of a notification.
-    Array.from(document.getElementsByClassName("notificationsRemoval")).forEach(itemRemoval => {
-        itemRemoval.addEventListener("click", e => {
-            if(notificationsArr.children.length == 1) {
-                document.getElementById("notifications").style.display = "none";
-                document.getElementById("notificationsExit").click();
-            }
-            e.target.parentNode.parentNode.remove();
-            ipcElec.send("notificationsSave", {"html": notificationsArr.innerHTML});
-        });
-    });
     // Listen for a click on the name of a notification in order to open the update page.
     Array.from(document.getElementsByClassName("notificationsTitle")).forEach(itemLink => {
         itemLink.addEventListener("click", e => {

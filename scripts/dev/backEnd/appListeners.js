@@ -45,9 +45,9 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
-   		let win = tools.createWindow("index", originalPath, BrowserWindow, path, log, dev, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
-   		win.webContents.on("did-finish-load", () => {
-  				win.webContents.send("loadRows", win.getContentSize()[1] - 800);
+	   		let win = tools.createWindow("index", originalPath, BrowserWindow, path, log, dev, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
+	   		win.webContents.on("did-finish-load", () => {
+				win.webContents.send("loadRows", win.getContentSize()[1] - 800);
   				tools.tutorialLoad(fs, path, log, win, originalPath);
   				if(updateCondition == false) {
   					tools.checkForUpdate(require("os"), require("https"), fs, path, log, originalPath, win);
@@ -70,7 +70,50 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
 
   	// Handle the writing of the notifications file.
     ipc.on("notificationsSave", (event, submissionContent) => {
-    	fs.writeFileSync(path.join(originalPath, "Trak", "config", "notifications.json"), JSON.stringify(submissionContent), "UTF8");
+    	// fs.writeFileSync(path.join(originalPath, "Trak", "config", "notifications.json"), JSON.stringify(submissionContent), "UTF8");
+    	const notificationsPath = path.join(originalPath, "Trak", "config", "notifications.json");
+    	fs.readFile(notificationsPath, "UTF8", (err, file) => {
+    		if(err) {
+        		log.error("There was an issue reading the notifications configuration file.");
+        		event.sender.send("notificationsFileReadFailure");
+        	}
+        	else {
+        		const currentNotificationsFile = JSON.parse(file),
+        			currentNotifications = currentNotificationsFile.notifications.map(a => ({...a}));
+        		for(let u = 0; u < submissionContent.length; u++) {
+        			let v = 0;
+        			for(; v < currentNotificationsFile.notifications.length; v++) {
+        				if(currentNotificationsFile.notifications[v].id == submissionContent[u][0] && currentNotificationsFile.notifications[v].text == submissionContent[u][3]) { break; }
+        			}
+        			if(v == currentNotificationsFile.notifications.length) {
+        				currentNotifications.push({
+        					"id": submissionContent[u][0],
+        					"category": submissionContent[u][1],
+        					"name": submissionContent[u][2],
+        					"text": submissionContent[u][3],
+        					"date": submissionContent[u][4],
+        					"img": submissionContent[u][5],
+        					"snooze": ""
+        				});
+        			}
+        			else {
+        				currentNotifications[v].date = submissionContent[u][4];
+        				currentNotifications[v].img = submissionContent[u][5];
+        				currentNotifications[v].snooze = submissionContent[u][6];
+        			}
+        		}
+        		currentNotificationsFile.notifications = currentNotifications.sort((lhs, rhs) => (new Date(lhs.date)).getTime() < (new Date(rhs.date)).getTime());
+        		fs.writeFile(notificationsPath, JSON.stringify(currentNotificationsFile), "UTF8", er => {
+        			if(er) {
+        				log.error("There was an issue writing to the notifications configuration file.");
+        				event.sender.send("notificationsFileWriteFailure");
+        			}
+        			else {
+        				event.sender.send("notificationsReady");
+        			}
+        		});
+        	}
+    	});
     });
 
   	// Handle the load of the home page.

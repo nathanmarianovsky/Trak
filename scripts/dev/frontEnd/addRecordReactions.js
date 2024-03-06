@@ -508,7 +508,9 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 updateFetchedDataDate(mangaStartDate, recordData.start, true);
                 relatedContentListeners(mangaStartDate);
                 updateFetchedDataDate(mangaStartDate, recordData.start, true);
+                updateFetchedDataDate(mangaEndDate, recordData.end, true);
                 relatedContentListeners(mangaEndDate);
+                updateFetchedDataDate(mangaEndDate, recordData.end, true);
                 updateImgLoad("Manga", mangaImg, recordData.img);
                 updateGenreLoad("Manga", mangaOtherGenres, recordData.genres);
                 relatedContentListeners(mangaOtherGenres);

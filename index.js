@@ -73,9 +73,12 @@ app.whenReady().then(() => {
 		"showSelectAll": true
 	});
 	// Delete the notifications file if it exists.
-	if(fs.existsSync(path.join(basePath, "Trak", "config", "notifications.json"))) {
-		fs.unlink(path.join(basePath, "Trak", "config", "notifications.json"));
+	if(!fs.existsSync(path.join(basePath, "Trak", "config", "notifications.json"))) {
+		fs.writeFileSync(path.join(basePath, "Trak", "config", "notifications.json"), JSON.stringify({"interval": 14, "notifications": []}), "UTF8");
 	}
+	// if(!fs.existsSync(path.join(basePath, "Trak", "data", "associations.json"))) {
+
+	// }
 	// Create the configuration file if it does not exist.
 	if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
 		log.info("Creating the default configuration file. To be located at " + path.join(basePath, "Trak", "config", "configuration.json"));

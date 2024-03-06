@@ -402,7 +402,7 @@ window.addEventListener("load", () => {
     clearNotifications.addEventListener("click", e => {
         notificationsCollection.innerHTML = "";
         notifications.style.display = "none";
-        ipcRenderer.send("notificationsSave", {"html": ""})
+        ipcRenderer.send("notificationsSave", [])
     });
     // Listen for an input change event on the search bar in order to filter the records table.
     searchBar.addEventListener("input", e => {
