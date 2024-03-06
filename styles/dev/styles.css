@@ -366,6 +366,8 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	position: relative !important;
 	top: 2px;
 	accent-color: #2A2A8E;
+	cursor: pointer;
+	pointer-events: initial !important;
 }
 
 .iconSorter {
@@ -745,6 +747,7 @@ footer {
 
 #snoozeDropdown {
 	width: 110px !important;
+	border-radius: 17px;
 }
 
 .secondary-content {

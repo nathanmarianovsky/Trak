@@ -521,7 +521,7 @@ var notificationCreation = (ipcElec, itemId, itemCategory, itemTitle, itemReleas
     link.classList.add("secondary-content", "notificationsCheckDiv");
     linkInput.setAttribute("type", "checkbox");
     linkInput.setAttribute("id", "notificationCheck_" + itemId);
-    linkInput.classList.add("filled-in", "recordsChecks");
+    linkInput.classList.add("filled-in", "recordsChecks", "notificationCheck");
     linkLabel.append(linkInput);
     // Attach the notification to the notifications modal.
     link.append(linkLabel);
@@ -539,6 +539,13 @@ Adds the listeners associated to a record notification listing.
 
 */
 var notificationsRemovalListeners = ipcElec => {
+    const checkArr = Array.from(document.getElementsByClassName("notificationCheck")),
+        globalCheck = document.getElementById("notificationsCheckAll");
+    checkArr.forEach(itemCheck => {
+        itemCheck.addEventListener("click", e => {
+            checkArr.every(elem => elem.checked) ? globalCheck.checked = true : globalCheck.checked = false;
+        });
+    });
     // Listen for a click on the name of a notification in order to open the update page.
     Array.from(document.getElementsByClassName("notificationsTitle")).forEach(itemLink => {
         itemLink.addEventListener("click", e => {

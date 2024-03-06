@@ -103,6 +103,7 @@ window.addEventListener("load", () => {
         remove = document.getElementById("removeConfirm"),
         searchBar = document.getElementById("searchBar"),
         checkAll = document.getElementById("checkAll"),
+        notificationsCheckAll = document.getElementById("notificationsCheckAll"),
         nameSort = document.getElementById("nameSort"),
         categorySort = document.getElementById("categorySort"),
         ratingSort = document.getElementById("ratingSort"),
@@ -694,6 +695,20 @@ window.addEventListener("load", () => {
                 assortmentTable.append(assortment[z]);
             }
         }
+    });
+    // Listen for a click event on the notifications check all checkbox in order to check or uncheck all notification checkboxes.
+    notificationsCheckAll.addEventListener("click", e => {
+        // Define the collection of all notification checkboxes.
+        const notificationsList = Array.from(document.getElementsByClassName("notificationCheck"));
+        // If the notificationsCheckAll is checked then check all notifications.
+        notificationsList.forEach(elem => notificationsCheckAll.checked ? elem.checked = true : elem.checked = false);
+        // if(notificationsCheckAll.checked) {
+        //     notificationsList.forEach(elem => elem.checked = true);
+        // }
+        // // Otherwise, if the notificationsCheckAll is unchecked then uncheck all notifications.
+        // else {
+            
+        // }
     });
     // Listen for a click event on the clear filter button in order to remove all active filters.
     clearFilter.addEventListener("click", e => { cleanFilter(); });

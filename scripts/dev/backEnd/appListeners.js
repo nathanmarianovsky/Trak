@@ -93,13 +93,15 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
         					"text": submissionContent[u][3],
         					"date": submissionContent[u][4],
         					"img": submissionContent[u][5],
+        					"hidden": false,
         					"snooze": ""
         				});
         			}
         			else {
         				currentNotifications[v].date = submissionContent[u][4];
         				currentNotifications[v].img = submissionContent[u][5];
-        				currentNotifications[v].snooze = submissionContent[u][6];
+        				currentNotifications[v].hidden = submissionContent[u][6];
+        				currentNotifications[v].snooze = submissionContent[u][7];
         			}
         		}
         		currentNotificationsFile.notifications = currentNotifications.sort((lhs, rhs) => (new Date(lhs.date)).getTime() < (new Date(rhs.date)).getTime());

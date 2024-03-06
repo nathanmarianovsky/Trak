@@ -367,12 +367,11 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
     // Define the path for all items and get a list of all available records.
     const pathDir = path.join(localPath, "Trak", "data"),
         curTime = (new Date()).getTime(),
+        notificationsArr = document.getElementById("notificationsCollection"),
         newNotificationsArr = [];
     let list = [],
-        // notificationCheck = false,
         counters = [0,0,0,0,0];
     fs.existsSync(pathDir) ? list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()) : list = [];
-    // fs.existsSync(path.join(basePath, "Trak", "config", "notifications.json")) ? notificationCheck = true : notificationCheck = false;
     if(list.length > 0) {
         list = list.sort((lhs, rhs) => {
             let lhsVal = lhs.substring(lhs.indexOf("-")),
@@ -460,24 +459,12 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     seasonCount++;
                     episodeCount += recordData.content[t].episodes.length;
                     if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].start)))) <= 14) {
-                        let dateStr = "";
-                        if(recordData.content[t].start != "") {
-                            let dateArr = recordData.content[t].start.split("-");
-                            dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
-                        }
-                        newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img[0], ""]);
-                        // notificationCreation(ipcRenderer, list[n], recordData.category, recordData.name, "Season<br>To Be Released: " + dateStr, recordData.img[0]);
+                        newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img[0], false, ""]);
                     }
                 }
                 if(recordData.content[t].scenario == "Single") {
                     if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].release)))) <= 14) {
-                        let dateStr = "";
-                        if(recordData.content[t].release != "") {
-                            let dateArr = recordData.content[t].release.split("-");
-                            dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
-                        }
-                        newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].type, recordData.content[t].release, recordData.img[0], ""]);
-                        // notificationCreation(ipcRenderer, list[n], recordData.category, recordData.name, recordData.content[t].type + "<br>To Be Released: " + dateStr, recordData.img[0]);
+                        newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].type, recordData.content[t].release, recordData.img[0], false, ""]);
                     }
                 }
             }
@@ -519,24 +506,12 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         }
         else if(recordData.category == "Book") {
             if(convertToDays(Math.abs(curTime - (new Date(recordData.publicationDate)))) <= 14) {
-                let dateStr = "";
-                if(recordData.publicationDate != "") {
-                    let dateArr = recordData.publicationDate.split("-");
-                    dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
-                }
-                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Book", recordData.publicationDate, recordData.img[0], ""]);
-                // notificationCreation(ipcRenderer, list[n], recordData.category, recordData.name, "Book<br>To Be Released: " + dateStr, recordData.img[0]);
+                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Book", recordData.publicationDate, recordData.img[0], false, ""]);
             }
         }
         else if(recordData.category == "Film") {
             if(convertToDays(Math.abs(curTime - (new Date(recordData.release)))) <= 14) {
-                let dateStr = "";
-                if(recordData.release != "") {
-                    let dateArr = recordData.release.split("-");
-                    dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
-                }
-                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Film", recordData.release, recordData.img[0], ""]);
-                // notificationCreation(ipcRenderer, list[n], recordData.category, recordData.name, "Film<br>To Be Released: " + dateStr, recordData.img[0]);
+                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Film", recordData.release, recordData.img[0], false, ""]);
             }
         }
         else if(recordData.category == "Manga" && recordData.content.length > 0) {
@@ -549,13 +524,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     volumeCount++;
                 }
                 if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].release)))) <= 14) {
-                    let dateStr = "";
-                    if(recordData.content[t].release != "") {
-                        let dateArr = recordData.content[t].release.split("-");
-                        dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
-                    }
-                    newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].scenario, recordData.content[t].release, recordData.img[0], ""]);
-                    // notificationCreation(ipcRenderer, list[n], recordData.category, recordData.name, recordData.content[t].scenario + "<br>To Be Released: " + dateStr, recordData.img[0]);
+                    newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].scenario, recordData.content[t].release, recordData.img[0], false, ""]);
                 }
             }
             tdNameOuterDiv.classList.add("tooltipped");
@@ -577,13 +546,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 seasonCount++;
                 episodeCount += recordData.content[t].episodes.length;
                 if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].start)))) <= 14) {
-                    let dateStr = "";
-                    if(recordData.content[t].start != "") {
-                        let dateArr = recordData.content[t].start.split("-");
-                        dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
-                    }
-                    newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img[0], ""]);
-                    // notificationCreation(ipcRenderer, list[n], recordData.category, recordData.name, "Season<br>To Be Released: " + dateStr, recordData.img[0]);
+                    newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img[0], false, ""]);
                 }
             }
             tdNameOuterDiv.classList.add("tooltipped");
@@ -905,35 +868,27 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         bottomStr += ")";
     }
     document.getElementById("homeCounter").textContent = bottomStr;
-    const notificationsArr = document.getElementById("notificationsCollection");
-    // if(notificationCheck == false) {
-    //     ipcRenderer.send("notificationsSave", Array.from(notificationsArr.children).map(child => {
-    //         let childLst = child.children,
-    //             parArr = childLst[2].innerHTML.split("<br>");
-    //         return [childLst[1].getAttribute("id"), childLst[1].textContent].concat(parArr);
-    //     }));
-    // }
-    // else {
-    //     notificationsArr.innerHTML = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "config", "notifications.json"), "UTF8")).html;
-    //     Array.from(notificationsArr.children).forEach(oldItem => {
-    //         if(!list.join(",").includes(oldItem.children[1].getAttribute("id"))) {
-    //             oldItem.remove();
-    //         }
-    //     });
-    // }
+    // Send a request to the back-end to update the list of notifications based on the current list of records.
     ipcRenderer.send("notificationsSave", newNotificationsArr);
+    // Once the back-end has processed the list of notifications sent over display the appropriate notifications on the home page.
     ipcRenderer.on("notificationsReady", event => {
+        // Read the notifications configuration file.
         const curNotifications = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "config", "notifications.json"), "UTF8"));
+        // Iterate through all application notifications.
         for(let k = 0; k < curNotifications.notifications.length; k++) {
-            if(curNotifications.notifications[k].snooze == "" || (new Date()).getTime() <= (new Date(curNotifications.notifications[k].snooze)).getTime()) {
+            // Display an application notification only if it has not been cleared and snoozed.
+            if(curNotifications.notifications[k].hidden == false && (curNotifications.notifications[k].snooze == "" || curTime <= (new Date(curNotifications.notifications[k].snooze)).getTime())) {
+                // Process the corresponding notification date to be displayed.
                 if(curNotifications.notifications[k].date != "") {
                     let dateArr = curNotifications.notifications[k].date.split("-");
                     dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
                 }
+                // Create a notification.
                 notificationCreation(ipcRenderer, curNotifications.notifications[k].id, curNotifications.notifications[k].category,
                     curNotifications.notifications[k].name, curNotifications.notifications[k].text + "<br>To Be Released: " + dateStr, curNotifications.notifications[k].img);
             }
         }
+        // If there are notifications to be displayed then show the notifications modal button, initialize the dropdown menu, and add notification listeners.
         if(notificationsArr.children.length > 0) {
             document.getElementById("notifications").style.display = "inline-block";
             initDropdown();
