@@ -105,6 +105,7 @@ window.addEventListener("load", () => {
         checkAll = document.getElementById("checkAll"),
         notificationsCheckAll = document.getElementById("notificationsCheckAll"),
         notificationsClear = document.getElementById("notificationsClear"),
+        notificationsSnoozeList = Array.from(document.getElementsByClassName("snoozeOption")),
         nameSort = document.getElementById("nameSort"),
         categorySort = document.getElementById("categorySort"),
         ratingSort = document.getElementById("ratingSort"),
@@ -712,6 +713,27 @@ window.addEventListener("load", () => {
                 false
             ];
         }));
+    });
+    // Listen for a click event on the first notifications snooze button in order to snooze the selected notifications.
+    notificationsSnoozeList.forEach(notificationSnooze => {
+        notificationSnooze.addEventListener("click", e => {
+            ipcRenderer.send("notificationsSave", Array.from(document.getElementsByClassName("notificationCheck")).filter(elem => elem.checked).map(iter => {
+                let infoElem = iter.closest("li"),
+                    snoozeDate = (new Date());
+                snoozeDate.setDate(snoozeDate.getDate() + parseInt(e.target.getAttribute("id").split("_")[1]));
+                return [
+                    infoElem.getAttribute("notificationId") != null ? infoElem.getAttribute("notificationId") : "",
+                    infoElem.getAttribute("notificationCategory") != null ? infoElem.getAttribute("notificationCategory") : "",
+                    infoElem.getAttribute("notificationTitle") != null ? infoElem.getAttribute("notificationTitle") : "",
+                    infoElem.getAttribute("notificationScenario") != null ? infoElem.getAttribute("notificationScenario") : "",
+                    infoElem.getAttribute("notificationRelease") != null ? infoElem.getAttribute("notificationRelease") : "",
+                    infoElem.children[0].getAttribute("src") != null ? infoElem.children[0].getAttribute("src") : "",
+                    false,
+                    snoozeDate.getFullYear() + "-" + (snoozeDate.getMonth() + 1) + "-" + snoozeDate.getDate(),
+                    false
+                ];
+            }));
+        });
     });
     // Listen for a click event on the clear filter button in order to remove all active filters.
     clearFilter.addEventListener("click", e => { cleanFilter(); });

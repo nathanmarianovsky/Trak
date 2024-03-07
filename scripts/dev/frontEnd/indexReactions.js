@@ -879,7 +879,9 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         // Iterate through all application notifications.
         for(let k = 0; k < curNotifications.notifications.length; k++) {
             // Display an application notification only if it has not been cleared and snoozed.
-            if(curNotifications.notifications[k].hidden == false && (curNotifications.notifications[k].snooze == "" || curTime <= (new Date(curNotifications.notifications[k].snooze)).getTime())) {
+            console.log(curNotifications.notifications[k].snooze == "");
+            console.log(curTime >= (new Date(curNotifications.notifications[k].snooze)).getTime());
+            if(curNotifications.notifications[k].hidden == false && (curNotifications.notifications[k].snooze == "" || curTime >= (new Date(curNotifications.notifications[k].snooze)).getTime())) {
                 // Create a notification.
                 notificationCreation(ipcRenderer, curNotifications.notifications[k].id, curNotifications.notifications[k].category,
                     curNotifications.notifications[k].name, curNotifications.notifications[k].text, curNotifications.notifications[k].date, curNotifications.notifications[k].img, curNotifications.notifications[k].snooze);
