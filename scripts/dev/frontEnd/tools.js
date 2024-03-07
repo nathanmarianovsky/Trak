@@ -533,7 +533,7 @@ var notificationCreation = (ipcElec, itemId, itemCategory, itemTitle, itemScenar
     par.innerHTML = itemScenario + "<br>To Be Released: " + dateStr;
     link.classList.add("secondary-content", "notificationsCheckDiv");
     linkInput.setAttribute("type", "checkbox");
-    linkInput.classList.add("filled-in", "recordsChecks", "notificationCheck");
+    linkInput.classList.add("filled-in", "notificationCheck");
     linkLabel.append(linkInput);
     // Attach the notification to the notifications modal.
     link.append(linkLabel);

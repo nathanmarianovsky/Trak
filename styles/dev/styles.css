@@ -361,7 +361,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	bottom: 58px;
 }
 
-.recordsChecks {
+.recordsChecks, .notificationCheck {
 	opacity: 1 !important;
 	position: relative !important;
 	top: 2px;
