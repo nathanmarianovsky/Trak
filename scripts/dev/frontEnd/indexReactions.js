@@ -459,12 +459,12 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     seasonCount++;
                     episodeCount += recordData.content[t].episodes.length;
                     if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].start)))) <= 14) {
-                        newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img[0], false, ""]);
+                        newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img[0], false, "", true]);
                     }
                 }
                 if(recordData.content[t].scenario == "Single") {
                     if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].release)))) <= 14) {
-                        newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].type, recordData.content[t].release, recordData.img[0], false, ""]);
+                        newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].type, recordData.content[t].release, recordData.img[0], false, "", true]);
                     }
                 }
             }
@@ -506,12 +506,12 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         }
         else if(recordData.category == "Book") {
             if(convertToDays(Math.abs(curTime - (new Date(recordData.publicationDate)))) <= 14) {
-                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Book", recordData.publicationDate, recordData.img[0], false, ""]);
+                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Book", recordData.publicationDate, recordData.img[0], false, "", true]);
             }
         }
         else if(recordData.category == "Film") {
             if(convertToDays(Math.abs(curTime - (new Date(recordData.release)))) <= 14) {
-                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Film", recordData.release, recordData.img[0], false, ""]);
+                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Film", recordData.release, recordData.img[0], false, "", true]);
             }
         }
         else if(recordData.category == "Manga" && recordData.content.length > 0) {
@@ -524,7 +524,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     volumeCount++;
                 }
                 if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].release)))) <= 14) {
-                    newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].scenario, recordData.content[t].release, recordData.img[0], false, ""]);
+                    newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].scenario, recordData.content[t].release, recordData.img[0], false, "", true]);
                 }
             }
             tdNameOuterDiv.classList.add("tooltipped");
@@ -546,7 +546,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 seasonCount++;
                 episodeCount += recordData.content[t].episodes.length;
                 if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].start)))) <= 14) {
-                    newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img[0], false, ""]);
+                    newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img[0], false, "", true]);
                 }
             }
             tdNameOuterDiv.classList.add("tooltipped");
@@ -874,18 +874,15 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
     ipcRenderer.on("notificationsReady", event => {
         // Read the notifications configuration file.
         const curNotifications = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "config", "notifications.json"), "UTF8"));
+        // Clear any current notifications.
+        document.getElementById("notificationsCollection").innerHTML = "";
         // Iterate through all application notifications.
         for(let k = 0; k < curNotifications.notifications.length; k++) {
             // Display an application notification only if it has not been cleared and snoozed.
             if(curNotifications.notifications[k].hidden == false && (curNotifications.notifications[k].snooze == "" || curTime <= (new Date(curNotifications.notifications[k].snooze)).getTime())) {
-                // Process the corresponding notification date to be displayed.
-                if(curNotifications.notifications[k].date != "") {
-                    let dateArr = curNotifications.notifications[k].date.split("-");
-                    dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
-                }
                 // Create a notification.
                 notificationCreation(ipcRenderer, curNotifications.notifications[k].id, curNotifications.notifications[k].category,
-                    curNotifications.notifications[k].name, curNotifications.notifications[k].text + "<br>To Be Released: " + dateStr, curNotifications.notifications[k].img);
+                    curNotifications.notifications[k].name, curNotifications.notifications[k].text, curNotifications.notifications[k].date, curNotifications.notifications[k].img, curNotifications.notifications[k].snooze);
             }
         }
         // If there are notifications to be displayed then show the notifications modal button, initialize the dropdown menu, and add notification listeners.

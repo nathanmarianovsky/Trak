@@ -494,11 +494,13 @@ Creates a notification listing in the notifications modal.
    - itemId is a string corresponding to the id of a record.
    - itemCategory is a string corresponding to the category of a record.
    - itemTitle is a string corresponding to the name of a record.
+   - itemScenario is a string corresponding to the release type text of a record notification.
    - itemRelease is a string corresponding to the release date text of a record notification.
    - itemImg is a string corresponding to the notification image of a record.
+   - itemRelease is a string corresponding to the snooze date of a record notification.
 
 */
-var notificationCreation = (ipcElec, itemId, itemCategory, itemTitle, itemRelease, itemImg) => {
+var notificationCreation = (ipcElec, itemId, itemCategory, itemTitle, itemScenario, itemRelease, itemImg, itemSnooze) => {
     // Define the portions of the notification listed item.
     const outerLI = document.createElement("li"),
         img = document.createElement("img"),
@@ -510,6 +512,12 @@ var notificationCreation = (ipcElec, itemId, itemCategory, itemTitle, itemReleas
         linkInput = document.createElement("input");
     // Modify the notification components appropriately.
     outerLI.classList.add("collection-item", "avatar");
+    outerLI.setAttribute("notificationId", itemId);
+    outerLI.setAttribute("notificationCategory", itemCategory);
+    outerLI.setAttribute("notificationTitle", itemTitle);
+    outerLI.setAttribute("notificationScenario", itemScenario);
+    outerLI.setAttribute("notificationRelease", itemRelease);
+    outerLI.setAttribute("notificationSnooze", itemSnooze);
     img.setAttribute("src", itemImg);
     img.classList.add("circle");
     imgIcon.classList.add("material-icons", "circle");
@@ -517,10 +525,14 @@ var notificationCreation = (ipcElec, itemId, itemCategory, itemTitle, itemReleas
     span.classList.add("title", "recordsNameRowDiv", "notificationsTitle");
     span.textContent = itemTitle + " (" + itemCategory + ")";
     span.setAttribute("id", itemId);
-    par.innerHTML = itemRelease;
+    // Process the corresponding notification date to be displayed.
+    if(itemRelease != "") {
+        let dateArr = itemRelease.split("-");
+        dateStr = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
+    }
+    par.innerHTML = itemScenario + "<br>To Be Released: " + dateStr;
     link.classList.add("secondary-content", "notificationsCheckDiv");
     linkInput.setAttribute("type", "checkbox");
-    linkInput.setAttribute("id", "notificationCheck_" + itemId);
     linkInput.classList.add("filled-in", "recordsChecks", "notificationCheck");
     linkLabel.append(linkInput);
     // Attach the notification to the notifications modal.

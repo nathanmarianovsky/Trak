@@ -79,11 +79,13 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
         	}
         	else {
         		const currentNotificationsFile = JSON.parse(file),
-        			currentNotifications = currentNotificationsFile.notifications.map(a => ({...a}));
+        			currentNotifications = currentNotificationsFile.notifications.map(a => ({...a})),
+        			removalList = [];
         		for(let u = 0; u < submissionContent.length; u++) {
         			let v = 0;
         			for(; v < currentNotificationsFile.notifications.length; v++) {
         				if(currentNotificationsFile.notifications[v].id == submissionContent[u][0] && currentNotificationsFile.notifications[v].text == submissionContent[u][3]) { break; }
+        				else if(!fs.existsSync(path.join(originalPath, "Trak", "data", currentNotificationsFile.notifications[v].id, "data.json")) || (new Date(currentNotificationsFile.notifications[v].date)).getTime() < (new Date()).getTime()) { removalList.push(v); }
         			}
         			if(v == currentNotificationsFile.notifications.length) {
         				currentNotifications.push({
@@ -100,11 +102,15 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
         			else {
         				currentNotifications[v].date = submissionContent[u][4];
         				currentNotifications[v].img = submissionContent[u][5];
-        				currentNotifications[v].hidden = submissionContent[u][6];
-        				currentNotifications[v].snooze = submissionContent[u][7];
+        				if(submissionContent[u][8] == false) {
+        					currentNotifications[v].hidden = submissionContent[u][6];
+        					currentNotifications[v].snooze = submissionContent[u][7];
+        				}
         			}
         		}
-        		currentNotificationsFile.notifications = currentNotifications.sort((lhs, rhs) => (new Date(lhs.date)).getTime() < (new Date(rhs.date)).getTime());
+        		removalList.forEach(delIndex => currentNotifications.splice(delIndex, 1));
+        		currentNotifications.sort((lhs, rhs) => (new Date(lhs.date)).getTime() - (new Date(rhs.date)).getTime());
+        		currentNotificationsFile.notifications = currentNotifications;
         		fs.writeFile(notificationsPath, JSON.stringify(currentNotificationsFile), "UTF8", er => {
         			if(er) {
         				log.error("There was an issue writing to the notifications configuration file.");

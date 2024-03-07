@@ -104,6 +104,7 @@ window.addEventListener("load", () => {
         searchBar = document.getElementById("searchBar"),
         checkAll = document.getElementById("checkAll"),
         notificationsCheckAll = document.getElementById("notificationsCheckAll"),
+        notificationsClear = document.getElementById("notificationsClear"),
         nameSort = document.getElementById("nameSort"),
         categorySort = document.getElementById("categorySort"),
         ratingSort = document.getElementById("ratingSort"),
@@ -399,12 +400,6 @@ window.addEventListener("load", () => {
         const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
         ipcRenderer.send("removeRecords", checkAll.checked ? list.slice(1) : list);
     });
-    // Listen for a click event on the notifications clear all button in order to remove all active notifications.
-    clearNotifications.addEventListener("click", e => {
-        notificationsCollection.innerHTML = "";
-        notifications.style.display = "none";
-        ipcRenderer.send("notificationsSave", [])
-    });
     // Listen for an input change event on the search bar in order to filter the records table.
     searchBar.addEventListener("input", e => {
         // Define the collection of all record rows and the current string being searched.
@@ -698,17 +693,25 @@ window.addEventListener("load", () => {
     });
     // Listen for a click event on the notifications check all checkbox in order to check or uncheck all notification checkboxes.
     notificationsCheckAll.addEventListener("click", e => {
-        // Define the collection of all notification checkboxes.
-        const notificationsList = Array.from(document.getElementsByClassName("notificationCheck"));
-        // If the notificationsCheckAll is checked then check all notifications.
-        notificationsList.forEach(elem => notificationsCheckAll.checked ? elem.checked = true : elem.checked = false);
-        // if(notificationsCheckAll.checked) {
-        //     notificationsList.forEach(elem => elem.checked = true);
-        // }
-        // // Otherwise, if the notificationsCheckAll is unchecked then uncheck all notifications.
-        // else {
-            
-        // }
+        // If the notificationsCheckAll is checked then check all notifications, otherwise uncheck.
+        Array.from(document.getElementsByClassName("notificationCheck")).forEach(elem => notificationsCheckAll.checked ? elem.checked = true : elem.checked = false);
+    });
+    // Listen for a click event on the notifications clear button in order to clear the selected notifications permanently.
+    notificationsClear.addEventListener("click", e => {
+        ipcRenderer.send("notificationsSave", Array.from(document.getElementsByClassName("notificationCheck")).filter(elem => elem.checked).map(iter => {
+            let infoElem = iter.closest("li");
+            return [
+                infoElem.getAttribute("notificationId") != null ? infoElem.getAttribute("notificationId") : "",
+                infoElem.getAttribute("notificationCategory") != null ? infoElem.getAttribute("notificationCategory") : "",
+                infoElem.getAttribute("notificationTitle") != null ? infoElem.getAttribute("notificationTitle") : "",
+                infoElem.getAttribute("notificationScenario") != null ? infoElem.getAttribute("notificationScenario") : "",
+                infoElem.getAttribute("notificationRelease") != null ? infoElem.getAttribute("notificationRelease") : "",
+                infoElem.children[0].getAttribute("src") != null ? infoElem.children[0].getAttribute("src") : "",
+                true,
+                infoElem.getAttribute("notificationSnooze") != null ? infoElem.getAttribute("notificationSnooze") : "",
+                false
+            ];
+        }));
     });
     // Listen for a click event on the clear filter button in order to remove all active filters.
     clearFilter.addEventListener("click", e => { cleanFilter(); });
