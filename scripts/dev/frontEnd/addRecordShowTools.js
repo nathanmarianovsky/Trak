@@ -90,6 +90,7 @@ var showSave = () => {
                 showCinematographers, showFiles, showDistributors, showProductionCompanies, showStarring, [genresLst, genres, otherGenres], showSynopsis, showRating, showReleaseDate, showRunningTime,
                 [document.getElementById("addRecordShowImg").getAttribute("list") == document.getElementById("addRecordShowImg").getAttribute("previous"), showImg], content, oldTitle];
             ipcRenderer.send("performSave", submissionMaterial);
+            saveAssociations("Show", showName, ipcRenderer);
         }
         // If no name has been provided then notify the user.
         else { M.toast({"html": "A show record requires a name be provided.", "classes": "rounded"}); }

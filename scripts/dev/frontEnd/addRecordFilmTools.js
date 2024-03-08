@@ -59,6 +59,7 @@ var filmSave = () => {
                 filmCinematographers, filmFiles, filmDistributors, filmProductionCompanies, filmStarring, [genresLst, genres, otherGenres], filmSynopsis, filmRating, filmReleaseDate, filmRunningTime,
                 filmLastWatched, [document.getElementById("addRecordFilmImg").getAttribute("list") == document.getElementById("addRecordFilmImg").getAttribute("previous"), filmImg], oldTitle];
             ipcRenderer.send("performSave", submissionMaterial);
+            saveAssociations("Film", filmName, ipcRenderer);
         }
         // If no name has been provided then notify the user.
         else { M.toast({"html": "A film record requires a name be provided.", "classes": "rounded"}); }

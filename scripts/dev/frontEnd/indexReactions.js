@@ -459,12 +459,12 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     seasonCount++;
                     episodeCount += recordData.content[t].episodes.length;
                     if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].start)))) <= 14) {
-                        newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img[0], false, "", true]);
+                        newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                     }
                 }
                 if(recordData.content[t].scenario == "Single") {
                     if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].release)))) <= 14) {
-                        newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].type, recordData.content[t].release, recordData.img[0], false, "", true]);
+                        newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].type, recordData.content[t].release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                     }
                 }
             }
@@ -506,12 +506,12 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         }
         else if(recordData.category == "Book") {
             if(convertToDays(Math.abs(curTime - (new Date(recordData.publicationDate)))) <= 14) {
-                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Book", recordData.publicationDate, recordData.img[0], false, "", true]);
+                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Book", recordData.publicationDate, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
             }
         }
         else if(recordData.category == "Film") {
             if(convertToDays(Math.abs(curTime - (new Date(recordData.release)))) <= 14) {
-                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Film", recordData.release, recordData.img[0], false, "", true]);
+                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Film", recordData.release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
             }
         }
         else if(recordData.category == "Manga" && recordData.content.length > 0) {
@@ -524,7 +524,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     volumeCount++;
                 }
                 if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].release)))) <= 14) {
-                    newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].scenario, recordData.content[t].release, recordData.img[0], false, "", true]);
+                    newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].scenario, recordData.content[t].release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                 }
             }
             tdNameOuterDiv.classList.add("tooltipped");
@@ -546,7 +546,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 seasonCount++;
                 episodeCount += recordData.content[t].episodes.length;
                 if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].start)))) <= 14) {
-                    newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img[0], false, "", true]);
+                    newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                 }
             }
             tdNameOuterDiv.classList.add("tooltipped");

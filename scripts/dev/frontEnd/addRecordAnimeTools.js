@@ -98,6 +98,7 @@ var animeSave = () => {
                 animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres, otherGenres], content, animeSynopsis,
                 [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), animeImg], oldTitle];
             ipcRenderer.send("performSave", submissionMaterial);
+            saveAssociations("Anime", animeName, ipcRenderer);
         }
         // If no name has been provided then notify the user.
         else { M.toast({"html": "An anime record requires that either an English or Japanese name is provided.", "classes": "rounded"}); }

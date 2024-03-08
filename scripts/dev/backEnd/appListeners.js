@@ -133,6 +133,36 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
   			tools.tutorialLoad(fs, path, log, mainWindow, originalPath);
   		});
   	});
+
+  	ipc.on("saveAssociations", (event, submissionArr) => {
+  		const associationsPath = path.join(originalPath, "Trak", "config", "associations.json");
+  		fs.readFile(associationsPath, "UTF8", (err, file) => {
+  			if(err) {
+        		log.error("There was an issue reading the associations configuration file.");
+        		event.sender.send("associationsFileReadFailure");
+        	}
+        	else {
+        		const associationsFileList = JSON.parse(file).associations;
+    			let focusItem = submissionArr[0] + "-" + tools.formatFolderName(submissionArr[1]),
+        			w = 0;
+        		for(; w < associationsFileList.length; w++) {
+        			if(associationsFileList[w].includes(focusItem)) {
+        				associationsFileList[w] = [focusItem].concat(submissionArr[2]).sort((a, b) => a.split("-").slice(1).join("-").localeCompare(b.split("-").slice(1).join("-")));
+        				break;
+        			}
+        		}
+        		if(w == associationsFileList.length) {
+        			associationsFileList.push([focusItem].concat(submissionArr[2]).sort((a, b) => a.split("-").slice(1).join("-").localeCompare(b.split("-").slice(1).join("-"))))
+        		}
+        		fs.writeFile(associationsPath, JSON.stringify({"associations": associationsFileList}), "UTF8", er => {
+        			if(er) {
+        				log.error("There was an issue writing to the associations configuration file.");
+        				event.sender.send("associationsFileWriteFailure");
+        			}
+        		});
+        	}
+  		});
+  	});
 };
 
 

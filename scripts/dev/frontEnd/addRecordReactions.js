@@ -36,6 +36,20 @@ else {
 
 
 
+// Display a notification if there was an error opening the associations configuration file.
+ipcRenderer.on("notificationsFileReadFailure", event => {
+    M.toast({"html": "There was an error in reading the associations configuration file.", "classes": "rounded"});
+});
+
+
+
+// Display a notification if there was an error writing to the associations configuration file.
+ipcRenderer.on("notificationsFileWriteFailure", event => {
+    M.toast({"html": "There was an error in writing the associations configuration file.", "classes": "rounded"});
+});
+
+
+
 // Display a notification whenever a record already exists with a provided name.
 ipcRenderer.on("recordExists", (event, response) => {
     M.toast({"html": "A record for the " + toastParse(response) + " already exists! You can remove or update this record on a separate page.", "classes": "rounded"});
@@ -735,15 +749,19 @@ window.addEventListener("load", () => {
         initSynopsisObserver(document.getElementById(category.toLowerCase() + "Synopsis"));
     });
     const dataDir = path.join(localPath, "Trak", "data"),
-        dataList = fs.readdirSync(dataDir).filter(file => fs.statSync(path.join(dataDir, file)).isDirectory());
-    const associationsAutocomplete = M.Autocomplete.init(document.getElementById("associationsAutocomplete"), {
+        dataList = fs.readdirSync(dataDir).filter(file => fs.statSync(path.join(dataDir, file)).isDirectory()),
+        autocompleteInput = document.getElementById("associationsAutocomplete");
+    const associationsAutocomplete = M.Autocomplete.init(autocompleteInput, {
         "sortFunction": (a, b) => a.localeCompare(b),
         "data": {},
         "onAutocomplete": txt => {
             for(let n = 0; n < dataList.length; n++) {
                 let selectedData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", dataList[n], "data.json"), "UTF8"));
                 if(txt == selectedData.name + " (" + selectedData.category + ")") {
-                    associationCreation(dataList[n], selectedData.category, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "")
+                    associationCreation(dataList[n], selectedData.category, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "");
+                    autocompleteInput.value = "";
+                    autocompleteInput.nextElementSibling.nextElementSibling.classList.remove("active");
+                    associationsListeners(ipcRenderer);
                 }
             }
         }

@@ -682,7 +682,7 @@ Adds the listeners associated to an association listing.
    - ipcElec provides the means to operate the Electron app.
 
 */
-var associationsRemovalListeners = ipcElec => {
+var associationsListeners = ipcElec => {
     // Listen for a click on the name of an association in order to open the update page.
     Array.from(document.getElementsByClassName("associationTitle")).forEach(itemLink => {
         itemLink.addEventListener("click", e => {
@@ -696,4 +696,10 @@ var associationsRemovalListeners = ipcElec => {
             e.target.closest("li").remove();
         });
     });
+};
+
+
+
+var saveAssociations = (curCategory, curName, ipcElec) => {
+    ipcElec.send("saveAssociations", [curCategory, curName, Array.from(document.getElementById("associationsCollection").children).map(association => association.getAttribute("associationId"))]);
 };
