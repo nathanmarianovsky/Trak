@@ -701,5 +701,5 @@ var associationsListeners = ipcElec => {
 
 
 var saveAssociations = (curCategory, curName, ipcElec) => {
-    ipcElec.send("saveAssociations", [curCategory, curName, Array.from(document.getElementById("associationsCollection").children).map(association => association.getAttribute("associationId"))]);
+    ipcElec.send("associationsSave", [curCategory, curName, Array.from(document.getElementById("associationsCollection").children).map(association => association.getAttribute("associationId"))]);
 };

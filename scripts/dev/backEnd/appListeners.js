@@ -134,7 +134,7 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
   		});
   	});
 
-  	ipc.on("saveAssociations", (event, submissionArr) => {
+  	ipc.on("associationsSave", (event, submissionArr) => {
   		const associationsPath = path.join(originalPath, "Trak", "config", "associations.json");
   		fs.readFile(associationsPath, "UTF8", (err, file) => {
   			if(err) {
@@ -212,6 +212,30 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
   	// Handles the deletion of multiple records.
   	ipc.on("removeRecords", (event, list) => {
   		tools.removeRecords(log, BrowserWindow.getFocusedWindow(), dataPath, fs, path, list);
+  		const associationsPath = path.join(originalPath, "Trak", "config", "associations.json");
+  		fs.readFile(associationsPath, "UTF8", (err, file) => {
+  			if(err) {
+        		log.error("There was an issue reading the associations configuration file.");
+        		event.sender.send("associationsFileReadFailure");
+        	}
+        	else {
+	  			let associationsLst = JSON.parse(file).associations;
+	  			for(let u = 0; u < list.length; u++) {
+	  				for(let v = 0; v < associationsLst.length; v++) {
+	  					if(associationsLst[v].includes(list[u])) {
+	  						associationsLst[v].splice(associationsLst[v].indexOf(list[u]), 1);
+	  						break;
+	  					}
+	  				}
+	  			}
+	  			fs.writeFile(associationsPath, JSON.stringify({"associations": associationsLst}), "UTF8", er => {
+        			if(er) {
+        				log.error("There was an issue writing to the associations configuration file.");
+        				event.sender.send("associationsFileWriteFailure");
+        			}
+        		});
+        	}
+  		});
   	});
 
   	// Handles the opening of a record's assets folder.

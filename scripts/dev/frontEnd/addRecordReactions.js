@@ -711,6 +711,26 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     updateShowPreloader.style.visibility = "hidden";
                 }, 500);
             }
+            fs.readFile(path.join(localPath, "Trak", "config", "associations.json"), (er, associationsFile) => {
+                if(er) {
+                    M.toast({"html": "There was an error in reading the associations configuration file.", "classes": "rounded"});
+                }
+                else {
+                    const associationsFileList = JSON.parse(associationsFile).associations;
+                    for(let t = 0; t < associationsFileList.length; t++) {
+                        if(associationsFileList[t].includes(name)) {
+                            for(let y = 0; y < associationsFileList[t].length; y++) {
+                                if(associationsFileList[t][y] != name) {
+                                    let assocItem = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", associationsFileList[t][y], "data.json"), "UTF8"));
+                                    associationCreation(associationsFileList[t][y], assocItem.category, assocItem.name, assocItem.img.length > 0 ? assocItem.img[0] : "");
+                                }
+                            }
+                            associationsListeners(ipcRenderer);
+                            break;
+                        }
+                    }
+                }
+            });
         }
         // Hide the addRecord preloader once the file data has been added.
         updateRecordPreloader.style.display = "none";
