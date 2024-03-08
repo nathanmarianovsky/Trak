@@ -52,6 +52,7 @@ textarea.materialize-textarea.valid {
 #filmNameSearchInnerDiv1 .input-field .prefix.active,
 #mangaNameSearchInnerDiv1 .input-field .prefix.active,
 #showNameSearchInnerDiv1 .input-field .prefix.active,
+#associationsModal .input-field .prefix.active,
 input[type="text"]:not(.browser-default):focus:not([readonly])+label,
 input[type="date"]:not(.browser-default):focus:not([readonly])+label,
 textarea.materialize-textarea:focus:not([readonly])+label,
@@ -828,16 +829,20 @@ footer {
     text-align: center;
 }
 
-#animeSave, #mangaSave, #showSave {
-	position: fixed;
-	right: 23px;
-	bottom: 92px;
+#associationsModalPar {
+	margin-left: 14px;
 }
 
-#bookSave, #filmSave {
-	position: fixed;
+#associationsCollection {
+	position: relative;
+    left: 14px;
+    width: calc(100% - 24px);
+}
+
+.addRecordSave {
+	position: fixed !important;
 	right: 23px;
-	bottom: 23px;
+	bottom: 92px;
 }
 
 .categoryDiv .row {

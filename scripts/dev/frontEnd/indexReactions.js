@@ -638,7 +638,6 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         else if(recordData.category == "Manga") {
             let displayRating = "N/A",
                 displayRatingArr = [[],[]];
-                // ratingArr = [];
             for(let a = 0; a < recordData.content.length; a++) {
                 if(recordData.content[a].rating != "") {
                     if(recordData.content[a].scenario == "Chapter") {
@@ -881,7 +880,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             // Display an application notification only if it has not been cleared and snoozed.
             if(curNotifications.notifications[k].hidden == false && (curNotifications.notifications[k].snooze == "" || curTime >= (new Date(curNotifications.notifications[k].snooze)).getTime())) {
                 // Create a notification.
-                notificationCreation(ipcRenderer, curNotifications.notifications[k].id, curNotifications.notifications[k].category,
+                notificationCreation(curNotifications.notifications[k].id, curNotifications.notifications[k].category,
                     curNotifications.notifications[k].name, curNotifications.notifications[k].text, curNotifications.notifications[k].date, curNotifications.notifications[k].img, curNotifications.notifications[k].snooze);
             }
         }
@@ -889,7 +888,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         if(notificationsArr.children.length > 0) {
             document.getElementById("notifications").style.display = "inline-block";
             initDropdown();
-            notificationsRemovalListeners(ipcRenderer);
+            notificationsListeners(ipcRenderer);
         }
     });
     // Initialize the tooltips.
@@ -927,7 +926,6 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     for(let y = 0; y < genreCheck.length; y++) {
                         if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
                     }
-                    // genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
                     if(genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category"))) {
                         pageTable[x].style.display = "table-row";
                         pageTable[x].setAttribute("genreFiltered", "1");
@@ -939,7 +937,6 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 }
                 // Filter based only on categories.
                 else if(catCheck.length > 0 && genreCheck.length == 0) {
-                    // catCheck.includes(pageTable[x].getAttribute("category")) ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
                     if(catCheck.includes(pageTable[x].getAttribute("category"))) {
                         pageTable[x].style.display = "table-row";
                         pageTable[x].setAttribute("genreFiltered", "1");
@@ -956,7 +953,6 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     for(let y = 0; y < genreCheck.length; y++) {
                         if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
                     }
-                    // genreOverall == true ? pageTable[x].style.display = "table-row" : pageTable[x].style.display = "none";
                     if(genreOverall == true) {
                         pageTable[x].style.display = "table-row"
                         pageTable[x].setAttribute("genreFiltered", "1");

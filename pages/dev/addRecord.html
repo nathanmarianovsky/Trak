@@ -198,7 +198,7 @@
             <div class="row addRecordDiv">
                 <form id="categoryAnimeForm2" class="col s12 categoryBottomForm"></form>
             </div>
-            <a id="animeSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
+            <a id="animeSave" class="btn-floating btn-large waves-effect waves-light tooltipped addRecordSave" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
             <div id="introductionTargetAnimeSave" class="tap-target" data-target="animeSave">
                 <div class="tap-target-content">
                     <p>Use this button to save the anime record.</p>
@@ -212,6 +212,7 @@
                     </div>
                 </div>
                 <ul>
+                    <li><a id="animeAssociations" href="#associationsModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Associations"><i class="material-icons">local_library</i></a></li>
                     <li><a id="animeSeasons" href="#animeModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
                 </ul>
             </div>
@@ -361,10 +362,18 @@
             <div class="row addRecordDiv">
                 <form id="categoryBookForm2" class="col s12 categoryBottomForm"></form>
             </div>
-            <a id="bookSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
+            <a id="bookSave" class="btn-floating btn-large waves-effect waves-light tooltipped addRecordSave" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
             <div id="introductionTargetBookSave" class="tap-target" data-target="bookSave">
                 <div class="tap-target-content">
                     <p>Use this button to save the book record.</p>
+                </div>
+            </div>
+            <div class="fixed-action-btn">
+                <a id="bookAssociations" href="#associationsModal" class="btn-floating btn-large waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Associations"><i class="large material-icons">local_library</i></a>
+                <div id="introductionTargetBookAssociations" class="tap-target" data-target="bookAssociations">
+                    <div class="tap-target-content">
+                        <p>Connect records of distinct category type.</p>
+                    </div>
                 </div>
             </div>
             <div id="originalTitleModal" class="modal infoModal">
@@ -542,10 +551,18 @@
             <div class="row addRecordDiv">
                 <form id="categoryFilmForm2" class="col s12 categoryBottomForm"></form>
             </div>
-            <a id="filmSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
+            <a id="filmSave" class="btn-floating btn-large waves-effect waves-light tooltipped addRecordSave" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
             <div id="introductionTargetFilmSave" class="tap-target" data-target="filmSave">
                 <div class="tap-target-content">
                     <p>Use this button to save the film record.</p>
+                </div>
+            </div>
+            <div class="fixed-action-btn">
+                <a id="filmAssociations" href="#associationsModal" class="btn-floating btn-large waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Associations"><i class="large material-icons">local_library</i></a>
+                <div id="introductionTargetFilmAssociations" class="tap-target" data-target="filmAssociations">
+                    <div class="tap-target-content">
+                        <p>Connect records of distinct category type.</p>
+                    </div>
                 </div>
             </div>
             <div id="filmAlternateNameModal" class="modal infoModal">
@@ -705,7 +722,7 @@
             <div class="row addRecordDiv">
                 <form id="categoryMangaForm2" class="col s12 categoryBottomForm"></form>
             </div>
-            <a id="mangaSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
+            <a id="mangaSave" class="btn-floating btn-large waves-effect waves-light tooltipped addRecordSave" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
             <div id="introductionTargetMangaSave" class="tap-target" data-target="mangaSave">
                 <div class="tap-target-content">
                     <p>Use this button to save the manga record.</p>
@@ -719,6 +736,7 @@
                     </div>
                 </div>
                 <ul>
+                    <li><a id="mangaAssociations" href="#associationsModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Associations"><i class="material-icons">local_library</i></a></li>
                     <li><a id="mangaContent" href="#mangaModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
                 </ul>
             </div>
@@ -917,7 +935,7 @@
             <div class="row addRecordDiv">
                 <form id="categoryShowForm2" class="col s12 categoryBottomForm"></form>
             </div>
-            <a id="showSave" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
+            <a id="showSave" class="btn-floating btn-large waves-effect waves-light tooltipped addRecordSave" data-position="left" data-tooltip="Save"><i class="material-icons">save</i></a>
             <div id="introductionTargetShowSave" class="tap-target" data-target="showSave">
                 <div class="tap-target-content">
                     <p>Use this button to save the show record.</p>
@@ -931,6 +949,7 @@
                     </div>
                 </div>
                 <ul>
+                    <li><a id="showAssociations" href="#associationsModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Associations"><i class="material-icons">local_library</i></a></li>
                     <li><a id="showSeasons" href="#showModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
                 </ul>
             </div>
@@ -1008,6 +1027,28 @@
                 </form>
             </div>
             <div class="modal-footer">
+                <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+            </div>
+        </div>
+        <div id="associationsModal" class="modal contentModal modal-fixed-footer">
+            <div class="modal-content">
+                <h4 class="center">Associations</h4>
+                <p id="associationsModalPar">Create a list of library records associated to the current one.</p>
+                <div class="row">
+                    <div class="col s12">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">search</i>
+                                <input type="text" id="associationsAutocomplete" class="autocomplete">
+                                <label for="associationsAutocomplete">Use this search bar to find the desired records:</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ul id="associationsCollection" class="collection"></ul>
+            </div>
+            <div class="modal-footer">
+                <!-- <a id="addAssociations" class="waves-effect waves-light btn-flat left modalButtons"><i class="material-icons">add</i></a> -->
                 <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
             </div>
         </div>

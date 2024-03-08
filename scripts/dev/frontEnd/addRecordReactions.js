@@ -734,4 +734,24 @@ window.addEventListener("load", () => {
         // Initialize the observer for the synopsis.
         initSynopsisObserver(document.getElementById(category.toLowerCase() + "Synopsis"));
     });
+    const dataDir = path.join(localPath, "Trak", "data"),
+        dataList = fs.readdirSync(dataDir).filter(file => fs.statSync(path.join(dataDir, file)).isDirectory());
+    const associationsAutocomplete = M.Autocomplete.init(document.getElementById("associationsAutocomplete"), {
+        "sortFunction": (a, b) => a.localeCompare(b),
+        "data": {},
+        "onAutocomplete": txt => {
+            for(let n = 0; n < dataList.length; n++) {
+                let selectedData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", dataList[n], "data.json"), "UTF8"));
+                if(txt == selectedData.name + " (" + selectedData.category + ")") {
+                    associationCreation(dataList[n], selectedData.category, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "")
+                }
+            }
+        }
+    });
+    let associationsDataObj = {};
+    for(let m = 0; m < dataList.length; m++) {
+        let curData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", dataList[m], "data.json"), "UTF8"));
+        associationsDataObj[curData.name + " (" + curData.category + ")"] = (curData.img.length > 0 ? curData.img[0] : "");
+    }
+    associationsAutocomplete.updateData(associationsDataObj);
 });

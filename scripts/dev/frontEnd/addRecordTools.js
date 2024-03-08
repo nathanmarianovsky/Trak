@@ -629,3 +629,71 @@ var relatedContentListeners = item => {
     item.addEventListener("change", listenerFunc);
     item.addEventListener("click", listenerFunc);
 };
+
+
+
+/*
+
+Creates an association listing in the notifications modal.
+
+   - itemId is a string corresponding to the id of a record.
+   - itemCategory is a string corresponding to the category of a record.
+   - itemTitle is a string corresponding to the name of a record.
+   - itemImg is a string corresponding to the image of a record.
+
+*/
+var associationCreation = (itemId, itemCategory, itemTitle, itemImg) => {
+    // Define the portions of the association listed item.
+    const outerLI = document.createElement("li"),
+        img = document.createElement("img"),
+        imgIcon = document.createElement("i"),
+        span = document.createElement("span"),
+        par = document.createElement("p"),
+        link = document.createElement("a"),
+        linkIcon = document.createElement("i");
+    // Modify the notification components appropriately.
+    outerLI.classList.add("collection-item", "avatar");
+    outerLI.setAttribute("associationId", itemId);
+    outerLI.setAttribute("associationCategory", itemCategory);
+    outerLI.setAttribute("associationTitle", itemTitle);
+    img.setAttribute("src", itemImg);
+    img.classList.add("circle");
+    imgIcon.classList.add("material-icons", "circle");
+    imgIcon.textContent = "bookmark";
+    span.classList.add("title", "recordsNameRowDiv", "associationTitle");
+    span.textContent = itemTitle;
+    span.setAttribute("id", itemId);
+    par.innerHTML = itemCategory;
+    link.classList.add("secondary-content");
+    linkIcon.classList.add("material-icons", "associationDelete");
+    linkIcon.textContent = "close";
+    link.append(linkIcon);
+    // Attach the association to the associations modal.
+    outerLI.append(itemImg != "" ? img : imgIcon, span, par, link);
+    document.getElementById("associationsCollection").append(outerLI);
+};
+
+
+
+/*
+
+Adds the listeners associated to an association listing.
+
+   - ipcElec provides the means to operate the Electron app.
+
+*/
+var associationsRemovalListeners = ipcElec => {
+    // Listen for a click on the name of an association in order to open the update page.
+    Array.from(document.getElementsByClassName("associationTitle")).forEach(itemLink => {
+        itemLink.addEventListener("click", e => {
+            e.preventDefault();
+            ipcElec.send("updateRecord", e.target.id);
+        });
+    });
+    // Listen for a click on the delete icon of an association in order to remove the association.
+    Array.from(document.getElementsByClassName("associationDelete")).forEach(itemLink => {
+        itemLink.addEventListener("click", e => {
+            e.target.closest("li").remove();
+        });
+    });
+};

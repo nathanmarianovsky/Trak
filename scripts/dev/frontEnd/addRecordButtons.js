@@ -283,13 +283,17 @@ var recordChoicesButtons = () => {
             bookSave.style.visibility = "visible";
             initSelect();
         });
-        // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         if(introBookHolder == true) {
-            const instancesTapBookSave = M.TapTarget.init(document.getElementById("introductionTargetBookSave"));
-            setTimeout(() => {
-                instancesTapBookSave.open();
-                introBookHolder = false;
-            }, 500);
+            const instancesTapBookSave = M.TapTarget.init(document.getElementById("introductionTargetBookSave"), { "onClose": () => {
+                setTimeout(() => {
+                    const instancesTapBookAssociations = M.TapTarget.init(document.getElementById("introductionTargetBookAssociations"));
+                    setTimeout(() => {
+                        instancesTapBookAssociations.open();
+                        introBookHolder = false;
+                    }, 500);
+                }, 500);
+            }});
+            setTimeout(() => { instancesTapBookSave.open(); }, 500);
         }
     });
     // Listen for a click event on the categoryFilm button on the top bar to display the form corresponding to a film record.
@@ -369,11 +373,16 @@ var recordChoicesButtons = () => {
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         if(introFilmHolder == true) {
-            const instancesTapFilmSave = M.TapTarget.init(document.getElementById("introductionTargetFilmSave"));
-            setTimeout(() => {
-                instancesTapFilmSave.open();
-                introFilmHolder = false;
-            }, 500);
+            const instancesTapFilmSave = M.TapTarget.init(document.getElementById("introductionTargetFilmSave"), { "onClose": () => {
+                setTimeout(() => {
+                    const instancesTapFilmAssociations = M.TapTarget.init(document.getElementById("introductionTargetFilmAssociations"));
+                    setTimeout(() => {
+                        instancesTapFilmAssociations.open();
+                        introFilmHolder = false;
+                    }, 500);
+                }, 500);
+            }});
+            setTimeout(() => { instancesTapFilmSave.open(); }, 500);
         }
     });
     // Listen for a click event on the categoryManga button on the top bar to display the form corresponding to a manga record.
@@ -617,11 +626,16 @@ var recordChoicesButtons = () => {
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         if(introShowHolder == true) {
-            const instancesTapShowSave = M.TapTarget.init(document.getElementById("introductionTargetShowSave"));
-            setTimeout(() => {
-                instancesTapShowSave.open();
-                introShowHolder = false;
-            }, 500);
+            const instancesTapShowSave = M.TapTarget.init(document.getElementById("introductionTargetShowSave"), { "onClose": () => {
+                setTimeout(() => {
+                    const instancesTapShowOptions = M.TapTarget.init(document.getElementById("introductionTargetShowOptions"));
+                    setTimeout(() => {
+                        instancesTapShowOptions.open();
+                        introShowHolder = false;
+                    }, 500);
+                }, 500);
+            }});
+            setTimeout(() => { instancesTapShowSave.open(); }, 500);
         }
     });
 };

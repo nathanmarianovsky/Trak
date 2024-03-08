@@ -72,13 +72,14 @@ app.whenReady().then(() => {
 		"showSearchWithGoogle": true,
 		"showSelectAll": true
 	});
-	// Delete the notifications file if it exists.
+	// Create the notifications file if it does not exist.
 	if(!fs.existsSync(path.join(basePath, "Trak", "config", "notifications.json"))) {
 		fs.writeFileSync(path.join(basePath, "Trak", "config", "notifications.json"), JSON.stringify({"interval": 14, "notifications": []}), "UTF8");
 	}
-	// if(!fs.existsSync(path.join(basePath, "Trak", "data", "associations.json"))) {
-
-	// }
+	// Create the associations file if it does not exist.
+	if(!fs.existsSync(path.join(basePath, "Trak", "config", "associations.json"))) {
+		fs.writeFileSync(path.join(basePath, "Trak", "config", "associations.json"), JSON.stringify({"associations": []}), "UTF8");
+	}
 	// Create the configuration file if it does not exist.
 	if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
 		log.info("Creating the default configuration file. To be located at " + path.join(basePath, "Trak", "config", "configuration.json"));

@@ -24,7 +24,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - genreListLoad: Appends all genre options as checkboxes.
     - fadeOut: Fades out an element on a page.
     - notificationCreation: Creates a notification listing in the notifications modal.
-    - notificationsRemovalListeners: Adds the listeners associated to a record notification listing.
+    - notificationsListeners: Adds the listeners associated to a record notification listing.
     - convertToDays: Converts a length of time in milliseconds to days.
 
 */
@@ -490,17 +490,16 @@ var fadeOut = (el, diff) => {
 
 Creates a notification listing in the notifications modal.
 
-   - ipcElec provides the means to operate the Electron app.
    - itemId is a string corresponding to the id of a record.
    - itemCategory is a string corresponding to the category of a record.
    - itemTitle is a string corresponding to the name of a record.
    - itemScenario is a string corresponding to the release type text of a record notification.
    - itemRelease is a string corresponding to the release date text of a record notification.
    - itemImg is a string corresponding to the notification image of a record.
-   - itemRelease is a string corresponding to the snooze date of a record notification.
+   - itemSnooze is a string corresponding to the snooze date of a record notification.
 
 */
-var notificationCreation = (ipcElec, itemId, itemCategory, itemTitle, itemScenario, itemRelease, itemImg, itemSnooze) => {
+var notificationCreation = (itemId, itemCategory, itemTitle, itemScenario, itemRelease, itemImg, itemSnooze) => {
     // Define the portions of the notification listed item.
     const outerLI = document.createElement("li"),
         img = document.createElement("img"),
@@ -550,7 +549,7 @@ Adds the listeners associated to a record notification listing.
    - ipcElec provides the means to operate the Electron app.
 
 */
-var notificationsRemovalListeners = ipcElec => {
+var notificationsListeners = ipcElec => {
     const checkArr = Array.from(document.getElementsByClassName("notificationCheck")),
         globalCheck = document.getElementById("notificationsCheckAll");
     checkArr.forEach(itemCheck => {

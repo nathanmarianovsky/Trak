@@ -70,7 +70,6 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
 
   	// Handle the writing of the notifications file.
     ipc.on("notificationsSave", (event, submissionContent) => {
-    	// fs.writeFileSync(path.join(originalPath, "Trak", "config", "notifications.json"), JSON.stringify(submissionContent), "UTF8");
     	const notificationsPath = path.join(originalPath, "Trak", "config", "notifications.json");
     	fs.readFile(notificationsPath, "UTF8", (err, file) => {
     		if(err) {
@@ -84,8 +83,10 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
         		for(let u = 0; u < submissionContent.length; u++) {
         			let v = 0;
         			for(; v < currentNotificationsFile.notifications.length; v++) {
-        				if(currentNotificationsFile.notifications[v].id == submissionContent[u][0] && currentNotificationsFile.notifications[v].text == submissionContent[u][3]) { break; }
-        				else if(!fs.existsSync(path.join(originalPath, "Trak", "data", currentNotificationsFile.notifications[v].id, "data.json")) || (new Date(currentNotificationsFile.notifications[v].date)).getTime() < (new Date()).getTime()) { removalList.push(v); }
+        				if(currentNotificationsFile.notifications[v].id == submissionContent[u][0]
+        					&& currentNotificationsFile.notifications[v].text == submissionContent[u][3]) { break; }
+        				else if(!fs.existsSync(path.join(originalPath, "Trak", "data", currentNotificationsFile.notifications[v].id, "data.json"))
+        					|| (new Date(currentNotificationsFile.notifications[v].date)).getTime() < (new Date()).getTime()) { removalList.push(v); }
         			}
         			if(v == currentNotificationsFile.notifications.length) {
         				currentNotifications.push({
