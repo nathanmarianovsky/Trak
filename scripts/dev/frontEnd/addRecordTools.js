@@ -644,33 +644,36 @@ Creates an association listing in the notifications modal.
 */
 var associationCreation = (itemId, itemCategory, itemTitle, itemImg) => {
     // Define the portions of the association listed item.
-    const outerLI = document.createElement("li"),
-        img = document.createElement("img"),
-        imgIcon = document.createElement("i"),
-        span = document.createElement("span"),
-        par = document.createElement("p"),
-        link = document.createElement("a"),
-        linkIcon = document.createElement("i");
-    // Modify the notification components appropriately.
-    outerLI.classList.add("collection-item", "avatar");
-    outerLI.setAttribute("associationId", itemId);
-    outerLI.setAttribute("associationCategory", itemCategory);
-    outerLI.setAttribute("associationTitle", itemTitle);
-    img.setAttribute("src", itemImg);
-    img.classList.add("circle");
-    imgIcon.classList.add("material-icons", "circle");
-    imgIcon.textContent = "bookmark";
-    span.classList.add("title", "recordsNameRowDiv", "associationTitle");
-    span.textContent = itemTitle;
-    span.setAttribute("id", itemId);
-    par.innerHTML = itemCategory;
-    link.classList.add("secondary-content");
-    linkIcon.classList.add("material-icons", "associationDelete");
-    linkIcon.textContent = "close";
-    link.append(linkIcon);
-    // Attach the association to the associations modal.
-    outerLI.append(itemImg != "" ? img : imgIcon, span, par, link);
-    document.getElementById("associationsCollection").append(outerLI);
+    const associationsCollection = document.getElementById("associationsCollection");
+    if(!Array.from(associationsCollection.children).map(elem => elem.getAttribute("associationId")).includes(itemId)) {
+        const outerLI = document.createElement("li"),
+            img = document.createElement("img"),
+            imgIcon = document.createElement("i"),
+            span = document.createElement("span"),
+            par = document.createElement("p"),
+            link = document.createElement("a"),
+            linkIcon = document.createElement("i");
+        // Modify the notification components appropriately.
+        outerLI.classList.add("collection-item", "avatar");
+        outerLI.setAttribute("associationId", itemId);
+        outerLI.setAttribute("associationCategory", itemCategory);
+        outerLI.setAttribute("associationTitle", itemTitle);
+        img.setAttribute("src", itemImg);
+        img.classList.add("circle");
+        imgIcon.classList.add("material-icons", "circle");
+        imgIcon.textContent = "bookmark";
+        span.classList.add("title", "recordsNameRowDiv", "associationTitle");
+        span.textContent = itemTitle;
+        span.setAttribute("id", itemId);
+        par.innerHTML = itemCategory;
+        link.classList.add("secondary-content");
+        linkIcon.classList.add("material-icons", "associationDelete");
+        linkIcon.textContent = "close";
+        link.append(linkIcon);
+        // Attach the association to the associations modal.
+        outerLI.append(itemImg != "" ? img : imgIcon, span, par, link);
+        associationsCollection.append(outerLI);
+    }
 };
 
 

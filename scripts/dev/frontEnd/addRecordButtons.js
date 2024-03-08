@@ -23,7 +23,8 @@ var recordChoicesButtons = () => {
         categoryBook = document.getElementById("categoryBook"),
         categoryFilm = document.getElementById("categoryFilm"),
         categoryManga = document.getElementById("categoryManga"),
-        categoryShow = document.getElementById("categoryShow");
+        categoryShow = document.getElementById("categoryShow"),
+        clearAssociations = document.getElementById("clearAssociations");
     // Define the relevant portions of the page that are in the rotation of record forms.
     const directionsTitle = document.getElementById("directionsTitle"),
         directionsText = document.getElementById("directionsText"),
@@ -50,9 +51,15 @@ var recordChoicesButtons = () => {
         introMangaHolder = true;
         introShowHolder = true;
     });
+    // Listen for a click event on the clear all associations button to remove all associations.
+    clearAssociations.addEventListener("click", e => {
+        document.getElementById("associationsCollection").innerHTML = "";
+    });
     // Listen for a click event on the categoryAnime button on the top bar to display the form corresponding to an anime record.
     categoryAnime.addEventListener("click", e => {
         e.preventDefault();
+        // Reset the associations.
+        clearAssociations.click();
         // Reset the top nav accordingly.
         navReset(categoryInitial, categoryDivs, categoryLinks, categoryAnimeDiv, categoryAnime);
         // Display the correct input associated to the anime other genres/tags.
@@ -201,6 +208,8 @@ var recordChoicesButtons = () => {
     // Listen for a click event on the categoryBook button on the top bar to display the form corresponding to a book record.
     categoryBook.addEventListener("click", e => {
         e.preventDefault();
+        // Reset the associations.
+        clearAssociations.click();
         // Reset the top nav accordingly.
         navReset(categoryInitial, categoryDivs, categoryLinks, categoryBookDiv, categoryBook);
         // Display the correct input associated to the book other genres/tags.
@@ -299,6 +308,8 @@ var recordChoicesButtons = () => {
     // Listen for a click event on the categoryFilm button on the top bar to display the form corresponding to a film record.
     categoryFilm.addEventListener("click", e => {
         e.preventDefault();
+        // Reset the associations.
+        clearAssociations.click();
         // Reset the top nav accordingly.
         navReset(categoryInitial, categoryDivs, categoryLinks, categoryFilmDiv, categoryFilm);
         // Display the correct input associated to the film other genres/tags.
@@ -388,6 +399,8 @@ var recordChoicesButtons = () => {
     // Listen for a click event on the categoryManga button on the top bar to display the form corresponding to a manga record.
     categoryManga.addEventListener("click", e => {
         e.preventDefault();
+        // Reset the associations.
+        clearAssociations.click();
         // Reset the top nav accordingly.
         navReset(categoryInitial, categoryDivs, categoryLinks, categoryMangaDiv, categoryManga);
         // Display the correct input associated to the manga other genres/tags.
@@ -550,6 +563,8 @@ var recordChoicesButtons = () => {
     // Listen for a click event on the categoryShow button on the top bar to display the form corresponding to a show record.
     categoryShow.addEventListener("click", e => {
         e.preventDefault();
+        // Reset the associations.
+        clearAssociations.click();
         // Reset the top nav accordingly.
         navReset(categoryInitial, categoryDivs, categoryLinks, categoryShowDiv, categoryShow);
         // Display the correct input associated to the show other genres/tags.

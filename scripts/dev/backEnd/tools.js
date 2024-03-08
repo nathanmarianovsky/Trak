@@ -66,7 +66,6 @@ Downloads images associated to a record and returns an array to their location.
 */
 exports.objCreationImgs = (path, fs, https, tools, dir, recordDir, providedImgs) => {
 	let imgArr = [];
-	console.log(providedImgs);
 	if(providedImgs[0] == false && providedImgs[1][0] != "") {
 		for(let y = 0; y < providedImgs[1].length; y++) {
 			if(tools.isURL(providedImgs[1][y])) {
