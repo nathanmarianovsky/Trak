@@ -121,7 +121,7 @@ exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, 
 	else if(info[0] == "Film" || info[0] == "Show") {
 		fldr = info[0] + "-" + exports.formatFolderName(info[1]);
 	}
-	if(mode == "U") { writeData.img = writeData.img.map(file => path.join(savePath, "Trak", "data", fldr, "assets", path.basename(file))); }
+	if(mode == "U" && writeData.img[0] != "") { writeData.img = writeData.img.map(file => path.join(savePath, "Trak", "data", fldr, "assets", path.basename(file))); }
 	fs.writeFile(path.join(savePath, "Trak", "data", fldr, "data.json"), JSON.stringify(writeData), "UTF8", err => {
 		// If there was an error in writing to the data file, then notify the user.
 		if(err) {

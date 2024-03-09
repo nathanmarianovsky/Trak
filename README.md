@@ -13,8 +13,6 @@ This application was motivated by the simple thought that there is no such dedic
 The following is a list of features that are in the plans for future releases prior to a full release:
 * Application Logo.
 * Create application splash screen.
-* Addition/Removal/Update of Record Associations.
-	* A record association is meant to link two or more items across multiple categories. In example, an anime can typically be associated to light novels and manga.
 
 
 ## Application Files

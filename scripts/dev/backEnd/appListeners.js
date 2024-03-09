@@ -146,7 +146,7 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
     			let focusItem = submissionArr[0] + "-" + tools.formatFolderName(submissionArr[1]),
         			w = 0;
         		for(; w < associationsFileList.length; w++) {
-        			if(associationsFileList[w].includes(focusItem)) {
+        			if(associationsFileList[w].includes(focusItem) || associationsFileList[w].some(r => submissionArr[2].includes(r))) {
         				associationsFileList[w] = [focusItem].concat(submissionArr[2]).sort((a, b) => a.split("-").slice(1).join("-").localeCompare(b.split("-").slice(1).join("-")));
         				break;
         			}
