@@ -768,28 +768,6 @@ window.addEventListener("load", () => {
         // Initialize the observer for the synopsis.
         initSynopsisObserver(document.getElementById(category.toLowerCase() + "Synopsis"));
     });
-    const dataDir = path.join(localPath, "Trak", "data"),
-        dataList = fs.readdirSync(dataDir).filter(file => fs.statSync(path.join(dataDir, file)).isDirectory()),
-        autocompleteInput = document.getElementById("associationsAutocomplete");
-    const associationsAutocomplete = M.Autocomplete.init(autocompleteInput, {
-        "sortFunction": (a, b) => a.localeCompare(b),
-        "data": {},
-        "onAutocomplete": txt => {
-            for(let n = 0; n < dataList.length; n++) {
-                let selectedData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", dataList[n], "data.json"), "UTF8"));
-                if(txt == selectedData.name + " (" + selectedData.category + ")") {
-                    associationCreation(dataList[n], selectedData.category, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "");
-                    autocompleteInput.value = "";
-                    autocompleteInput.nextElementSibling.nextElementSibling.classList.remove("active");
-                    associationsListeners(ipcRenderer);
-                }
-            }
-        }
-    });
-    let associationsDataObj = {};
-    for(let m = 0; m < dataList.length; m++) {
-        let curData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", dataList[m], "data.json"), "UTF8"));
-        associationsDataObj[curData.name + " (" + curData.category + ")"] = (curData.img.length > 0 ? curData.img[0] : "");
-    }
-    associationsAutocomplete.updateData(associationsDataObj);
+    // Initialize the autocomplete functionality for the associations modal.
+    associationsInit();
 });

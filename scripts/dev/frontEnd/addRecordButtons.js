@@ -192,18 +192,7 @@ var recordChoicesButtons = () => {
             }, 500);
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
-        if(introAnimeHolder == true) {
-            const instancesTapAnimeSave = M.TapTarget.init(document.getElementById("introductionTargetAnimeSave"), { "onClose": () => {
-                setTimeout(() => {
-                    const instancesTapAnimeOptions = M.TapTarget.init(document.getElementById("introductionTargetAnimeOptions"));
-                    setTimeout(() => {
-                        instancesTapAnimeOptions.open();
-                        introAnimeHolder = false;
-                    }, 500);
-                }, 500);
-            }});
-            setTimeout(() => { instancesTapAnimeSave.open(); }, 500);
-        }
+        introAnimeHolder = introInit(introAnimeHolder, document.getElementById("introductionTargetAnimeSave"), document.getElementById("introductionTargetAnimeOptions"));
     });
     // Listen for a click event on the categoryBook button on the top bar to display the form corresponding to a book record.
     categoryBook.addEventListener("click", e => {
@@ -292,18 +281,8 @@ var recordChoicesButtons = () => {
             bookSave.style.visibility = "visible";
             initSelect();
         });
-        if(introBookHolder == true) {
-            const instancesTapBookSave = M.TapTarget.init(document.getElementById("introductionTargetBookSave"), { "onClose": () => {
-                setTimeout(() => {
-                    const instancesTapBookAssociations = M.TapTarget.init(document.getElementById("introductionTargetBookAssociations"));
-                    setTimeout(() => {
-                        instancesTapBookAssociations.open();
-                        introBookHolder = false;
-                    }, 500);
-                }, 500);
-            }});
-            setTimeout(() => { instancesTapBookSave.open(); }, 500);
-        }
+        // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
+        introBookHolder = introInit(introBookHolder, document.getElementById("introductionTargetBookSave"), document.getElementById("introductionTargetBookAssociations"));
     });
     // Listen for a click event on the categoryFilm button on the top bar to display the form corresponding to a film record.
     categoryFilm.addEventListener("click", e => {
@@ -383,18 +362,7 @@ var recordChoicesButtons = () => {
             initSelect();
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
-        if(introFilmHolder == true) {
-            const instancesTapFilmSave = M.TapTarget.init(document.getElementById("introductionTargetFilmSave"), { "onClose": () => {
-                setTimeout(() => {
-                    const instancesTapFilmAssociations = M.TapTarget.init(document.getElementById("introductionTargetFilmAssociations"));
-                    setTimeout(() => {
-                        instancesTapFilmAssociations.open();
-                        introFilmHolder = false;
-                    }, 500);
-                }, 500);
-            }});
-            setTimeout(() => { instancesTapFilmSave.open(); }, 500);
-        }
+        introFilmHolder = introInit(introFilmHolder, document.getElementById("introductionTargetFilmSave"), document.getElementById("introductionTargetFilmAssociations"));
     });
     // Listen for a click event on the categoryManga button on the top bar to display the form corresponding to a manga record.
     categoryManga.addEventListener("click", e => {
@@ -547,18 +515,7 @@ var recordChoicesButtons = () => {
             volumeFetchPreloader.style.visibility = "hidden";
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
-        if(introMangaHolder == true) {
-            const instancesTapMangaSave = M.TapTarget.init(document.getElementById("introductionTargetMangaSave"), { "onClose": () => {
-                setTimeout(() => {
-                    const instancesTapMangaOptions = M.TapTarget.init(document.getElementById("introductionTargetMangaOptions"));
-                    setTimeout(() => {
-                        instancesTapMangaOptions.open();
-                        introMangaHolder = false;
-                    }, 500);
-                }, 500);
-            }});
-            setTimeout(() => { instancesTapMangaSave.open(); }, 500);
-        }
+        introShowHolder = introInit(introMangaHolder, document.getElementById("introductionTargetMangaSave"), document.getElementById("introductionTargetMangaOptions"));
     });
     // Listen for a click event on the categoryShow button on the top bar to display the form corresponding to a show record.
     categoryShow.addEventListener("click", e => {
@@ -640,17 +597,6 @@ var recordChoicesButtons = () => {
             initSelect();
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
-        if(introShowHolder == true) {
-            const instancesTapShowSave = M.TapTarget.init(document.getElementById("introductionTargetShowSave"), { "onClose": () => {
-                setTimeout(() => {
-                    const instancesTapShowOptions = M.TapTarget.init(document.getElementById("introductionTargetShowOptions"));
-                    setTimeout(() => {
-                        instancesTapShowOptions.open();
-                        introShowHolder = false;
-                    }, 500);
-                }, 500);
-            }});
-            setTimeout(() => { instancesTapShowSave.open(); }, 500);
-        }
+        introShowHolder = introInit(introShowHolder, document.getElementById("introductionTargetShowSave"), document.getElementById("introductionTargetShowOptions"));
     });
 };

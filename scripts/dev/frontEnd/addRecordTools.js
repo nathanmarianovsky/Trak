@@ -21,6 +21,11 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
     - genreFill: Checks the appropriate genres on the addRecord page for fetched data.
     - relatedContentFinisher: Initializes select tags and tooltips. Designed to be executed after all related content items have been added.
     - relatedContentListeners: Addes the appropriate event listeners to ensure that page items are highlighted only in the event that a change in the original value is detected.
+    - associationsInit: Initializes the autocomplete functionality on the associations modal.
+    - associationCreation: Creates an association listing in the notifications modal.
+    - associationsListeners: Adds the listeners associated to an association listing.
+    - saveAssociations: Handles the save request of a record's associations.
+    - introInit: Initializes the tutorial on the addRecord.html page.
 
 */
 
@@ -634,6 +639,53 @@ var relatedContentListeners = item => {
 
 /*
 
+Initializes the autocomplete functionality on the associations modal.
+
+*/
+var associationsInit = () => {
+    // Define the collection of library records and the associations modal autocomplete input.
+    const dataDir = path.join(localPath, "Trak", "data"),
+        dataList = fs.readdirSync(dataDir).filter(file => fs.statSync(path.join(dataDir, file)).isDirectory()),
+        autocompleteInput = document.getElementById("associationsAutocomplete");
+    // Initialize the autocomplete input on the associations modal.
+    const associationsAutocomplete = M.Autocomplete.init(autocompleteInput, {
+        "sortFunction": (a, b) => a.localeCompare(b),
+        "data": {},
+        "onAutocomplete": txt => {
+            // Iterate through the list of library records.
+            for(let n = 0; n < dataList.length; n++) {
+                // Define the current library record data.
+                let selectedData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", dataList[n], "data.json"), "UTF8"));
+                // Proceed if the current library record is the one corresponding to the autocomplete search selection.
+                if(txt == selectedData.name + " (" + selectedData.category + ")") {
+                    // Create an association on the associations modal.
+                    associationCreation(dataList[n], selectedData.category, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "");
+                    // Clear the autocomplete input search bar.
+                    autocompleteInput.value = "";
+                    autocompleteInput.nextElementSibling.nextElementSibling.classList.remove("active");
+                    // Initialize the page listeners corresponding to an association.
+                    associationsListeners(ipcRenderer);
+                }
+            }
+        }
+    });
+    // Define the object which will house the list of options for the associations modal autocomplete search bar.
+    let associationsDataObj = {};
+    // Iterate through the list of library records.
+    for(let m = 0; m < dataList.length; m++) {
+        // Define the current library record data.
+        let curData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", dataList[m], "data.json"), "UTF8"));
+        // Create an entry in the associations data object.
+        associationsDataObj[curData.name + " (" + curData.category + ")"] = (curData.img.length > 0 ? curData.img[0] : "");
+    }
+    // Update the associations autocomplete input options.
+    associationsAutocomplete.updateData(associationsDataObj);
+};
+
+
+
+/*
+
 Creates an association listing in the notifications modal.
 
    - itemId is a string corresponding to the id of a record.
@@ -673,6 +725,11 @@ var associationCreation = (itemId, itemCategory, itemTitle, itemImg) => {
         // Attach the association to the associations modal.
         outerLI.append(itemImg != "" ? img : imgIcon, span, par, link);
         associationsCollection.append(outerLI);
+        // Sort the associations alphabetically on the associations modal.
+        let newLst = Array.from(associationsCollection.children);
+        newLst.sort((lhs, rhs) => lhs.getAttribute("associationTitle").localeCompare(rhs.getAttribute("associationTitle")));
+        associationsCollection.innerHTML = "";
+        newLst.forEach(elem => associationsCollection.append(elem));
     }
 };
 
@@ -703,6 +760,41 @@ var associationsListeners = ipcElec => {
 
 
 
+/*
+
+Handles the save request of a record's associations.
+
+   - curCategory is a string corresponding to the category of the current record.
+   - curName is a string corresponding to the name of the current record.
+   - ipcElec provides the means to operate the Electron app.
+
+*/
 var saveAssociations = (curCategory, curName, ipcElec) => {
     ipcElec.send("associationsSave", [curCategory, curName, Array.from(document.getElementById("associationsCollection").children).map(association => association.getAttribute("associationId"))]);
+};
+
+
+
+/*
+
+Initializes the tutorial on the addRecord.html page.
+
+   - hldr is the boolean corresponding to whether the tutorial should be shown.
+   - tgt1 is the first item to focus on in the tutorial.
+   - tgt2 is the second item to focus on in the tutorial.
+
+*/
+var introInit = (hldr, tgt1, tgt2) => {
+    if(hldr == true) {
+        const instancesTap1 = M.TapTarget.init(tgt1, { "onClose": () => {
+            setTimeout(() => {
+                const instancesTap2 = M.TapTarget.init(tgt2);
+                setTimeout(() => {
+                    instancesTap2.open();
+                    return false;
+                }, 500);
+            }, 500);
+        }});
+        setTimeout(() => { instancesTap1.open(); }, 500);
+    }
 };
