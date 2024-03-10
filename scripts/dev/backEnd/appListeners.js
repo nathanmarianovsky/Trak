@@ -45,10 +45,15 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
+    		// Create a primary window.
 	   		let win = tools.createWindow("index", originalPath, BrowserWindow, path, log, dev, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
+	   		// Proceed once the window has finished loading.
 	   		win.webContents.on("did-finish-load", () => {
+	   			// Send a request to the front-end to initialize the loading of library records on the primary window.
 				win.webContents.send("loadRows", win.getContentSize()[1] - 800);
+				// Send a request to the front-end to initialize the application tutorial.
   				tools.tutorialLoad(fs, path, log, win, originalPath);
+  				// Check for an application update if necessary.
   				if(updateCondition == false) {
   					tools.checkForUpdate(require("os"), require("https"), fs, path, log, originalPath, win);
   					updateCondition = true;
@@ -60,34 +65,46 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
   	// Close the Electron app if the primary window is closed.
 	let logCheck = false;
   	mainWindow.on("close", () => {
+  		// Log that the application is quitting, if necessary.
   		if(logCheck == false) {
   			log.info("The application is quitting.");
   			logCheck = true;
   		}
+  		// Quit the application.
     	mainWindow = null;
     	app.quit();
     });
 
-  	// Handle the writing of the notifications file.
+  	// Handle the update of the notifications configuration file.
     ipc.on("notificationsSave", (event, submissionContent) => {
+    	// Define the path to the notifications configuration file.
     	const notificationsPath = path.join(originalPath, "Trak", "config", "notifications.json");
+    	// Read the notifications configuration file.
     	fs.readFile(notificationsPath, "UTF8", (err, file) => {
+    		// If an error occured in reading the notifications configuration file then log it and notify the user.
     		if(err) {
         		log.error("There was an issue reading the notifications configuration file.");
         		event.sender.send("notificationsFileReadFailure");
         	}
+        	// Otherwise, if no error was thrown proceed as designed.
         	else {
+        		// Define the list of current notifications and the array which will hold indices of notifications to be removed.
         		const currentNotificationsFile = JSON.parse(file),
         			currentNotifications = currentNotificationsFile.notifications.map(a => ({...a})),
         			removalList = [];
+        		// Iterate through the list of submitted notifications from the front-end request.
         		for(let u = 0; u < submissionContent.length; u++) {
         			let v = 0;
+        			// Iterate through the list of current notifications in the notifications configuration file.
         			for(; v < currentNotificationsFile.notifications.length; v++) {
+        				// If a submitted notification already exists break out of the loop.
         				if(currentNotificationsFile.notifications[v].id == submissionContent[u][0]
         					&& currentNotificationsFile.notifications[v].text == submissionContent[u][3]) { break; }
+        				// Otherwise, if a record no longer exists corresponding to the notification or the notification expired remove the record.
         				else if(!fs.existsSync(path.join(originalPath, "Trak", "data", currentNotificationsFile.notifications[v].id, "data.json"))
         					|| (new Date(currentNotificationsFile.notifications[v].date)).getTime() < (new Date()).getTime()) { removalList.push(v); }
         			}
+        			// If no current notification matched up to the one submitted, then create a new notification.
         			if(v == currentNotificationsFile.notifications.length) {
         				currentNotifications.push({
         					"id": submissionContent[u][0],
@@ -100,6 +117,7 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
         					"snooze": ""
         				});
         			}
+        			// Otherwise, if a submitted notification already exists simply update the necessary parameters that expect a change.
         			else {
         				currentNotifications[v].date = submissionContent[u][4];
         				currentNotifications[v].img = submissionContent[u][5];
@@ -109,14 +127,20 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
         				}
         			}
         		}
+        		// Remove the notifications marked for removal.
         		removalList.forEach(delIndex => currentNotifications.splice(delIndex, 1));
+        		// Sort the notifications based on a record's release/start date.
         		currentNotifications.sort((lhs, rhs) => (new Date(lhs.date)).getTime() - (new Date(rhs.date)).getTime());
+        		// Set the notifications to the modified list.
         		currentNotificationsFile.notifications = currentNotifications;
+        		// Write the new notifications to the notifications configuration file.
         		fs.writeFile(notificationsPath, JSON.stringify(currentNotificationsFile), "UTF8", er => {
+        			// If an error occured in writing the notifications configuration file then log it and notify the user.
         			if(er) {
         				log.error("There was an issue writing to the notifications configuration file.");
         				event.sender.send("notificationsFileWriteFailure");
         			}
+        			// Otherwise, send a request to the front-end to display the notifications, if any exist.
         			else {
         				event.sender.send("notificationsReady");
         			}
@@ -127,34 +151,49 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
 
   	// Handle the load of the home page.
   	ipc.on("home", event => {
+  		// Have the primary window load the corresponding html structure.
   		mainWindow.loadFile(path.join(originalPath, "Trak", "localPages", "index.html"));
+  		// Proceed once the window has finished loading.
   		mainWindow.webContents.on("did-finish-load", () => {
+  			// Send a request to the front-end to initialize the loading of library records on the primary window.
   			mainWindow.webContents.send("loadRows", mainWindow.getContentSize()[1] - 800);
+			// Send a request to the front-end to initialize the application tutorial.
   			tools.tutorialLoad(fs, path, log, mainWindow, originalPath);
   		});
   	});
 
+  	// Handle the update of the associations configuration file.
   	ipc.on("associationsSave", (event, submissionArr) => {
+  		// Define the path to the associations configuration file.
   		const associationsPath = path.join(originalPath, "Trak", "config", "associations.json");
+		// Read the associations configuration file.
   		fs.readFile(associationsPath, "UTF8", (err, file) => {
+  			// If an error occured in reading the associations configuration file then log it and notify the user.
   			if(err) {
         		log.error("There was an issue reading the associations configuration file.");
         		event.sender.send("associationsFileReadFailure");
         	}
+        	// Otherwise, if no error was thrown proceed as designed.
         	else {
+        		// Define the list of current associations and the id of the primary record submitted.
         		const associationsFileList = JSON.parse(file).associations;
     			let focusItem = submissionArr[0] + "-" + tools.formatFolderName(submissionArr[1]),
         			w = 0;
+        		// Iterate through the list of current associations.
         		for(; w < associationsFileList.length; w++) {
+        			// If the current association contains any of the records in the submitted association then update the current association.
         			if(associationsFileList[w].includes(focusItem) || associationsFileList[w].some(r => submissionArr[2].includes(r))) {
         				associationsFileList[w] = [focusItem].concat(submissionArr[2]).sort((a, b) => a.split("-").slice(1).join("-").localeCompare(b.split("-").slice(1).join("-")));
         				break;
         			}
         		}
+        		// Otherwise, if no association was found to contain any of the records in the submitted association create a new association.
         		if(w == associationsFileList.length) {
         			associationsFileList.push([focusItem].concat(submissionArr[2]).sort((a, b) => a.split("-").slice(1).join("-").localeCompare(b.split("-").slice(1).join("-"))))
         		}
+        		// Write the new associations to the associations configuration file.
         		fs.writeFile(associationsPath, JSON.stringify({"associations": associationsFileList}), "UTF8", er => {
+        			// If an error occured in writing the associations configuration file then log it and notify the user.
         			if(er) {
         				log.error("There was an issue writing to the associations configuration file.");
         				event.sender.send("associationsFileWriteFailure");
@@ -185,13 +224,18 @@ Driver function for adding all listeners associated to the maintenance of record
 exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Handles the load of the addRecord.html page for the creation of a record.
   	ipc.on("addLoad", (event, scenario) => {
+  		// Have the secondary window load the corresponding html structure.
   		let addWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+		// Proceed once the window has finished loading.
   		addWindow.webContents.on("did-finish-load", () => {
+  			// Send a request to the front-end if the tutorial is chosen to be shown.
   			if(scenario == true) {
   				log.info("Loading the application tutorial for the addRecord.html page.");
   				addWindow.webContents.send("addIntroduction");
   			}
+  			// Tell the front-end to display the default message for adding a new record.
   			addWindow.webContents.send("addRecordInitialMessage");
+  			// Save the record upon a request from the front-end.
   			ipc.once("performSave", (event, submission) => {
   				require("./" + submission[0].toLowerCase() + "Tools")[submission[0].toLowerCase() + "Save"](BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
   			});
@@ -200,35 +244,50 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
 
   	// Handles the load of the addRecord.html page for the update of a record.
   	ipc.on("updateRecord", (event, fldrName) => {
+  		// Have the secondary window load the corresponding html structure.
   		let recordUpdateWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+		// Proceed once the window has finished loading.
   		recordUpdateWindow.webContents.on("did-finish-load", () => {
+  			// Send a request to the front-end to load the record's details.
   			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
+  			// Save the record upon a request from the front-end.
   			ipc.once("performSave", (event, submission) => {
   				require("./" + submission[0].toLowerCase() + "Tools")[submission[0].toLowerCase() + "Update"](BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
   			});
   		});
   	});
 
-  	// Handles the deletion of multiple records.
+  	// Handles the deletion of multiple records and updates the associations configuration file accodingly.
   	ipc.on("removeRecords", (event, list) => {
+  		// Remove the desired records.
   		tools.removeRecords(log, BrowserWindow.getFocusedWindow(), dataPath, fs, path, list);
+  		// Define the path to the associations configuration file.
   		const associationsPath = path.join(originalPath, "Trak", "config", "associations.json");
+  		// Read the associations configuration file.
   		fs.readFile(associationsPath, "UTF8", (err, file) => {
+  			// If an error occured in reading the associations configuration file then log it and notify the user.
   			if(err) {
         		log.error("There was an issue reading the associations configuration file.");
         		event.sender.send("associationsFileReadFailure");
         	}
+        	// Otherwise, if no error was thrown proceed as designed.
         	else {
+        		// Define the current list of associations.
 	  			let associationsLst = JSON.parse(file).associations;
+	  			// Iterate through the list of records which are being removed.
 	  			for(let u = 0; u < list.length; u++) {
+	  				// Iterate through the list of current associations.
 	  				for(let v = 0; v < associationsLst.length; v++) {
+	  					// If an association is found to contain a record that is being removed then it's removed from the association.
 	  					if(associationsLst[v].includes(list[u])) {
 	  						associationsLst[v].splice(associationsLst[v].indexOf(list[u]), 1);
 	  						break;
 	  					}
 	  				}
 	  			}
+	  			// Write the new associations to the associations configuration file.
 	  			fs.writeFile(associationsPath, JSON.stringify({"associations": associationsLst}), "UTF8", er => {
+	  				// If an error occured in writing the associations configuration file then log it and notify the user.
         			if(er) {
         				log.error("There was an issue writing to the associations configuration file.");
         				event.sender.send("associationsFileWriteFailure");
@@ -241,10 +300,12 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
   	// Handles the opening of a record's assets folder.
 	ipc.on("recordFiles", (event, params) => {
 		require("child_process").exec(tools.startCommandLineFolder() + " " + path.join(dataPath, "Trak", "data", params[0], "assets"));
+		// Log that the assets folder was opened and notify the user.
 		log.info("The application successfully opened the folder directory " + path.join(dataPath, "Trak", "data", params[0], "assets") + ".");
 		event.sender.send("recordFilesSuccess", params[1]);
 	});
 
+	// Define the list of categories and the associated object containing the library import methods.
 	const categoryArr = ["anime", "book", "film", "manga", "show"];
 	const requireObj = {
 		"tools": category => require("./" + category + "Tools"),
@@ -254,6 +315,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
 		"mangaLib": val => require("mal-scraper"),
 		"showLib": val => val == true ? require("imdb-scrapper") : require("movier")
 	};
+	// Iterate through the list of categories.
 	for(let w = 0; w < categoryArr.length; w++) {
 		// Handles the search of a string through all possible records listings on a database.
 		ipc.on(categoryArr[w] + "Search", (event, submission) => {
@@ -277,8 +339,11 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
 
 		// Handles the opening of the addRecord.html page to load a record based on a content search.
 		ipc.on(categoryArr[w] + "RecordRequest", (event, submission) => {
+			// Have the secondary window load the corresponding html structure.
 			let recordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+			// Proceed once the window has finished loading.
 	  		recordWindow.webContents.on("did-finish-load", () => {
+	  			// Fetch the record details from the corresponding online resource.
 	  			recordWindow.webContents.send("searchRecordStart", categoryArr[w].charAt(0).toUpperCase() + categoryArr[w].substring(1));
 	  			requireObj["tools"](categoryArr[w])[categoryArr[w] + "RecordRequest"](BrowserWindow, ipc, path, fs, log, require("https"), requireObj[categoryArr[w] + "Lib"](false), tools, mainWindow, recordWindow, dataPath, submission, requireObj["bookLib"](false));
 	  		});
