@@ -192,11 +192,38 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
         			associationsFileList.push([focusItem].concat(submissionArr[2]).sort((a, b) => a.split("-").slice(1).join("-").localeCompare(b.split("-").slice(1).join("-"))))
         		}
         		// Write the new associations to the associations configuration file.
-        		fs.writeFile(associationsPath, JSON.stringify({"associations": associationsFileList}), "UTF8", er => {
+        		fs.writeFile(associationsPath, JSON.stringify({"associations": associationsFileList.filter(arrElem => arrElem.length > 1)}), "UTF8", er => {
         			// If an error occured in writing the associations configuration file then log it and notify the user.
         			if(er) {
         				log.error("There was an issue writing to the associations configuration file.");
         				event.sender.send("associationsFileWriteFailure");
+        			}
+        		});
+        	}
+  		});
+  	});
+
+  	ipc.on("notificationsIntervalSave", (event, intervalSubmission) => {
+  		// Define the path to the notifications configuration file.
+  		const notificationsPath = path.join(originalPath, "Trak", "config", "notifications.json");
+		// Read the notifications configuration file.
+  		fs.readFile(notificationsPath, "UTF8", (err, file) => {
+  			// If an error occured in reading the notifications configuration file then log it and notify the user.
+  			if(err) {
+        		log.error("There was an issue reading the notifications configuration file.");
+        		event.sender.send("notificationsFileReadFailure");
+        	}
+        	// Otherwise, if no error was thrown proceed as designed.
+        	else {
+        		// Define the current notifications configuration setup and modfiy the interval accordingly.
+        		const curFile = JSON.parse(file);
+        		curFile.interval = parseInt(intervalSubmission);
+        		// Write the new interval to the notifications configuration file.
+        		fs.writeFile(notificationsPath, JSON.stringify(curFile), "UTF8", er => {
+        			// If an error occured in writing the notifications configuration file then log it and notify the user.
+        			if(er) {
+        				log.error("There was an issue writing to the notifications configuration file.");
+        				event.sender.send("notificationsFileWriteFailure");
         			}
         		});
         	}
@@ -262,7 +289,8 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
   		// Remove the desired records.
   		tools.removeRecords(log, BrowserWindow.getFocusedWindow(), dataPath, fs, path, list);
   		// Define the path to the associations configuration file.
-  		const associationsPath = path.join(originalPath, "Trak", "config", "associations.json");
+  		const associationsPath = path.join(originalPath, "Trak", "config", "associations.json"),
+  			notificationsPath = path.join(originalPath, "Trak", "config", "notifications.json");
   		// Read the associations configuration file.
   		fs.readFile(associationsPath, "UTF8", (err, file) => {
   			// If an error occured in reading the associations configuration file then log it and notify the user.
@@ -291,6 +319,39 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
         			if(er) {
         				log.error("There was an issue writing to the associations configuration file.");
         				event.sender.send("associationsFileWriteFailure");
+        			}
+        		});
+        	}
+  		});
+  		// Read the notifications configuration file.
+  		fs.readFile(notificationsPath, "UTF8", (err, file) => {
+  			// If an error occured in reading the notifications configuration file then log it and notify the user.
+  			if(err) {
+        		log.error("There was an issue reading the notifications configuration file.");
+        		event.sender.send("notificationsFileReadFailure");
+        	}
+        	// Otherwise, if no error was thrown proceed as designed.
+        	else {
+        		// Define the current list of notifications.
+	  			let notificationsFile = JSON.parse(file),
+	  				indexArr = [];
+	  			// Iterate through the list of records which are being removed.
+	  			for(let u = 0; u < list.length; u++) {
+	  				// Iterate through the list of current notifications.
+	  				for(let v = 0; v < notificationsFile.notifications.length; v++) {
+	  					// If a notification is found to be associated to a record that is being removed then it's removed from the notifications.
+	  					if(notificationsFile.notifications[v].id == list[u]) {
+	  						notificationsFile.notifications.splice(v, 1);
+	  						break;
+	  					}
+	  				}
+	  			}
+	  			// Write the new notifications to the notifications configuration file.
+	  			fs.writeFile(notificationsPath, JSON.stringify(notificationsFile), "UTF8", er => {
+	  				// If an error occured in writing the notifications configuration file then log it and notify the user.
+        			if(er) {
+        				log.error("There was an issue writing to the notifications configuration file.");
+        				event.sender.send("notificationsFileWriteFailure");
         			}
         		});
         	}

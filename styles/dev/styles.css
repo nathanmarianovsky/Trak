@@ -687,6 +687,11 @@ footer {
 	display: none;
 }
 
+.settingsWindowDiv .select-dropdown {
+/*	width: 110px!important;*/
+    border-radius: 17px;
+}
+
 .fullScreenRow {
 	margin-top: 15px;
 }

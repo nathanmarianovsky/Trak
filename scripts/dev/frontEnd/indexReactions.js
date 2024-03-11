@@ -368,7 +368,8 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
     const pathDir = path.join(localPath, "Trak", "data"),
         curTime = (new Date()).getTime(),
         notificationsArr = document.getElementById("notificationsCollection"),
-        newNotificationsArr = [];
+        newNotificationsArr = [],
+        userInterval = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "config", "notifications.json"), "UTF8")).interval;
     let list = [],
         counters = [0,0,0,0,0];
     fs.existsSync(pathDir) ? list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()) : list = [];
@@ -458,12 +459,14 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 else if(recordData.content[t].scenario == "Season") {
                     seasonCount++;
                     episodeCount += recordData.content[t].episodes.length;
-                    if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].start)))) <= 14) {
+                    let curCheck = (new Date(recordData.content[t].start)).getTime();
+                    if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                         newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                     }
                 }
                 if(recordData.content[t].scenario == "Single") {
-                    if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].release)))) <= 14) {
+                    let curCheck = (new Date(recordData.content[t].release)).getTime();
+                    if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                         newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].type, recordData.content[t].release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                     }
                 }
@@ -505,12 +508,15 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
         }
         else if(recordData.category == "Book") {
-            if(convertToDays(Math.abs(curTime - (new Date(recordData.publicationDate)))) <= 14) {
+            let curCheck = (new Date(recordData.publicationDate)).getTime();
+            console.log(userInterval);
+            if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                 newNotificationsArr.push([list[n], recordData.category, recordData.name, "Book", recordData.publicationDate, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
             }
         }
         else if(recordData.category == "Film") {
-            if(convertToDays(Math.abs(curTime - (new Date(recordData.release)))) <= 14) {
+            let curCheck = (new Date(recordData.release)).getTime();
+            if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                 newNotificationsArr.push([list[n], recordData.category, recordData.name, "Film", recordData.release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
             }
         }
@@ -523,7 +529,8 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 else if(recordData.content[t].scenario == "Volume") {
                     volumeCount++;
                 }
-                if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].release)))) <= 14) {
+                let curCheck = (new Date(recordData.content[t].release)).getTime();
+                if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                     newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].scenario, recordData.content[t].release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                 }
             }
@@ -545,7 +552,8 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             for(let t = 0; t < recordData.content.length; t++) {
                 seasonCount++;
                 episodeCount += recordData.content[t].episodes.length;
-                if(convertToDays(Math.abs(curTime - (new Date(recordData.content[t].start)))) <= 14) {
+                let curCheck = (new Date(recordData.content[t].start)).getTime();
+                if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                     newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                 }
             }

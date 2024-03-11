@@ -152,7 +152,8 @@ window.addEventListener("load", () => {
             primaryWindowFullscreen = document.getElementById("primaryWindowFullscreen"),
     		secondaryWindowWidth = document.getElementById("secondaryWindowWidth"),
     		secondaryWindowHeight = document.getElementById("secondaryWindowHeight"),
-            secondaryWindowFullscreen = document.getElementById("secondaryWindowFullscreen");
+            secondaryWindowFullscreen = document.getElementById("secondaryWindowFullscreen"),
+            notificationsInterval = document.getElementById("notificationsInterval");
         // Display a notification if there was an error in reading the configuration file.
         if(err) {
             M.toast({"html": "There was an error opening the configuration file associated to the application settings.", "classes": "rounded"});
@@ -219,6 +220,8 @@ window.addEventListener("load", () => {
                 secondaryWindowFullscreen.checked = configData.original.secondaryWindowFullscreen;
                 secondaryWindowFullscreen.setAttribute("lastValue", configData.original.secondaryWindowFullscreen);
         	}
+            notificationsInterval.value = JSON.parse(fs.readFileSync(path.join(basePath, "Trak", "config", "notifications.json"), "UTF8")).interval;
+            initSelect();
             // Listen for a click on the color reset button to restore the color inputs to the original values.
             settingsColorReset.addEventListener("click", e => {
                 primaryColor.value = configData.original.primaryColor;
@@ -298,6 +301,7 @@ window.addEventListener("load", () => {
                         secondaryWindowFullscreen.checked,
                         tutorialLoad.checked
             		]);
+                    ipcRenderer.send("notificationsIntervalSave", notificationsInterval.value);
                     // Close the settings modal.
             		settingsModalInstance.close();
                 }
