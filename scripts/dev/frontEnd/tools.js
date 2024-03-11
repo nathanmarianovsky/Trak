@@ -576,3 +576,44 @@ Converts a length of time in milliseconds to days.
 
 */
 var convertToDays = milli => milli / (1000 * 60 * 60 * 24);
+
+
+
+var settingsBtnsInit = (ipcElec, btn, containers, selections, btnContainer, showList, hideList, callback) => {
+    // Listen for a click event on the settingsDisplay button on the top bar to display the display settings.
+    btn.addEventListener("click", e => {
+        e.preventDefault();
+        containers.forEach(cont => cont.style.display = "none");
+        selections.forEach(item => item.parentNode.classList.remove("active"));
+        btnContainer.style.display = "initial";
+        btn.parentNode.classList.add("active");
+        showList.forEach(className => {
+            Array.from(document.getElementsByClassName(className)).forEach(otherBtn => otherBtn.style.display = "inline-block");
+            if(className == "settingsLogsButtons") {
+                ipcElec.send("logsRequest");
+                ipcRenderer.on("logsRequestResult", (event, logsArr) => {
+                    const logsTerminal = document.getElementById("logsTerminal");
+                    logsTerminal.innerHTML = "";
+                    for(let c = 0; c < logsArr.length; c++) {
+                        let logSpan = document.createElement("span");
+                        if(logsArr[c].includes("[info]")) {
+                            logSpan.textContent = logsArr[c].replace(" [info]", "");
+                        }
+                        else if(logsArr[c].includes("[error]")) {
+                            logSpan.textContent = logsArr[c].replace(" [error]", "");
+                            logSpan.style.color = "red";
+                        }
+                        else if(logsArr[c].includes("[warn]")) {
+                            logSpan.textContent = logsArr[c].replace(" [warn]", "");
+                            logSpan.style.color = "blue";
+                        }
+                        logsTerminal.append(logSpan, document.createElement("br"));
+                    }
+                });
+            }
+        });
+        hideList.forEach(className => {
+            Array.from(document.getElementsByClassName(className)).forEach(otherBtn => otherBtn.style.display = "none");
+        });
+    });
+};

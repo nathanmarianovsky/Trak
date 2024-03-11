@@ -652,13 +652,19 @@ footer {
 	margin-top: 0px !important;
 }
 
+.settingsContainer p {
+	margin-left: 30px;
+	margin-right: 30px;
+	line-height: 15px;
+}
+
 #settingsAboutContainer p {
 	margin: 30px;
 	line-height: 35px;
 }
 
 #settingsSelection li {
-	width: 33.33%;
+	width: 20%;
     text-align: center;
 }
 
@@ -677,7 +683,7 @@ footer {
     overflow-y: auto;
 }
 
-#logsFolder {
+#logsFolder, #settingsDataReset {
 	display: none;
 }
 

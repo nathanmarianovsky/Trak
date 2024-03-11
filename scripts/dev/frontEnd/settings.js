@@ -106,7 +106,9 @@ ipcRenderer.on("dataOriginalDeleteAsk", (event, response) => {
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
 	// Define the buttons for all settings choices.
-    const settingsOptions = document.getElementById("settingsOptions"),
+    const settingsDisplay = document.getElementById("settingsDisplay"),
+        settingsInterface = document.getElementById("settingsInterface"),
+        settingsData = document.getElementById("settingsData"),
     	settingsLogs = document.getElementById("settingsLogs"),
         settingsAbout = document.getElementById("settingsAbout"),
         settingsColorReset = document.getElementById("settingsColorReset"),
@@ -115,65 +117,25 @@ window.addEventListener("load", () => {
         aboutGithub = document.getElementById("aboutGithub"),
     	settingsApply = document.getElementById("settingsApply");
     // Define the relevant portions of the page that are in the settings rotation.
-    const settingsOptionsContainer = document.getElementById("settingsOptionsContainer"),
+    const settingsDisplayContainer = document.getElementById("settingsDisplayContainer"),
+        settingsInterfaceContainer = document.getElementById("settingsInterfaceContainer"),
+        settingsDataContainer = document.getElementById("settingsDataContainer"),
         settingsAboutContainer = document.getElementById("settingsAboutContainer"),
         settingsContainers = Array.from(document.getElementsByClassName("settingsContainer")),
-        settingsSelectionItems = Array.from(document.getElementsByClassName("settingsSelectionItems")),
-        settingsButtons = Array.from(document.getElementsByClassName("settingsButtons")),
-        logsTerminal = document.getElementById("logsTerminal"),
-        logsFolder = document.getElementById("logsFolder");
+        settingsSelectionItems = Array.from(document.getElementsByClassName("settingsSelectionItems"));
     logsFolder.addEventListener("click", e => {
         ipcRenderer.send("logsFile");
     });
-    // Listen for a click event on the settingsOptions button on the top bar to display the settings options.
-    settingsOptions.addEventListener("click", e => {
-        e.preventDefault();
-        settingsContainers.forEach(cont => cont.style.display = "none");
-        settingsSelectionItems.forEach(item => item.parentNode.classList.remove("active"));
-        settingsOptionsContainer.style.display = "initial";
-        settingsOptions.parentNode.classList.add("active");
-        settingsButtons.forEach(btn => btn.style.display = "inline-block");
-        logsFolder.style.display = "none";
-    });
+    // Listen for a click event on the settingsDisplay button on the top bar to display the display settings.
+    settingsBtnsInit(ipcRenderer, settingsDisplay, settingsContainers, settingsSelectionItems, settingsDisplayContainer, ["settingsDisplayButtons"], ["settingsLogsButtons", "settingsDataButtons"]);
+    // Listen for a click event on the settingsInterface button on the top bar to display the interface settings.
+    settingsBtnsInit(ipcRenderer, settingsInterface, settingsContainers, settingsSelectionItems, settingsInterfaceContainer, [], ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons"]);
+    // Listen for a click event on the settingsData button on the top bar to display the data settings.
+    settingsBtnsInit(ipcRenderer, settingsData, settingsContainers, settingsSelectionItems, settingsDataContainer, ["settingsDataButtons"], ["settingsDisplayButtons", "settingsLogsButtons"]);
     // Listen for a click event on the settingsLogs button on the top bar to display the application logs.
-    settingsLogs.addEventListener("click", e => {
-        e.preventDefault();
-        settingsContainers.forEach(cont => cont.style.display = "none");
-        settingsSelectionItems.forEach(item => item.parentNode.classList.remove("active"));
-        settingsLogsContainer.style.display = "initial";
-        settingsLogs.parentNode.classList.add("active");
-        settingsButtons.forEach(btn => btn.style.display = "none");
-        logsFolder.style.display = "inline-block";
-        ipcRenderer.send("logsRequest");
-    });
-    ipcRenderer.on("logsRequestResult", (event, logsArr) => {
-        logsTerminal.innerHTML = "";
-        for(let c = 0; c < logsArr.length; c++) {
-            let logSpan = document.createElement("span");
-            if(logsArr[c].includes("[info]")) {
-                logSpan.textContent = logsArr[c].replace(" [info]", "");
-            }
-            else if(logsArr[c].includes("[error]")) {
-                logSpan.textContent = logsArr[c].replace(" [error]", "");
-                logSpan.style.color = "red";
-            }
-            else if(logsArr[c].includes("[warn]")) {
-                logSpan.textContent = logsArr[c].replace(" [warn]", "");
-                logSpan.style.color = "blue";
-            }
-            logsTerminal.append(logSpan, document.createElement("br"));
-        }
-    });
+    settingsBtnsInit(ipcRenderer, settingsLogs, settingsContainers, settingsSelectionItems, settingsLogsContainer, ["settingsLogsButtons"], ["settingsDisplayButtons", "settingsDataButtons"]);
     // Listen for a click event on the settingsAbout button on the top bar to display the about section of the app.
-    settingsAbout.addEventListener("click", e => {
-        e.preventDefault();
-        settingsContainers.forEach(cont => cont.style.display = "none");
-        settingsSelectionItems.forEach(item => item.parentNode.classList.remove("active"));
-        settingsAboutContainer.style.display = "initial";
-        settingsAbout.parentNode.classList.add("active");
-        settingsButtons.forEach(btn => btn.style.display = "none");
-        logsFolder.style.display = "none";
-    });
+    settingsBtnsInit(ipcRenderer, settingsAbout, settingsContainers, settingsSelectionItems, settingsAboutContainer, [], ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons"]);
     // Listen for a click event on the aboutGithub button in the about section in order to open the associated link in the default browser.
     aboutGithub.addEventListener("click", e => {
         e.preventDefault();
@@ -279,7 +241,7 @@ window.addEventListener("load", () => {
                 secondaryWindowHeight.classList.remove("validate", "valid");
             });
             // By default load the options section of the settings modal.
-        	settingsOptions.click();
+        	settingsDisplay.click();
         }
         // Read the tutorial.json file.
         fs.readFile(path.join(basePath, "Trak", "config", "tutorial.json"), "UTF8", (err, tutorialInfo) => {
@@ -299,7 +261,7 @@ window.addEventListener("load", () => {
             }
         	// Reset the values in the settings modal upon an exit.
         	const settingsModalInstance = M.Modal.init(document.getElementById("settingsModal"), { "onCloseStart": () => {
-                    settingsOptions.click();
+                    settingsDisplay.click();
         			primaryColor.value = primaryColor.getAttribute("lastValue");
     	    		secondaryColor.value = secondaryColor.getAttribute("lastValue");
     	    		appPath.value = appPath.getAttribute("lastValue");
