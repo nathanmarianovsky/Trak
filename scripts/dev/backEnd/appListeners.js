@@ -75,6 +75,19 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
     	app.quit();
     });
 
+    // Handle the load of the home page.
+  	ipc.on("home", event => {
+  		// Have the primary window load the corresponding html structure.
+  		mainWindow.loadFile(path.join(originalPath, "Trak", "localPages", "index.html"));
+  		// Proceed once the window has finished loading.
+  		mainWindow.webContents.on("did-finish-load", () => {
+  			// Send a request to the front-end to initialize the loading of library records on the primary window.
+  			mainWindow.webContents.send("loadRows", mainWindow.getContentSize()[1] - 800);
+			// Send a request to the front-end to initialize the application tutorial.
+  			tools.tutorialLoad(fs, path, log, mainWindow, originalPath);
+  		});
+  	});
+
   	// Handle the update of the notifications configuration file.
     ipc.on("notificationsSave", (event, submissionContent) => {
     	// Define the path to the notifications configuration file.
@@ -149,16 +162,31 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
     	});
     });
 
-  	// Handle the load of the home page.
-  	ipc.on("home", event => {
-  		// Have the primary window load the corresponding html structure.
-  		mainWindow.loadFile(path.join(originalPath, "Trak", "localPages", "index.html"));
-  		// Proceed once the window has finished loading.
-  		mainWindow.webContents.on("did-finish-load", () => {
-  			// Send a request to the front-end to initialize the loading of library records on the primary window.
-  			mainWindow.webContents.send("loadRows", mainWindow.getContentSize()[1] - 800);
-			// Send a request to the front-end to initialize the application tutorial.
-  			tools.tutorialLoad(fs, path, log, mainWindow, originalPath);
+	// Handle the update of the notifications interval in the notifications configuration file.
+	ipc.on("notificationsIntervalSave", (event, intervalSubmission) => {
+  		// Define the path to the notifications configuration file.
+  		const notificationsPath = path.join(originalPath, "Trak", "config", "notifications.json");
+		// Read the notifications configuration file.
+  		fs.readFile(notificationsPath, "UTF8", (err, file) => {
+  			// If an error occured in reading the notifications configuration file then log it and notify the user.
+  			if(err) {
+        		log.error("There was an issue reading the notifications configuration file.");
+        		event.sender.send("notificationsFileReadFailure");
+        	}
+        	// Otherwise, if no error was thrown proceed as designed.
+        	else {
+        		// Define the current notifications configuration setup and modfiy the interval accordingly.
+        		const curFile = JSON.parse(file);
+        		curFile.interval = parseInt(intervalSubmission);
+        		// Write the new interval to the notifications configuration file.
+        		fs.writeFile(notificationsPath, JSON.stringify(curFile), "UTF8", er => {
+        			// If an error occured in writing the notifications configuration file then log it and notify the user.
+        			if(er) {
+        				log.error("There was an issue writing to the notifications configuration file.");
+        				event.sender.send("notificationsFileWriteFailure");
+        			}
+        		});
+        	}
   		});
   	});
 
@@ -197,33 +225,6 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
         			if(er) {
         				log.error("There was an issue writing to the associations configuration file.");
         				event.sender.send("associationsFileWriteFailure");
-        			}
-        		});
-        	}
-  		});
-  	});
-
-  	ipc.on("notificationsIntervalSave", (event, intervalSubmission) => {
-  		// Define the path to the notifications configuration file.
-  		const notificationsPath = path.join(originalPath, "Trak", "config", "notifications.json");
-		// Read the notifications configuration file.
-  		fs.readFile(notificationsPath, "UTF8", (err, file) => {
-  			// If an error occured in reading the notifications configuration file then log it and notify the user.
-  			if(err) {
-        		log.error("There was an issue reading the notifications configuration file.");
-        		event.sender.send("notificationsFileReadFailure");
-        	}
-        	// Otherwise, if no error was thrown proceed as designed.
-        	else {
-        		// Define the current notifications configuration setup and modfiy the interval accordingly.
-        		const curFile = JSON.parse(file);
-        		curFile.interval = parseInt(intervalSubmission);
-        		// Write the new interval to the notifications configuration file.
-        		fs.writeFile(notificationsPath, JSON.stringify(curFile), "UTF8", er => {
-        			// If an error occured in writing the notifications configuration file then log it and notify the user.
-        			if(er) {
-        				log.error("There was an issue writing to the notifications configuration file.");
-        				event.sender.send("notificationsFileWriteFailure");
         			}
         		});
         	}

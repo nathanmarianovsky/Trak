@@ -114,12 +114,14 @@ window.addEventListener("load", () => {
         settingsColorReset = document.getElementById("settingsColorReset"),
         settingsDataReset = document.getElementById("settingsDataReset"),
         settingsSizesReset = document.getElementById("settingsSizesReset"),
+        settingsIntervalReset = document.getElementById("settingsIntervalReset"),
         aboutGithub = document.getElementById("aboutGithub"),
     	settingsApply = document.getElementById("settingsApply");
     // Define the relevant portions of the page that are in the settings rotation.
     const settingsDisplayContainer = document.getElementById("settingsDisplayContainer"),
         settingsInterfaceContainer = document.getElementById("settingsInterfaceContainer"),
         settingsDataContainer = document.getElementById("settingsDataContainer"),
+        settingsLogsContainer = document.getElementById("settingsLogsContainer"),
         settingsAboutContainer = document.getElementById("settingsAboutContainer"),
         settingsContainers = Array.from(document.getElementsByClassName("settingsContainer")),
         settingsSelectionItems = Array.from(document.getElementsByClassName("settingsSelectionItems"));
@@ -127,15 +129,17 @@ window.addEventListener("load", () => {
         ipcRenderer.send("logsFile");
     });
     // Listen for a click event on the settingsDisplay button on the top bar to display the display settings.
-    settingsBtnsInit(ipcRenderer, settingsDisplay, settingsContainers, settingsSelectionItems, settingsDisplayContainer, ["settingsDisplayButtons"], ["settingsLogsButtons", "settingsDataButtons"]);
+    settingsBtnsInit(ipcRenderer, settingsDisplay, settingsContainers, settingsSelectionItems, settingsDisplayContainer, ["settingsDisplayButtons"], ["settingsLogsButtons", "settingsDataButtons", "settingsInterfaceButtons"]);
     // Listen for a click event on the settingsInterface button on the top bar to display the interface settings.
-    settingsBtnsInit(ipcRenderer, settingsInterface, settingsContainers, settingsSelectionItems, settingsInterfaceContainer, [], ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons"]);
+    settingsBtnsInit(ipcRenderer, settingsInterface, settingsContainers, settingsSelectionItems, settingsInterfaceContainer, ["settingsInterfaceButtons"], ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons"]);
     // Listen for a click event on the settingsData button on the top bar to display the data settings.
-    settingsBtnsInit(ipcRenderer, settingsData, settingsContainers, settingsSelectionItems, settingsDataContainer, ["settingsDataButtons"], ["settingsDisplayButtons", "settingsLogsButtons"]);
+    settingsBtnsInit(ipcRenderer, settingsData, settingsContainers, settingsSelectionItems, settingsDataContainer, ["settingsDataButtons"], ["settingsDisplayButtons", "settingsLogsButtons", "settingsInterfaceButtons"]);
     // Listen for a click event on the settingsLogs button on the top bar to display the application logs.
-    settingsBtnsInit(ipcRenderer, settingsLogs, settingsContainers, settingsSelectionItems, settingsLogsContainer, ["settingsLogsButtons"], ["settingsDisplayButtons", "settingsDataButtons"]);
+    settingsBtnsInit(ipcRenderer, settingsLogs, settingsContainers, settingsSelectionItems, settingsLogsContainer, ["settingsLogsButtons"], ["settingsDisplayButtons", "settingsDataButtons", "settingsInterfaceButtons"]);
+    // Listen for a click event on the settingsAnalytics button on the top bar to display the record analytics.
+    settingsBtnsInit(ipcRenderer, settingsAnalytics, settingsContainers, settingsSelectionItems, settingsAnalyticsContainer, [], ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons", "settingsInterfaceButtons"]);
     // Listen for a click event on the settingsAbout button on the top bar to display the about section of the app.
-    settingsBtnsInit(ipcRenderer, settingsAbout, settingsContainers, settingsSelectionItems, settingsAboutContainer, [], ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons"]);
+    settingsBtnsInit(ipcRenderer, settingsAbout, settingsContainers, settingsSelectionItems, settingsAboutContainer, [], ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons", "settingsInterfaceButtons"]);
     // Listen for a click event on the aboutGithub button in the about section in order to open the associated link in the default browser.
     aboutGithub.addEventListener("click", e => {
         e.preventDefault();
@@ -180,46 +184,24 @@ window.addEventListener("load", () => {
         // If the file loaded without issues populate the settings modal with the current application setup.
         else {
         	const configData = JSON.parse(file);
-        	if(configData.current != undefined) {
-        		primaryColor.value = configData.current.primaryColor;
-        		primaryColor.setAttribute("lastValue", configData.current.primaryColor);
-        		secondaryColor.value = configData.current.secondaryColor;
-        		secondaryColor.setAttribute("lastValue", configData.current.secondaryColor);
-        		appPath.value = configData.current.path;
-        		appPath.setAttribute("lastValue", configData.current.path);
-        		primaryWindowWidth.value = configData.current.primaryWindowWidth;
-        		primaryWindowWidth.setAttribute("lastValue", configData.current.primaryWindowWidth);
-        		primaryWindowHeight.value = configData.current.primaryWindowHeight;
-        		primaryWindowHeight.setAttribute("lastValue", configData.current.primaryWindowHeight);
-                primaryWindowFullscreen.checked = configData.current.primaryWindowFullscreen;
-                primaryWindowFullscreen.setAttribute("lastValue", configData.current.primaryWindowFullscreen);
-        		secondaryWindowWidth.value = configData.current.secondaryWindowWidth;
-        		secondaryWindowWidth.setAttribute("lastValue", configData.current.secondaryWindowWidth);
-        		secondaryWindowHeight.value = configData.current.secondaryWindowHeight;
-        		secondaryWindowHeight.setAttribute("lastValue", configData.current.secondaryWindowHeight);
-                secondaryWindowFullscreen.checked = configData.current.secondaryWindowFullscreen;
-                secondaryWindowFullscreen.setAttribute("lastValue", configData.current.secondaryWindowFullscreen);
-        	}
-        	else {
-        		primaryColor.value = configData.original.primaryColor;
-        		primaryColor.setAttribute("lastValue", configData.original.primaryColor);
-        		secondaryColor.value = configData.original.secondaryColor;
-        		secondaryColor.setAttribute("lastValue", configData.original.secondaryColor);
-        		appPath.value = configData.original.path;
-        		appPath.setAttribute("lastValue", configData.original.path);
-        		primaryWindowWidth.value = configData.original.primaryWindowWidth;
-        		primaryWindowWidth.setAttribute("lastValue", configData.original.primaryWindowWidth);
-        		primaryWindowHeight.value = configData.original.primaryWindowHeight;
-        		primaryWindowHeight.setAttribute("lastValue", configData.original.primaryWindowHeight);
-                primaryWindowFullscreen.checked = configData.original.primaryWindowFullscreen;
-                primaryWindowFullscreen.setAttribute("lastValue", configData.original.primaryWindowFullscreen);
-        		secondaryWindowWidth.value = configData.original.secondaryWindowWidth;
-        		secondaryWindowWidth.setAttribute("lastValue", configData.original.secondaryWindowWidth);
-        		secondaryWindowHeight.value = configData.original.secondaryWindowHeight;
-        		secondaryWindowHeight.setAttribute("lastValue", configData.original.secondaryWindowHeight);
-                secondaryWindowFullscreen.checked = configData.original.secondaryWindowFullscreen;
-                secondaryWindowFullscreen.setAttribute("lastValue", configData.original.secondaryWindowFullscreen);
-        	}
+            primaryColor.value = configData[configData.current != undefined ? "current" : "original"].primaryColor;
+            primaryColor.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryColor);
+            secondaryColor.value = configData[configData.current != undefined ? "current" : "original"].secondaryColor;
+            secondaryColor.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryColor);
+            appPath.value = configData[configData.current != undefined ? "current" : "original"].path;
+            appPath.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].path);
+            primaryWindowWidth.value = configData[configData.current != undefined ? "current" : "original"].primaryWindowWidth;
+            primaryWindowWidth.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryWindowWidth);
+            primaryWindowHeight.value = configData[configData.current != undefined ? "current" : "original"].primaryWindowHeight;
+            primaryWindowHeight.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryWindowHeight);
+            primaryWindowFullscreen.checked = configData[configData.current != undefined ? "current" : "original"].primaryWindowFullscreen;
+            primaryWindowFullscreen.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryWindowFullscreen);
+            secondaryWindowWidth.value = configData[configData.current != undefined ? "current" : "original"].secondaryWindowWidth;
+            secondaryWindowWidth.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowWidth);
+            secondaryWindowHeight.value = configData[configData.current != undefined ? "current" : "original"].secondaryWindowHeight;
+            secondaryWindowHeight.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowHeight);
+            secondaryWindowFullscreen.checked = configData[configData.current != undefined ? "current" : "original"].secondaryWindowFullscreen;
+            secondaryWindowFullscreen.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowFullscreen);
             notificationsInterval.value = JSON.parse(fs.readFileSync(path.join(basePath, "Trak", "config", "notifications.json"), "UTF8")).interval;
             initSelect();
             // Listen for a click on the color reset button to restore the color inputs to the original values.
@@ -242,6 +224,10 @@ window.addEventListener("load", () => {
                 secondaryWindowWidth.classList.remove("validate", "valid");
                 secondaryWindowHeight.value = configData.original.secondaryWindowHeight;
                 secondaryWindowHeight.classList.remove("validate", "valid");
+            });
+            settingsIntervalReset.addEventListener("click", e => {
+                notificationsInterval.value = "14";
+                initSelect();
             });
             // By default load the options section of the settings modal.
         	settingsDisplay.click();

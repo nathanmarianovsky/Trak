@@ -2,7 +2,7 @@
 
 BASIC DETAILS: Provides all actions associated to working with the app settings.
 
-   - updateSettings: Handles the update of all settings files.
+   - updateSettings: Handles the update of the settings configuration file.
 
 */
 

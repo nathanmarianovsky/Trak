@@ -26,6 +26,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - notificationCreation: Creates a notification listing in the notifications modal.
     - notificationsListeners: Adds the listeners associated to a record notification listing.
     - convertToDays: Converts a length of time in milliseconds to days.
+    - settingsBtnsInit: Initializes the behavior for the top nav buttons on the settings modal.
 
 */
 
@@ -550,8 +551,10 @@ Adds the listeners associated to a record notification listing.
 
 */
 var notificationsListeners = ipcElec => {
+    // Define the list of checkboxes for notifications.
     const checkArr = Array.from(document.getElementsByClassName("notificationCheck")),
         globalCheck = document.getElementById("notificationsCheckAll");
+    // For each notification checkbox listen for a click in order to check or uncheck the global notifications checkbox.
     checkArr.forEach(itemCheck => {
         itemCheck.addEventListener("click", e => {
             checkArr.every(elem => elem.checked) ? globalCheck.checked = true : globalCheck.checked = false;
@@ -579,7 +582,20 @@ var convertToDays = milli => milli / (1000 * 60 * 60 * 24);
 
 
 
-var settingsBtnsInit = (ipcElec, btn, containers, selections, btnContainer, showList, hideList, callback) => {
+/*
+
+Initializes the behavior for the top nav buttons on the settings modal.
+
+   - ipcElec provides the means to operate the Electron app.
+   - btn is a page element corresponding to a button on the settings modal top nav.
+   - containers is a list of page elements corresponding to the containers of top nav buttons on the settings modal.
+   - selections is a list of page elements corresponding to the links of top nav buttons on the settings modal.
+   - btnContainer is a page element corresponding to the container of btn on the settings modal.
+   - showList is an array of class names corresponding to the buttons which are to be shown on the settings modal footer.
+   - hideList is an array of class names corresponding to the buttons which are to be hidden on the settings modal footer.
+
+*/
+var settingsBtnsInit = (ipcElec, btn, containers, selections, btnContainer, showList, hideList) => {
     // Listen for a click event on the settingsDisplay button on the top bar to display the display settings.
     btn.addEventListener("click", e => {
         e.preventDefault();

@@ -7,6 +7,7 @@
                     <li class="tooltipped" data-position="below" data-tooltip="Interface Settings"><a id="settingsInterface" class="settingsSelectionItems"><i class="material-icons">tune</i></a></li>
                     <li class="tooltipped" data-position="below" data-tooltip="Data Settings"><a id="settingsData" class="settingsSelectionItems"><i class="material-icons">dataset</i></a></li>
                     <li class="tooltipped" data-position="below" data-tooltip="Application Logs"><a id="settingsLogs" class="settingsSelectionItems"><i class="material-icons">feed</i></a></li>
+                    <li class="tooltipped" data-position="below" data-tooltip="Analytics"><a id="settingsAnalytics" class="settingsSelectionItems"><i class="material-icons">analytics</i></a></li>
                     <li class="tooltipped" data-position="below" data-tooltip="About"><a id="settingsAbout" class="settingsSelectionItems"><i class="material-icons">help_center</i></a></li>
                 </ul>
             </div>
@@ -105,6 +106,112 @@
         <h5 class="center settingsHeaders">Application Logs</h5>
         <div id="logsTerminal"></div>
     </div>
+    <div id="settingsAnalyticsContainer" class="settingsContainer">
+        <h5 class="center settingsHeaders">Record Analytics</h5>
+        <p>The analytics below displays numerical details associated to the library records.</p>
+        <table id="settingsAnalyticsTable" class="highlight">
+            <thead>
+                <tr>
+                    <th class="firstColumn"></th>
+                    <th class="center">Anime</th>
+                    <th class="center">Book</th>
+                    <th class="center">Film</th>
+                    <th class="center">Manga</th>
+                    <th class="center">Show</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="firstColumn">Total Records</td>
+                    <td id="settingsTotalAnime"></td>
+                    <td id="settingsTotalBook"></td>
+                    <td id="settingsTotalFilm"></td>
+                    <td id="settingsTotalManga"></td>
+                    <td id="settingsTotalShow"></td>
+                </tr>
+                <tr>
+                    <td class="firstColumn">Average Rating</td>
+                    <td id="settingsRatingAnime"></td>
+                    <td id="settingsRatingBook"></td>
+                    <td id="settingsRatingFilm"></td>
+                    <td id="settingsRatingManga"></td>
+                    <td id="settingsRatingShow"></td>
+                </tr>
+                <tr>
+                    <td class="firstColumn">Distinct Genres</td>
+                    <td id="settingsGenresAnime"></td>
+                    <td id="settingsGenresBook"></td>
+                    <td id="settingsGenresFilm"></td>
+                    <td id="settingsGenresManga"></td>
+                    <td id="settingsGenresShow"></td>
+                </tr>
+                <tr>
+                    <td class="firstColumn">Total Seasons</td>
+                    <td id="settingsSeasonsAnime"></td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td id="settingsSeasonsShow"></td>
+                </tr>
+                <tr>
+                    <td class="firstColumn">Total Episodes</td>
+                    <td id="settingsEpisodesAnime"></td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td id="settingsEpisodesShow"></td>
+                </tr>
+                <tr>
+                    <td class="firstColumn">Total ONAs</td>
+                    <td id="settingsONAsAnime"></td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td class="firstColumn">Total OVAs</td>
+                    <td id="settingsOVAsAnime"></td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td class="firstColumn">Total Specials</td>
+                    <td id="settingsSpecialsAnime"></td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td class="firstColumn">Total Movies</td>
+                    <td id="settingsMoviesAnime"></td>
+                    <td>N/A</td>
+                    <td id="settingsMoviesFilm"></td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td class="firstColumn">Total Volumes</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td id="settingsVolumesManga"></td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td class="firstColumn">Total Chapters</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td id="settingsChaptersManga"></td>
+                    <td>N/A</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <div id="settingsAboutContainer" class="settingsContainer">
         <p>
             Trak is an application designed to be the one for all stop of personal content cataloging. Maintaining records on here provides a visual upgrade when compared to using sheets without all the hassle along with the advantage of having offline records which cannot be offered by a website service. This is still a work in progress that can be monitored on <a id="aboutGithub" class="hyperlink">Github</a>. 
@@ -118,6 +225,7 @@
     <a id="settingsColorReset" class="left waves-effect waves-light btn-flat modalButtons settingsDisplayButtons">Colors Reset</a>
     <a id="settingsDataReset" class="left waves-effect waves-light btn-flat modalButtons settingsDataButtons">Data Reset</a>
     <a id="settingsSizesReset" class="left waves-effect waves-light btn-flat modalButtons settingsDisplayButtons">Sizes Reset</a>
+    <a id="settingsIntervalReset" class="left waves-effect waves-light btn-flat modalButtons settingsInterfaceButtons">Interval Reset</a>
     <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
     <a id="settingsApply" class="waves-effect waves-light btn-flat modalButtons">Apply</a>
 </div>

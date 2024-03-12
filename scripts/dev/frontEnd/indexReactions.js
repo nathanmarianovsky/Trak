@@ -369,9 +369,15 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         curTime = (new Date()).getTime(),
         notificationsArr = document.getElementById("notificationsCollection"),
         newNotificationsArr = [],
-        userInterval = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "config", "notifications.json"), "UTF8")).interval;
+        userInterval = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "config", "notifications.json"), "UTF8")).interval,
+        sumFunc = (accum, cur) => accum + cur;
     let list = [],
-        counters = [0,0,0,0,0];
+        counters = [0, 0, 0, 0, 0],
+        globalRatingsArr = [[],[],[],[],[]],
+        globalGenresArr = [[],[],[],[],[]],
+        globalAnimeTypes = [0, 0, 0, 0, 0, 0],
+        globalMangaTypes = [0, 0],
+        globalShowTypes = [0, 0];
     fs.existsSync(pathDir) ? list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()) : list = [];
     if(list.length > 0) {
         list = list.sort((lhs, rhs) => {
@@ -471,6 +477,12 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     }
                 }
             }
+            globalAnimeTypes[0] += seasonCount;
+            globalAnimeTypes[1] += episodeCount;
+            globalAnimeTypes[2] += onaCount;
+            globalAnimeTypes[3] += ovaCount;
+            globalAnimeTypes[4] += specialCount;
+            globalAnimeTypes[5] += movieCount;
             tdNameOuterDiv.classList.add("tooltipped");
             tdNameOuterDiv.setAttribute("data-position", "right");
             let movieStr = (movieCount == 1 ? "1 Movie" : movieCount + " Movies"),
@@ -509,7 +521,6 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         }
         else if(recordData.category == "Book") {
             let curCheck = (new Date(recordData.publicationDate)).getTime();
-            console.log(userInterval);
             if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                 newNotificationsArr.push([list[n], recordData.category, recordData.name, "Book", recordData.publicationDate, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
             }
@@ -534,6 +545,8 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].scenario, recordData.content[t].release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                 }
             }
+            globalMangaTypes[0] += volumeCount;
+            globalMangaTypes[1] += chapterCount;
             tdNameOuterDiv.classList.add("tooltipped");
             tdNameOuterDiv.setAttribute("data-position", "right");
             let chapterStr = (chapterCount == 1 ? "1 Chapter" : chapterCount + " Chapters"),
@@ -557,6 +570,8 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                 }
             }
+            globalShowTypes[0] += seasonCount;
+            globalShowTypes[1] += episodeCount;
             tdNameOuterDiv.classList.add("tooltipped");
             tdNameOuterDiv.setAttribute("data-position", "right");
             let seasonStr = (seasonCount == 1
@@ -632,16 +647,20 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                         }
                     }
                     if(ratingHolderArr.length > 0) {
-                        ratingHolder = (ratingHolderArr.reduce((accum, cur) => accum + cur, 0) / ratingHolderArr.length).toFixed(2);
+                        ratingHolder = (ratingHolderArr.reduce(sumFunc, 0) / ratingHolderArr.length).toFixed(2);
                         displayRatingArr.push(ratingHolder);
                     }
                 }
             }
-            if(displayRatingArr.length > 0) { displayRating = (displayRatingArr.reduce((accum, cur) => accum + cur, 0) / displayRatingArr.length).toFixed(2); }
+            if(displayRatingArr.length > 0) {
+                displayRating = (displayRatingArr.reduce(sumFunc, 0) / displayRatingArr.length).toFixed(2);
+                globalRatingsArr[0].push(parseFloat(displayRating));
+            }
             tdRatingDiv.textContent = displayRating;
         }
         else if(recordData.category == "Book" || recordData.category == "Film") {
             tdRatingDiv.textContent = recordData.rating != "" ? parseInt(recordData.rating).toFixed(2) : "N/A";
+            if(recordData.rating != "") { globalRatingsArr[recordData.category == "Book" ? 1 : 2].push(parseInt(recordData.rating)); }
         }
         else if(recordData.category == "Manga") {
             let displayRating = "N/A",
@@ -656,9 +675,10 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     }
                 }
             }
-            displayRating = displayRatingArr[0].length + displayRatingArr[1].length == 0 ? "N/A" : (((displayRatingArr[0].length == 0 ? 0 : (displayRatingArr[0].reduce((accum, cur) => accum + cur, 0) / displayRatingArr[0].length))
-                + (displayRatingArr[1].length == 0 ? 0 : (displayRatingArr[1].reduce((accum, cur) => accum + cur, 0) / displayRatingArr[1].length))) / (displayRatingArr[0].length != 0 && displayRatingArr[1].length != 0 ? 2 : 1)).toFixed(2);
+            displayRating = displayRatingArr[0].length + displayRatingArr[1].length == 0 ? "N/A" : (((displayRatingArr[0].length == 0 ? 0 : (displayRatingArr[0].reduce(sumFunc, 0) / displayRatingArr[0].length))
+                + (displayRatingArr[1].length == 0 ? 0 : (displayRatingArr[1].reduce(sumFunc, 0) / displayRatingArr[1].length))) / (displayRatingArr[0].length != 0 && displayRatingArr[1].length != 0 ? 2 : 1)).toFixed(2);
             tdRatingDiv.textContent = displayRating;
+            if(displayRating != "N/A") { globalRatingsArr[3].push(parseFloat(displayRating)); }
         }
         if(recordData.category == "Show") {
             let displayRating = "N/A",
@@ -672,11 +692,14 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     }
                 }
                 if(ratingHolderArr.length > 0) {
-                    ratingHolder = (ratingHolderArr.reduce((accum, cur) => accum + cur, 0) / ratingHolderArr.length).toFixed(2);
+                    ratingHolder = (ratingHolderArr.reduce(sumFunc, 0) / ratingHolderArr.length).toFixed(2);
                     displayRatingArr.push(ratingHolder);
                 }
             }
-            if(displayRatingArr.length > 0) { displayRating = (displayRatingArr.reduce((accum, cur) => accum + cur, 0) / displayRatingArr.length).toFixed(2); }
+            if(displayRatingArr.length > 0) {
+                displayRating = (displayRatingArr.reduce(sumFunc, 0) / displayRatingArr.length).toFixed(2);
+                globalRatingsArr[4].push(parseFloat(displayRating));
+            }
             tdRatingDiv.textContent = displayRating;
         }
         tdRatingDiv.classList.add("recordsRowDiv", "left");
@@ -709,6 +732,21 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     }
                     count++;
                 }
+                if(recordData.category == "Anime" && !globalGenresArr[0].includes(recordData.genres[0][y])) {
+                    globalGenresArr[0].push(recordData.genres[0][y]);
+                }
+                else if(recordData.category == "Book" && !globalGenresArr[1].includes(recordData.genres[0][y])) {
+                    globalGenresArr[1].push(recordData.genres[0][y]);
+                }
+                else if(recordData.category == "Film" && !globalGenresArr[2].includes(recordData.genres[0][y])) {
+                    globalGenresArr[2].push(recordData.genres[0][y]);
+                }
+                else if(recordData.category == "Manga" && !globalGenresArr[3].includes(recordData.genres[0][y])) {
+                    globalGenresArr[3].push(recordData.genres[0][y]);
+                }
+                else if(recordData.category == "Show" && !globalGenresArr[4].includes(recordData.genres[0][y])) {
+                    globalGenresArr[4].push(recordData.genres[0][y]);
+                }
             }
         }
         if(count < 3) {
@@ -716,6 +754,21 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                 if(count <= 3) {
                     rowGenreStrArr.push(recordData.genres[2][z].split(/(?=[A-Z])/).join(" "));
                     count++;
+                }
+                if(recordData.category == "Anime" && !globalGenresArr[0].includes(recordData.genres[2][z])) {
+                    globalGenresArr[0].push(recordData.genres[2][z]);
+                }
+                else if(recordData.category == "Book" && !globalGenresArr[1].includes(recordData.genres[2][z])) {
+                    globalGenresArr[1].push(recordData.genres[2][z]);
+                }
+                else if(recordData.category == "Film" && !globalGenresArr[2].includes(recordData.genres[2][z])) {
+                    globalGenresArr[2].push(recordData.genres[2][z]);
+                }
+                else if(recordData.category == "Manga" && !globalGenresArr[3].includes(recordData.genres[2][z])) {
+                    globalGenresArr[3].push(recordData.genres[2][z]);
+                }
+                else if(recordData.category == "Show" && !globalGenresArr[4].includes(recordData.genres[2][z])) {
+                    globalGenresArr[4].push(recordData.genres[2][z]);
                 }
             }
         }
@@ -844,7 +897,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         });
     }
     let bottomStr = "Total Records: " + list.length;
-    if(counters.reduce((accum, cur) => accum + cur, 0) > 0) {
+    if(counters.reduce(sumFunc, 0) > 0) {
         bottomStr += " (";
         for(let catIter = 0; catIter < counters.length; catIter++) {
             if(counters[catIter] > 0) {
@@ -852,7 +905,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
                     bottomStr += counters[0] + " Anime";
                 }
                 else {
-                    let prevSum = counters.slice(0, catIter).reduce((accum, cur) => accum + cur, 0);
+                    let prevSum = counters.slice(0, catIter).reduce(sumFunc, 0);
                     if(prevSum != 0) {
                         bottomStr += ", ";
                     }
@@ -874,7 +927,34 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         }
         bottomStr += ")";
     }
+    // Provide the settings modal with the library record analytics.
     document.getElementById("homeCounter").textContent = bottomStr;
+    document.getElementById("settingsTotalAnime").textContent = counters[0];
+    document.getElementById("settingsTotalBook").textContent = counters[1];
+    document.getElementById("settingsTotalFilm").textContent = counters[2];
+    document.getElementById("settingsTotalManga").textContent = counters[3];
+    document.getElementById("settingsTotalShow").textContent = counters[4];
+    document.getElementById("settingsRatingAnime").textContent = (globalRatingsArr[0].length > 0 ? (globalRatingsArr[0].reduce(sumFunc, 0) / globalRatingsArr[0].length).toFixed(2) : "N/A");
+    document.getElementById("settingsRatingBook").textContent = (globalRatingsArr[1].length > 0 ? (globalRatingsArr[1].reduce(sumFunc, 0) / globalRatingsArr[1].length).toFixed(2) : "N/A");
+    document.getElementById("settingsRatingFilm").textContent = (globalRatingsArr[2].length > 0 ? (globalRatingsArr[2].reduce(sumFunc, 0) / globalRatingsArr[2].length).toFixed(2) : "N/A");
+    document.getElementById("settingsRatingManga").textContent = (globalRatingsArr[3].length > 0 ? (globalRatingsArr[3].reduce(sumFunc, 0) / globalRatingsArr[3].length).toFixed(2) : "N/A");
+    document.getElementById("settingsRatingShow").textContent = (globalRatingsArr[4].length > 0 ? (globalRatingsArr[4].reduce(sumFunc, 0) / globalRatingsArr[4].length).toFixed(2) : "N/A");
+    document.getElementById("settingsGenresAnime").textContent = globalGenresArr[0].length;
+    document.getElementById("settingsGenresBook").textContent = globalGenresArr[1].length;
+    document.getElementById("settingsGenresFilm").textContent = globalGenresArr[2].length;
+    document.getElementById("settingsGenresManga").textContent = globalGenresArr[3].length;
+    document.getElementById("settingsGenresShow").textContent = globalGenresArr[4].length;
+    document.getElementById("settingsSeasonsAnime").textContent = globalAnimeTypes[0];
+    document.getElementById("settingsEpisodesAnime").textContent = globalAnimeTypes[1];
+    document.getElementById("settingsONAsAnime").textContent = globalAnimeTypes[2];
+    document.getElementById("settingsOVAsAnime").textContent = globalAnimeTypes[3];
+    document.getElementById("settingsSpecialsAnime").textContent = globalAnimeTypes[4];
+    document.getElementById("settingsMoviesAnime").textContent = globalAnimeTypes[5];
+    document.getElementById("settingsMoviesFilm").textContent = counters[2];
+    document.getElementById("settingsVolumesManga").textContent = globalMangaTypes[0];
+    document.getElementById("settingsChaptersManga").textContent = globalMangaTypes[1];
+    document.getElementById("settingsSeasonsShow").textContent = globalShowTypes[0];
+    document.getElementById("settingsEpisodesShow").textContent = globalShowTypes[1];
     // Send a request to the back-end to update the list of notifications based on the current list of records.
     ipcRenderer.send("notificationsSave", newNotificationsArr);
     // Once the back-end has processed the list of notifications sent over display the appropriate notifications on the home page.
