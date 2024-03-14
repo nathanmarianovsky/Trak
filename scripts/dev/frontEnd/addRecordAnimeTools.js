@@ -64,26 +64,26 @@ var animeSave = () => {
                     curContent = [];
                 // Attain the details on a film/ONA/OVA.
                 if(animeListChildCondition == "Single") {
-                    let singleName = document.getElementById("li_" + q + "_Single_Name").value,
-                        singleType = document.getElementById("li_" + q + "_Single_Type").value,
-                        singleRelease = document.getElementById("li_" + q + "_Single_Release").value,
-                        singleLastWatched = document.getElementById("li_" + q + "_Single_LastWatched").value,
-                        singleRating = document.getElementById("li_" + q + "_Single_Rating").value,
-                        singleReview = document.getElementById("li_" + q + "_Single_Review").value;
+                    let singleName = document.getElementById("li_" + q + "_AnimeSingle_Name").value,
+                        singleType = document.getElementById("li_" + q + "_AnimeSingle_Type").value,
+                        singleRelease = document.getElementById("li_" + q + "_AnimeSingle_Release").value,
+                        singleLastWatched = document.getElementById("li_" + q + "_AnimeSingle_LastWatched").value,
+                        singleRating = document.getElementById("li_" + q + "_AnimeSingle_Rating").value,
+                        singleReview = document.getElementById("li_" + q + "_AnimeSingle_Review").value;
                     curContent.push("Single", singleName, singleType, singleRelease, singleLastWatched, singleRating, singleReview);
                 }
                 // Attain the details on a season and its episodes.
                 else if(animeListChildCondition == "Season") {
-                    let seasonName = document.getElementById("li_" + q + "_Season_Name").value,
-                        seasonStart = document.getElementById("li_" + q + "_Season_Start").value,
-                        seasonEnd = document.getElementById("li_" + q + "_Season_End").value,
-                        seasonStatus = document.getElementById("li_" + q + "_Season_Status").value,
+                    let seasonName = document.getElementById("li_" + q + "_AnimeSeason_Name").value,
+                        seasonStart = document.getElementById("li_" + q + "_AnimeSeason_Start").value,
+                        seasonEnd = document.getElementById("li_" + q + "_AnimeSeason_End").value,
+                        seasonStatus = document.getElementById("li_" + q + "_AnimeSeason_Status").value,
                         seasonEpisodes = [];
                     for(let r = 1; r < animeListChild.children[1].children[0].children.length + 1; r++) {
-                        let seasonEpisodeName = document.getElementById("li_" + q + "_Episode_Name_" + r).value,
-                            seasonEpisodeLastWatched = document.getElementById("li_" + q + "_Episode_LastWatched_" + r).value,
-                            seasonEpisodeRating = document.getElementById("li_" + q + "_Episode_Rating_" + r).value,
-                            seasonEpisodeReview = document.getElementById("li_" + q + "_Episode_Review_" + r).value;
+                        let seasonEpisodeName = document.getElementById("li_" + q + "_AnimeEpisode_Name_" + r).value,
+                            seasonEpisodeLastWatched = document.getElementById("li_" + q + "_AnimeEpisode_LastWatched_" + r).value,
+                            seasonEpisodeRating = document.getElementById("li_" + q + "_AnimeEpisode_Rating_" + r).value,
+                            seasonEpisodeReview = document.getElementById("li_" + q + "_AnimeEpisode_Review_" + r).value;
                         seasonEpisodes.push([seasonEpisodeName, seasonEpisodeLastWatched, seasonEpisodeRating, seasonEpisodeReview]);
                     }
                     curContent.push("Season", seasonName, seasonStart, seasonEnd, seasonStatus, seasonEpisodes);
@@ -248,17 +248,17 @@ var animeListReorganize = () => {
                 singleRatingSelect = childHeader.children[4].children[0].children[3],
                 singleReviewInput = childBody.children[0].children[0].children[0].children[0],
                 singleReviewLabel = childBody.children[0].children[0].children[0].children[1];
-            child.setAttribute("id", "li_" + i + "_Single");
-            singleNameInput.setAttribute("id", "li_" + i + "_Single_Name");
-            singleNameLabel.setAttribute("for", "li_" + i + "_Single_Name");
-            singleTypeSelect.setAttribute("id", "li_" + i + "_Single_Type");
-            singleReleaseInput.setAttribute("id", "li_" + i + "_Single_Release");
-            singleReleaseLabel.setAttribute("for", "li_" + i + "_Single_Release");
-            singleLastWatchedInput.setAttribute("id", "li_" + i + "_Single_LastWatched");
-            singleLastWatchedLabel.setAttribute("for", "li_" + i + "_Single_LastWatched");
-            singleRatingSelect.setAttribute("id", "li_" + i + "_Single_Rating");
-            singleReviewInput.setAttribute("id", "li_" + i + "_Single_Review");
-            singleReviewLabel.setAttribute("for", "li_" + i + "_Single_Review");
+            child.setAttribute("id", "li_" + i + "_AnimeSingle");
+            singleNameInput.setAttribute("id", "li_" + i + "_AnimeSingle_Name");
+            singleNameLabel.setAttribute("for", "li_" + i + "_AnimeSingle_Name");
+            singleTypeSelect.setAttribute("id", "li_" + i + "_AnimeSingle_Type");
+            singleReleaseInput.setAttribute("id", "li_" + i + "_AnimeSingle_Release");
+            singleReleaseLabel.setAttribute("for", "li_" + i + "_AnimeSingle_Release");
+            singleLastWatchedInput.setAttribute("id", "li_" + i + "_AnimeSingle_LastWatched");
+            singleLastWatchedLabel.setAttribute("for", "li_" + i + "_AnimeSingle_LastWatched");
+            singleRatingSelect.setAttribute("id", "li_" + i + "_AnimeSingle_Rating");
+            singleReviewInput.setAttribute("id", "li_" + i + "_AnimeSingle_Review");
+            singleReviewLabel.setAttribute("for", "li_" + i + "_AnimeSingle_Review");
         }
         // If the item is of type season then change the id and for attributes accordingly.
         else if(childType == "Season") {
@@ -271,16 +271,16 @@ var animeListReorganize = () => {
                 seasonStatusSelect = childHeader.children[3].children[0].children[3],
                 seasonAverageRatingInput = childHeader.children[4].children[0],
                 seasonAverageRatingLabel = childHeader.children[4].children[1];
-            child.setAttribute("id", "li_" + i + "_Season");
-            seasonNameInput.setAttribute("id", "li_" + i + "_Season_Name");
-            seasonNameLabel.setAttribute("for", "li_" + i + "_Season_Name");
-            seasonStartInput.setAttribute("id", "li_" + i + "_Season_Start");
-            seasonStartLabel.setAttribute("for", "li_" + i + "_Season_Start");
-            seasonEndInput.setAttribute("id", "li_" + i + "_Season_End");
-            seasonEndLabel.setAttribute("for", "li_" + i + "_Season_End");
-            seasonStatusSelect.setAttribute("id", "li_" + i + "_Season_Status");
-            seasonAverageRatingInput.setAttribute("id", "li_" + i + "_Season_AverageRating");
-            seasonAverageRatingLabel.setAttribute("for", "li_" + i + "_Season_AverageRating");
+            child.setAttribute("id", "li_" + i + "_AnimeSeason");
+            seasonNameInput.setAttribute("id", "li_" + i + "_AnimeSeason_Name");
+            seasonNameLabel.setAttribute("for", "li_" + i + "_AnimeSeason_Name");
+            seasonStartInput.setAttribute("id", "li_" + i + "_AnimeSeason_Start");
+            seasonStartLabel.setAttribute("for", "li_" + i + "_AnimeSeason_Start");
+            seasonEndInput.setAttribute("id", "li_" + i + "_AnimeSeason_End");
+            seasonEndLabel.setAttribute("for", "li_" + i + "_AnimeSeason_End");
+            seasonStatusSelect.setAttribute("id", "li_" + i + "_AnimeSeason_Status");
+            seasonAverageRatingInput.setAttribute("id", "li_" + i + "_AnimeSeason_AverageRating");
+            seasonAverageRatingLabel.setAttribute("for", "li_" + i + "_AnimeSeason_AverageRating");
             // Iterate through the season episodes and change the id and for attributes accordingly.
             for(let j = 1; j < childBody.children[0].children.length + 1; j++) {
                 let episodeChild = childBody.children[0].children[j - 1],
@@ -291,13 +291,13 @@ var animeListReorganize = () => {
                     episodeChildRatingSelect = episodeChild.children[2].children[0].children[3],
                     episodeChildReviewInput = episodeChild.children[3].children[0],
                     episodeChildReviewLabel = episodeChild.children[3].children[1];
-                episodeChildNameInput.setAttribute("id", "li_" + i + "_Episode_Name_" + j);
-                episodeChildNameLabel.setAttribute("for", "li_" + i + "_Episode_Name_" + j);
-                episodeChildLastWatchedInput.setAttribute("id", "li_" + i + "_Episode_LastWatched_" + j);
-                episodeChildLastWatchedLabel.setAttribute("for", "li_" + i + "_Episode_LastWatched_" + j);
-                episodeChildRatingSelect.setAttribute("id", "li_" + i + "_Episode_Rating_" + j);
-                episodeChildReviewInput.setAttribute("id", "li_" + i + "_Episode_Review_" + j);
-                episodeChildReviewLabel.setAttribute("for", "li_" + i + "_Episode_Review_" + j);
+                episodeChildNameInput.setAttribute("id", "li_" + i + "_AnimeEpisode_Name_" + j);
+                episodeChildNameLabel.setAttribute("for", "li_" + i + "_AnimeEpisode_Name_" + j);
+                episodeChildLastWatchedInput.setAttribute("id", "li_" + i + "_AnimeEpisode_LastWatched_" + j);
+                episodeChildLastWatchedLabel.setAttribute("for", "li_" + i + "_AnimeEpisode_LastWatched_" + j);
+                episodeChildRatingSelect.setAttribute("id", "li_" + i + "_AnimeEpisode_Rating_" + j);
+                episodeChildReviewInput.setAttribute("id", "li_" + i + "_AnimeEpisode_Review_" + j);
+                episodeChildReviewLabel.setAttribute("for", "li_" + i + "_AnimeEpisode_Review_" + j);
             }
         }
     }
@@ -319,11 +319,11 @@ var animeSeasonContentButtons = (ratingSelect, delButton) => {
         // Calculate the new average of the anime season rating based on the ratings of the episodes.
         let selectIdArr = e.target.id.split("_"),
             seasonNum = selectIdArr[1],
-            episodesArr = document.querySelectorAll('[id^="li_' + seasonNum + '_Episode_Rating_"]'),
+            episodesArr = document.querySelectorAll('[id^="li_' + seasonNum + '_AnimeEpisode_Rating_"]'),
             episodesArrFiltered = Array.from(episodesArr).filter(elem => elem.value != ""),
             avg = episodesArrFiltered.reduce((total, current) => total + parseInt(current.value), 0) / episodesArrFiltered.length;
         // Write the new rating average to the page.
-        document.getElementById("li_" + seasonNum + "_Season_AverageRating").value = avg.toFixed(2);
+        document.getElementById("li_" + seasonNum + "_AnimeSeason_AverageRating").value = avg.toFixed(2);
         // Calculate and write the new anime global rating.
         calculateAnimeRating();
     });
@@ -341,18 +341,18 @@ var animeSeasonContentButtons = (ratingSelect, delButton) => {
         // Reoganize the ids of the modal list items.
         animeListReorganize();
         // Calculate the new average of the anime season rating based on the ratings of the episodes.
-        let episodesArr = document.querySelectorAll('[id^="li_' + seasonNum + '_Episode_Rating_"]'),
+        let episodesArr = document.querySelectorAll('[id^="li_' + seasonNum + '_AnimeEpisode_Rating_"]'),
             episodesArrFiltered = Array.from(episodesArr).filter(elem => elem.value != "");
         // If the list of ratings available has at least one entry then define the average properly.
         if(episodesArrFiltered.length > 0) {
             let avg = episodesArrFiltered.reduce((total, current) => total + parseInt(current.value), 0) / episodesArrFiltered.length;
             // Write the new rating average to the page.
-            document.getElementById("li_" + seasonNum + "_Season_AverageRating").value = avg.toFixed(2);
+            document.getElementById("li_" + seasonNum + "_AnimeSeason_AverageRating").value = avg.toFixed(2);
         }
         // If there are no ratings available then set the season ratings average to the default value.
         else {
             // Write the new rating average to the page.
-            document.getElementById("li_" + seasonNum + "_Season_AverageRating").value = "N/A";
+            document.getElementById("li_" + seasonNum + "_AnimeSeason_AverageRating").value = "N/A";
         }
         // Calculate and write the new anime global rating.
         calculateAnimeRating();
@@ -437,23 +437,23 @@ var animeEpisodeAddition = tgt => {
         seasonEpisodeDeleteIcon = document.createElement("i");
     // Prepare the season episode name.
     seasonEpisodeNameInput.setAttribute("type", "text");
-    seasonEpisodeNameInput.setAttribute("id", "li_" + addTargetNum + "_Episode_Name_" + (tgt.children[1].children[0].children.length + 1));
+    seasonEpisodeNameInput.setAttribute("id", "li_" + addTargetNum + "_AnimeEpisode_Name_" + (tgt.children[1].children[0].children.length + 1));
     seasonEpisodeNameInput.classList.add("validate", "left");
-    seasonEpisodeNameLabel.setAttribute("for", "li_" + addTargetNum + "_Episode_Name_" + (tgt.children[1].children[0].children.length + 1));
+    seasonEpisodeNameLabel.setAttribute("for", "li_" + addTargetNum + "_AnimeEpisode_Name_" + (tgt.children[1].children[0].children.length + 1));
     seasonEpisodeNameLabel.textContent = "Episode Name:";
     seasonEpisodeNameDiv.classList.add("input-field", "col", "s2");
     // Prepare the season episode last watched date.
     seasonEpisodeLastWatchedInput.classList.add("validate", "left");
-    seasonEpisodeLastWatchedInput.setAttribute("id", "li_" + addTargetNum + "_Episode_LastWatched_" + (tgt.children[1].children[0].children.length + 1));
+    seasonEpisodeLastWatchedInput.setAttribute("id", "li_" + addTargetNum + "_AnimeEpisode_LastWatched_" + (tgt.children[1].children[0].children.length + 1));
     seasonEpisodeLastWatchedInput.setAttribute("type", "date");
-    seasonEpisodeLastWatchedLabel.setAttribute("for", "li_" + addTargetNum + "_Episode_LastWatched_" + (tgt.children[1].children[0].children.length + 1));
+    seasonEpisodeLastWatchedLabel.setAttribute("for", "li_" + addTargetNum + "_AnimeEpisode_LastWatched_" + (tgt.children[1].children[0].children.length + 1));
     seasonEpisodeLastWatchedLabel.textContent = "Last Watched:";
     seasonEpisodeLastWatchedDiv.classList.add("input-field", "col", "s2");
     // Prepare the season episode rating.
     seasonEpisodeRatingDefOption.setAttribute("value", "");
     seasonEpisodeRatingDefOption.setAttribute("selected", "true");
     seasonEpisodeRatingDefOption.textContent = "N/A";
-    seasonEpisodeRatingSelect.setAttribute("id", "li_" + addTargetNum + "_Episode_Rating_" + (tgt.children[1].children[0].children.length + 1));
+    seasonEpisodeRatingSelect.setAttribute("id", "li_" + addTargetNum + "_AnimeEpisode_Rating_" + (tgt.children[1].children[0].children.length + 1));
     seasonEpisodeRatingSelect.append(seasonEpisodeRatingDefOption);
     for(let t = 0; t < 11; t++) {
         let newOption = document.createElement("option");
@@ -464,9 +464,9 @@ var animeEpisodeAddition = tgt => {
     seasonEpisodeRatingLabel.textContent = "Rating:";
     seasonEpisodeRatingDiv.classList.add("input-field", "col", "s2", "selectShortVerticalScroll");
     // Prepare the season episode review.
-    seasonEpisodeReviewInput.setAttribute("id", "li_" + addTargetNum + "_Episode_Review_" + (tgt.children[1].children[0].children.length + 1));
+    seasonEpisodeReviewInput.setAttribute("id", "li_" + addTargetNum + "_AnimeEpisode_Review_" + (tgt.children[1].children[0].children.length + 1));
     seasonEpisodeReviewInput.classList.add("validate", "materialize-textarea");
-    seasonEpisodeReviewLabel.setAttribute("for", "li_" + addTargetNum + "_Episode_Review_" + (tgt.children[1].children[0].children.length + 1));
+    seasonEpisodeReviewLabel.setAttribute("for", "li_" + addTargetNum + "_AnimeEpisode_Review_" + (tgt.children[1].children[0].children.length + 1));
     seasonEpisodeReviewLabel.textContent = "Comments/Review:";
     seasonEpisodeReviewDiv.classList.add("input-field", "col", "s5");
     // Prepare the season episode button for deleting the episode.
@@ -589,9 +589,9 @@ var animeSingleAddition = () => {
     divSingleName.classList.add("input-field");
     divSingleName.style.width = "20%";
     inputSingleName.classList.add("validate", "left");
-    inputSingleName.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Name");
+    inputSingleName.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSingle_Name");
     inputSingleName.setAttribute("type", "text");
-    labelSingleName.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_Name");
+    labelSingleName.setAttribute("for", "li_" + (animeList.children.length + 1) + "_AnimeSingle_Name");
     labelSingleName.textContent = "Name:";
     // Prepare the single type.
     divSingleType.classList.add("input-field");
@@ -608,25 +608,25 @@ var animeSingleAddition = () => {
     option5SingleType.setAttribute("value", "Special");
     option5SingleType.textContent = "Special";
     selectSingleType.append(option1SingleType, option2SingleType, option3SingleType, option4SingleType, option5SingleType);
-    selectSingleType.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Type");
+    selectSingleType.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSingle_Type");
     labelSingleType.textContent = "Type:";
     // Prepare the film/ONA/OVA release date.
     divSingleReleaseDate.classList.add("input-field");
     divSingleReleaseDate.style.width = "20%";
     divSingleReleaseDate.style.marginLeft = "25px";
     inputSingleReleaseDate.classList.add("validate", "left");
-    inputSingleReleaseDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Release");
+    inputSingleReleaseDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSingle_Release");
     inputSingleReleaseDate.setAttribute("type", "date");
-    labelSingleReleaseDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_Release");
+    labelSingleReleaseDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_AnimeSingle_Release");
     labelSingleReleaseDate.textContent = "Release Date:";
     // Prepare the film/ONA/OVA last watched date.
     divSingleLastWatchedDate.classList.add("input-field");
     divSingleLastWatchedDate.style.width = "20%";
     divSingleLastWatchedDate.style.marginLeft = "25px";
     inputSingleLastWatchedDate.classList.add("validate", "left");
-    inputSingleLastWatchedDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_LastWatched");
+    inputSingleLastWatchedDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSingle_LastWatched");
     inputSingleLastWatchedDate.setAttribute("type", "date");
-    labelSingleLastWatchedDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_LastWatched");
+    labelSingleLastWatchedDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_AnimeSingle_LastWatched");
     labelSingleLastWatchedDate.textContent = "Last Watched Date:";
     // Prepare the film/ONA/OVA rating.
     divSingleRating.classList.add("input-field", "selectShortVerticalScroll");
@@ -635,7 +635,7 @@ var animeSingleAddition = () => {
     defOptionSingleRating.setAttribute("value", "");
     defOptionSingleRating.setAttribute("selected", "true");
     defOptionSingleRating.textContent = "N/A";
-    selectSingleRating.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Rating");
+    selectSingleRating.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSingle_Rating");
     selectSingleRating.append(defOptionSingleRating);
     for(let t = 0; t < 11; t++) {
         let newOption = document.createElement("option");
@@ -658,8 +658,8 @@ var animeSingleAddition = () => {
     divSingleReview.classList.add("row");
     spanSingleReview.classList.add("input-field", "col", "s12");
     inputSingleReview.classList.add("validate", "materialize-textarea");
-    inputSingleReview.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single_Review");
-    labelSingleReview.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Single_Review");
+    inputSingleReview.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSingle_Review");
+    labelSingleReview.setAttribute("for", "li_" + (animeList.children.length + 1) + "_AnimeSingle_Review");
     labelSingleReview.textContent = "Comments/Review:";
     // Attach all season components to the list item.
     itemSingleDivHeader.classList.add("collapsible-header");
@@ -681,7 +681,7 @@ var animeSingleAddition = () => {
     // Attach the list item to the page modal.
     itemSingleLI.setAttribute("draggable", "true");
     itemSingleLI.classList.add("dropzone");
-    itemSingleLI.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Single");
+    itemSingleLI.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSingle");
     itemSingleLI.append(itemSingleDivHeader, itemSingleDivBody);
     animeList.append(itemSingleLI);
     // Add the button listeners associated to a film/ONA/OVA.
@@ -733,27 +733,27 @@ var animeSeasonAddition = () => {
     divName.classList.add("input-field");
     divName.style.width = "17%";
     inputName.classList.add("validate", "left");
-    inputName.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_Name");
+    inputName.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSeason_Name");
     inputName.setAttribute("type", "text");
-    labelName.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_Name");
+    labelName.setAttribute("for", "li_" + (animeList.children.length + 1) + "_AnimeSeason_Name");
     labelName.textContent = "Season Name:";
     // Prepare the season start date.
     divStartDate.classList.add("input-field");
     divStartDate.style.width = "15%";
     divStartDate.style.marginLeft = "25px";
     inputStartDate.classList.add("validate", "left");
-    inputStartDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_Start");
+    inputStartDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSeason_Start");
     inputStartDate.setAttribute("type", "date");
-    labelStartDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_Start");
+    labelStartDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_AnimeSeason_Start");
     labelStartDate.textContent = "Season Start Date:";
     // Prepare the season end date.
     divEndDate.classList.add("input-field");
     divEndDate.style.width = "15%";
     divEndDate.style.marginLeft = "25px";
     inputEndDate.classList.add("validate", "left");
-    inputEndDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_End");
+    inputEndDate.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSeason_End");
     inputEndDate.setAttribute("type", "date");
-    labelEndDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_End");
+    labelEndDate.setAttribute("for", "li_" + (animeList.children.length + 1) + "_AnimeSeason_End");
     labelEndDate.textContent = "Season End Date:";
     // Prepare the season status.
     divStatus.classList.add("input-field");
@@ -772,19 +772,19 @@ var animeSeasonAddition = () => {
     option6Status.setAttribute("value", "Plan To Watch");
     option6Status.textContent = "Plan To Watch";
     selectStatus.append(option1Status, option2Status, option3Status, option4Status, option5Status, option6Status);
-    selectStatus.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_Status");
+    selectStatus.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSeason_Status");
     labelStatus.textContent = "Status:";
     // Prepare the season average rating.
     divAverageRating.classList.add("input-field");
     divAverageRating.style.width = "13%";
     divAverageRating.style.marginLeft = "25px";
     inputAverageRating.classList.add("left");
-    inputAverageRating.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_AverageRating");
+    inputAverageRating.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSeason_AverageRating");
     inputAverageRating.setAttribute("type", "text");
     inputAverageRating.readOnly = "true";
     inputAverageRating.value = "N/A";
     labelAverageRating.classList.add("active");
-    labelAverageRating.setAttribute("for", "li_" + (animeList.children.length + 1) + "_Season_AverageRating");
+    labelAverageRating.setAttribute("for", "li_" + (animeList.children.length + 1) + "_AnimeSeason_AverageRating");
     labelAverageRating.textContent = "Average Rating:";
     // Prepare the season button for adding an episode.
     divAdd.classList.add("input-field");
@@ -796,7 +796,7 @@ var animeSeasonAddition = () => {
     spanAdd.classList.add("modalContentButtons", "modalContentAdd");
     iconAdd.textContent = "add";
     iconAdd.classList.add("material-icons");
-    iconAdd.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season_AddEpisode");
+    iconAdd.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSeason_AddEpisode");
     // Prepare the season button for deleting the season.
     divDelete.classList.add("input-field");
     divDelete.style.width = "5%";
@@ -826,7 +826,7 @@ var animeSeasonAddition = () => {
     // Attach the list item to the page modal.
     itemLI.setAttribute("draggable", "true");
     itemLI.classList.add("dropzone");
-    itemLI.setAttribute("id", "li_" + (animeList.children.length + 1) + "_Season");
+    itemLI.setAttribute("id", "li_" + (animeList.children.length + 1) + "_AnimeSeason");
     itemLI.append(itemDivHeader, itemDivBody);
     animeList.append(itemLI);
     // Add the button listeners associated to an anime season.

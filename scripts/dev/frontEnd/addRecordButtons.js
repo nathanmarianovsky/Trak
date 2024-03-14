@@ -129,12 +129,12 @@ var recordChoicesButtons = () => {
                 if(newResponse[5] == "TV" || parseInt(newResponse[6]) > 1) {
                     // Attach a season.
                     animeSeasonAddition();
-                    const seasonName = document.getElementById("li_" + listNum + "_Season_Name");
+                    const seasonName = document.getElementById("li_" + listNum + "_AnimeSeason_Name");
                     // If the start date is provided then set it as the value for the season start date input. 
                     if(newResponse[3] != "") {
                         let dateStart = new Date(newResponse[3]);
                         dateStart.setDate(dateStart.getDate() - 1);
-                        document.getElementById("li_" + listNum + "_Season_Start").value = dateStart.getFullYear() + "-"
+                        document.getElementById("li_" + listNum + "_AnimeSeason_Start").value = dateStart.getFullYear() + "-"
                             + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
                             + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
                     }
@@ -142,7 +142,7 @@ var recordChoicesButtons = () => {
                     if(newResponse[4] != "") {
                         let dateEnd = new Date(newResponse[4]);
                         dateEnd.setDate(dateEnd.getDate() - 1);
-                        document.getElementById("li_" + listNum + "_Season_End").value = dateEnd.getFullYear() + "-"
+                        document.getElementById("li_" + listNum + "_AnimeSeason_End").value = dateEnd.getFullYear() + "-"
                             + (dateEnd.getMonth() + 1 > 9 ? dateEnd.getMonth() + 1 : "0" + (dateEnd.getMonth() + 1)) + "-"
                             + (dateEnd.getDate() + 1 > 9 ? dateEnd.getDate() + 1 : "0" + (dateEnd.getDate() + 1));
                     }
@@ -152,8 +152,8 @@ var recordChoicesButtons = () => {
                     seasonName.nextElementSibling.classList.add("active");
                     // Add the appropriate number of episodes with a default episode name.
                     for(let f = 0; f < parseInt(newResponse[6]); f++) {
-                        document.getElementById("li_" + listNum + "_Season_AddEpisode").click();
-                        let episodeName = document.getElementById("li_" + listNum + "_Episode_Name_" + (f + 1));
+                        document.getElementById("li_" + listNum + "_AnimeSeason_AddEpisode").click();
+                        let episodeName = document.getElementById("li_" + listNum + "_AnimeEpisode_Name_" + (f + 1));
                         episodeName.value = "Episode " + (f + 1);
                         episodeName.classList.add("valid");
                         episodeName.nextElementSibling.classList.add("active");
@@ -164,13 +164,13 @@ var recordChoicesButtons = () => {
                 else {
                     // Attach a single film/ona/ova.
                     animeSingleAddition();
-                    const singleName = document.getElementById("li_" + listNum + "_Single_Name"),
-                        singleType = document.getElementById("li_" + listNum + "_Single_Type");
+                    const singleName = document.getElementById("li_" + listNum + "_AnimeSingle_Name"),
+                        singleType = document.getElementById("li_" + listNum + "_AnimeSingle_Type");
                     // If the release date is provided then set it as the value for the single release date input. 
                     if(newResponse[3] != "") {
                         let dateStart = new Date(newResponse[3]);
                         dateStart.setDate(dateStart.getDate() - 1);
-                        document.getElementById("li_" + listNum + "_Single_Release").value = dateStart.getFullYear() + "-"
+                        document.getElementById("li_" + listNum + "_AnimeSingle_Release").value = dateStart.getFullYear() + "-"
                             + (dateStart.getMonth() + 1 > 9 ? dateStart.getMonth() + 1 : "0" + (dateStart.getMonth() + 1)) + "-"
                             + (dateStart.getDate() + 1 > 9 ? dateStart.getDate() + 1 : "0" + (dateStart.getDate() + 1));
                     }

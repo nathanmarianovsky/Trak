@@ -447,21 +447,11 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
         if(recordData.category == "Anime" && recordData.content.length > 0) {
             let movieCount = 0, onaCount = 0, ovaCount = 0, specialCount = 0, unclassifiedCount = 0, seasonCount = 0, episodeCount = 0;
             for(let t = 0; t < recordData.content.length; t++) {
-                if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Movie") {
-                    movieCount++;
-                }
-                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "ONA") {
-                    onaCount++;
-                }
-                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "OVA") {
-                    ovaCount++;
-                }
-                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Special") {
-                    specialCount++;
-                }
-                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "") {
-                    unclassifiedCount++;
-                }
+                if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Movie") { movieCount++; }
+                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "ONA") { onaCount++; }
+                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "OVA") { ovaCount++; }
+                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Special") { specialCount++; }
+                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "") { unclassifiedCount++; }
                 else if(recordData.content[t].scenario == "Season") {
                     seasonCount++;
                     episodeCount += recordData.content[t].episodes.length;
@@ -1316,20 +1306,21 @@ ipcRenderer.on("fetchResult", (event, submissionArr) => {
         }
     };
     // Listen for a change in the value of the sorting select tags.
+    const changeFunc = ev => sortFunc(ev);
     if(submissionArr[2] == "Anime") {
-        animeSortSeasonSelect.addEventListener("change", ev => sortFunc(ev));
-        animeSortNameSelect.addEventListener("change", ev => sortFunc(ev));
+        animeSortSeasonSelect.addEventListener("change", changeFunc);
+        animeSortNameSelect.addEventListener("change", changeFunc);
     }
     else if(submissionArr[2] == "Book") {
-        bookSortNameSelect.addEventListener("change", ev => sortFunc(ev));
+        bookSortNameSelect.addEventListener("change", changeFunc);
     }
     else if(submissionArr[2] == "Film") {
-        filmSortNameSelect.addEventListener("change", ev => sortFunc(ev));
+        filmSortNameSelect.addEventListener("change", changeFunc);
     }
     else if(submissionArr[2] == "Manga") {
-        mangaSortNameSelect.addEventListener("change", ev => sortFunc(ev));
+        mangaSortNameSelect.addEventListener("change", changeFunc);
     }
     else if(submissionArr[2] == "Show") {
-        showSortNameSelect.addEventListener("change", ev => sortFunc(ev));
+        showSortNameSelect.addEventListener("change", changeFunc);
     }
 });

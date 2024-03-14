@@ -67,26 +67,12 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
   	left:7%;  
 }
 
-.select-wrapper input.select-dropdown {
-	text-align: center;
+.btn-floating {
+	background-color: #2A2A8E !important;
 }
 
-.dropdown-content li>span, .select-wrapper span {
-	color: #2A2A8E !important;
-}
-
-.select-dropdown li.disabled>span {
-	color: rgba(0,0,0,0.3) !important;
-}
-
-.select-dropdown li {
-	min-height: 0px !important;
-}
-
-.select-dropdown li>span {
-	text-align: center;
-	font-size: 14px !important;
-	line-height: 12px !important;
+.checkboxLabel {
+	display: block;
 }
 
 .checkboxSpan {
@@ -101,8 +87,12 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	line-height: 20px !important;
 }
 
-.checkboxLabel {
-	display: block;
+.dropdown-content li>span, .select-wrapper span {
+	color: #2A2A8E !important;
+}
+
+.genreRow {
+	margin-bottom: 10px !important;
 }
 
 .infoModal {
@@ -110,16 +100,13 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
     width: 55% !important;
 }
 
-.btn-floating {
-	background-color: #2A2A8E !important;
+.invisibleGenreCheck {
+	visibility: hidden;
+	height: 25px;
 }
 
 .modal {
 	border-radius: 30px !important;
-}
-
-.row {
-	margin-bottom: 0 !important;
 }
 
 .modalButtons {
@@ -129,21 +116,34 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	color: white !important;
 }
 
-.genreRow {
-	margin-bottom: 10px !important;
+.row {
+	margin-bottom: 0 !important;
 }
 
 .selectShortVerticalScroll ul {
 	height: 125px !important;
 }
 
-.select-wrapper input.select-dropdown:focus {
-	border-bottom-color: #2A2A8E !important;
+.select-dropdown li {
+	min-height: 0px !important;
 }
 
-.invisibleGenreCheck {
-	visibility: hidden;
-	height: 25px;
+.select-dropdown li.disabled>span {
+	color: rgba(0,0,0,0.3) !important;
+}
+
+.select-dropdown li>span {
+	text-align: center;
+	font-size: 14px !important;
+	line-height: 12px !important;
+}
+
+.select-wrapper input.select-dropdown {
+	text-align: center;
+}
+
+.select-wrapper input.select-dropdown:focus {
+	border-bottom-color: #2A2A8E !important;
 }
 
 

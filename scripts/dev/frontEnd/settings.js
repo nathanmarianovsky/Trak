@@ -129,17 +129,23 @@ window.addEventListener("load", () => {
         ipcRenderer.send("logsFile");
     });
     // Listen for a click event on the settingsDisplay button on the top bar to display the display settings.
-    settingsBtnsInit(ipcRenderer, settingsDisplay, settingsContainers, settingsSelectionItems, settingsDisplayContainer, ["settingsDisplayButtons"], ["settingsLogsButtons", "settingsDataButtons", "settingsInterfaceButtons"]);
+    settingsBtnsInit(ipcRenderer, settingsDisplay, settingsContainers, settingsSelectionItems, settingsDisplayContainer,
+        ["settingsDisplayButtons"], ["settingsLogsButtons", "settingsDataButtons", "settingsInterfaceButtons"]);
     // Listen for a click event on the settingsInterface button on the top bar to display the interface settings.
-    settingsBtnsInit(ipcRenderer, settingsInterface, settingsContainers, settingsSelectionItems, settingsInterfaceContainer, ["settingsInterfaceButtons"], ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons"]);
+    settingsBtnsInit(ipcRenderer, settingsInterface, settingsContainers, settingsSelectionItems, settingsInterfaceContainer,
+        ["settingsInterfaceButtons"], ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons"]);
     // Listen for a click event on the settingsData button on the top bar to display the data settings.
-    settingsBtnsInit(ipcRenderer, settingsData, settingsContainers, settingsSelectionItems, settingsDataContainer, ["settingsDataButtons"], ["settingsDisplayButtons", "settingsLogsButtons", "settingsInterfaceButtons"]);
+    settingsBtnsInit(ipcRenderer, settingsData, settingsContainers, settingsSelectionItems, settingsDataContainer,
+        ["settingsDataButtons"], ["settingsDisplayButtons", "settingsLogsButtons", "settingsInterfaceButtons"]);
     // Listen for a click event on the settingsLogs button on the top bar to display the application logs.
-    settingsBtnsInit(ipcRenderer, settingsLogs, settingsContainers, settingsSelectionItems, settingsLogsContainer, ["settingsLogsButtons"], ["settingsDisplayButtons", "settingsDataButtons", "settingsInterfaceButtons"]);
+    settingsBtnsInit(ipcRenderer, settingsLogs, settingsContainers, settingsSelectionItems, settingsLogsContainer,
+        ["settingsLogsButtons"], ["settingsDisplayButtons", "settingsDataButtons", "settingsInterfaceButtons"]);
     // Listen for a click event on the settingsAnalytics button on the top bar to display the record analytics.
-    settingsBtnsInit(ipcRenderer, settingsAnalytics, settingsContainers, settingsSelectionItems, settingsAnalyticsContainer, [], ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons", "settingsInterfaceButtons"]);
+    settingsBtnsInit(ipcRenderer, settingsAnalytics, settingsContainers, settingsSelectionItems, settingsAnalyticsContainer, [],
+        ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons", "settingsInterfaceButtons"]);
     // Listen for a click event on the settingsAbout button on the top bar to display the about section of the app.
-    settingsBtnsInit(ipcRenderer, settingsAbout, settingsContainers, settingsSelectionItems, settingsAboutContainer, [], ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons", "settingsInterfaceButtons"]);
+    settingsBtnsInit(ipcRenderer, settingsAbout, settingsContainers, settingsSelectionItems, settingsAboutContainer, [],
+        ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons", "settingsInterfaceButtons"]);
     // Listen for a click event on the aboutGithub button in the about section in order to open the associated link in the default browser.
     aboutGithub.addEventListener("click", e => {
         e.preventDefault();
@@ -297,7 +303,7 @@ window.addEventListener("load", () => {
                 }
                 // Display a notification if the primary window height is too small.
                 else if(parseInt(primaryWindowHeight.value) < 800) {
-                    M.toast({"html": "The primary window width has to be at least 800.", "classes": "rounded"});
+                    M.toast({"html": "The primary window height has to be at least 800.", "classes": "rounded"});
                 }
                 // Display a notification if the secondary window width is too small.
                 else if(parseInt(secondaryWindowWidth.value) < 1400) {
@@ -305,32 +311,23 @@ window.addEventListener("load", () => {
                 }
                 // Display a notification if the secondary window height is too small.
                 else if(parseInt(secondaryWindowHeight.value) < 1000) {
-                    M.toast({"html": "The secondary window width has to be at least 1000.", "classes": "rounded"});
+                    M.toast({"html": "The secondary window height has to be at least 1000.", "classes": "rounded"});
                 }
         	});
             // Listen for a change in the path input in order to highlight it accordingly.
-        	appPath.addEventListener("change", e => {
-        		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-        	});
+        	const btnFunc = e => e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
+            appPath.addEventListener("change", btnFunc);
             // Listen for a change in the primary window width input in order to highlight it accordingly.
-        	primaryWindowWidth.addEventListener("change", e => {
-        		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-        	});
+        	primaryWindowWidth.addEventListener("change", btnFunc);
             // Listen for a change in the primary window height input in order to highlight it accordingly.
-        	primaryWindowHeight.addEventListener("change", e => {
-        		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-        	});
+        	primaryWindowHeight.addEventListener("change", btnFunc);
             // Listen for a change in the secondary window width input in order to highlight it accordingly.
-        	secondaryWindowWidth.addEventListener("change", e => {
-        		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-        	});
+        	secondaryWindowWidth.addEventListener("change", btnFunc);
             // Listen for a change in the secondary window height input in order to highlight it accordingly.
-        	secondaryWindowHeight.addEventListener("change", e => {
-        		e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-        	});
+        	secondaryWindowHeight.addEventListener("change", btnFunc);
             // Write the app version based on the version in the package.json file.
             fs.readFile(path.join(basePath, "Trak", "config", "location.json"), "UTF8", (resp, fl) => {
-                if(resp) { M.toast({"html": "There was an issue reading the location.json file.", "classes": "rounded"}); }
+                if(resp) { M.toast({"html": "There was an issue reading the configurations location.json file.", "classes": "rounded"}); }
                 else {
                     document.getElementById("appVersion").textContent = "App Version: " + JSON.parse(fs.readFileSync(path.join(JSON.parse(fl).appLocation, "package.json"), "UTF8")).version;
                 }

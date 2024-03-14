@@ -276,12 +276,12 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                         // If the iterated item is of type single then proceed accordingly.
                         if(recordData.content[u-1].scenario == "Single") {
                             animeSingleAddition();
-                            let curName = document.getElementById("li_" + u + "_Single_Name"),
-                                curType = document.getElementById("li_" + u + "_Single_Type"),
-                                curRelease = document.getElementById("li_" + u + "_Single_Release"),
-                                curWatched = document.getElementById("li_" + u + "_Single_LastWatched"),
-                                curRating = document.getElementById("li_" + u + "_Single_Rating"),
-                                curReview = document.getElementById("li_" + u + "_Single_Review");
+                            let curName = document.getElementById("li_" + u + "_AnimeSingle_Name"),
+                                curType = document.getElementById("li_" + u + "_AnimeSingle_Type"),
+                                curRelease = document.getElementById("li_" + u + "_AnimeSingle_Release"),
+                                curWatched = document.getElementById("li_" + u + "_AnimeSingle_LastWatched"),
+                                curRating = document.getElementById("li_" + u + "_AnimeSingle_Rating"),
+                                curReview = document.getElementById("li_" + u + "_AnimeSingle_Review");
                             updateFetchedDataString(curName, recordData.content[u-1].name, true);
                             relatedContentListeners(curName);
                             curType.value = recordData.content[u-1].type;
@@ -297,10 +297,10 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                         // If the iterated item is of type season then proceed accordingly.
                         else if(recordData.content[u-1].scenario == "Season") {
                             animeSeasonAddition();
-                            let curName = document.getElementById("li_" + u + "_Season_Name"),
-                                curStart = document.getElementById("li_" + u + "_Season_Start"),
-                                curEnd = document.getElementById("li_" + u + "_Season_End"),
-                                curStatus = document.getElementById("li_" + u + "_Season_Status");
+                            let curName = document.getElementById("li_" + u + "_AnimeSeason_Name"),
+                                curStart = document.getElementById("li_" + u + "_AnimeSeason_Start"),
+                                curEnd = document.getElementById("li_" + u + "_AnimeSeason_End"),
+                                curStatus = document.getElementById("li_" + u + "_AnimeSeason_Status");
                             updateFetchedDataString(curName, recordData.content[u-1].name, true);
                             relatedContentListeners(curName);
                             updateFetchedDataDate(curStart, recordData.content[u-1].start, true);
@@ -311,11 +311,11 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                             let seasonRatingList = [];
                             // Iterate through the season episodes and add a listing for each within the season populated with the saved data.
                             for(let w = 1; w < recordData.content[u-1].episodes.length + 1; w++) {
-                                animeEpisodeAddition(document.getElementById("li_" + u + "_Season"));
-                                let curEpisodeName = document.getElementById("li_" + u + "_Episode_Name_" + w),
-                                    curEpisodeWatched = document.getElementById("li_" + u + "_Episode_LastWatched_" + w),
-                                    curEpisodeRating = document.getElementById("li_" + u + "_Episode_Rating_" + w),
-                                    curEpisodeReview = document.getElementById("li_" + u + "_Episode_Review_" + w);
+                                animeEpisodeAddition(document.getElementById("li_" + u + "_AnimeSeason"));
+                                let curEpisodeName = document.getElementById("li_" + u + "_AnimeEpisode_Name_" + w),
+                                    curEpisodeWatched = document.getElementById("li_" + u + "_AnimeEpisode_LastWatched_" + w),
+                                    curEpisodeRating = document.getElementById("li_" + u + "_AnimeEpisode_Rating_" + w),
+                                    curEpisodeReview = document.getElementById("li_" + u + "_AnimeEpisode_Review_" + w);
                                 updateFetchedDataString(curEpisodeName, recordData.content[u-1].episodes[w-1].name, true);
                                 relatedContentListeners(curEpisodeName);
                                 updateFetchedDataDate(curEpisodeWatched, recordData.content[u-1].episodes[w-1].watched, true);
@@ -327,7 +327,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                             }
                             // Push the corresponding item rating to the associated list.
                             let seasonRating = seasonRatingList.length > 0 ? (seasonRatingList.reduce((accum, cur) => accum + cur, 0) / seasonRatingList.length).toFixed(2) : "N/A";
-                            document.getElementById("li_" + u + "_Season_AverageRating").value = seasonRating;
+                            document.getElementById("li_" + u + "_AnimeSeason_AverageRating").value = seasonRating;
                             if(seasonRating != "N/A") { rtngList.push(parseFloat(seasonRating)); }
                             // Initialize the select tags.
                             initSelect();

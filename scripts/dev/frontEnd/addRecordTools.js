@@ -91,13 +91,9 @@ var updateFetchedDataString = (elem, data, updateCheck, nameCheck = false, callb
     // Update the record data if available.
     if(data !== null && data.trim() != ""  && data != "None found, add some") {
         if(updateCheck == true) {
-            elem.value += (elem.value.trim() == "" ? data : ", " + data);
             elem.setAttribute("lastValue", elem.value);
         }
-        else {
-            elem.value = data;
-        }
-        // updateCheck == true ? elem.value += (elem.value == "" ? data : ", " + data) : elem.value = data;
+        elem.value = data;
         elem.classList.add("valid");
         if(nameCheck == true) {
             elem.nextElementSibling.nextElementSibling.classList.add("active");
