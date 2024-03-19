@@ -771,8 +771,10 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	exports.addHelperListeners(log, ipc, mainWindow);
 
 	ipc.on("removeSplash", event => {
-		loadWindow.webContents.send("loadComplete", 5);
-		firstWindow.destroy();
+		loadWindow.webContents.send("loadBlink", 6);
+		setTimeout(() => {
+			loadWindow.destroy();
+		}, 500)
 	});
 };
 

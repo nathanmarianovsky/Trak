@@ -1989,6 +1989,7 @@ Executes the creation of the primary window with all necessary parameters.
 
 */
 exports.createWindow = (extension, dir, BrowserWindow, path, log, devCheck, width = 1000, height = 800, fullscreen = false, resizable = true) => {
+  	console.log(path.join(__dirname, "../../../assets", "whiteLogo.ico"));
   	let win = new BrowserWindow({
 		"width": width,
     	"height": height,
@@ -1999,9 +2000,10 @@ exports.createWindow = (extension, dir, BrowserWindow, path, log, devCheck, widt
     		"nodeIntegration": true,
     		"contextIsolation": false
     	},
-    	"icon": __dirname + "/assets/favicon.ico",
+    	"icon": path.join(__dirname, "../../../assets", "whiteLogo.ico"),
     	"titleBarOverlay": true,
-    	"frame": extension != "splash"
+    	"frame": extension != "splash",
+    	"transparent": extension == "splash"
 	});
 	extension != "splash" ? win.loadFile(path.join(dir, "Trak", "localPages", extension + ".html")) : win.loadFile(path.join(dir, "pages", "dist", extension + ".html"));
 	win.setProgressBar(0.25);

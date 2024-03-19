@@ -75,7 +75,6 @@ app.whenReady().then(() => {
 			"showSearchWithGoogle": true,
 			"showSelectAll": true
 		});
-		splashWindow.webContents.send("loadComplete", 1);
 		splashWindow.webContents.send("loadBlink", 2);
 		// Create the notifications file if it does not exist.
 		if(!fs.existsSync(path.join(basePath, "Trak", "config", "notifications.json"))) {
@@ -124,7 +123,6 @@ app.whenReady().then(() => {
 			log.info("Creating the data folder. To be located at " + path.join(basePath, "Trak", "data"));
 			fs.mkdirSync(path.join(basePath, "Trak", "data"), { "recursive": true });
 		}
-		splashWindow.webContents.send("loadComplete", 2);
 		splashWindow.webContents.send("loadBlink", 3);
 		let updateCheck = false;
 		// Load the user's preferred window sizes if they exist.
@@ -201,12 +199,10 @@ app.whenReady().then(() => {
 															else {
 																log.info("The styles.css file has been successfully rewritten to the localStyles folder.");
 																// Create the primary window.
-																splashWindow.webContents.send("loadComplete", 3);
 																splashWindow.webContents.send("loadBlink", 4);
 															  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, path, log, dev, primWinWidth, primWinHeight, primWinFullscreen);
 																splashWindow.focus();
 																primaryWindow.webContents.on("did-finish-load", () => {
-																	splashWindow.webContents.send("loadComplete", 4);
 																	splashWindow.webContents.send("loadBlink", 5);
 																	primaryWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
 																	primaryWindow.setProgressBar(0.50);
