@@ -24,7 +24,7 @@ const htmlMinify = require("html-minifier").minify,
 // Append the app settings to the appropriate html files.
 console.log("Adding Settings to Appropriate HTML Files.");
 const htmlSettingsList = ["index.html"],
-	htmlList = ["addRecord.html"],
+	htmlList = ["addRecord.html", "splash.html"],
 	htmlSettings = fs.readFileSync(path.join(__dirname, "pages", "dev", "settings.html"));
 for(let t = 0; t < htmlSettingsList.length; t++) {
 	let data = fs.readFileSync(path.join(__dirname, "pages", "dev", htmlSettingsList[t]), "UTF8"),

@@ -1071,6 +1071,7 @@ ipcRenderer.on("loadRows", (event, tableDiff) => {
             initTooltips();
         }
     }});
+    ipcRenderer.send("removeSplash");
 });
 
 

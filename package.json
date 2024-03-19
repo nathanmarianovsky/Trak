@@ -1,6 +1,6 @@
 {
     "name": "Trak",
-    "version": "0.5.0",
+    "version": "0.5.5",
     "description": "A tracker designed to display and maintain details of content read and/or watched.",
     "main": "index.js",
     "author": "Nathan Marianovsky",
@@ -12,6 +12,7 @@
         "check-internet-connected": "^2.0.6",
         "cheerio": "^1.0.0-rc.12",
         "cli-progress": "^3.12.0",
+        "custom-electron-titlebar": "^4.2.8",
         "download-github-release": "^0.3.2",
         "electron-context-menu": "^3.6.1",
         "electron-log": "^5.1.2",

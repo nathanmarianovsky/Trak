@@ -1999,9 +1999,12 @@ exports.createWindow = (extension, dir, BrowserWindow, path, log, devCheck, widt
     		"nodeIntegration": true,
     		"contextIsolation": false
     	},
-    	"icon": __dirname + "/assets/favicon.ico"
+    	"icon": __dirname + "/assets/favicon.ico",
+    	"titleBarOverlay": true,
+    	"frame": extension != "splash"
 	});
-	win.loadFile(path.join(dir, "Trak", "localPages", extension + ".html"));
+	extension != "splash" ? win.loadFile(path.join(dir, "Trak", "localPages", extension + ".html")) : win.loadFile(path.join(dir, "pages", "dist", extension + ".html"));
+	win.setProgressBar(0.25);
 	if(fullscreen == true) { win.maximize(); }
 	log.info("The " + extension + ".html page is now loading.");
 	if(devCheck == true) { win.webContents.openDevTools(); }

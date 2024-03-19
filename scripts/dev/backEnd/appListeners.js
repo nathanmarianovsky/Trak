@@ -51,13 +51,16 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
 	   		win.webContents.on("did-finish-load", () => {
 	   			// Send a request to the front-end to initialize the loading of library records on the primary window.
 				win.webContents.send("loadRows", win.getContentSize()[1] - 800);
+				win.setProgressBar(0.50);
 				// Send a request to the front-end to initialize the application tutorial.
   				tools.tutorialLoad(fs, path, log, win, originalPath);
+  				win.setProgressBar(0.75);
   				// Check for an application update if necessary.
   				if(updateCondition == false) {
   					tools.checkForUpdate(require("os"), require("https"), fs, path, log, originalPath, win);
   					updateCondition = true;
   				}
+  				win.setProgressBar(1);
   			});
     	}
   	});
@@ -739,12 +742,13 @@ Driver function for adding all app listeners.
 	- tools provides a collection of local functions.
 	- updateCondition is a boolean used to ensure that a check for an update occurs only once per application load.
 	- mainWindow is an object referencing the primary window of the Electron app.
+	- loadWindow is an object referencing the splash window of the Electron app.
 	- dataPath is the current path to the local user data.
 	- originalPath is the original path to the local user data.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, loadWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Add the basic listeners.
 	exports.addBasicListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
 	// Add the listeners associated to all types of records.
@@ -765,6 +769,11 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	exports.addLogListeners(path, fs, log, ipc, tools, originalPath);
 	// Add the listeners which act as tools for the front-end.
 	exports.addHelperListeners(log, ipc, mainWindow);
+
+	ipc.on("removeSplash", event => {
+		loadWindow.webContents.send("loadComplete", 5);
+		firstWindow.destroy();
+	});
 };
 
 

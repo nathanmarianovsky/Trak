@@ -1,0 +1,40 @@
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+/* Styling applicable for all app pages. */
+
+
+
+body {
+	background-color: black;
+}
+
+#splashContainer {
+	height: 750px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#splashLoadContainer {
+	display: flex;
+	justify-content: center;
+	position: relative;
+    bottom: 25px;
+}
+
+#splashMessage {
+	color: white;
+    text-align: center;
+    position: relative;
+    bottom: 45px;
+    font-size: 20px;
+}
+
+.splashLoad {
+	height: 10px;
+    width: 10px;
+    background-color: white;
+    margin-left: 25px;
+    margin-right: 25px;
+    opacity: 0.25;
+}
