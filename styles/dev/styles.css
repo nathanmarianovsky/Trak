@@ -673,6 +673,10 @@ footer {
 	height: 80%;
 }
 
+#settingsModal .input-field {
+	margin-top: 5px !important;
+}
+
 #settingsModal .modal-content {
 	padding-right: 0px;
 	padding-left: 0px;

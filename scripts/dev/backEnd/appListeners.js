@@ -50,7 +50,7 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
 	   		// Proceed once the window has finished loading.
 	   		win.webContents.on("did-finish-load", () => {
 	   			// Send a request to the front-end to initialize the loading of library records on the primary window.
-				win.webContents.send("loadRows", win.getContentSize()[1] - 800);
+				win.webContents.send("loadRows", [false, win.getContentSize()[1] - 800]);
 				win.setProgressBar(0.50);
 				// Send a request to the front-end to initialize the application tutorial.
   				tools.tutorialLoad(fs, path, log, win, originalPath);
@@ -85,7 +85,7 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
   		// Proceed once the window has finished loading.
   		mainWindow.webContents.on("did-finish-load", () => {
   			// Send a request to the front-end to initialize the loading of library records on the primary window.
-  			mainWindow.webContents.send("loadRows", mainWindow.getContentSize()[1] - 800);
+  			mainWindow.webContents.send("loadRows", [false, mainWindow.getContentSize()[1] - 800]);
 			// Send a request to the front-end to initialize the application tutorial.
   			tools.tutorialLoad(fs, path, log, mainWindow, originalPath);
   		});
@@ -773,7 +773,8 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	ipc.on("removeSplash", event => {
 		loadWindow.webContents.send("loadBlink", 6);
 		setTimeout(() => {
-			loadWindow.destroy();
+			mainWindow.focus();
+			// loadWindow.destroy();
 		}, 1000)
 	});
 };

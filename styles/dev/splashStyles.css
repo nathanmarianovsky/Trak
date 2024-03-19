@@ -15,6 +15,11 @@ body {
     justify-content: center;
 }
 
+#splashImg {
+	height: 30%;
+    width: auto;
+}
+
 #splashLoadContainer {
 	display: flex;
 	justify-content: center;

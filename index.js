@@ -125,7 +125,8 @@ app.whenReady().then(() => {
 			fs.mkdirSync(path.join(basePath, "Trak", "data"), { "recursive": true });
 		}
 		splashWindow.webContents.send("loadBlink", 3);
-		let updateCheck = false;
+		let updateCheck = false,
+			splashCheck = false;
 		// Load the user's preferred window sizes if they exist.
 		fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
 			// If there was an issue reading the configuration.json file display a notification on the console.
@@ -208,8 +209,10 @@ app.whenReady().then(() => {
 															  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, path, log, dev, primWinWidth, primWinHeight, primWinFullscreen);
 																splashWindow.focus();
 																primaryWindow.webContents.on("did-finish-load", () => {
-																	splashWindow.webContents.send("loadBlink", 5);
-																	primaryWindow.webContents.send("loadRows", primaryWindow.getContentSize()[1] - 800);
+																	if(splashCheck == false) {
+																		splashWindow.webContents.send("loadBlink", 5);
+																	}
+																	primaryWindow.webContents.send("loadRows", [true, primaryWindow.getContentSize()[1] - 800]);
 																	primaryWindow.setProgressBar(0.50);
 																	tools.tutorialLoad(fs, path, log, primaryWindow, basePath);
 																	primaryWindow.setProgressBar(0.75);
@@ -218,6 +221,7 @@ app.whenReady().then(() => {
 																		updateCheck = true;
 																	}
 																	primaryWindow.setProgressBar(1);
+																	splashCheck = true;
 																});
 															  	// Create the system tray icon and menu. 
 															  	log.info("The application is creating the tray menu.");
