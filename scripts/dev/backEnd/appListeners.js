@@ -774,7 +774,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 		loadWindow.webContents.send("loadBlink", 6);
 		setTimeout(() => {
 			loadWindow.destroy();
-		}, 500)
+		}, 1000)
 	});
 };
 

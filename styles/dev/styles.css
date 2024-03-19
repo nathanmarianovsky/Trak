@@ -164,6 +164,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	display: none;
 }
 
+#titlebarLogo {
+	height: 20px;
+}
+
 .tabDiv {
 	position: relative;
 	margin: 3% 0 auto 5%;

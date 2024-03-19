@@ -87,7 +87,7 @@ app.whenReady().then(() => {
 		// Create the configuration file if it does not exist.
 		if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
 			log.info("Creating the default configuration file. To be located at " + path.join(basePath, "Trak", "config", "configuration.json"));
-			fs.mkdirSync(path.join(basePath, "Trak", "config"), { "recursive": true });
+			fs.mkdirSync(path.join(basePath, "Trak", "config", "assets"), { "recursive": true });
 			const writeData = { "original": {
 					"path": path.join(basePath, "Trak", "data"),
 					"primaryColor": "#2A2A8E",
@@ -97,7 +97,8 @@ app.whenReady().then(() => {
 					"primaryWindowFullscreen": false,
 					"secondaryWindowWidth": 1400,
 					"secondaryWindowHeight": 1000,
-					"secondaryWindowFullscreen": false
+					"secondaryWindowFullscreen": false,
+					"icon": "white"
 				}
 			};
 			fs.writeFileSync(path.join(basePath, "Trak", "config", "configuration.json"), JSON.stringify(writeData), "UTF8");
@@ -139,7 +140,8 @@ app.whenReady().then(() => {
 				    	primWinFullscreen = configObj.current.primaryWindowFullscreen,
 				    	secWinWidth = parseInt(configObj.current.secondaryWindowWidth),
 				    	secWinHeight = parseInt(configObj.current.secondaryWindowHeight),
-				    	secWinFullscreen = configObj.current.secondaryWindowFullscreen;
+				    	secWinFullscreen = configObj.current.secondaryWindowFullscreen,
+				    	iconChoice = configObj.current.icon;
 			    }
 			    else {
 			    	var primWinWidth = parseInt(configObj.original.primaryWindowWidth),
@@ -147,8 +149,10 @@ app.whenReady().then(() => {
 				    	primWinFullscreen = configObj.original.primaryWindowFullscreen,
 				    	secWinWidth = parseInt(configObj.original.secondaryWindowWidth),
 				    	secWinHeight = parseInt(configObj.original.secondaryWindowHeight),
-				    	secWinFullscreen = configObj.original.secondaryWindowFullscreen;
+				    	secWinFullscreen = configObj.original.secondaryWindowFullscreen,
+				    	iconChoice = configObj.original.icon;
 			    }
+			    fs.copyFileSync(path.join(__dirname, "assets", iconChoice + "Logo.png"), path.join(basePath, "Trak", "config", "assets", "logo.png"));
 			    // Read the index.html file.
 			    fs.readFile(path.join(__dirname, "pages", "dist", "index.html"), "UTF8", (issue, indexPage) => {
 			    	// If there was an issue reading the index.html file display a notification on the console.
@@ -160,6 +164,7 @@ app.whenReady().then(() => {
 							regJS = new RegExp("../../scripts/dist/frontEnd/", "g");
 						indexPage = indexPage.replace(regCSS, path.join(basePath, "Trak", "localStyles", "styles.css"));
 						indexPage = indexPage.replace(regJS, path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "scripts", "dist", "frontEnd", " ").trim());
+						indexPage = indexPage.replace(new RegExp("../../assets/logo.png", "g"), path.join(basePath, "Trak", "config", "assets", "logo.png"));
 						fs.writeFile(path.join(basePath, "Trak", "localPages", "index.html"), indexPage, "UTF8", prob => {
 							// If there was an issue writing the index.html file display a notification on the console.
 							if(prob) { log.error("There was an issue writing the index.html file to the localPages folder."); }
