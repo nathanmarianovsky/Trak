@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+/* Styling applicable for the notifications modal. */
+
+
+
+#notificationsTitle {
+	padding-left: 17px;
+	padding-right: 17px;
+}
+
+#snoozeDropdown {
+	width: 110px !important;
+	border-radius: 17px;
+}
+
+.secondary-content {
+	cursor: pointer;
+}
+
+.secondary-content i, .dropdown-content li > a {
+	color: #2A2A8E !important
+}
+
+.snoozeBtn {
+	position: absolute;
+	right: 60px;
+	top: 11px;
+}
+
+.notificationsCheckDiv {
+	cursor: inherit;
+}

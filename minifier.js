@@ -53,7 +53,7 @@ for(let t = 0; t < htmlSettingsList.length; t++) {
 
 
 // Compress the html files.
-console.log("Starting Compression of HTML Files without the Settings Modal:");
+console.log("Starting Compression of HTML Files without Sections:");
 if(!fs.existsSync(path.join(__dirname, "pages", "dist"))) {
 	fs.mkdirSync(path.join(__dirname, "pages", "dist"));
 }
@@ -74,7 +74,7 @@ for(let r = 0; r < htmlList.length; r++) {
 	settingsHtmlBarRow.update(1);
 }
 htmlBar.stop();
-console.log("Starting Compression of HTML Files with the Settings Modal:");
+console.log("Starting Compression of HTML Files with Sections:");
 const settingsHtmlBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect);
 for(let r = 0; r < htmlSettingsList.length; r++) {
 	let file = htmlSettingsList[r],
@@ -100,24 +100,34 @@ console.log("Starting Compression of CSS Files:");
 if(!fs.existsSync(path.join(__dirname, "styles", "dist"))) {
 	fs.mkdirSync(path.join(__dirname, "styles", "dist"));
 }
-const cssList = fs.readdirSync("./styles/dev"),
-	cssBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect);
-for(let j = 0; j < cssList.length; j++) {
-	let file = cssList[j];
-		cssBarRow = cssBar.create(1, 0, {}, {"format": "[{bar}] {percentage}% | " + file});
-	minify({
-		"compressor": yui,
-		"type": "css",
-		"input": path.join(__dirname, "styles", "dev", file),
-		"output": path.join(__dirname, "styles", "dist", file),
-		"callback": (err, result) => {
-			if(err) {
-				console.log("Minifying the css file " + file + " threw an error: " + err.stack);
-			}
+const cssBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect),
+	inputDir = path.join(__dirname, "styles", "dev");
+let cssBarRow = cssBar.create(1, 0, {}, {"format": "[{bar}] {percentage}% | styles.css"});
+minify({
+	"compressor": yui,
+	"type": "css",
+	"input": fs.readdirSync(inputDir).filter(file => file != "splash.css").map(elem => path.join(__dirname, "styles", "dev", elem)),
+	"output": path.join(__dirname, "styles", "dist", "styles.css"),
+	"callback": (err, result) => {
+		if(err) {
+			console.log("Minifying the styles css file threw an error: " + err.stack);
 		}
-	});
-	cssBarRow.update(1);
-}
+	}
+});
+cssBarRow.update(1);
+cssBarRow = cssBar.create(1, 0, {}, {"format": "[{bar}] {percentage}% | splash.css"});
+minify({
+	"compressor": yui,
+	"type": "css",
+	"input": path.join(__dirname, "styles", "dev", "splash.css"),
+	"output": path.join(__dirname, "styles", "dist", "splash.css"),
+	"callback": (err, result) => {
+		if(err) {
+			console.log("Minifying the splash css file threw an error: " + err.stack);
+		}
+	}
+});
+cssBarRow.update(1);
 cssBar.stop();
 
 

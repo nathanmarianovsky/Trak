@@ -1,4 +1,4 @@
-<h1 align="center">Trak</h1>
+<h1 align="center"><img height="50px" src="/assets/whiteLogo.png"></h1>
 
 Trak is the one-stop application designed for cataloging all content read and/or watched. Install for use simply by downloading the package for your operating system in the releases.
 

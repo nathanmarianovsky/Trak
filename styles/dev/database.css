@@ -1,0 +1,112 @@
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+/* Styling applicable for the database modal. */
+
+
+
+#databaseModal {
+	top: 3% !important;
+	width: 75%;
+	height: 720px;
+	max-height: 100%;
+}
+
+#databaseImportBtn {
+	display: none;
+}
+
+#databaseNav {
+	border-top-right-radius: 30px;
+	border-top-left-radius: 30px;
+}
+
+#databaseSelection li {
+	width: 50%;
+    text-align: center;
+}
+
+#databaseModal .modal-content {
+	padding-right: 0px;
+	padding-left: 0px;
+	padding-top: 0px;
+}
+
+#databaseExportContainer p, #databaseImportContainer p {
+	margin-left: 32px;
+	margin-right: 32px;
+	margin-top: 35px;
+}
+
+#databaseCheckLabel {
+	position: relative;
+	top: 14px;
+	left: 70px;
+}
+
+#databaseCheckSpan {
+	line-height: 19px;
+}
+
+#databasePreloader {
+	display: none;
+	margin: 3% auto 3% auto;
+}
+
+#databaseSwitchDiv, #mangaModalSwitchDiv {
+	position: relative;
+    top: 12px;
+    left: 25px;
+}
+
+#XLSXTypeSwitchDiv {
+	display: none;
+	position: relative;
+    top: 12px;
+    left: 55px;
+}
+
+#databaseSwitchDiv label,
+#mangaModalSwitchDiv label,
+#XLSXTypeSwitchDiv label,
+#databaseCheckLabel span {
+	color: black;
+	font-weight: bold;
+}
+
+#databaseSwitchDiv label input[type=checkbox]:checked+.lever:after,
+#mangaModalSwitchDiv label input[type=checkbox]:checked+.lever:after,
+#XLSXTypeSwitchDiv label input[type=checkbox]:checked+.lever:after {
+	background-color: #2A2A8E !important;
+}
+
+#importXLSXContent, .importXLSXContentSimple, .importXLSXContentDetailed {
+	display: none;
+}
+
+.databaseImportDiv {
+	margin-left: 11px !important;
+}
+
+.databaseWindowDiv {
+    margin-left: 20px !important;
+}
+
+.databaseDataInput {
+	width: 80% !important;
+}
+
+.databaseContainer {
+	display: none;
+}
+
+.importDiv {
+	display: none;
+}
+
+.textFocus {
+	display: block;
+	margin-left: 5%;
+	margin-right: 5%;
+	font-weight: bold;
+	font-size: 13px;
+}

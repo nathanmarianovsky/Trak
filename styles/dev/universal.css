@@ -1,0 +1,147 @@
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+/* Styling applicable for all app pages. */
+
+
+
+html {
+	background-color: #D9D9DB;
+	font-family: "Montserrat" !important;
+}
+
+body {
+	overflow-x: hidden;
+}
+
+nav {
+	background-color: #2A2A8E !important;
+}
+
+h2 {
+	text-decoration: underline;
+	margin-left: 50px !important;
+	font-size: 25px !important;
+}
+
+button {
+	font-family: "Montserrat" !important;
+}
+
+[type="checkbox"].filled-in:checked+span:not(.lever):after {
+	border-color: #2A2A8E !important;
+	background-color: #2A2A8E !important;
+}
+
+#searchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
+#animeNameSearchInnerDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
+#searchBarDiv1 input.valid[type="text"]:not(.browser-default),
+#animeNameSearchInnerDiv1 input.valid[type="text"]:not(.browser-default),
+[type="text"]:not(.browser-default):focus:not([readonly]),
+input.valid[type="text"]:not(.browser-default),
+input[type="date"]:not(.browser-default):focus:not([readonly]),
+input.valid[type=date]:not(.browser-default),
+textarea.materialize-textarea:focus:not([readonly]),
+textarea.materialize-textarea.valid {
+	border-bottom-color: #2A2A8E !important;
+	box-shadow: 0 1px 0 0 #2A2A8E !important;
+}
+
+#searchBarDiv1 .input-field .prefix.active,
+#animeNameSearchInnerDiv1 .input-field .prefix.active,
+#bookNameSearchInnerDiv1 .input-field .prefix.active,
+#filmNameSearchInnerDiv1 .input-field .prefix.active,
+#mangaNameSearchInnerDiv1 .input-field .prefix.active,
+#showNameSearchInnerDiv1 .input-field .prefix.active,
+#associationsModal .input-field .prefix.active,
+input[type="text"]:not(.browser-default):focus:not([readonly])+label,
+input[type="date"]:not(.browser-default):focus:not([readonly])+label,
+textarea.materialize-textarea:focus:not([readonly])+label,
+input[type="text"]:not(.browser-default):focus.valid ~ label {
+	color: #2A2A8E !important;
+}
+
+#toast-container {
+  	top: auto !important;
+  	right: auto !important;
+  	bottom: 10%;
+  	left:7%;  
+}
+
+.btn-floating {
+	background-color: #2A2A8E !important;
+}
+
+.checkboxLabel {
+	display: block;
+}
+
+.checkboxSpan {
+	top: 5px;
+	left: 10px;
+	color: initial;
+	line-height: initial !important;
+}
+
+.checkboxText {
+	color: initial;
+	line-height: 20px !important;
+}
+
+.dropdown-content li>span, .select-wrapper span {
+	color: #2A2A8E !important;
+}
+
+.genreRow {
+	margin-bottom: 10px !important;
+}
+
+.infoModal {
+	top: 30% !important;
+    width: 55% !important;
+}
+
+.invisibleGenreCheck {
+	visibility: hidden;
+	height: 25px;
+}
+
+.modal {
+	border-radius: 30px !important;
+}
+
+.modalButtons {
+	background-color: #2A2A8E !important;
+	margin-left: 3px !important;
+	border-radius: 30px !important;
+	color: white !important;
+}
+
+.row {
+	margin-bottom: 0 !important;
+}
+
+.selectShortVerticalScroll ul {
+	height: 125px !important;
+}
+
+.select-dropdown li {
+	min-height: 0px !important;
+}
+
+.select-dropdown li.disabled>span {
+	color: rgba(0,0,0,0.3) !important;
+}
+
+.select-dropdown li>span {
+	text-align: center;
+	font-size: 14px !important;
+	line-height: 12px !important;
+}
+
+.select-wrapper input.select-dropdown {
+	text-align: center;
+}
+
+.select-wrapper input.select-dropdown:focus {
+	border-bottom-color: #2A2A8E !important;
+}

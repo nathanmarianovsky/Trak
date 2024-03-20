@@ -1,0 +1,295 @@
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+/* Styling applicable for the index page. */
+
+
+
+#outerLayer {
+	position: relative;
+	margin: 8px 0 auto 0;
+	width: 95%;
+}
+
+#contentSearchDiv {
+	display: none;
+}
+
+#titlebarLogo {
+	height: 20px;
+}
+
+.tabDiv {
+	position: relative;
+	margin: 3% 0 auto 5%;
+	width: 90%;
+}
+
+.indicator {
+	background-color: white !important;
+}
+
+.tabDiv {
+	display: none;
+}
+
+.tabSearchLink {
+	color: white !important;
+}
+
+.tabs .tab a:focus.active {
+	background-color: rgba(0,0,0,0.1) !important;
+}
+
+#contentSearchDiv .select-dropdown span {
+	text-align: left;
+}
+
+#table, #headersTable {
+	width: 95%;
+	margin-left: 50px;
+}
+
+#add, #animeSearchSubmission, #bookSearchSubmission,
+#filmSearchSubmission, #mangaSearchSubmission, #showSearchSubmission {
+	position: fixed;
+  	bottom: 23px;
+  	right: 23px;
+}
+
+#animeSearchSwitch {
+	position: fixed;
+  	bottom: 92px;
+  	right: 23px;
+}
+
+#remove {
+	background-color: #2A2A8E;
+	position: fixed;
+  	bottom: 23px;
+  	left: 23px;
+  	display: none;
+}
+
+#tableDiv, #headersTableDiv {
+	position: relative;
+	bottom: 15px;
+}
+
+#tableDiv {
+	height: 467px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+#searchBarDiv1 {
+	margin-left: 40px;
+	margin-bottom: 0;
+}
+
+#searchBarDiv2 {
+	margin-bottom: 0;
+}
+
+#animeNameSearchInnerDiv1 {
+	display: none;
+}
+
+#animeNameSearchInnerDiv2, #bookNameSearchInnerDiv2 {
+	margin-bottom: 0;
+}
+
+#preloader {
+	display: block !important;
+    position: fixed;
+    left: 47%;
+    top: 50%;
+  	margin: 0 auto;
+}
+
+#chunkPreloader {
+	display: none;
+    margin: 1% auto 5% auto;
+}
+
+#chunkCheck {
+	text-align: center;
+	display: none;
+}
+
+#chunkCheck i {
+	font-size: 90px;
+	color: #2A2A8E;
+}
+
+#synopsisModal {
+	width: 75%;
+    height: 60%;
+    top: 15% !important;
+}
+
+#synopsisPreloader {
+	display: none;
+	margin-left: auto;
+    margin-right: auto;
+    margin-top: 20%;
+}
+
+#updatePreloader {
+	display: block !important;
+	position: relative !important;
+	left: 46%;
+	margin-bottom: 3%;
+}
+
+#updatePreloaderDiv {
+	font-weight: bold;
+	display: none;
+}
+
+#updateAvailable, #notifications {
+	display: none;
+}
+
+#tableBody {
+	font-size: 13px;
+}
+
+#updateModalContent ul {
+	padding-left: 50px;
+}
+
+#updateModalContent ul li {
+	list-style-type: disc;
+}
+
+#indexHome {
+	display: none;
+}
+
+#animeSeasonSearchYearDiv ul {
+	height: 250px;
+}
+
+#animeNameSearchInnerDiv {
+	display: none;
+}
+
+#homeCounter {
+	text-align: center;
+    width: 105%;
+    position: absolute;
+    bottom: -10%;
+}
+
+#homeSelected {
+	text-align: center;
+    width: 105%;
+    position: absolute;
+    bottom: -5%;
+}
+
+.spinner-layer {
+	border-color: #2A2A8E !important;
+}
+
+.preloaderIndicator {
+	position: absolute !important;
+	bottom: 40px;
+	right: 40px;
+}
+
+.recordsNameRowDiv {
+	line-height: 20px;
+	color:blue;
+ 	text-decoration:underline;
+	cursor: pointer;
+	display: inline;
+}
+
+.recordsRowDiv {
+	line-height: 20px;
+}
+
+.recordButtonsRowDiv {
+	height: 20px;
+	position: relative;
+	bottom: 58px;
+}
+
+.recordsChecks, .notificationCheck {
+	opacity: 1 !important;
+	position: relative !important;
+	top: 2px;
+	accent-color: #2A2A8E;
+	cursor: pointer;
+	pointer-events: initial !important;
+}
+
+.iconSorter {
+	position: relative;
+	top: 8px;
+	left: 8px;
+	cursor: pointer;
+}
+
+.func {
+	margin-top: 50px;
+	margin-bottom: 50px;
+	display: block;
+	font-size: 18px !important;
+	background-color: #2A2A8E !important;
+  	color: white !important;
+  	border-radius: 12px !important;
+}
+
+.topNavTapContainer {
+	display: inline-block;
+}
+
+.synopsisIconDiv {
+	display: inline;
+}
+
+.recordsNameContainer {
+	text-align: left;
+	padding-right: 25px;
+}
+
+.synopsisInfoIcon {
+	font-size: 15px !important;
+	color: #2A2A8E!important;
+    position: relative;
+    top: 4px;
+    left: 4px;
+    cursor: pointer;
+}
+
+.seasonItemImage {
+	width: 100%;
+	height: auto;
+	border: 2px solid black;
+	cursor: pointer;
+}
+
+.searchItemContainer {
+	display: inline-block;
+    width: 15%;
+    height: auto; 
+    margin-bottom: 5%;
+    margin-right: 5%;
+}
+
+.seasonItemText {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.searchInfoIcon {
+	margin-left: 5%;
+}
+
+.recordIcon {
+	border-radius: 50%;
+	width: 100px;
+	height: 100px;
+}
