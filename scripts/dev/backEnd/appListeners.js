@@ -41,7 +41,18 @@ Driver function for adding all basic listeners.
 	- primaryWindowWidth, primaryWindowHeight, and primaryWindowFullscreen are the window parameters.
 
 */
-exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen) => {
+exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, loadWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen) => {
+	// Close the splash screen once the application is ready.
+	ipc.once("removeSplash", event => {
+		// Update the splash screen to indicate that the application has finished loading and is ready.
+		loadWindow.webContents.send("loadBlink", 6);
+		// After a small delay put the primary window on display and destroy the splash screen.
+		setTimeout(() => {
+			mainWindow.focus();
+			loadWindow.destroy();
+		}, 1000);
+	});
+
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -750,7 +761,7 @@ Driver function for adding all app listeners.
 */
 exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, loadWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Add the basic listeners.
-	exports.addBasicListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
+	exports.addBasicListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, loadWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
 	// Add the listeners associated to all types of records.
 	exports.addRecordListeners(BrowserWindow, path, fs, log, dev, ipc, tools, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to anime records.
@@ -769,14 +780,6 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	exports.addLogListeners(path, fs, log, ipc, tools, originalPath);
 	// Add the listeners which act as tools for the front-end.
 	exports.addHelperListeners(log, ipc, mainWindow);
-
-	ipc.once("removeSplash", event => {
-		loadWindow.webContents.send("loadBlink", 6);
-		setTimeout(() => {
-			mainWindow.focus();
-			loadWindow.destroy();
-		}, 1000);
-	});
 };
 
 

@@ -956,7 +956,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
         // Iterate through all application notifications.
         for(let k = 0; k < curNotifications.notifications.length; k++) {
             // Display an application notification only if it has not been cleared and snoozed.
-            if(curNotifications.notifications[k].hidden == false && (curNotifications.notifications[k].snooze == "" || curTime >= (new Date(curNotifications.notifications[k].snooze)).getTime())) {
+            if(curNotifications.notifications[k].hidden == false && (curNotifications.notifications[k].snooze == "" || (curTime >= (new Date(curNotifications.notifications[k].snooze)).getTime())) && convertToDays((new Date(curNotifications.notifications[k].date)).getTime() - curTime) <= userInterval) {
                 // Create a notification.
                 notificationCreation(curNotifications.notifications[k].id, curNotifications.notifications[k].category,
                     curNotifications.notifications[k].name, curNotifications.notifications[k].text, curNotifications.notifications[k].date, curNotifications.notifications[k].img, curNotifications.notifications[k].snooze);
@@ -1071,6 +1071,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
             initTooltips();
         }
     }});
+    // Send a request to the back-end to close the splash screen once the library records have been loaded.
     ipcRenderer.send("removeSplash");
 });
 

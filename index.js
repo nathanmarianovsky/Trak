@@ -41,6 +41,7 @@ log.info("The application is starting.");
 app.whenReady().then(() => {
 	let splashWindow = tools.createWindow("splash", basePath, BrowserWindow, fs, path, log, dev);
 	splashWindow.webContents.on("did-finish-load", () => {
+		// Update the splash screen to indicate that the tray is being created.
 		splashWindow.webContents.send("loadBlink", 1);
 		// Create the Electron app menu.
 		const template = [
@@ -75,6 +76,7 @@ app.whenReady().then(() => {
 			"showSearchWithGoogle": true,
 			"showSelectAll": true
 		});
+		// Update the splash screen to indicate that the default files and folders are being created.
 		splashWindow.webContents.send("loadBlink", 2);
 		// Create the notifications file if it does not exist.
 		if(!fs.existsSync(path.join(basePath, "Trak", "config", "notifications.json"))) {
@@ -124,6 +126,7 @@ app.whenReady().then(() => {
 			log.info("Creating the data folder. To be located at " + path.join(basePath, "Trak", "data"));
 			fs.mkdirSync(path.join(basePath, "Trak", "data"), { "recursive": true });
 		}
+		// Update the splash screen to indicate that the necessary css and html files are being modified.
 		splashWindow.webContents.send("loadBlink", 3);
 		let updateCheck = false,
 			splashCheck = false;
@@ -204,8 +207,9 @@ app.whenReady().then(() => {
 															if(err) { log.error("There was an issue writing the application styles file to the localStyles folder."); }
 															else {
 																log.info("The styles.css file has been successfully rewritten to the localStyles folder.");
-																// Create the primary window.
+																// Update the splash screen to indicate that the primary window is being created.
 																splashWindow.webContents.send("loadBlink", 4);
+																// Create the primary window.
 															  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, fs, path, log, dev, primWinWidth, primWinHeight, primWinFullscreen);
 																splashWindow.focus();
 																primaryWindow.webContents.on("did-finish-load", () => {
