@@ -576,9 +576,10 @@ Driver function for adding all settings listeners.
 	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
 	- originalPath is the original path to the local user data.
+	- mainWindow is an object referencing the primary window of the Electron app.
 
 */
-exports.addSettingsListeners = (app, path, fs, log, ipc, originalPath) => {
+exports.addSettingsListeners = (app, path, fs, log, ipc, originalPath, mainWindow) => {
 	// Handles the saving of the tutorial.json file.
    	ipc.on("introductionFileSave", (event, launchIntro) => {
     	if(!fs.existsSync(path.join(originalPath, "Trak", "config", "tutorial.json"))) {
@@ -608,7 +609,7 @@ exports.addSettingsListeners = (app, path, fs, log, ipc, originalPath) => {
 
    	// Handles the saving of all options in the user settings.
 	ipc.on("settingsSave", (event, submissionArr) => {
-		require("./settings").updateSettings(fs, path, log, ipc, app, submissionArr, originalPath, event);
+		require("./settings").updateSettings(fs, path, log, ipc, app, submissionArr, originalPath, mainWindow, event);
 	});
 
 	// Handle the opening of the github link on the about section.
@@ -773,7 +774,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	// Add the listeners associated to exporting and importing data.
 	exports.addDatabaseListeners(path, fs, log, ipc, tools, mainWindow, originalPath);
 	// Add the listeners associated to all settings actions.
-	exports.addSettingsListeners(app, path, fs, log, ipc, originalPath);
+	exports.addSettingsListeners(app, path, fs, log, ipc, originalPath, mainWindow);
 	// Add the listeners associated to all update actions.
 	exports.addUpdateListeners(app, path, fs, log, ipc);
 	// Add the listeners associated to log actions.

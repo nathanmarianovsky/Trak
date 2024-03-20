@@ -25,10 +25,11 @@ Handles the update of all settings files.
     - app and ipc provide the means to operate the Electron app.
     - dataArr is the array submitted from the front-end to update the settings options.
     - appDirectory is the path to the local user data.
+    - win is an object representing the primary window.
     - evnt provides the means to interact with the front-end of the Electron app.
 
 */
-exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, evnt) => {
+exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, evnt) => {
     // Define the new data to be saved for the settings configuration file.
     const writeData = {
         "path": dataArr[0],
@@ -168,7 +169,10 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, evnt) 
                                         }
                                         else {
                                             log.info("The application settings have been updated.");
-                                            evnt.sender.send("configurationFileWritingSuccessSimple");
+                                            win.reload();
+                                            setTimeout(() => {
+                                                win.webContents.send("configurationFileWritingSuccessSimple");
+                                            }, 500);
                                         }
                                     });
                                 }
@@ -232,7 +236,10 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, evnt) 
                                         }
                                         else {
                                             log.info("The application settings have been updated.");
-                                            evnt.sender.send("configurationFileWritingSuccessSimple");
+                                            win.reload();
+                                            setTimeout(() => {
+                                                win.webContents.send("configurationFileWritingSuccessSimple");
+                                            }, 500);
                                         }
                                     });
                                 }

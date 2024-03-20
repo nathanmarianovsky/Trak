@@ -955,8 +955,9 @@ ipcRenderer.on("loadRows", (event, diff) => {
         document.getElementById("notificationsCollection").innerHTML = "";
         // Iterate through all application notifications.
         for(let k = 0; k < curNotifications.notifications.length; k++) {
-            // Display an application notification only if it has not been cleared and snoozed.
-            if(curNotifications.notifications[k].hidden == false && (curNotifications.notifications[k].snooze == "" || (curTime >= (new Date(curNotifications.notifications[k].snooze)).getTime())) && convertToDays((new Date(curNotifications.notifications[k].date)).getTime() - curTime) <= userInterval) {
+            // Display an application notification only if it has not been cleared and snoozed and is within the desired interval.
+            if(curNotifications.notifications[k].hidden == false && convertToDays((new Date(curNotifications.notifications[k].date)).getTime() - curTime) <= userInterval
+                && (curNotifications.notifications[k].snooze == "" || (curTime >= (new Date(curNotifications.notifications[k].snooze)).getTime()))) {
                 // Create a notification.
                 notificationCreation(curNotifications.notifications[k].id, curNotifications.notifications[k].category,
                     curNotifications.notifications[k].name, curNotifications.notifications[k].text, curNotifications.notifications[k].date, curNotifications.notifications[k].img, curNotifications.notifications[k].snooze);
