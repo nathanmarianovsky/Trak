@@ -363,7 +363,7 @@ ipcRenderer.on("introduction", (event, response) => {
 
 
 // Load all of the records as rows in the table once the page has loaded.
-ipcRenderer.on("loadRows", (event, providedArr) => {
+ipcRenderer.on("loadRows", (event, diff) => {
     // Define the path for all items and get a list of all available records.
     const pathDir = path.join(localPath, "Trak", "data"),
         curTime = (new Date()).getTime(),
@@ -391,7 +391,7 @@ ipcRenderer.on("loadRows", (event, providedArr) => {
         tableBody = document.getElementById("tableBody"),
         synopsisPreloader = document.getElementById("synopsisPreloader"),
         synopsisModalContent = document.getElementById("synopsisModalContent");
-    tableDiv.style.height = (providedArr[1] + 506) + "px";
+    tableDiv.style.height = (diff + 506) + "px";
     tableBody.textContent = "";
     // Listen for a window resize event in order to change the table height.
     window.addEventListener("resize", () => ipcRenderer.send("getAppHeight"));
@@ -1071,7 +1071,7 @@ ipcRenderer.on("loadRows", (event, providedArr) => {
             initTooltips();
         }
     }});
-    if(providedArr[0] == true) { ipcRenderer.send("removeSplash"); }
+    ipcRenderer.send("removeSplash");
 });
 
 

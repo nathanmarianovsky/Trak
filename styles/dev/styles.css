@@ -771,12 +771,6 @@ footer {
 	width: 15% !important;
 }
 
-.settingsHeaders {
-	margin-bottom: 0px;
-	position: relative;
-	top: 5px;
-}
-
 .settingsContainer {
 	display: none;
 }

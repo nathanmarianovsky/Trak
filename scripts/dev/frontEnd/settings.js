@@ -163,7 +163,8 @@ window.addEventListener("load", () => {
     		secondaryWindowWidth = document.getElementById("secondaryWindowWidth"),
     		secondaryWindowHeight = document.getElementById("secondaryWindowHeight"),
             secondaryWindowFullscreen = document.getElementById("secondaryWindowFullscreen"),
-            notificationsInterval = document.getElementById("notificationsInterval");
+            notificationsInterval = document.getElementById("notificationsInterval"),
+            logoColor = document.getElementById("logoColor");
         // Display a notification if there was an error in reading the configuration file.
         if(err) {
             M.toast({"html": "There was an error opening the configuration file associated to the application settings.", "classes": "rounded"});
@@ -186,10 +187,15 @@ window.addEventListener("load", () => {
     		secondaryWindowHeight.setAttribute("lastValue", "1000");
             secondaryWindowFullscreen.checked = false;
             secondaryWindowFullscreen.setAttribute("lastValue", "false");
+            notificationsInterval.value = "14";
+            notificationsInterval.setAttribute("lastValue", "14");
+            logoColor.value = "white";
+            logoColor.setAttribute("lastValue", "white");
         }
         // If the file loaded without issues populate the settings modal with the current application setup.
         else {
-        	const configData = JSON.parse(file);
+        	const configData = JSON.parse(file),
+                notificationsData = JSON.parse(fs.readFileSync(path.join(basePath, "Trak", "config", "notifications.json"), "UTF8"));
             primaryColor.value = configData[configData.current != undefined ? "current" : "original"].primaryColor;
             primaryColor.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryColor);
             secondaryColor.value = configData[configData.current != undefined ? "current" : "original"].secondaryColor;
@@ -208,7 +214,10 @@ window.addEventListener("load", () => {
             secondaryWindowHeight.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowHeight);
             secondaryWindowFullscreen.checked = configData[configData.current != undefined ? "current" : "original"].secondaryWindowFullscreen;
             secondaryWindowFullscreen.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowFullscreen);
-            notificationsInterval.value = JSON.parse(fs.readFileSync(path.join(basePath, "Trak", "config", "notifications.json"), "UTF8")).interval;
+            notificationsInterval.value = notificationsData.interval;
+            notificationsInterval.setAttribute("lastValue", notificationsData.interval);
+            logoColor.value = configData[configData.current != undefined ? "current" : "original"].icon;
+            logoColor.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].icon);
             initSelect();
             // Listen for a click on the color reset button to restore the color inputs to the original values.
             settingsColorReset.addEventListener("click", e => {
@@ -272,6 +281,7 @@ window.addEventListener("load", () => {
     	    		secondaryWindowHeight.classList.remove("validate", "valid");
                     secondaryWindowFullscreen.checked = secondaryWindowFullscreen.getAttribute("lastValue") == "true";
                     tutorialLoad.checked = tutorialLoad.getAttribute("lastValue") == "true";
+                    notificationsInterval.value = notificationsInterval.getAttribute("lastValue");
         		}
         	});
             // Listen for a click on the apply button in order to submit a back-end request to update the configuration files.
@@ -291,6 +301,7 @@ window.addEventListener("load", () => {
         				secondaryWindowWidth.value,
         				secondaryWindowHeight.value,
                         secondaryWindowFullscreen.checked,
+                        logoColor.value,
                         tutorialLoad.checked
             		]);
                     ipcRenderer.send("notificationsIntervalSave", notificationsInterval.value);

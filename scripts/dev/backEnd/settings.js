@@ -39,7 +39,8 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, evnt) 
         "primaryWindowFullscreen": dataArr[5],
         "secondaryWindowWidth": dataArr[6],
         "secondaryWindowHeight": dataArr[7],
-        "secondaryWindowFullscreen": dataArr[8]
+        "secondaryWindowFullscreen": dataArr[8],
+        "icon": dataArr[9]
     };
     // Read the settings tutorial.json file.
     fs.readFile(path.join(appDirectory, "Trak", "config", "tutorial.json"), "UTF8", (er, tutorialFile) => {
@@ -53,7 +54,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, evnt) 
             // Define the tutorial boolean.
             const origIntro = JSON.parse(tutorialFile).introduction;
             // Write the tutorial.json file with the submitted data.
-            fs.writeFile(path.join(appDirectory, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": dataArr[9] }), "UTF8", error => {
+            fs.writeFile(path.join(appDirectory, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": dataArr[dataArr.length - 1] }), "UTF8", error => {
                 // If there was an issue writing the tutorial.json file notify the user.
                 if(error) {
                     log.error("There was an error in updating the tutorial configuration file.");
@@ -62,7 +63,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, evnt) 
                 else {
                     log.info("The tutorial configuration file has been successfully rewritten.");
                     // If the tutorial data was changed notify the user that the file was successfully updated.
-                    if(origIntro != dataArr[9]) { evnt.sender.send("introductionFileSaveSuccess"); }
+                    if(origIntro != dataArr[dataArr.length - 1]) { evnt.sender.send("introductionFileSaveSuccess"); }
                     // Read the settings configuration.json file.
                     fs.readFile(path.join(appDirectory, "Trak", "config", "configuration.json"), (err, file) => {
                         // If there was an issue in reading the configuration.json file notify the user.
@@ -154,7 +155,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, evnt) 
                                     && configurationData.original.secondaryColor == writeData.secondaryColor && configurationData.original.primaryWindowWidth == writeData.primaryWindowWidth
                                     && configurationData.original.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.original.secondaryWindowWidth == writeData.secondaryWindowWidth
                                     && configurationData.original.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.original.primaryWindowFullscreen == writeData.primaryWindowFullscreen
-                                    && configurationData.original.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && origIntro == dataArr[9]) {
+                                    && configurationData.original.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && configurationData.original.icon == writeData.icon && origIntro == dataArr[dataArr.length - 1]) {
                                     writeData.previousPrimaryColor = configurationData.original.primaryColor;
                                     writeData.previousSecondaryColor = configurationData.original.secondaryColor;
                                     configurationData.current = writeData;
@@ -218,7 +219,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, evnt) 
                                     && configurationData.current.secondaryColor == writeData.secondaryColor && configurationData.current.primaryWindowWidth == writeData.primaryWindowWidth
                                     && configurationData.current.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.current.secondaryWindowWidth == writeData.secondaryWindowWidth
                                     && configurationData.current.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.current.primaryWindowFullscreen == writeData.primaryWindowFullscreen
-                                    && configurationData.current.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && origIntro == dataArr[9]) {
+                                    && configurationData.current.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && configurationData.current.icon == writeData.icon && origIntro == dataArr[dataArr.length - 1]) {
                                     writeData.previousPrimaryColor = configurationData.current.primaryColor;
                                     writeData.previousSecondaryColor = configurationData.current.secondaryColor;
                                     configurationData.current = writeData;

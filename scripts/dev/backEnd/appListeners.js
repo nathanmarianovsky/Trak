@@ -46,11 +46,11 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
     		// Create a primary window.
-	   		let win = tools.createWindow("index", originalPath, BrowserWindow, path, log, dev, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
+	   		let win = tools.createWindow("index", originalPath, BrowserWindow, fs, path, log, dev, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
 	   		// Proceed once the window has finished loading.
 	   		win.webContents.on("did-finish-load", () => {
 	   			// Send a request to the front-end to initialize the loading of library records on the primary window.
-				win.webContents.send("loadRows", [false, win.getContentSize()[1] - 800]);
+				win.webContents.send("loadRows", win.getContentSize()[1] - 800);
 				win.setProgressBar(0.50);
 				// Send a request to the front-end to initialize the application tutorial.
   				tools.tutorialLoad(fs, path, log, win, originalPath);
@@ -85,7 +85,7 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
   		// Proceed once the window has finished loading.
   		mainWindow.webContents.on("did-finish-load", () => {
   			// Send a request to the front-end to initialize the loading of library records on the primary window.
-  			mainWindow.webContents.send("loadRows", [false, mainWindow.getContentSize()[1] - 800]);
+  			mainWindow.webContents.send("loadRows", mainWindow.getContentSize()[1] - 800);
 			// Send a request to the front-end to initialize the application tutorial.
   			tools.tutorialLoad(fs, path, log, mainWindow, originalPath);
   		});
@@ -256,7 +256,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
 	// Handles the load of the addRecord.html page for the creation of a record.
   	ipc.on("addLoad", (event, scenario) => {
   		// Have the secondary window load the corresponding html structure.
-  		let addWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  		let addWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, fs, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 		// Proceed once the window has finished loading.
   		addWindow.webContents.on("did-finish-load", () => {
   			// Send a request to the front-end if the tutorial is chosen to be shown.
@@ -276,7 +276,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
   	// Handles the load of the addRecord.html page for the update of a record.
   	ipc.on("updateRecord", (event, fldrName) => {
   		// Have the secondary window load the corresponding html structure.
-  		let recordUpdateWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+  		let recordUpdateWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, fs, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 		// Proceed once the window has finished loading.
   		recordUpdateWindow.webContents.on("did-finish-load", () => {
   			// Send a request to the front-end to load the record's details.
@@ -405,7 +405,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
 		// Handles the opening of the addRecord.html page to load a record based on a content search.
 		ipc.on(categoryArr[w] + "RecordRequest", (event, submission) => {
 			// Have the secondary window load the corresponding html structure.
-			let recordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+			let recordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, fs, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 			// Proceed once the window has finished loading.
 	  		recordWindow.webContents.on("did-finish-load", () => {
 	  			// Fetch the record details from the corresponding online resource.
@@ -770,12 +770,12 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	// Add the listeners which act as tools for the front-end.
 	exports.addHelperListeners(log, ipc, mainWindow);
 
-	ipc.on("removeSplash", event => {
+	ipc.once("removeSplash", event => {
 		loadWindow.webContents.send("loadBlink", 6);
 		setTimeout(() => {
 			mainWindow.focus();
-			// loadWindow.destroy();
-		}, 1000)
+			loadWindow.destroy();
+		}, 1000);
 	});
 };
 

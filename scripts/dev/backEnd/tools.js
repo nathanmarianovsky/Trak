@@ -1980,7 +1980,7 @@ Executes the creation of the primary window with all necessary parameters.
 	- extension refers to the html file name.
 	- dir is the directory containing the display pages.
 	- BrowserWindow provides the means to create a new app window.
-	- path provides the means to work with file paths.
+	- fs and path provide the means to work with file paths.
 	- log provides the means to create application logs to keep track of what is going on.
 	- devCheck is a boolean representing whether the app is being run in a development mode.
 	- width and height are the physical parameters for describing the created window size.
@@ -1988,8 +1988,8 @@ Executes the creation of the primary window with all necessary parameters.
 	- resizable is a boolean representing whether a window should be allowed to rescale.
 
 */
-exports.createWindow = (extension, dir, BrowserWindow, path, log, devCheck, width = 1000, height = 800, fullscreen = false, resizable = true) => {
-  	console.log(path.join(__dirname, "../../../assets", "whiteLogo.ico"));
+exports.createWindow = (extension, dir, BrowserWindow, fs, path, log, devCheck, width = 1000, height = 800, fullscreen = false, resizable = true) => {
+  	const conData = JSON.parse(fs.readFileSync(path.join(dir, "Trak", "config", "configuration.json"), "UTF8"));
   	let win = new BrowserWindow({
 		"width": width,
     	"height": height,
@@ -2000,12 +2000,11 @@ exports.createWindow = (extension, dir, BrowserWindow, path, log, devCheck, widt
     		"nodeIntegration": true,
     		"contextIsolation": false
     	},
-    	"icon": path.join(__dirname, "../../../assets", "whiteLogo.ico"),
+    	"icon": path.join(__dirname, "../../../assets", (conData.current != undefined ? conData.current.icon : conData.original.icon) + "Logo.ico"),
     	"titleBarOverlay": true,
-    	"frame": extension != "splash",
-    	"transparent": extension == "splash"
+    	"frame": extension != "splash"
 	});
-	extension != "splash" ? win.loadFile(path.join(dir, "Trak", "localPages", extension + ".html")) : win.loadFile(path.join(dir, "pages", "dist", extension + ".html"));
+	extension != "splash" ? win.loadFile(path.join(dir, "Trak", "localPages", extension + ".html")) : win.loadFile(path.join(__dirname, "../../../pages", "dist", extension + ".html"));
 	win.setProgressBar(0.25);
 	if(fullscreen == true) { win.maximize(); }
 	log.info("The " + extension + ".html page is now loading.");

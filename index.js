@@ -39,7 +39,7 @@ log.info("The application is starting.");
 
 // Loads the Electron app by creating the primary window. 
 app.whenReady().then(() => {
-	let splashWindow = tools.createWindow("splash", __dirname, BrowserWindow, path, log, dev);
+	let splashWindow = tools.createWindow("splash", basePath, BrowserWindow, fs, path, log, dev);
 	splashWindow.webContents.on("did-finish-load", () => {
 		splashWindow.webContents.send("loadBlink", 1);
 		// Create the Electron app menu.
@@ -206,11 +206,12 @@ app.whenReady().then(() => {
 																log.info("The styles.css file has been successfully rewritten to the localStyles folder.");
 																// Create the primary window.
 																splashWindow.webContents.send("loadBlink", 4);
-															  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, path, log, dev, primWinWidth, primWinHeight, primWinFullscreen);
+															  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, fs, path, log, dev, primWinWidth, primWinHeight, primWinFullscreen);
 																splashWindow.focus();
 																primaryWindow.webContents.on("did-finish-load", () => {
 																	if(splashCheck == false) {
 																		splashWindow.webContents.send("loadBlink", 5);
+																		splashCheck = true;
 																	}
 																	primaryWindow.webContents.send("loadRows", [true, primaryWindow.getContentSize()[1] - 800]);
 																	primaryWindow.setProgressBar(0.50);
@@ -221,11 +222,10 @@ app.whenReady().then(() => {
 																		updateCheck = true;
 																	}
 																	primaryWindow.setProgressBar(1);
-																	splashCheck = true;
 																});
 															  	// Create the system tray icon and menu. 
 															  	log.info("The application is creating the tray menu.");
-															  	tray = new Tray(path.join(__dirname, "/assets/whiteLogo.png"));
+															  	tray = new Tray(path.join(__dirname, "assets", iconChoice + "Logo.png"));
 																tools.createTrayMenu("h", primaryWindow, tray, Menu);
 																// Add all of the back-end listeners.
 																require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCheck, primaryWindow, splashWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
