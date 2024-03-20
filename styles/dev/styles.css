@@ -466,6 +466,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	margin-top: 25px;
 }
 
+#filterForm .checkboxText {
+	font-size: 12px;
+}
+
 
 
 /*---------------------------------------------------------------------------------------------------------------------*/

@@ -21,19 +21,33 @@ const htmlMinify = require("html-minifier").minify,
 
 
 
-// Append the app settings to the appropriate html files.
+// Append the appropriate sections to the index html file.
 console.log("Adding Settings to Appropriate HTML Files.");
 const htmlSettingsList = ["index.html"],
 	htmlList = ["addRecord.html", "splash.html"],
-	htmlSettings = fs.readFileSync(path.join(__dirname, "pages", "dev", "settings.html"));
+	htmlSettings = fs.readFileSync(path.join(__dirname, "pages", "dev", "settings.html")),
+	htmlUpdate = fs.readFileSync(path.join(__dirname, "pages", "dev", "update.html")),
+	htmlSynopsis = fs.readFileSync(path.join(__dirname, "pages", "dev", "synopsis.html")),
+	htmlImport = fs.readFileSync(path.join(__dirname, "pages", "dev", "import.html")),
+	htmlIntroduction = fs.readFileSync(path.join(__dirname, "pages", "dev", "introduction.html")),
+	htmlDatabase = fs.readFileSync(path.join(__dirname, "pages", "dev", "database.html")),
+	htmlNotifications = fs.readFileSync(path.join(__dirname, "pages", "dev", "notifications.html")),
+	htmlFilter = fs.readFileSync(path.join(__dirname, "pages", "dev", "filter.html"));
 for(let t = 0; t < htmlSettingsList.length; t++) {
 	let data = fs.readFileSync(path.join(__dirname, "pages", "dev", htmlSettingsList[t]), "UTF8"),
 		$ = cheerio.load(data);
 	$("#settingsModal").html(htmlSettings);
-	if(!fs.existsSync(path.join(__dirname, "pages", "dev", "settingsAttached"))) {
-		fs.mkdirSync(path.join(__dirname, "pages", "dev", "settingsAttached"), { "recursive": true });
+	$("#updateModal").html(htmlUpdate);
+	$("#synopsisModal").html(htmlSynopsis);
+	$("#importModal").html(htmlImport);
+	$("#introductionModal").html(htmlIntroduction);
+	$("#databaseModal").html(htmlDatabase);
+	$("#notificationsModal").html(htmlNotifications);
+	$("#filterModal").html(htmlFilter);
+	if(!fs.existsSync(path.join(__dirname, "pages", "dev", "sectionsAttached"))) {
+		fs.mkdirSync(path.join(__dirname, "pages", "dev", "sectionsAttached"), { "recursive": true });
 	}
-	fs.writeFileSync(path.join(__dirname, "pages", "dev", "settingsAttached", "settingsAttached" + htmlSettingsList[t].charAt(0).toUpperCase() + htmlSettingsList[t].slice(1)), $.html(), "UTF8");
+	fs.writeFileSync(path.join(__dirname, "pages", "dev", "sectionsAttached", "sectionsAttached" + htmlSettingsList[t].charAt(0).toUpperCase() + htmlSettingsList[t].slice(1)), $.html(), "UTF8");
 }
 
 
@@ -65,7 +79,7 @@ const settingsHtmlBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect);
 for(let r = 0; r < htmlSettingsList.length; r++) {
 	let file = htmlSettingsList[r],
 		settingsHtmlBarRow = settingsHtmlBar.create(1, 0, {}, {"format": "[{bar}] {percentage}% | " + file}),
-		data = fs.readFileSync(path.join(__dirname, "pages", "dev", "settingsAttached", "settingsAttached" + file.charAt(0).toUpperCase() + file.slice(1)), "UTF8");
+		data = fs.readFileSync(path.join(__dirname, "pages", "dev", "sectionsAttached", "sectionsAttached" + file.charAt(0).toUpperCase() + file.slice(1)), "UTF8");
 	fs.writeFileSync(path.join(__dirname, "pages", "dist", file), htmlMinify(data, {
 		"removeComments": true,
 		"removeCommentsFromCDATA": true,
@@ -190,7 +204,7 @@ jsFrontBar.stop();
 
 
 // Remove the menu attached html files inside the dev folder.
-fs.rmSync(path.join(__dirname, "pages", "dev", "settingsAttached"), {"recursive": true, "force": true});
+fs.rmSync(path.join(__dirname, "pages", "dev", "sectionsAttached"), {"recursive": true, "force": true});
 
 
 

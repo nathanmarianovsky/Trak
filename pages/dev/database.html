@@ -1,0 +1,166 @@
+<div class="modal-content">
+    <div class="navbar">
+        <nav id="databaseNav" class="z-depth-2">
+            <div class="nav-wrapper">
+                <ul id="databaseSelection">
+                    <li><a id="databaseExport">Export</a></li>
+                    <li><a id="databaseImport">Import</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <div id="databaseTabs">
+        <ul class="tabs tabs-fixed-width z-depth-1">
+            <li class="tab"><a class="tabSearchLink" href="#animeImportDiv">Anime</a></li>
+            <li class="tab"><a class="tabSearchLink" href="#bookImportDiv">Book</a></li>
+            <li class="tab"><a class="tabSearchLink" href="#filmImportDiv">Film</a></li>
+            <li class="tab"><a class="tabSearchLink" href="#mangaImportDiv">Manga</a></li>
+            <li class="tab"><a class="tabSearchLink" href="#showImportDiv">Show</a></li>
+        </ul>
+    </div>
+    <div id="databaseExportContainer" class="databaseContainer">
+        <p>
+            In order to export the checked library records simply provide the directory to which the xlsx or zip files should be saved.
+            <br><br>
+            For the case of a xlsx file either a simple file can be generated containing a single worksheet with all basic record details or a detailed file containing the same information provided by the simple version along with a separate worksheet for each record containing details such as season information, episode information, etc... If desired, any zip file generated in the export process can be compressed by checking the "Compress" option below.
+        </p>
+        <div class="row databaseWindowDiv">
+            <form class="col s12">
+                <div class="row">
+                    <div class="input-field col s10">
+                        Directory:
+                        <input id="exportPath" type="text" class="databaseDataInput">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="databaseImportContainer" class="databaseContainer">
+        <p id="importZipContent">
+            To import into the library records simply select the zip files which contain the data and click to import. Any zip file to be imported should correspond to an export generated from this application. A sample can be found <a id="importSampleZIP" class="hyperlink">here</a>.
+        </p>
+        <p id="importXLSXContent">
+            To import into the library records simply select the xlsx files which contain the data and click to import. The instructions for how the xlsx files should be formatted is described for each record option above.
+        </p>
+        <div id="animeImportDiv" class="importDiv">
+            <p class="importXLSXContentSimple">
+                To import anime records into the library via a simple xlsx file there should be a worksheet titled "Category-Anime" whose columns are expected to be in the order:
+                <br><br>
+                <span class="center textFocus">| Name | Japanese Name | Rating | Comments/Review | Synopsis | Directors |<br>| Producers | Writers | Music Directors | Studios | Licensed By | Release Date | Genres |</span>
+                <br>
+                The first row should be used for column headers with data starting on the second row whose entries can consist of a comma separated list for multiple values in a single entry. Select the xlsx files which contain the data and click to import. A sample can be found <a class="importSampleSimpleXLSX hyperlink">here</a>.
+            </p>
+            <p class="importXLSXContentDetailed">
+                To import anime records into the library via a detailed xlsx file multiple worksheets are expected to be provided where the first worksheet corresponds to the same data as with a simple xlsx import. All other worksheets are expected to be titled in the format "Anime-FormattedName" where FormattedName is the value in the first column of the "Category-Anime" worksheet whose words all start with a capital letter and has all whitespaces removed. The columns for these same worksheets are expected to be in the order:
+                <br><br>
+                <span class="center textFocus">| Type | Name | Start Date | End Date | Status | Last Watched |<br>| Rating | Episode # | Episode Name | Comments/Review |</span>
+                <br>
+                The first row should be used for column headers with data starting on the second row. Furthermore, the value of a record's related content type can be either a "Season" or "Single" where single corresponds to an entry with a single episode and status can take on one of five values "Watching", "Completed", "On-Hold", "Dropped", or "Plan To Watch". For type single provide the release date under the start date column and ignore the columns corresponding to the episode number and episode name. Select the xlsx files which contain the data and click to import. A sample can be found <a class="importSampleDetailedXLSX hyperlink">here</a>.
+            </p>
+        </div>
+        <div id="bookImportDiv" class="importDiv">
+            <p>
+                To import book records into the library via a simple or detailed xlsx file there should be a worksheet titled "Category-Book" whose columns are expected to be in the order:
+                <br><br>
+                <span class="center textFocus">| Title | Original Title | Rating | Comments/Review | Synopsis | ASIN/ISBN | Authors |<br>| Publisher | Publication Date | Number of Pages | Media Type | Last Read Date | Genres |</span>
+                <br>
+                The first row should be used for column headers with data starting on the second row whose entries can consist of a comma separated list for multiple values in a single entry. Select the xlsx files which contain the data and click to import. A sample can be found <a class="importSampleSimpleXLSX hyperlink">here</a>.
+            </p>
+        </div>
+        <div id="filmImportDiv" class="importDiv">
+            <p>
+                To import film records into the library via a simple or detailed xlsx file there should be a worksheet titled "Category-Film" whose columns are expected to be in the order:
+                <br><br>
+                <span class="center textFocus">| Name | Alternate Name | Rating | Comments/Review | Plot | Runtime | Directors | Editors |<br>| Writers | Cinematographers | Music Directors | Distributors | Producers |<br>| Production Companies | Starring | Release Date | Last Watched Date | Genres |</span>
+                <br>
+                The first row should be used for column headers with data starting on the second row whose entries can consist of a comma separated list for multiple values in a single entry. Select the xlsx files which contain the data and click to import. A sample can be found <a class="importSampleSimpleXLSX hyperlink">here</a>.
+            </p>
+        </div>
+        <div id="mangaImportDiv" class="importDiv">
+            <p class="importXLSXContentSimple">
+                To import manga records into the library via a simple xlsx file there should be a worksheet titled "Category-Manga" whose columns are expected to be in the order:
+                <br><br>
+                <span class="center textFocus">| Name | Japanese Name | Rating | Comments/Review | Synopsis | Writers |<br>| Illustrators | Publisher | Japanese Publisher | Demographic | Start Date | End Date | Genres |</span>
+                <br>
+                The first row should be used for column headers with data starting on the second row whose entries can consist of a comma separated list for multiple values in a single entry. Select the xlsx files which contain the data and click to import. A sample can be found <a class="importSampleSimpleXLSX hyperlink">here</a>.
+            </p>
+            <p class="importXLSXContentDetailed">
+                To import manga records into the library via a detailed xlsx file multiple worksheets are expected to be provided where the first worksheet corresponds to the same data as with a simple xlsx import. All other worksheets are expected to be titled in the format "Manga-FormattedName" where FormattedName is the value in the first column of the "Category-Manga" worksheet whose words all start with a capital letter and has all whitespaces removed. The columns for these same worksheets are expected to be in the order:
+                <br><br>
+                <span class="center textFocus">| Type | Name | ASIN/ISBN | Release Date | Last Read | Rating | Synopsis | Comments/Review |</span>
+                <br>
+                The first row should be used for column headers with data starting on the second row. Furthermore, the value of a record's related content type can be either a "Chapter" or "Volume". Select the xlsx files which contain the data and click to import. A sample can be found <a class="importSampleDetailedXLSX hyperlink">here</a>.
+            </p>
+        </div>
+        <div id="showImportDiv" class="importDiv">
+            <p class="importXLSXContentSimple">
+                To import show records into the library via a simple xlsx file there should be a worksheet titled "Category-Show" whose columns are expected to be in the order:
+                <br><br>
+                <span class="center textFocus">| Name | Alternate Name | Rating | Comments/Review | Plot | Runtime | Directors | Editors |<br>| Writers | Cinematographers | Music Directors | Distributors | Producers |<br>| Production Companies | Starring | Release Date | Last Watched Date | Genres |</span>
+                <br>
+                The first row should be used for column headers with data starting on the second row whose entries can consist of a comma separated list for multiple values in a single entry. Select the xlsx files which contain the data and click to import. A sample can be found <a class="importSampleSimpleXLSX hyperlink">here</a>.
+            </p>
+            <p class="importXLSXContentDetailed">
+                To import show records into the library via a detailed xlsx file multiple worksheets are expected to be provided where the first worksheet corresponds to the same data as with a simple xlsx import. All other worksheets are expected to be titled in the format "Show-FormattedName" where FormattedName is the value in the first column of the "Category-Show" worksheet whose words all start with a capital letter and has all whitespaces removed. The columns for these same worksheets are expected to be in the order:
+                <br><br>
+                <span class="center textFocus">| Season Name | Start Date | End Date | Status | Last Watched |<br>| Rating | Episode # | Episode Name | Comments/Review |</span>
+                <br>
+                The first row should be used for column headers with data starting on the second row. Furthermore, status can take on one of five values "Watching", "Completed", "On-Hold", "Dropped", or "Plan To Watch". Select the xlsx files which contain the data and click to import. A sample can be found <a class="importSampleDetailedXLSX hyperlink">here</a>.
+            </p>
+        </div>
+        <div class="row databaseImportDiv">
+            <form class="col s12">
+                <div class="file-field input-field col s10">
+                    <div class="btn addRecordFilesDiv">
+                        <span>
+                            File<i class="material-icons right">add</i>
+                        </span>
+                        <input id="importZipFile" type="file" multiple>
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input id="databaseFilesText" class="file-path validate" type="text">
+                        <label for="databaseFilesText">Upload one or more files.</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="databasePreloader" class="preloader-wrapper big active">
+        <div class="spinner-layer">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div id="databaseSwitchDiv" class="switch left">
+        <label>
+            ZIP
+            <input id="databaseSwitch" type="checkbox">
+            <span class="lever"></span>
+            XLSX
+        </label>
+    </div>
+    <div id="XLSXTypeSwitchDiv" class="switch left">
+        <label>
+            Simple
+            <input id="XLSXTypeSwitch" type="checkbox">
+            <span class="lever"></span>
+            Detailed
+        </label>
+    </div>
+    <label id="databaseCheckLabel" class="left">
+        <input type="checkbox" class="filled-in" id="exportCheck"/>
+        <span id="databaseCheckSpan">Compress</span>
+    </label>
+    <a id="databaseModalExit" class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+    <a id="databaseExportBtn" class="waves-effect waves-light btn-flat modalButtons">Export</a>
+    <a id="databaseImportBtn" class="waves-effect waves-light btn-flat modalButtons">Import</a>
+</div>

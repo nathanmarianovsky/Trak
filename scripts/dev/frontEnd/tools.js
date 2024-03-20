@@ -390,7 +390,7 @@ const genreList = (type = "All") => {
             "Superhero", "TalkShow", "Thriller", "Utopian", "Vampire", "Vigilante", "Western", "Zombie"];
     }
     else if(type == "All") {
-        genArr = [...new Set([].concat.apply([], [genreList("Anime"), genreList("Book"), genreList("Film"), genreList("Manga"), genreList("Show")]))];
+        genArr = [...new Set([].concat(genreList("Anime"), genreList("Book"), genreList("Film"), genreList("Manga"), genreList("Show")))];
         genArr.sort((a, b) => a.localeCompare(b));
     }
     return genArr;
