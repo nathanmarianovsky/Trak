@@ -18,7 +18,7 @@ BASIC DETAILS: This file handles all buttons on the index.html page.
 Remove all active filters.
 
 */
-var cleanFilter = () => {
+const cleanFilter = () => {
     const homeIcon = document.getElementById("indexHome");
     // Define the category and genre arrays along with the record rows.
     const pageTable = homeIcon.style.display == "none" || homeIcon.style.display == ""
@@ -63,7 +63,7 @@ Provides the request to load more chunks, if available, on a content search when
    - showSearchBar is the search bar input for film content searches.
 
 */
-var bottomScrollRequest = (animeSearch, bookSearch, filmSearch, mangaSearch, showSearch) => {
+const bottomScrollRequest = (animeSearch, bookSearch, filmSearch, mangaSearch, showSearch) => {
     window.addEventListener("scroll", ev => {
         if((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight) {
             let tabs = Array.from(document.getElementsByClassName("tabSearchLink")).filter(elem => elem.classList.contains("active")),

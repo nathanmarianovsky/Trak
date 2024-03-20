@@ -143,7 +143,7 @@ var animeModalButtons = () => {
 Resets the page counters for an anime record's related content.
 
 */
-var resetAnimeContentCounters = () => {
+const resetAnimeContentCounters = () => {
     const itemList = Array.from(document.getElementById("animeList").children),
         animeMovieCount = document.getElementById("animeMovieCount"),
         animeONACount = document.getElementById("animeONACount"),
@@ -189,7 +189,7 @@ var resetAnimeContentCounters = () => {
 Calculates the average rating for an anime based on the available ratings for all films, ONAs, OVAs, and seasons.
 
 */
-var calculateAnimeRating = () => {
+const calculateAnimeRating = () => {
     // Define the related content list and global ratings input.
     const relevantList = document.getElementById("animeList"),
         globalRating = document.getElementById("animeRating");
@@ -225,7 +225,7 @@ var calculateAnimeRating = () => {
 Reorganize the list items in the associated anime modal.
 
 */
-var animeListReorganize = () => {
+const animeListReorganize = () => {
     // Define the related content list.
     const animeModalList = document.getElementById("animeList");
     // Iterate through all related content items.
@@ -313,7 +313,7 @@ Listen for change and click events on the related content anime episode table it
     - delButton is the button that deletes an episode.
 
 */
-var animeSeasonContentButtons = (ratingSelect, delButton) => {
+const animeSeasonContentButtons = (ratingSelect, delButton) => {
     // Listen for a change in the rating of an anime episode.
     ratingSelect.addEventListener("change", e => {
         // Calculate the new average of the anime season rating based on the ratings of the episodes.
@@ -374,7 +374,7 @@ Listen for click events on the related content anime film/ONA/OVA table items.
     - delSingleBtn is the button that deletes a film/ONA/OVA.
 
 */
-var animeContentSingleButtons = (formSingleName, formSingleReleaseDate, formSingleLastWatchedDate, formSingleRating, delSingleBtn) => {
+const animeContentSingleButtons = (formSingleName, formSingleReleaseDate, formSingleLastWatchedDate, formSingleRating, delSingleBtn) => {
     // Listen for a click on the season name, season start date, season end date, or season average rating in order to prevent the listed item body from displaying.
     formSingleName.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formSingleReleaseDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
@@ -411,7 +411,7 @@ Add an episode to an anime related content season.
     - tgt is the document element corresponding to the season table item.
 
 */
-var animeEpisodeAddition = tgt => {
+const animeEpisodeAddition = tgt => {
     // Remove the tooltips.
     clearTooltips();
     // Define the list item id.
@@ -512,7 +512,7 @@ Listen for click events on the related content anime season table items.
     - delBtn is the button that deletes a season.
 
 */
-var animeContentSeasonButtons = (formName, formStartDate, formEndDate, formAverageRating, addBtn, delBtn) => {
+const animeContentSeasonButtons = (formName, formStartDate, formEndDate, formAverageRating, addBtn, delBtn) => {
     // Listen for a click on the season name, season start date, season end date, or season average rating in order to prevent the listed item body from displaying.
     formName.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formStartDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
@@ -550,7 +550,7 @@ var animeContentSeasonButtons = (formName, formStartDate, formEndDate, formAvera
 Driver function designed to add a film/ONA/OVA table item in the related content section of an anime record.
 
 */
-var animeSingleAddition = () => {
+const animeSingleAddition = () => {
     // Define and construct all components needed to attach an anime film to the related content table.
     const animeList = document.getElementById("animeList"),
         itemSingleLI = document.createElement("li"),
@@ -695,7 +695,7 @@ var animeSingleAddition = () => {
 Driver function designed to add a season table item in the related content section of an anime record.
 
 */
-var animeSeasonAddition = () => {
+const animeSeasonAddition = () => {
     // Define and construct all components needed to attach an anime season to the related content table.
     const animeList = document.getElementById("animeList"),
         itemLI = document.createElement("li"),

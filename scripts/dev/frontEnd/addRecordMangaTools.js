@@ -148,7 +148,7 @@ var mangaModalButtons = () => {
 Resets the page counters for a manga record's related content.
 
 */
-var resetMangaContentCounters = () => {
+const resetMangaContentCounters = () => {
     const itemList = Array.from(document.getElementById("mangaList").children),
         mangaChapterCount = document.getElementById("mangaChapterCount"),
         mangaVolumeCount = document.getElementById("mangaVolumeCount");
@@ -173,7 +173,7 @@ var resetMangaContentCounters = () => {
 Calculates the average rating for a manga based on the available ratings for all chapters and volumes.
 
 */
-var calculateMangaRating = () => {
+const calculateMangaRating = () => {
     // Define the related content list and global ratings input.
     const relevantList = document.getElementById("mangaList"),
         globalRating = document.getElementById("mangaRating");
@@ -205,7 +205,7 @@ var calculateMangaRating = () => {
 Reorganize the list items in the associated manga modal.
 
 */
-var mangaListReorganize = () => {
+const mangaListReorganize = () => {
     // Define the related content list.
     const mangaModalList = document.getElementById("mangaList");
     // Iterate through all related content items.
@@ -272,7 +272,7 @@ Listen for click events on the related content manga chapter/volume table items.
     - delSingleBtn is the button that deletes a chapter/volume.
 
 */
-var mangaContentSingleButtons = (formSingleName, formSingleISBN, formSingleReleaseDate, formSingleLastReadDate, formSingleRating, fetchSingleBtn, delSingleBtn) => {
+const mangaContentSingleButtons = (formSingleName, formSingleISBN, formSingleReleaseDate, formSingleLastReadDate, formSingleRating, fetchSingleBtn, delSingleBtn) => {
     // Listen for a click on the item name, item isbn, item start date, or item read date in order to prevent the listed item body from displaying.
     formSingleName.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formSingleISBN.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
@@ -395,7 +395,7 @@ Driver function designed to add a chapter/volume table item in the related conte
    - scenario is a string taking on either the value "Chapter" or "Volume" to correspond to which item to add.
 
 */
-var mangaItemAddition = scenario => {
+const mangaItemAddition = scenario => {
     // Define and construct all components needed to attach a manga chapter to the related content table.
     const mangaList = document.getElementById("mangaList"),
         itemSingleLI = document.createElement("li"),

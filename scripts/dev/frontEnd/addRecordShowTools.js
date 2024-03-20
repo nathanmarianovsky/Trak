@@ -125,7 +125,7 @@ var showModalButtons = () => {
 Resets the page counters for a show record's related content.
 
 */
-var resetShowContentCounters = () => {
+const resetShowContentCounters = () => {
     const itemList = Array.from(document.getElementById("showList").children),
         showSeasonCount = document.getElementById("showSeasonCount"),
         showEpisodeCount = document.getElementById("showEpisodeCount");
@@ -146,7 +146,7 @@ var resetShowContentCounters = () => {
 Calculates the average rating for a show based on the available ratings for all seasons.
 
 */
-var calculateShowRating = () => {
+const calculateShowRating = () => {
     // Define the related content list and global ratings input.
     const relevantList = document.getElementById("showList"),
         globalRating = document.getElementById("showRating");
@@ -171,7 +171,7 @@ var calculateShowRating = () => {
 Reorganize the list items in the associated show modal.
 
 */
-var showListReorganize = () => {
+const showListReorganize = () => {
     // Define the related content list.
     const showModalList = document.getElementById("showList");
     // Iterate through all related content items.
@@ -233,7 +233,7 @@ Listen for change and click events on the related content show episode table ite
     - delButton is the button that deletes an episode.
 
 */
-var showSeasonContentButtons = (ratingSelect, delButton) => {
+const showSeasonContentButtons = (ratingSelect, delButton) => {
     // Listen for a change in the rating of a show episode.
     ratingSelect.addEventListener("change", e => {
         // Calculate the new average of the show season rating based on the ratings of the episodes.
@@ -290,7 +290,7 @@ Add an episode to a show related content season.
     - tgt is the document element corresponding to the season table item.
 
 */
-var showEpisodeAddition = tgt => {
+const showEpisodeAddition = tgt => {
     // Remove the tooltips.
     clearTooltips();
     // Define the list item id.
@@ -391,7 +391,7 @@ Listen for click events on the related content show season table items.
     - delBtn is the button that deletes a season.
 
 */
-var showContentSeasonButtons = (formName, formStartDate, formEndDate, formAverageRating, addBtn, delBtn) => {
+const showContentSeasonButtons = (formName, formStartDate, formEndDate, formAverageRating, addBtn, delBtn) => {
     // Listen for a click on the season name, season start date, season end date, or season average rating in order to prevent the listed item body from displaying.
     formName.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formStartDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
@@ -429,7 +429,7 @@ var showContentSeasonButtons = (formName, formStartDate, formEndDate, formAverag
 Driver function designed to add a season table item in the related content section of a show record.
 
 */
-var showSeasonAddition = () => {
+const showSeasonAddition = () => {
     // Define and construct all components needed to attach a show season to the related content table.
     const showList = document.getElementById("showList"),
         itemLI = document.createElement("li"),

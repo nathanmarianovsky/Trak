@@ -35,7 +35,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
 
 
 
-var updateGenreLoad = (category, otherGenres, genreData) => {
+const updateGenreLoad = (category, otherGenres, genreData) => {
     for(let v = 0; v < genreData[0].length; v++) {
         document.getElementById(category.toLowerCase() + "Genre" + genreData[0][v]).checked = genreData[1][v];
     }
@@ -48,7 +48,7 @@ var updateGenreLoad = (category, otherGenres, genreData) => {
 
 
 
-var updateImgLoad = (category, imgElem, imgData) => {
+const updateImgLoad = (category, imgElem, imgData) => {
     imgElem.setAttribute("list", imgData.join(","));
     imgElem.setAttribute("previous", imgData.join(","));
     imgElem.setAttribute("src", imgData.length > 0 && imgData[0] != "" ? imgData[0] : imgElem.getAttribute("default"));
@@ -69,7 +69,7 @@ Updates a record counter on the addRecord page associated a record's related con
    - counter is an integer corresponding to the number of items available in the record's related content of the input's specific type.
 
 */
-var counterAssignment = (elem, counter) => {
+const counterAssignment = (elem, counter) => {
     elem.value = counter;
     counter > 0 ? elem.classList.add("valid") : elem.classList.remove("valid");
 };
@@ -87,7 +87,7 @@ Updates a page text input.
    - callback is a function meant to be called after updating the text input.
 
 */
-var updateFetchedDataString = (elem, data, updateCheck, nameCheck = false, callback) => {
+const updateFetchedDataString = (elem, data, updateCheck, nameCheck = false, callback) => {
     // Update the record data if available.
     if(data !== null && data.trim() != ""  && data != "None found, add some") {
         if(updateCheck == true) {
@@ -126,7 +126,7 @@ Updates a page textarea input.
    - updateCheck is a boolean representing whether the data is being provided for a record's creation or update.
 
 */
-var updateFetchedDataTextArea = (elem, data, updateCheck) => {
+const updateFetchedDataTextArea = (elem, data, updateCheck) => {
     if(data !== null && data.trim() != "" && data != "None found, add some") {
         let textHolder = data.replace("[Written by MAL Rewrite]", "");
         if(textHolder.includes("(Source:")) {
@@ -158,7 +158,7 @@ Updates a page date input.
    - updateCheck is a boolean representing whether the data is being provided for a record's creation or update.
 
 */
-var updateFetchedDataDate = (elem, data, updateCheck) => {
+const updateFetchedDataDate = (elem, data, updateCheck) => {
     if(data !== null && data.trim() != "" && data != " ?") {
         elem.value = new Date(data).toISOString().split("T")[0];
         elem.classList.add("valid");
@@ -188,7 +188,7 @@ Adds the functionality for all image buttons based on the category currently cho
    - favColor is the application's primary color.
 
 */
-var imgButtons = (favLink, prevBtn, addBtn, addInput, remBtn, nextBtn, recordImg, favColor) => {
+const imgButtons = (favLink, prevBtn, addBtn, addInput, remBtn, nextBtn, recordImg, favColor) => {
     // Define the default color which will be applied to the favorite image icon.
     const btnColorDefault = newSwitchBackground = "#" + addAlpha(rgba2hex(getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor).substring(1), 0.4);
     // Listen for a click event on the favorite image button in order to redefine the favorite image for a record.
@@ -303,7 +303,7 @@ Resets the top nav to correspond to the clicked category.
    - choiceLink is the link on the top nav corresponding to which category should be shown.
 
 */
-var navReset = (def, divs, links, choiceDiv, choiceLink) => {
+const navReset = (def, divs, links, choiceDiv, choiceLink) => {
     // Hide the default content.
     if(def.style.display != "none") {
         def.style.display = "none";
@@ -327,7 +327,7 @@ Formats a string to be in the format "XXX m" in order to represent a record runt
    - str is a string representing a record's runtime.
 
 */
-var formatRunningTime = str => String(parseInt(str)) + " m";
+const formatRunningTime = str => String(parseInt(str)) + " m";
 
 
 
@@ -340,7 +340,7 @@ Updates a record's image input based upon fetched data.
    - imgList is an array of links corresponding to record images.
 
 */
-var setFetchedImages = (category, clrFav, imgList) => {
+const setFetchedImages = (category, clrFav, imgList) => {
     // Update the recprd image, if available.
     if(imgList[1].constructor === Array && imgList[1].length > 0) {
         const recordImg = document.getElementById("addRecord" + category + "Img"),
@@ -370,7 +370,7 @@ Initiates a call for a record's autocomplete options.
    - autoCompleteScenario is a boolean representing whether this function is being called upon a click or input event.
 
 */
-var nameAutoCompleteFunc = (category, tgt, prev, objNameAutoComplete, autoCompleteScenario = false) => {
+const nameAutoCompleteFunc = (category, tgt, prev, objNameAutoComplete, autoCompleteScenario = false) => {
     // Only fetch options if the record name is of at least three characters.
     if(tgt.value.length > 2) {
         ipcRenderer.send(category.toLowerCase() + "Search", [prev, tgt.value]);
@@ -393,7 +393,7 @@ Processes the fetching of a record's details by a value.
    - objPreloader is the page element corresponding to the primary record preloader.
 
 */
-var valueFetchFunc = (category, objVal, objPreloader) => {
+const valueFetchFunc = (category, objVal, objPreloader) => {
     const submissionVal = objVal.value.replace(/\W/g,"");
     if(submissionVal.length == 10) {
         objPreloader.style.visibility = "visible";
@@ -420,7 +420,7 @@ Processes the fetching of a record's details by name.
    - extraPreloader is the page element corresponding to the secondary record preloader, if available.
 
 */
-var nameFetchFunc = (category, objName, objPreloader, extraPreloader = null) => {
+const nameFetchFunc = (category, objName, objPreloader, extraPreloader = null) => {
     if(objName.value.length > 2) {
         objPreloader.style.visibility = "visible";
         if(extraPreloader !== null) {
@@ -442,7 +442,7 @@ Hides/shows a scroll for a textarea element depending on the current element hei
    - textAreaElem is the page element corresponding to the textarea whose vertical scroll is going to be hidden/shown.
 
 */
-var textAreaFunc = textAreaElem => parseInt(textAreaElem.style.height) > parseInt(getComputedStyle(textAreaElem).maxHeight) ? textAreaElem.style.overflowY = "scroll" : textAreaElem.style.overflowY = "hidden";
+const textAreaFunc = textAreaElem => parseInt(textAreaElem.style.height) > parseInt(getComputedStyle(textAreaElem).maxHeight) ? textAreaElem.style.overflowY = "scroll" : textAreaElem.style.overflowY = "hidden";
 
 
 
@@ -456,7 +456,7 @@ Initializes the autocomplete object for a record name input.
    - extraPreloader is the page element corresponding to the secondary record preloader, if available.
 
 */
-var autoCompleteInit = (category, objName, objPreloader, extraPreloader = null) => {
+const autoCompleteInit = (category, objName, objPreloader, extraPreloader = null) => {
     return M.Autocomplete.init(objName, {
         "sortFunction": (a, b) => a.localeCompare(b),
         "onAutocomplete": txt => {
@@ -478,7 +478,7 @@ Hides and shows the appropriate inputs on the genresModal.
    - category is a string corresponding to a record category.
 
 */
-var otherGenresReset = category => {
+const otherGenresReset = category => {
     Array.from(document.getElementsByClassName("otherGenresDiv")).forEach(div => div.style.display = "none");
     document.getElementById(category.toLowerCase() + "OtherGenresDiv").style.display = "block";
 };
@@ -492,7 +492,7 @@ Initialize the dragging of related content elements on the addRecord page.
    - category is a string corresponding to a record category.
 
 */
-var dragInit = category => {
+const dragInit = category => {
     let drake = dragula({"containers": [document.querySelector("#" + category.toLowerCase() + "List")]});
     drake.on("dragend", () => { window[category.toLowerCase() + "ListReorganize"](); });
 };
@@ -509,7 +509,7 @@ Add a listener for fetched autocomplete options on the addRecord page.
    - nameAutoComplete is the initialized object corresponding to the autocomplete options.
 
 */
-var autoCompleteListener = (category, objName, objNameUL, nameAutoComplete) => {
+const autoCompleteListener = (category, objName, objNameUL, nameAutoComplete) => {
     // Once the autocomplete options have been attained update the page accordingly.
     ipcRenderer.on(category.toLowerCase() + "SearchResults", (event, response) => {
         // Proceed only if there are options available for autocomplete.
@@ -560,7 +560,7 @@ Checks the appropriate genres on the addRecord page for fetched data.
    - list is an array of strings corresponding to genres.
 
 */
-var genreFill = (category, list) => {
+const genreFill = (category, list) => {
     if(list.constructor === Array && list.length > 0) {
         // Reset all anime genres to not be checked.
         const extraGenres = document.getElementById(category.toLowerCase() + "OtherGenres");
@@ -607,7 +607,7 @@ var genreFill = (category, list) => {
 Initializes select tags and tooltips. Designed to be executed after all related content items have been added.
 
 */
-var relatedContentFinisher = () => {
+const relatedContentFinisher = () => {
     // Initialize the select tags.
     initSelect();
     // Initialize the tooltips.
@@ -625,7 +625,7 @@ Addes the appropriate event listeners to ensure that page items are highlighted 
    - item is the page element to which the change and click events will be attached.
 
 */
-var relatedContentListeners = item => {
+const relatedContentListeners = item => {
     const listenerFunc = e => e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
     item.addEventListener("change", listenerFunc);
     item.addEventListener("click", listenerFunc);
@@ -638,7 +638,7 @@ var relatedContentListeners = item => {
 Initializes the autocomplete functionality on the associations modal.
 
 */
-var associationsInit = () => {
+const associationsInit = () => {
     // Define the collection of library records and the associations modal autocomplete input.
     const dataDir = path.join(localPath, "Trak", "data"),
         dataList = fs.readdirSync(dataDir).filter(file => fs.statSync(path.join(dataDir, file)).isDirectory()),
@@ -690,7 +690,7 @@ Creates an association listing in the notifications modal.
    - itemImg is a string corresponding to the image of a record.
 
 */
-var associationCreation = (itemId, itemCategory, itemTitle, itemImg) => {
+const associationCreation = (itemId, itemCategory, itemTitle, itemImg) => {
     // Define the portions of the association listed item.
     const associationsCollection = document.getElementById("associationsCollection");
     if(!Array.from(associationsCollection.children).map(elem => elem.getAttribute("associationId")).includes(itemId)) {
@@ -738,7 +738,7 @@ Adds the listeners associated to an association listing.
    - ipcElec provides the means to operate the Electron app.
 
 */
-var associationsListeners = ipcElec => {
+const associationsListeners = ipcElec => {
     // Listen for a click on the name of an association in order to open the update page.
     Array.from(document.getElementsByClassName("associationTitle")).forEach(itemLink => {
         itemLink.addEventListener("click", e => {
@@ -765,7 +765,7 @@ Handles the save request of a record's associations.
    - ipcElec provides the means to operate the Electron app.
 
 */
-var saveAssociations = (curCategory, curName, ipcElec) => {
+const saveAssociations = (curCategory, curName, ipcElec) => {
     ipcElec.send("associationsSave", [curCategory, curName, Array.from(document.getElementById("associationsCollection").children).map(association => association.getAttribute("associationId"))]);
 };
 
@@ -780,7 +780,7 @@ Initializes the tutorial on the addRecord.html page.
    - tgt2 is the second item to focus on in the tutorial.
 
 */
-var introInit = (hldr, tgt1, tgt2) => {
+const introInit = (hldr, tgt1, tgt2) => {
     if(hldr == true) {
         const instancesTap1 = M.TapTarget.init(tgt1, { "onClose": () => {
             setTimeout(() => {

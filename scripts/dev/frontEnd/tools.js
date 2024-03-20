@@ -43,7 +43,7 @@ Convert a RGBA color to hex.
    - rgba is a color in RGBA form.
 
 */
-var rgba2hex = rgba => `#${rgba.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.{0,1}\d*))?\)$/).slice(1)
+const rgba2hex = rgba => `#${rgba.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.{0,1}\d*))?\)$/).slice(1)
     .map((n, i) => (i === 3 ? Math.round(parseFloat(n) * 255) : parseFloat(n)).toString(16).padStart(2, "0").replace("NaN", "")).join("")}`;
 
 
@@ -56,7 +56,7 @@ Provides a hex representing a color with a certain opacity of the given hex colo
    - opacity is a value between zero and one representing the opacity desired.
 
 */
-var addAlpha = (color, opacity) => color + Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255).toString(16).toUpperCase();
+const addAlpha = (color, opacity) => color + Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255).toString(16).toUpperCase();
 
 
 
@@ -65,7 +65,7 @@ var addAlpha = (color, opacity) => color + Math.round(Math.min(Math.max(opacity 
 Remove all tooltips on the page.
 
 */
-var clearTooltips = () => {
+const clearTooltips = () => {
     // Define the current instances of tooltips found on the page.
     let elemsTooltips = document.querySelectorAll(".tooltipped"),
         instancesTooltips = M.Tooltip.init(elemsTooltips);
@@ -80,7 +80,7 @@ var clearTooltips = () => {
 Initialize the dropdowns on the page.
 
 */
-var initDropdown = () => {
+const initDropdown = () => {
     // Define the current instances of dropdowns found on the page.
     let elems = document.querySelectorAll('.dropdown-trigger'),
         instances = M.Dropdown.init(elems);
@@ -93,7 +93,7 @@ var initDropdown = () => {
 Initialize the tabs on the page.
 
 */
-var initTabs = (scenario = 0) => {
+const initTabs = (scenario = 0) => {
     // Define the instances of the tabs on the page.
     if(scenario == 0) {
         let elemsTabs = document.querySelector("#contentSearchDiv .tabs");
@@ -122,7 +122,7 @@ var initTabs = (scenario = 0) => {
 Initialize the floating action button on the page.
 
 */
-var initFAB = () => {
+const initFAB = () => {
     // Define the instance of the fixed action button on the page.
     const elemsFAB = document.querySelectorAll(".fixed-action-btn"),
         instancesFAB = M.FloatingActionButton.init(elemsFAB, { "hoverEnabled": false, "direction": "left" });
@@ -135,7 +135,7 @@ var initFAB = () => {
 Initialize the collapsible divs on the page.
 
 */
-var initCollapsible = () => {
+const initCollapsible = () => {
     // Define the current instances of collapsible divs found on the page.
     const elemsCollapsible = document.querySelectorAll(".collapsible"),
         instancesCollapsible = M.Collapsible.init(elemsCollapsible);
@@ -148,7 +148,7 @@ var initCollapsible = () => {
 Initialize all tooltips on the page.
 
 */
-var initTooltips = () => {
+const initTooltips = () => {
     // Define the current instances of tooltips found on the page.
     let elemsTooltips = document.querySelectorAll(".tooltipped"),
         instancesTooltips = M.Tooltip.init(elemsTooltips);
@@ -161,7 +161,7 @@ var initTooltips = () => {
 Initialize all select tags on the page.
 
 */
-var initSelect = () => {
+const initSelect = () => {
     // Define the current instances of select tags found on the page.
     let elemsSelect = document.querySelectorAll("select"),
         instancesSelect = M.FormSelect.init(elemsSelect);
@@ -174,7 +174,7 @@ var initSelect = () => {
 Initialize all modals on the page.
 
 */
-var initModal = () => {
+const initModal = () => {
     // Define the current instances of modals found on the page.
     const elemsModal = document.querySelectorAll(".modal"),
         instancesModal = M.Modal.init(elemsModal, { "onCloseEnd": () => document.body.style.overflowY = "visible" });
@@ -187,7 +187,7 @@ var initModal = () => {
 Initialize the observers for style mutations on related content select tags.
 
 */
-var initSelectObservers = () => {
+const initSelectObservers = () => {
     // Define the select tags observer.
     let observer = new MutationObserver(mutations => {
         // Define the listed item target in the unordered list.
@@ -214,7 +214,7 @@ Initialize the observer for style mutations on the appropriate review.
    - review is the input corresponding to the appropriate review.
 
 */
-var initReviewObserver = review => {
+const initReviewObserver = review => {
     // Define the select tags observer.
     let observer = new MutationObserver(mutations => {
         // Define the item target on the page.
@@ -235,7 +235,7 @@ Initialize the observer for style mutations on the appropriate synopsis.
    - synopsis is the input corresponding to the appropriate synopsis.
 
 */
-var initSynopsisObserver = synopsis => {
+const initSynopsisObserver = synopsis => {
     // Define the select tags observer.
     let observer = new MutationObserver(mutations => {
         // Define the item target on the page.
@@ -256,7 +256,7 @@ Handles the parsing of a record folder name to display to the user.
     - folder is the string representing the name of the folder associated to a record.
 
 */
-var toastParse = folder => {
+const toastParse = folder => {
     let hldr = folder.split("-")[0];
     return nameStr = hldr.toLowerCase() + " " + folder.substring(hldr.length + 1);
 };
@@ -272,7 +272,7 @@ Moves an element in an array.
     - toIndex is the final position to which the element will be moved.
 
 */
-var arrayMove = (arr, fromIndex, toIndex) => {
+const arrayMove = (arr, fromIndex, toIndex) => {
     const element = arr[fromIndex];
     arr.splice(fromIndex, 1);
     arr.splice(toIndex, 0, element);
@@ -287,7 +287,7 @@ Perform a Fisher-Yates shuffle on an array of items.
     - arr is a collection of any items.
 
 */
-var shuffle = arr => {
+const shuffle = arr => {
     // Define the current index as the length of the given array and initialize the random index.
     let currentIndex = arr.length,
         randomIndex = 0;
@@ -313,7 +313,7 @@ Formats a string into a proper ISBN by adding hyphens.
    - val is the string to be formatted.
 
 */
-var formatISBNString = val => {
+const formatISBNString = val => {
     let curVal = "";
     if(/^[0-9]+$/.test(val)) {
         if(val.length < 4) { curVal = val; }
@@ -336,7 +336,7 @@ Driver function for formatting an ISBN input.
    - inp is the document input corresponding to the book ISBN.
 
 */
-var formatISBN = inp => inp.value = formatISBNString(inp.value.replace(/\W/g,""));
+const formatISBN = inp => inp.value = formatISBNString(inp.value.replace(/\W/g,""));
 
 
 
@@ -347,7 +347,7 @@ Provides the list of all genres/tags that can be selected from depending on the 
    - type is a string that corresponds to the different cases 'All', 'Anime', 'Book', 'Film', 'Manga', and 'Show'.
 
 */
-var genreList = (type = "All") => {
+const genreList = (type = "All") => {
     let genArr = [];
     if(type == "Anime") {
         genArr = ["Action", "Adventure", "Anthropomorphic", "AvantGarde", "Comedy", "ComingOfAge", "CGDCT",
@@ -407,7 +407,7 @@ Appends all genre options as checkboxes.
    - filterLoad is a boolean representing whether the genres/tags are being appended to the index page filter.
 
 */
-var genreListLoad = (type, cols, filterLoad = false) => {
+const genreListLoad = (type, cols, filterLoad = false) => {
     // Define the genres form, list of genres, and number of columns and rows.
     const genresForm = filterLoad == false ? document.getElementById("category" + type + "Form2") : document.getElementById("filterForm"),
         genresLst = genreList(type),
@@ -474,7 +474,7 @@ Fades out an element on a page.
    - diff is the amount subtracted on each iteration of the opacity change.
 
 */
-var fadeOut = (el, diff) => {
+const fadeOut = (el, diff) => {
     el.style.opacity = 1;
     const fade = () => {
         if((el.style.opacity -= diff) < 0) {
@@ -500,7 +500,7 @@ Creates a notification listing in the notifications modal.
    - itemSnooze is a string corresponding to the snooze date of a record notification.
 
 */
-var notificationCreation = (itemId, itemCategory, itemTitle, itemScenario, itemRelease, itemImg, itemSnooze) => {
+const notificationCreation = (itemId, itemCategory, itemTitle, itemScenario, itemRelease, itemImg, itemSnooze) => {
     // Define the portions of the notification listed item.
     const outerLI = document.createElement("li"),
         img = document.createElement("img"),
@@ -550,7 +550,7 @@ Adds the listeners associated to a record notification listing.
    - ipcElec provides the means to operate the Electron app.
 
 */
-var notificationsListeners = ipcElec => {
+const notificationsListeners = ipcElec => {
     // Define the list of checkboxes for notifications.
     const checkArr = Array.from(document.getElementsByClassName("notificationCheck")),
         globalCheck = document.getElementById("notificationsCheckAll");
@@ -578,7 +578,7 @@ Converts a length of time in milliseconds to days.
    - milli is an integer representing the amount of milliseconds to be converted into days.
 
 */
-var convertToDays = milli => milli / (1000 * 60 * 60 * 24);
+const convertToDays = milli => milli / (1000 * 60 * 60 * 24);
 
 
 
@@ -595,7 +595,7 @@ Initializes the behavior for the top nav buttons on the settings modal.
    - hideList is an array of class names corresponding to the buttons which are to be hidden on the settings modal footer.
 
 */
-var settingsBtnsInit = (ipcElec, btn, containers, selections, btnContainer, showList, hideList) => {
+const settingsBtnsInit = (ipcElec, btn, containers, selections, btnContainer, showList, hideList) => {
     // Listen for a click event on the settingsDisplay button on the top bar to display the display settings.
     btn.addEventListener("click", e => {
         e.preventDefault();

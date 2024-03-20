@@ -17,7 +17,7 @@ BASIC DETAILS: This file handles all buttons on the addRecord.html page.
 Listen for click events on the record choices.
 
 */
-var recordChoicesButtons = () => {
+const recordChoicesButtons = () => {
     // Define the buttons for all record choices.
     const categoryAnime = document.getElementById("categoryAnime"),
         categoryBook = document.getElementById("categoryBook"),

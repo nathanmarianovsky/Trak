@@ -11,8 +11,7 @@ This application was motivated by the simple thought that there is no such dedic
 ## Future Features
 
 The following is a list of features that are in the plans for future releases prior to a full release:
-* Application Logo.
-* Create application splash screen.
+* Auto change text color based on the background color.
 
 
 ## Application Files
@@ -23,7 +22,7 @@ C:\Users\username\AppData\Roaming\Trak\
 /home/username/.local/share/Trak/
 ```
 where 'username' has to be replaced.
-* Under the "config" folder there will be five files titled associations.json, configuration.json, location.json, notifications.json, and tutorial.json. These contain the application associations, settings parameters, application installation location, application notifications, and the application tutorial load.
+* Under the "config" folder there will be five files titled associations.json, configuration.json, location.json, notifications.json, and tutorial.json. These contain the application associations, settings parameters, application installation location, application notifications, and the application tutorial load. Furthermore, there will also be a folder titled assets containing any local assets used by the application.
 * Under the "data" folder all user records are contained. In the application settings this directory can be changed if the user desires for the data to be saved elsewhere.
 * Under the "localPages" folder will be the application html files reproduced by the application on launch. In order to avoid having to ask for administrator privileges the application creates new html files locally after modifying them. The modifications occuring correspond to changing the href values of the css and js files.
 * Under the "localStyles" folder will be the application css file reproduced by the application on launch. In order to avoid having to ask for administrator privileges the application creates new css files locally after modifying it. The modifications occuring correspond to changing the primary and secondary color values.
