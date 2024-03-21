@@ -37,6 +37,7 @@ Driver function for adding all basic listeners.
 	- tools provides a collection of local functions.
 	- updateCondition is a boolean used to ensure that a check for an update occurs only once per application load.
 	- mainWindow is an object referencing the primary window of the Electron app.
+	- loadWindow is an object referencing the splash window of the Electron app.
 	- originalPath is the original path to the local user data.
 	- primaryWindowWidth, primaryWindowHeight, and primaryWindowFullscreen are the window parameters.
 
