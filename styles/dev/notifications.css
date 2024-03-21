@@ -4,6 +4,12 @@
 
 
 
+#notificationsModal {
+	width: 75%;
+	max-height: 80%;
+	height: 80%;
+}
+
 #notificationsTitle {
 	padding-left: 17px;
 	padding-right: 17px;

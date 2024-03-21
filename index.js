@@ -165,10 +165,12 @@ app.whenReady().then(() => {
 			    		log.info("The index.html file has been successfully read.");
 			    		// Update the href values of the css and js files referenced in the index.html file.
 			    		const regCSS = new RegExp("../../styles/dist/styles.css", "g"),
+			    			regIcons = new RegExp("../../assets/titlebarIcons", "g"),
 							regJS = new RegExp("../../scripts/dist/frontEnd/", "g");
 						indexPage = indexPage.replace(regCSS, path.join(basePath, "Trak", "localStyles", "styles.css"));
 						indexPage = indexPage.replace(regJS, path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "scripts", "dist", "frontEnd", " ").trim());
 						indexPage = indexPage.replace(new RegExp("../../assets/logo.png", "g"), path.join(basePath, "Trak", "config", "assets", "logo.png"));
+						indexPage = indexPage.replace(regIcons, path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "assets", "titlebarIcons"));
 						fs.writeFile(path.join(basePath, "Trak", "localPages", "index.html"), indexPage, "UTF8", prob => {
 							// If there was an issue writing the index.html file display a notification on the console.
 							if(prob) { log.error("There was an issue writing the index.html file to the localPages folder."); }

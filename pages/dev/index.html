@@ -12,363 +12,381 @@
         <script type="text/javascript" src="../../scripts/dist/frontEnd/indexReactions.js" async></script>
         <script type="text/javascript" src="../../scripts/dist/frontEnd/tools.js" async></script>
         <script type="text/javascript" src="../../scripts/dist/frontEnd/settings.js" async></script>
+        <script type="text/javascript" src="../../scripts/dist/frontEnd/renderer.js" async></script>
     </head>
     <body id="indexBody">
-        <div class="navbar-fixed">
-            <nav class="z-depth-2">
-                <div class="nav-wrapper">
-                    <span class="brand-logo center"><img id="titlebarLogo" src="../../assets/logo.png"></span>
-                    <ul class="left">
-                        <li>
-                            <a id="setFilter" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Filter Records" href="#filterModal"><i class="material-icons">filter_list</i></a>
-                            <div id="introductionTargetFilter" class="tap-target" data-target="setFilter">
-                                <div class="tap-target-content">
-                                    <p>Use the filter to restrict the records shown.</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li><a id="clearFilter" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Clear Filter"><i class="material-icons">clear_all</i></a></li>
-                        <li>
-                            <a id="contentSearch" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Search Content"><i class="material-icons">library_books</i></a>
-                            <div id="introductionTargetContentSearch" class="tap-target" data-target="contentSearch">
-                                <div class="tap-target-content">
-                                    <p>Search through online databases for records.</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li><a id="indexHome" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Home"><i class="material-icons">home</i></a></li>
-                    </ul>
-                    <ul class="right">
-                        <li><a id="updateAvailable" class="waves-effect waves-light modal-trigger tooltipped pulse" data-position="bottom" data-tooltip="Update Available" href="#updateModal"><i class="material-icons">update</i></a></li>
-                        <li>
-                            <div class="topNavTapContainer">
-                                <a id="notifications" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Notifications" href="#notificationsModal"><i class="material-icons">notifications</i></a>
-                            </div>
-                            <div class="topNavTapContainer">
-                                <a id="openDatabase" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Export/Import" href="#databaseModal"><i class="material-icons">storage</i></a>
-                                <div id="introductionTargetDatabase" class="tap-target" data-target="openDatabase">
-                                    <div class="tap-target-content">
-                                        <p>Export/Import records via xlsx or zip archives.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="topNavTapContainer">
-                                <a id="openSettings" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Settings" href="#settingsModal"><i class="material-icons">settings</i></a>
-                                <div id="introductionTargetSettings" class="tap-target" data-target="openSettings">
-                                    <div class="tap-target-content">
-                                        <p>Use the settings to change application defaults.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-        <div id="outerLayer">
-            <div id="searchBarDiv1" class="row">
-                <form class="col s12">
-                    <div id="searchBarDiv2" class="row">
-                        <div class="input-field col s12">
-                            <i class="material-icons prefix">search</i>
-                            <input id="searchBar" type="text" class="validate">
-                            <label for="searchBar">Search: <a class="modal-trigger" href="#searchBarModal"><i class="material-icons infoIcon">info</i></a></label>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div id="searchBarModal" class="modal">
-                <div class="modal-content">
-                    <h4 class="center">Search Bar Features</h4>
-                    <div>
-                        The search bar on the home page of the application has been designed to provide mechanisms for performing searches based upon any record parameter desired. More specifically, the search bar may be utilized in the following two manners:
-                        <ul>
-                            <li>By typing any string without the @ symbol will initiate a simple search based on finding records whose name includes the desired string.</li>
+        <header id="titleBar"></header>
+        <div id="main">
+            <div class="navbar-fixed">
+                <nav class="z-depth-2">
+                    <div class="nav-wrapper">
+                        <span class="brand-logo center"><img id="titlebarLogo" src="../../assets/logo.png"></span>
+                        <ul class="left">
                             <li>
-                                Provided the search @option:param the application will filter all records whose attribute "option" matches "param." More specifically:
-                                <ul>
-                                    <li>The "option" of a search can correspond to any of the following: category, name, genres, jname, ogname, demographic, writers, authors, illustrators, directors, producers, musicians, studio, publisher, jpublisher, license, isbn, or media.</li>
-                                    <li>For the above options jname, ogname, musicians, jpublisher, and media reference the Japanese name, original title, musical producers, Japanese publisher, and media type of a record, respectively.</li>
-                                    <li>Multiple searches can be accomplished at the same time by formatting the search in the format @option1:param1,@option2:param2,...,@optionK:paramK for K many searches.</li>
-                                    <li>
-                                        For any single search multiple parameters can be provided by stating whether they should be searched in conjunction or disjunction with each other. More specifically:
-                                        <ul>
-                                            <li>The &amp symbol is used to denote the operation of conjunction, i.e. @option:param1&ampparam2 will filter the records whose attribute "option" includes both "param1" AND "param2."</li>
-                                            <li>The | symbol is used to denote the operation of disjunction, i.e. @option:param1|param2 will filter the records whose attribute "option" includes either "param1" OR "param2."</li>
-                                            <li>The &amp operator takes precedence over the | operator, i.e. @option:param1&ampparam2|param3 will filter the records whose attribute "option" includes param1 AND (param2 OR param3).</li>
-                                        </ul>
-                                    </li>
-                                </ul>
+                                <a id="setFilter" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Filter Records" href="#filterModal"><i class="material-icons">filter_list</i></a>
+                                <div id="introductionTargetFilter" class="tap-target" data-target="setFilter">
+                                    <div class="tap-target-content">
+                                        <p>Use the filter to restrict the records shown.</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><a id="clearFilter" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Clear Filter"><i class="material-icons">clear_all</i></a></li>
+                            <li>
+                                <a id="contentSearch" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Search Content"><i class="material-icons">library_books</i></a>
+                                <div id="introductionTargetContentSearch" class="tap-target" data-target="contentSearch">
+                                    <div class="tap-target-content">
+                                        <p>Search through online databases for records.</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><a id="indexHome" class="waves-effect waves-light tooltipped" data-position="bottom" data-tooltip="Home"><i class="material-icons">home</i></a></li>
+                        </ul>
+                        <ul class="right">
+                            <li><a id="updateAvailable" class="waves-effect waves-light modal-trigger tooltipped pulse" data-position="bottom" data-tooltip="Update Available" href="#updateModal"><i class="material-icons">update</i></a></li>
+                            <li>
+                                <div class="topNavTapContainer">
+                                    <a id="notifications" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Notifications" href="#notificationsModal"><i class="material-icons">notifications</i></a>
+                                </div>
+                                <div class="topNavTapContainer">
+                                    <a id="openDatabase" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Export/Import" href="#databaseModal"><i class="material-icons">storage</i></a>
+                                    <div id="introductionTargetDatabase" class="tap-target" data-target="openDatabase">
+                                        <div class="tap-target-content">
+                                            <p>Export/Import records via xlsx or zip archives.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="topNavTapContainer">
+                                    <a id="openSettings" class="waves-effect waves-light modal-trigger tooltipped" data-position="bottom" data-tooltip="Settings" href="#settingsModal"><i class="material-icons">settings</i></a>
+                                    <div id="introductionTargetSettings" class="tap-target" data-target="openSettings">
+                                        <div class="tap-target-content">
+                                            <p>Use the settings to change application defaults.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </li>
                         </ul>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
-                </div>
+                </nav>
             </div>
-            <div id="headersTableDiv">
-                <table id="headersTable" class="centered">
-                    <colgroup>
-                        <col span="1" style="width: 5%;">
-                        <col span="1" style="width: 30%;">
-                        <col span="1" style="width: 12.5%;">
-                        <col span="1" style="width: 12.5%;">
-                        <col span="1" style="width: 32.5%;">
-                        <col span="1" style="width: 7.5%;">
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th>
-                                <label>
-                                    <input type="checkbox" class="filled-in recordsChecks" id="checkAll" />
-                                </label>
-                            </th>
-                            <th>Name<i id="nameSort" class="material-icons center iconSorter">expand_less</i></th>
-                            <th>Category<i id="categorySort" class="material-icons center iconSorter">expand_more</i></th>
-                            <th>Rating<i id="ratingSort" class="material-icons center iconSorter">expand_more</i></th>
-                            <th>Genres</th>
-                            <th>Files</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <div id="tableDiv">
-                <table id="table" class="highlight centered">
-                    <colgroup>
-                        <col span="1" style="width: 5%;">
-                        <col span="1" style="width: 30%;">
-                        <col span="1" style="width: 12.5%;">
-                        <col span="1" style="width: 12.5%;">
-                        <col span="1" style="width: 32.5%;">
-                        <col span="1" style="width: 7.5%;">
-                    </colgroup>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
-            <div id="removeModal" class="modal infoModal">
-                <div class="modal-content">
-                    <h4 class="center">Remove Records</h4>
-                    <p>Please verify that you indeed wish to remove all data associated to the checked records. This cannot be undone.</p>
-                </div>
-                <div class="modal-footer">
-                    <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
-                    <a id="removeConfirm" class="modal-close waves-effect waves-light btn-flat modalButtons">Confirm</a>
-                </div>
-            </div>
-            <div id="dataDeleteModal" class="modal infoModal">
-                <div class="modal-content">
-                    <h4 class="center">Remove Original</h4>
-                    <p>Would you like to delete the original data folder now that its contents have been copied to the new directory?</p>
-                </div>
-                <div class="modal-footer">
-                    <a id="dataDeleteDeny" class="modal-close waves-effect waves-light btn-flat modalButtons">No</a>
-                    <a id="dataDeleteAccept" class="modal-close waves-effect waves-light btn-flat modalButtons">Yes</a>
-                </div>
-            </div>
-            <a id="add" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Add Record"><i class="material-icons">add</i></a>
-            <div id="introductionTargetAdd" class="tap-target" data-target="add">
-                <div class="tap-target-content">
-                    <p>Begin by clicking on the add button in order to open a separate window which handles record creation and update.</p>
-                </div>
-            </div>
-            <a id="remove" class="btn-floating btn-large waves-effect waves-light modal-trigger tooltipped" data-position="right" data-tooltip="Remove Records" href="#removeModal"><i class="material-icons">remove</i></a>
-            <div id="homeSelected"></div>
-            <div id="homeCounter"></div>
-        </div>
-        <div id="contentSearchDiv">
-            <ul class="tabs tabs-fixed-width z-depth-1">
-                <li class="tab"><a class="tabSearchLink" href="#animeSearchDiv">Anime</a></li>
-                <li class="tab"><a class="tabSearchLink" href="#bookSearchDiv">Book</a></li>
-                <li class="tab"><a class="tabSearchLink" href="#filmSearchDiv">Film</a></li>
-                <li class="tab"><a class="tabSearchLink" href="#mangaSearchDiv">Manga</a></li>
-                <li class="tab"><a class="tabSearchLink" href="#showSearchDiv">Show</a></li>
-            </ul>
-            <div id="defaultSearchDiv">
-                <h2 id="defaultTitle">Directions:</h2>
-                <div class="text formInfo" id="defaultText">
-                    Select the type of record you would like to search by clicking on the options available in the tabs above.
-                </div>
-            </div>
-            <div id="animeSearchDiv" class="tabDiv">
-                <div id="animeNameSearchInnerDiv1" class="row">
-                    <form class="col s9">
-                        <div id="animeNameSearchInnerDiv2" class="row">
+            <div id="outerLayer">
+                <div id="searchBarDiv1" class="row">
+                    <form class="col s12">
+                        <div id="searchBarDiv2" class="row">
                             <div class="input-field col s12">
                                 <i class="material-icons prefix">search</i>
-                                <input id="animeSearchBar" type="text" class="validate">
-                                <label for="animeSearchBar">Search for Anime:</label>
+                                <input id="searchBar" type="text" class="validate">
+                                <label for="searchBar">Search: <a class="modal-trigger" href="#searchBarModal"><i class="material-icons infoIcon">info</i></a></label>
                             </div>
                         </div>
                     </form>
-                    <div class="input-field col s3">
-                        <select id="animeNameSearchSort">
-                            <option value="" disabled selected>Sort by:</option>
-                            <option value="alphabetical">Alphabetical</option>
-                            <option value="reverseAlphabetical">Reverse Alphabetical</option>
-                            <option value="rating">Rating</option>
-                            <option value="reverseRating">Reverse Rating</option>
-                            <option value="random">Random</option>
-                        </select>
-                        <label>Sort:</label>
+                </div>
+                <div id="searchBarModal" class="modal">
+                    <div class="modal-content">
+                        <h4 class="center">Search Bar Features</h4>
+                        <div>
+                            The search bar on the home page of the application has been designed to provide mechanisms for performing searches based upon any record parameter desired. More specifically, the search bar may be utilized in the following two manners:
+                            <ul>
+                                <li>By typing any string without the @ symbol will initiate a simple search based on finding records whose name includes the desired string.</li>
+                                <li>
+                                    Provided the search @option:param the application will filter all records whose attribute "option" matches "param." More specifically:
+                                    <ul>
+                                        <li>The "option" of a search can correspond to any of the following: category, name, genres, jname, ogname, demographic, writers, authors, illustrators, directors, producers, musicians, studio, publisher, jpublisher, license, isbn, or media.</li>
+                                        <li>For the above options jname, ogname, musicians, jpublisher, and media reference the Japanese name, original title, musical producers, Japanese publisher, and media type of a record, respectively.</li>
+                                        <li>Multiple searches can be accomplished at the same time by formatting the search in the format @option1:param1,@option2:param2,...,@optionK:paramK for K many searches.</li>
+                                        <li>
+                                            For any single search multiple parameters can be provided by stating whether they should be searched in conjunction or disjunction with each other. More specifically:
+                                            <ul>
+                                                <li>The &amp symbol is used to denote the operation of conjunction, i.e. @option:param1&ampparam2 will filter the records whose attribute "option" includes both "param1" AND "param2."</li>
+                                                <li>The | symbol is used to denote the operation of disjunction, i.e. @option:param1|param2 will filter the records whose attribute "option" includes either "param1" OR "param2."</li>
+                                                <li>The &amp operator takes precedence over the | operator, i.e. @option:param1&ampparam2|param3 will filter the records whose attribute "option" includes param1 AND (param2 OR param3).</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
                     </div>
                 </div>
-                <div id="animeSeasonSearchInnerDiv" class="row">
-                    <div class="col s12">
-                        <div class="row">
-                            <div id="animeSeasonSearchYearDiv" class="input-field col s3">
-                                <select id="animeSeasonSearchYear">
-                                    <option value="" disabled selected>Choose the Year:</option>
-                                </select>
-                                <label>Year:</label>
+                <div id="headersTableDiv">
+                    <table id="headersTable" class="centered">
+                        <colgroup>
+                            <col span="1" style="width: 5%;">
+                            <col span="1" style="width: 30%;">
+                            <col span="1" style="width: 12.5%;">
+                            <col span="1" style="width: 12.5%;">
+                            <col span="1" style="width: 32.5%;">
+                            <col span="1" style="width: 7.5%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>
+                                    <label>
+                                        <input type="checkbox" class="filled-in recordsChecks" id="checkAll" />
+                                    </label>
+                                </th>
+                                <th>Name<i id="nameSort" class="material-icons center iconSorter">expand_less</i></th>
+                                <th>Category<i id="categorySort" class="material-icons center iconSorter">expand_more</i></th>
+                                <th>Rating<i id="ratingSort" class="material-icons center iconSorter">expand_more</i></th>
+                                <th>Genres</th>
+                                <th>Files</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div id="tableDiv">
+                    <table id="table" class="highlight centered">
+                        <colgroup>
+                            <col span="1" style="width: 5%;">
+                            <col span="1" style="width: 30%;">
+                            <col span="1" style="width: 12.5%;">
+                            <col span="1" style="width: 12.5%;">
+                            <col span="1" style="width: 32.5%;">
+                            <col span="1" style="width: 7.5%;">
+                        </colgroup>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                <div id="removeModal" class="modal infoModal">
+                    <div class="modal-content">
+                        <h4 class="center">Remove Records</h4>
+                        <p>Please verify that you indeed wish to remove all data associated to the checked records. This cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                        <a id="removeConfirm" class="modal-close waves-effect waves-light btn-flat modalButtons">Confirm</a>
+                    </div>
+                </div>
+                <div id="dataDeleteModal" class="modal infoModal">
+                    <div class="modal-content">
+                        <h4 class="center">Remove Original</h4>
+                        <p>Would you like to delete the original data folder now that its contents have been copied to the new directory?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a id="dataDeleteDeny" class="modal-close waves-effect waves-light btn-flat modalButtons">No</a>
+                        <a id="dataDeleteAccept" class="modal-close waves-effect waves-light btn-flat modalButtons">Yes</a>
+                    </div>
+                </div>
+                <a id="add" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Add Record"><i class="material-icons">add</i></a>
+                <div id="introductionTargetAdd" class="tap-target" data-target="add">
+                    <div class="tap-target-content">
+                        <p>Begin by clicking on the add button in order to open a separate window which handles record creation and update.</p>
+                    </div>
+                </div>
+                <a id="remove" class="btn-floating btn-large waves-effect waves-light modal-trigger tooltipped" data-position="right" data-tooltip="Remove Records" href="#removeModal"><i class="material-icons">remove</i></a>
+                <div id="homeSelected"></div>
+                <div id="homeCounter"></div>
+            </div>
+            <div id="contentSearchDiv">
+                <ul class="tabs tabs-fixed-width z-depth-1">
+                    <li class="tab"><a class="tabSearchLink" href="#animeSearchDiv">Anime</a></li>
+                    <li class="tab"><a class="tabSearchLink" href="#bookSearchDiv">Book</a></li>
+                    <li class="tab"><a class="tabSearchLink" href="#filmSearchDiv">Film</a></li>
+                    <li class="tab"><a class="tabSearchLink" href="#mangaSearchDiv">Manga</a></li>
+                    <li class="tab"><a class="tabSearchLink" href="#showSearchDiv">Show</a></li>
+                </ul>
+                <div id="defaultSearchDiv">
+                    <h2 id="defaultTitle">Directions:</h2>
+                    <div class="text formInfo" id="defaultText">
+                        Select the type of record you would like to search by clicking on the options available in the tabs above.
+                    </div>
+                </div>
+                <div id="animeSearchDiv" class="tabDiv">
+                    <div id="animeNameSearchInnerDiv1" class="row">
+                        <form class="col s9">
+                            <div id="animeNameSearchInnerDiv2" class="row">
+                                <div class="input-field col s12">
+                                    <i class="material-icons prefix">search</i>
+                                    <input id="animeSearchBar" type="text" class="validate">
+                                    <label for="animeSearchBar">Search for Anime:</label>
+                                </div>
                             </div>
-                            <div class="input-field col s3">
-                                <select id="animeSeasonSearchSeason">
-                                    <option value="" disabled selected>Choose the Season:</option>
-                                    <option value="winter">Winter</option>
-                                    <option value="spring">Spring</option>
-                                    <option value="summer">Summer</option>
-                                    <option value="fall">Fall</option>
-                                </select>
-                                <label>Season:</label>
-                            </div>
-                            <div class="input-field col s3">
-                                <select multiple id="animeSeasonSearchType">
-                                    <option value="" disabled>Filter the Releases:</option>
-                                    <optgroup label="TV">
-                                        <option value="TVNew">TV New</option>
-                                        <option value="TVCon"> TV Continued</option>
-                                    </optgroup>
-                                    <option value="OVAs">OVAs</option>
-                                    <option value="ONAs">ONAs</option>
-                                    <option value="Movies">Movies</option>
-                                    <option value="Specials">Specials</option>
-                                </select>
-                                <label>Release Types:</label>
-                            </div>
-                            <div id="animeSeasonSearchSortDiv" class="input-field col s3">
-                                <select id="animeSeasonSearchSort">
-                                    <option value="" disabled selected>Sort by:</option>
-                                    <option value="alphabetical">Alphabetical</option>
-                                    <option value="reverseAlphabetical">Reverse Alphabetical</option>
-                                    <option value="rating">Rating</option>
-                                    <option value="reverseRating">Reverse Rating</option>
-                                    <option value="random">Random</option>
-                                </select>
-                                <label>Sort:</label>
+                        </form>
+                        <div class="input-field col s3">
+                            <select id="animeNameSearchSort">
+                                <option value="" disabled selected>Sort by:</option>
+                                <option value="alphabetical">Alphabetical</option>
+                                <option value="reverseAlphabetical">Reverse Alphabetical</option>
+                                <option value="rating">Rating</option>
+                                <option value="reverseRating">Reverse Rating</option>
+                                <option value="random">Random</option>
+                            </select>
+                            <label>Sort:</label>
+                        </div>
+                    </div>
+                    <div id="animeSeasonSearchInnerDiv" class="row">
+                        <div class="col s12">
+                            <div class="row">
+                                <div id="animeSeasonSearchYearDiv" class="input-field col s3">
+                                    <select id="animeSeasonSearchYear">
+                                        <option value="" disabled selected>Choose the Year:</option>
+                                    </select>
+                                    <label>Year:</label>
+                                </div>
+                                <div class="input-field col s3">
+                                    <select id="animeSeasonSearchSeason">
+                                        <option value="" disabled selected>Choose the Season:</option>
+                                        <option value="winter">Winter</option>
+                                        <option value="spring">Spring</option>
+                                        <option value="summer">Summer</option>
+                                        <option value="fall">Fall</option>
+                                    </select>
+                                    <label>Season:</label>
+                                </div>
+                                <div class="input-field col s3">
+                                    <select multiple id="animeSeasonSearchType">
+                                        <option value="" disabled>Filter the Releases:</option>
+                                        <optgroup label="TV">
+                                            <option value="TVNew">TV New</option>
+                                            <option value="TVCon"> TV Continued</option>
+                                        </optgroup>
+                                        <option value="OVAs">OVAs</option>
+                                        <option value="ONAs">ONAs</option>
+                                        <option value="Movies">Movies</option>
+                                        <option value="Specials">Specials</option>
+                                    </select>
+                                    <label>Release Types:</label>
+                                </div>
+                                <div id="animeSeasonSearchSortDiv" class="input-field col s3">
+                                    <select id="animeSeasonSearchSort">
+                                        <option value="" disabled selected>Sort by:</option>
+                                        <option value="alphabetical">Alphabetical</option>
+                                        <option value="reverseAlphabetical">Reverse Alphabetical</option>
+                                        <option value="rating">Rating</option>
+                                        <option value="reverseRating">Reverse Rating</option>
+                                        <option value="random">Random</option>
+                                    </select>
+                                    <label>Sort:</label>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <a id="animeSearchSwitch" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search by Query"><i class="material-icons">toggle_off</i></a>
+                    <a id="animeSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
+                    <div id="animeSearchContainer"></div>
                 </div>
-                <a id="animeSearchSwitch" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search by Query"><i class="material-icons">toggle_off</i></a>
-                <a id="animeSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
-                <div id="animeSearchContainer"></div>
-            </div>
-            <div id="bookSearchDiv" class="tabDiv">
-                <div id="bookNameSearchInnerDiv1" class="row">
-                    <form class="col s9">
-                        <div id="bookNameSearchInnerDiv2" class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">search</i>
-                                <input id="bookSearchBar" type="text" class="validate">
-                                <label for="bookSearchBar">Search for Books:</label>
+                <div id="bookSearchDiv" class="tabDiv">
+                    <div id="bookNameSearchInnerDiv1" class="row">
+                        <form class="col s9">
+                            <div id="bookNameSearchInnerDiv2" class="row">
+                                <div class="input-field col s12">
+                                    <i class="material-icons prefix">search</i>
+                                    <input id="bookSearchBar" type="text" class="validate">
+                                    <label for="bookSearchBar">Search for Books:</label>
+                                </div>
                             </div>
+                        </form>
+                        <div class="input-field col s3">
+                            <select id="bookNameSearchSort">
+                                <option value="" disabled selected>Sort by:</option>
+                                <option value="alphabetical">Alphabetical</option>
+                                <option value="reverseAlphabetical">Reverse Alphabetical</option>
+                                <option value="rating">Rating</option>
+                                <option value="reverseRating">Reverse Rating</option>
+                                <option value="random">Random</option>
+                            </select>
+                            <label>Sort:</label>
                         </div>
-                    </form>
-                    <div class="input-field col s3">
-                        <select id="bookNameSearchSort">
-                            <option value="" disabled selected>Sort by:</option>
-                            <option value="alphabetical">Alphabetical</option>
-                            <option value="reverseAlphabetical">Reverse Alphabetical</option>
-                            <option value="rating">Rating</option>
-                            <option value="reverseRating">Reverse Rating</option>
-                            <option value="random">Random</option>
-                        </select>
-                        <label>Sort:</label>
+                    </div>
+                    <a id="bookSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
+                    <div id="bookSearchContainer"></div>
+                </div>
+                <div id="filmSearchDiv" class="tabDiv">
+                    <div id="filmNameSearchInnerDiv1" class="row">
+                        <form class="col s9">
+                            <div id="filmNameSearchInnerDiv2" class="row">
+                                <div class="input-field col s12">
+                                    <i class="material-icons prefix">search</i>
+                                    <input id="filmSearchBar" type="text" class="validate">
+                                    <label for="filmSearchBar">Search for Films:</label>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="input-field col s3">
+                            <select id="filmNameSearchSort">
+                                <option value="" disabled selected>Sort by:</option>
+                                <option value="alphabetical">Alphabetical</option>
+                                <option value="reverseAlphabetical">Reverse Alphabetical</option>
+                                <option value="rating">Rating</option>
+                                <option value="reverseRating">Reverse Rating</option>
+                                <option value="random">Random</option>
+                            </select>
+                            <label>Sort:</label>
+                        </div>
+                    </div>
+                    <a id="filmSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
+                    <div id="filmSearchContainer"></div>
+                </div>
+                <div id="mangaSearchDiv" class="tabDiv">
+                    <div id="mangaNameSearchInnerDiv1" class="row">
+                        <form class="col s9">
+                            <div id="mangaNameSearchInnerDiv2" class="row">
+                                <div class="input-field col s12">
+                                    <i class="material-icons prefix">search</i>
+                                    <input id="mangaSearchBar" type="text" class="validate">
+                                    <label for="mangaSearchBar">Search for Manga:</label>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="input-field col s3">
+                            <select id="mangaNameSearchSort">
+                                <option value="" disabled selected>Sort by:</option>
+                                <option value="alphabetical">Alphabetical</option>
+                                <option value="reverseAlphabetical">Reverse Alphabetical</option>
+                                <option value="rating">Rating</option>
+                                <option value="reverseRating">Reverse Rating</option>
+                                <option value="random">Random</option>
+                            </select>
+                            <label>Sort:</label>
+                        </div>
+                    </div>
+                    <a id="mangaSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
+                    <div id="mangaSearchContainer"></div>
+                </div>
+                <div id="showSearchDiv" class="tabDiv">
+                    <div id="showNameSearchInnerDiv1" class="row">
+                        <form class="col s9">
+                            <div id="showNameSearchInnerDiv2" class="row">
+                                <div class="input-field col s12">
+                                    <i class="material-icons prefix">search</i>
+                                    <input id="showSearchBar" type="text" class="validate">
+                                    <label for="showSearchBar">Search for Shows:</label>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="input-field col s3">
+                            <select id="showNameSearchSort">
+                                <option value="" disabled selected>Sort by:</option>
+                                <option value="alphabetical">Alphabetical</option>
+                                <option value="reverseAlphabetical">Reverse Alphabetical</option>
+                                <option value="rating">Rating</option>
+                                <option value="reverseRating">Reverse Rating</option>
+                                <option value="random">Random</option>
+                            </select>
+                            <label>Sort:</label>
+                        </div>
+                    </div>
+                    <a id="showSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
+                    <div id="showSearchContainer"></div>
+                </div>
+                <div id="chunkPreloader" class="preloader-wrapper big active" animeCheck="0" bookCheck="0" filmCheck="0" mangaCheck="0" showCheck="0">
+                    <div class="spinner-layer">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="gap-patch">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
                     </div>
                 </div>
-                <a id="bookSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
-                <div id="bookSearchContainer"></div>
+                <div id="chunkCheck"><i class="material-icons">published_with_changes</i></div>
             </div>
-            <div id="filmSearchDiv" class="tabDiv">
-                <div id="filmNameSearchInnerDiv1" class="row">
-                    <form class="col s9">
-                        <div id="filmNameSearchInnerDiv2" class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">search</i>
-                                <input id="filmSearchBar" type="text" class="validate">
-                                <label for="filmSearchBar">Search for Films:</label>
-                            </div>
-                        </div>
-                    </form>
-                    <div class="input-field col s3">
-                        <select id="filmNameSearchSort">
-                            <option value="" disabled selected>Sort by:</option>
-                            <option value="alphabetical">Alphabetical</option>
-                            <option value="reverseAlphabetical">Reverse Alphabetical</option>
-                            <option value="rating">Rating</option>
-                            <option value="reverseRating">Reverse Rating</option>
-                            <option value="random">Random</option>
-                        </select>
-                        <label>Sort:</label>
-                    </div>
-                </div>
-                <a id="filmSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
-                <div id="filmSearchContainer"></div>
-            </div>
-            <div id="mangaSearchDiv" class="tabDiv">
-                <div id="mangaNameSearchInnerDiv1" class="row">
-                    <form class="col s9">
-                        <div id="mangaNameSearchInnerDiv2" class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">search</i>
-                                <input id="mangaSearchBar" type="text" class="validate">
-                                <label for="mangaSearchBar">Search for Manga:</label>
-                            </div>
-                        </div>
-                    </form>
-                    <div class="input-field col s3">
-                        <select id="mangaNameSearchSort">
-                            <option value="" disabled selected>Sort by:</option>
-                            <option value="alphabetical">Alphabetical</option>
-                            <option value="reverseAlphabetical">Reverse Alphabetical</option>
-                            <option value="rating">Rating</option>
-                            <option value="reverseRating">Reverse Rating</option>
-                            <option value="random">Random</option>
-                        </select>
-                        <label>Sort:</label>
-                    </div>
-                </div>
-                <a id="mangaSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
-                <div id="mangaSearchContainer"></div>
-            </div>
-            <div id="showSearchDiv" class="tabDiv">
-                <div id="showNameSearchInnerDiv1" class="row">
-                    <form class="col s9">
-                        <div id="showNameSearchInnerDiv2" class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">search</i>
-                                <input id="showSearchBar" type="text" class="validate">
-                                <label for="showSearchBar">Search for Shows:</label>
-                            </div>
-                        </div>
-                    </form>
-                    <div class="input-field col s3">
-                        <select id="showNameSearchSort">
-                            <option value="" disabled selected>Sort by:</option>
-                            <option value="alphabetical">Alphabetical</option>
-                            <option value="reverseAlphabetical">Reverse Alphabetical</option>
-                            <option value="rating">Rating</option>
-                            <option value="reverseRating">Reverse Rating</option>
-                            <option value="random">Random</option>
-                        </select>
-                        <label>Sort:</label>
-                    </div>
-                </div>
-                <a id="showSearchSubmission" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Search"><i class="material-icons">search</i></a>
-                <div id="showSearchContainer"></div>
-            </div>
-            <div id="chunkPreloader" class="preloader-wrapper big active" animeCheck="0" bookCheck="0" filmCheck="0" mangaCheck="0" showCheck="0">
+            <div id="preloader" class="preloader-wrapper big active">
                 <div class="spinner-layer">
                     <div class="circle-clipper left">
                         <div class="circle"></div>
@@ -381,28 +399,14 @@
                     </div>
                 </div>
             </div>
-            <div id="chunkCheck"><i class="material-icons">published_with_changes</i></div>
+            <div id="settingsModal" class="modal modal-fixed-footer"></div>
+            <div id="filterModal" class="modal modal-fixed-footer"></div>
+            <div id="notificationsModal" class="modal modal-fixed-footer"></div>
+            <div id="databaseModal" class="modal modal-fixed-footer"></div>
+            <div id="introductionModal" class="modal modal-fixed-footer infoModal"></div>
+            <div id="importModal" class="modal modal-fixed-footer"></div>
+            <div id="synopsisModal" class="modal modal-fixed-footer"></div>
+            <div id="updateModal" class="modal modal-fixed-footer"></div>
         </div>
-        <div id="preloader" class="preloader-wrapper big active">
-            <div class="spinner-layer">
-                <div class="circle-clipper left">
-                    <div class="circle"></div>
-                </div>
-                <div class="gap-patch">
-                    <div class="circle"></div>
-                </div>
-                <div class="circle-clipper right">
-                    <div class="circle"></div>
-                </div>
-            </div>
-        </div>
-        <div id="settingsModal" class="modal modal-fixed-footer"></div>
-        <div id="filterModal" class="modal modal-fixed-footer"></div>
-        <div id="notificationsModal" class="modal modal-fixed-footer"></div>
-        <div id="databaseModal" class="modal modal-fixed-footer"></div>
-        <div id="introductionModal" class="modal modal-fixed-footer infoModal"></div>
-        <div id="importModal" class="modal modal-fixed-footer"></div>
-        <div id="synopsisModal" class="modal modal-fixed-footer"></div>
-        <div id="updateModal" class="modal modal-fixed-footer"></div>
     </body>
 </html>

@@ -33,6 +33,7 @@ const htmlSettingsList = ["index.html"],
 	htmlDatabase = fs.readFileSync(path.join(__dirname, "pages", "dev", "database.html")),
 	htmlNotifications = fs.readFileSync(path.join(__dirname, "pages", "dev", "notifications.html")),
 	htmlFilter = fs.readFileSync(path.join(__dirname, "pages", "dev", "filter.html"));
+	htmlTitlebar = fs.readFileSync(path.join(__dirname, "pages", "dev", "titlebar.html"));
 for(let t = 0; t < htmlSettingsList.length; t++) {
 	let data = fs.readFileSync(path.join(__dirname, "pages", "dev", htmlSettingsList[t]), "UTF8"),
 		$ = cheerio.load(data);
@@ -44,6 +45,7 @@ for(let t = 0; t < htmlSettingsList.length; t++) {
 	$("#databaseModal").html(htmlDatabase);
 	$("#notificationsModal").html(htmlNotifications);
 	$("#filterModal").html(htmlFilter);
+	$("#titleBar").html(htmlTitlebar);
 	if(!fs.existsSync(path.join(__dirname, "pages", "dev", "sectionsAttached"))) {
 		fs.mkdirSync(path.join(__dirname, "pages", "dev", "sectionsAttached"), { "recursive": true });
 	}

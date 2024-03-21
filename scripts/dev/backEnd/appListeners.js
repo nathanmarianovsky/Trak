@@ -782,6 +782,22 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	exports.addLogListeners(path, fs, log, ipc, tools, originalPath);
 	// Add the listeners which act as tools for the front-end.
 	exports.addHelperListeners(log, ipc, mainWindow);
+
+	ipc.on("minimizeWindow", event => {
+		BrowserWindow.getFocusedWindow().minimize();
+	});
+
+	ipc.on("maximizeWindow", event => {
+		BrowserWindow.getFocusedWindow().maximize();
+	});
+
+	ipc.on("restoreWindow", event => {
+		BrowserWindow.getFocusedWindow().unmaximize();
+	});
+
+	ipc.on("closeWindow", event => {
+		BrowserWindow.getFocusedWindow().close();
+	});
 };
 
 
