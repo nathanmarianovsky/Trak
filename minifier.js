@@ -21,10 +21,10 @@ const htmlMinify = require("html-minifier").minify,
 
 
 
-// Append the appropriate sections to the index html file.
-console.log("Adding Settings to Appropriate HTML Files.");
-const htmlSettingsList = ["index.html"],
-	htmlList = ["addRecord.html", "splash.html"],
+// Append the appropriate sections to the html files.
+console.log("Adding Sections to Appropriate HTML Files.");
+const htmlSettingsList = ["index.html", "addRecord.html"],
+	htmlList = ["splash.html"],
 	htmlSettings = fs.readFileSync(path.join(__dirname, "pages", "dev", "settings.html")),
 	htmlUpdate = fs.readFileSync(path.join(__dirname, "pages", "dev", "update.html")),
 	htmlSynopsis = fs.readFileSync(path.join(__dirname, "pages", "dev", "synopsis.html")),
@@ -32,25 +32,27 @@ const htmlSettingsList = ["index.html"],
 	htmlIntroduction = fs.readFileSync(path.join(__dirname, "pages", "dev", "introduction.html")),
 	htmlDatabase = fs.readFileSync(path.join(__dirname, "pages", "dev", "database.html")),
 	htmlNotifications = fs.readFileSync(path.join(__dirname, "pages", "dev", "notifications.html")),
-	htmlFilter = fs.readFileSync(path.join(__dirname, "pages", "dev", "filter.html"));
+	htmlFilter = fs.readFileSync(path.join(__dirname, "pages", "dev", "filter.html")),
 	htmlTitlebar = fs.readFileSync(path.join(__dirname, "pages", "dev", "titlebar.html"));
-for(let t = 0; t < htmlSettingsList.length; t++) {
-	let data = fs.readFileSync(path.join(__dirname, "pages", "dev", htmlSettingsList[t]), "UTF8"),
-		$ = cheerio.load(data);
-	$("#settingsModal").html(htmlSettings);
-	$("#updateModal").html(htmlUpdate);
-	$("#synopsisModal").html(htmlSynopsis);
-	$("#importModal").html(htmlImport);
-	$("#introductionModal").html(htmlIntroduction);
-	$("#databaseModal").html(htmlDatabase);
-	$("#notificationsModal").html(htmlNotifications);
-	$("#filterModal").html(htmlFilter);
-	$("#titleBar").html(htmlTitlebar);
-	if(!fs.existsSync(path.join(__dirname, "pages", "dev", "sectionsAttached"))) {
-		fs.mkdirSync(path.join(__dirname, "pages", "dev", "sectionsAttached"), { "recursive": true });
-	}
-	fs.writeFileSync(path.join(__dirname, "pages", "dev", "sectionsAttached", "sectionsAttached" + htmlSettingsList[t].charAt(0).toUpperCase() + htmlSettingsList[t].slice(1)), $.html(), "UTF8");
+if(!fs.existsSync(path.join(__dirname, "pages", "dev", "sectionsAttached"))) {
+	fs.mkdirSync(path.join(__dirname, "pages", "dev", "sectionsAttached"), { "recursive": true });
 }
+let data = fs.readFileSync(path.join(__dirname, "pages", "dev", "index.html"), "UTF8"),
+	$ = cheerio.load(data);
+$("#settingsModal").html(htmlSettings);
+$("#updateModal").html(htmlUpdate);
+$("#synopsisModal").html(htmlSynopsis);
+$("#importModal").html(htmlImport);
+$("#introductionModal").html(htmlIntroduction);
+$("#databaseModal").html(htmlDatabase);
+$("#notificationsModal").html(htmlNotifications);
+$("#filterModal").html(htmlFilter);
+$("#titleBar").html(htmlTitlebar);
+fs.writeFileSync(path.join(__dirname, "pages", "dev", "sectionsAttached", "sectionsAttached" + "index.html".charAt(0).toUpperCase() + "index.html".slice(1)), $.html(), "UTF8");
+data = fs.readFileSync(path.join(__dirname, "pages", "dev", "addRecord.html"), "UTF8");
+$ = cheerio.load(data);
+$("#titleBar").html(htmlTitlebar);
+fs.writeFileSync(path.join(__dirname, "pages", "dev", "sectionsAttached", "sectionsAttached" + "addRecord.html".charAt(0).toUpperCase() + "addRecord.html".slice(1)), $.html(), "UTF8");
 
 
 
@@ -72,7 +74,7 @@ for(let r = 0; r < htmlList.length; r++) {
 		"useShortDoctype": true,
 		"minifyJS": true,
 		"minifyCSS": true
-	}));
+	}), "UTF8");
 	settingsHtmlBarRow.update(1);
 }
 htmlBar.stop();

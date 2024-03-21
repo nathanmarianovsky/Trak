@@ -1,7 +1,16 @@
-// const { BrowserWindow } = require("electron");
+/*
 
-// const win = BrowserWindow.getCurrentWindow(); /* Note this is different to the
-// html global `window` variable */
+BASIC DETAILS: This file handles all titlebar functionality.
+
+    - windowControls: Initializes the listeners associated to the minimize, maximize, restore, and close buttons.
+
+*/
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+
 
 /*
 
@@ -12,25 +21,14 @@ Declare all of the necessary variables.
 */
 var { ipcRenderer } = require("electron");
 
-// // When document has loaded, initialise
-// document.onreadystatechange = (event) => {
-//     if (document.readyState == "complete") {
-//         handleWindowControls();
-//     }
-// };
 
-window.addEventListener("load", () => {
-    handleWindowControls();
-});
 
-// window.onbeforeunload = (event) => {
-//     /* If window is reloaded, remove win event listeners
-//     (DOM element listeners get auto garbage collected but not
-//     Electron win listeners as the win is not dereferenced unless closed) */
-//     win.removeAllListeners();
-// }
+/*
 
-function handleWindowControls() {
+Initializes the listeners associated to the minimize, maximize, restore, and close buttons.
+
+*/
+const windowControls = () => {
     // Make minimise/maximise/restore/close buttons work when they are clicked
     document.getElementById('minButton').addEventListener("click", event => {
         ipcRenderer.send("minimizeWindow");
@@ -52,17 +50,11 @@ function handleWindowControls() {
     document.getElementById('closeButton').addEventListener("click", event => {
         ipcRenderer.send("closeWindow");
     });
+};
 
-    // // Toggle maximise/restore buttons when maximisation/unmaximisation occurs
-    // toggleMaxRestoreButtons();
-    // win.on('maximize', toggleMaxRestoreButtons);
-    // win.on('unmaximize', toggleMaxRestoreButtons);
 
-    // function toggleMaxRestoreButtons() {
-    //     if (win.isMaximized()) {
-    //         document.body.classList.add('maximized');
-    //     } else {
-    //         document.body.classList.remove('maximized');
-    //     }
-    // }
-}
+
+// Initialize the listeners only once the page is ready.
+window.addEventListener("load", () => {
+    windowControls();
+});

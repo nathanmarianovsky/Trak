@@ -2,6 +2,7 @@
 
 BASIC DETAILS: After the app loads up with index.js this file is meant to handle all calls made to the back-end.
 
+   - addTitlebarListeners: Driver function for adding all titlebar listeners.
    - addBasicListeners: Driver function for adding all basic listeners.
    - addRecordListeners: Driver function for adding all listeners associated to the maintenance of records.
    - addAnimeListeners: Driver function for adding all anime listeners.
@@ -23,6 +24,37 @@ BASIC DETAILS: After the app loads up with index.js this file is meant to handle
 
 
 var exports = {};
+
+
+
+/*
+
+Driver function for adding all titlebar listeners.
+
+	- BrowserWindow and ipc provide the means to operate the Electron app.
+
+*/
+exports.addTitlebarListeners = (BrowserWindow, ipc) => {
+	// Handles the minimizing of a window.
+	ipc.on("minimizeWindow", event => {
+		BrowserWindow.getFocusedWindow().minimize();
+	});
+
+	// Handles the maximizing of a window.
+	ipc.on("maximizeWindow", event => {
+		BrowserWindow.getFocusedWindow().maximize();
+	});
+
+	// Handles the restoring of a window.
+	ipc.on("restoreWindow", event => {
+		BrowserWindow.getFocusedWindow().unmaximize();
+	});
+
+	// Handles the closing of a window.
+	ipc.on("closeWindow", event => {
+		BrowserWindow.getFocusedWindow().close();
+	});
+};
 
 
 
@@ -762,6 +794,8 @@ Driver function for adding all app listeners.
 
 */
 exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, loadWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+	// Add the titlebar listeners.
+	exports.addTitlebarListeners(BrowserWindow, ipc);
 	// Add the basic listeners.
 	exports.addBasicListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, loadWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
 	// Add the listeners associated to all types of records.
@@ -782,22 +816,6 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	exports.addLogListeners(path, fs, log, ipc, tools, originalPath);
 	// Add the listeners which act as tools for the front-end.
 	exports.addHelperListeners(log, ipc, mainWindow);
-
-	ipc.on("minimizeWindow", event => {
-		BrowserWindow.getFocusedWindow().minimize();
-	});
-
-	ipc.on("maximizeWindow", event => {
-		BrowserWindow.getFocusedWindow().maximize();
-	});
-
-	ipc.on("restoreWindow", event => {
-		BrowserWindow.getFocusedWindow().unmaximize();
-	});
-
-	ipc.on("closeWindow", event => {
-		BrowserWindow.getFocusedWindow().close();
-	});
 };
 
 
