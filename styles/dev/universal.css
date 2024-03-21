@@ -32,6 +32,10 @@ nav {
 	background-color: #2A2A8E !important;
 }
 
+#addRecordBody nav {
+	z-index: 1;
+}
+
 #animeNameSearchInnerDiv1 input.valid[type="text"]:not(.browser-default),
 #animeNameSearchInnerDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
 #searchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
@@ -60,11 +64,85 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	color: #2A2A8E !important;
 }
 
+#closeButton {
+	grid-column: 3;
+}
+
+#dragRegion {
+	width: 100%;
+	height: 100%;
+	-webkit-app-region: drag;
+	display: grid;
+  	grid-template-columns: auto 138px;
+}
+
+#main {
+	position: relative;
+	top: 32px;
+}
+
+#maxButton, #restoreButton {
+	grid-column: 2;
+}
+
+#minButton {
+	grid-column: 1;
+}
+
+#titleBar {
+	display: block;
+	position: fixed;
+	height: 32px;
+	width: 100%;
+	background: #2A2A8E;
+	padding: 4px;
+	color: white;
+	top: 0px;
+	z-index: 1;
+}
+
 #toast-container {
   	top: auto !important;
   	right: auto !important;
   	bottom: 10%;
   	left:7%;  
+}
+
+#windowControls {
+	display: grid;
+	grid-template-columns: repeat(3, 46px);
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 100%;
+	cursor: pointer;
+}
+
+#windowControls .button {
+	grid-row: 1 / span 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	-webkit-app-region: no-drag
+}
+
+#windowTitle {
+	grid-column: 1;
+	display: flex;
+	align-items: center;
+	margin-left: 8px;
+	overflow: hidden;
+	font-family: "Segoe UI", sans-serif;
+	font-size: 12px;
+}
+
+#windowTitle span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	line-height: 1.5;
 }
 
 .btn-floating {
@@ -116,6 +194,11 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	color: white !important;
 }
 
+.navbar-fixed {
+	position: initial !important;
+	z-index: 1 !important;
+}
+
 .row {
 	margin-bottom: 0 !important;
 }
@@ -144,80 +227,4 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 .select-wrapper input.select-dropdown:focus {
 	border-bottom-color: #2A2A8E !important;
-}
-
-
-
-
-#titleBar {
-	display: block;
-	position: fixed;
-	height: 32px;
-	width: 100%;
-	background: #2A2A8E;
-	padding: 4px;
-	border-bottom: 1px solid #D9D9DB;
-	color: white;
-}
-
-#main {
-	position: relative;
-	top: 32px;
-}
-
-#dragRegion {
-	width: 100%;
-	height: 100%;
-	-webkit-app-region: drag;
-	display: grid;
-  	grid-template-columns: auto 138px;
-}
-
-#windowControls {
-  display: grid;
-  grid-template-columns: repeat(3, 46px);
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  cursor: pointer;
-}
-
-#windowControls .button {
-  grid-row: 1 / span 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  -webkit-app-region: no-drag
-}
-
-#minButton {
-  grid-column: 1;
-}
-
-#maxButton, #restoreButton {
-  grid-column: 2;
-}
-
-#closeButton {
-  grid-column: 3;
-}
-
-#windowTitle {
-  grid-column: 1;
-  display: flex;
-  align-items: center;
-  margin-left: 8px;
-  overflow: hidden;
-  font-family: "Segoe UI", sans-serif;
-  font-size: 12px;
-}
-
-#windowTitle span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1.5;
 }

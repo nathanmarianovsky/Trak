@@ -742,7 +742,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
     // Update the titlebar color.
-    document.getElementById("titleBar").style.backgroundColor = "#" + addAlpha(rgba2hex(getComputedStyle(document.querySelector("nav")).backgroundColor).substring(1), 0.6);
+    // document.getElementById("titleBar").style.backgroundColor = "#" + addAlpha(rgba2hex(getComputedStyle(document.querySelector("nav")).backgroundColor).substring(1), 0.6);
     // Initialize the select tags on the page.
     initSelect();
     // Initialize the floating action button on the page.
