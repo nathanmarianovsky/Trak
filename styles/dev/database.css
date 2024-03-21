@@ -4,39 +4,6 @@
 
 
 
-#databaseModal {
-	top: 3% !important;
-	width: 75%;
-	height: 720px;
-	max-height: 100%;
-}
-
-#databaseImportBtn {
-	display: none;
-}
-
-#databaseNav {
-	border-top-right-radius: 30px;
-	border-top-left-radius: 30px;
-}
-
-#databaseSelection li {
-	width: 50%;
-    text-align: center;
-}
-
-#databaseModal .modal-content {
-	padding-right: 0px;
-	padding-left: 0px;
-	padding-top: 0px;
-}
-
-#databaseExportContainer p, #databaseImportContainer p {
-	margin-left: 32px;
-	margin-right: 32px;
-	margin-top: 35px;
-}
-
 #databaseCheckLabel {
 	position: relative;
 	top: 14px;
@@ -47,22 +14,48 @@
 	line-height: 19px;
 }
 
+#databaseImportBtn {
+	display: none;
+}
+
+#databaseExportContainer p, #databaseImportContainer p {
+	margin-left: 32px;
+	margin-right: 32px;
+	margin-top: 35px;
+}
+
+#databaseModal {
+	top: 3% !important;
+	width: 75%;
+	height: 720px;
+	max-height: 100%;
+}
+
+#databaseModal .modal-content {
+	padding-right: 0px;
+	padding-left: 0px;
+	padding-top: 0px;
+}
+
+#databaseNav {
+	border-top-right-radius: 30px;
+	border-top-left-radius: 30px;
+}
+
 #databasePreloader {
 	display: none;
 	margin: 3% auto 3% auto;
+}
+
+#databaseSelection li {
+	width: 50%;
+    text-align: center;
 }
 
 #databaseSwitchDiv, #mangaModalSwitchDiv {
 	position: relative;
     top: 12px;
     left: 25px;
-}
-
-#XLSXTypeSwitchDiv {
-	display: none;
-	position: relative;
-    top: 12px;
-    left: 55px;
 }
 
 #databaseSwitchDiv label,
@@ -83,20 +76,27 @@
 	display: none;
 }
 
-.databaseImportDiv {
-	margin-left: 11px !important;
+#XLSXTypeSwitchDiv {
+	display: none;
+	position: relative;
+    top: 12px;
+    left: 55px;
 }
 
-.databaseWindowDiv {
-    margin-left: 20px !important;
+.databaseContainer {
+	display: none;
 }
 
 .databaseDataInput {
 	width: 80% !important;
 }
 
-.databaseContainer {
-	display: none;
+.databaseImportDiv {
+	margin-left: 11px !important;
+}
+
+.databaseWindowDiv {
+    margin-left: 20px !important;
 }
 
 .importDiv {

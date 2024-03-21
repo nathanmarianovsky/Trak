@@ -4,33 +4,13 @@
 
 
 
-.recordGenresTitle {
-	margin-top: 15px;
-	position: relative;
-	bottom: 20px;
-}
-
-.categoryDiv .formInfo {
-	position: relative;
-	bottom: 15px;
-}
-
-.categoryBottomForm {
-	position: relative;
-	bottom: 20px;
-}
-
 #addRecordBody {
 	overflow-y: hidden;
 }
 
-#categorySelection li {
-	width: 20%;
-    text-align: center;
-}
-
-#associationsModalPar {
-	margin-left: 14px;
+#animeReview, #animeSynopsis,
+#bookReview, #bookSynopsis {
+	max-height: 400px;
 }
 
 #associationsCollection {
@@ -39,24 +19,80 @@
     width: calc(100% - 24px);
 }
 
-.addRecordSave {
-	position: fixed !important;
-	right: 23px;
-	bottom: 92px;
+#associationsModalPar {
+	margin-left: 14px;
 }
 
-.categoryDiv .row {
-	position: relative;
-	bottom: 10px;
+#bookFetchDetailsBtn {
+	margin-top: 3%;
 }
 
-.categoryTopForm {
-	margin-left: 5% !important;
+#categorySelection li {
+	width: 20%;
+    text-align: center;
+}
+
+#filmMoreDetailsModal, #showMoreDetailsModal {
+	max-height: 75%;
+	height: 75%;
+}
+
+#genresModal {
+	height: 35%;
+	width: 60%;
+}
+
+#mangaAddChapter {
+	display: none;
+}
+
+#searchBarModal {
+	max-height: 85%;
+	height: 85%;
+	width: 90%;
+}
+
+#searchBarModal li {
+	list-style-type: disc;
+}
+
+#searchBarModal ul {
+	padding: revert;
+}
+
+#updateRecordPreloader {
+	display: none;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+}
+
+#volumeFetchPreloader {
+	visibility: hidden;
+	width: 35px;
+    height: 35px;
+    position: absolute;
+    right: 3%;
+    top: 4%;
+}
+
+.addRecordAnimeImgBtnContainer, .addRecordBookImgBtnContainer {
+	width: 20%;
 	display: inline-block;
 }
 
-.categoryMoreDetailsForm {
-	display: inline-block;
+.addRecordBtn {
+	background-color: #2A2A8E !important;
+	margin-left: 1.5%;
+}
+
+.addRecordDiv {
+	margin-left: 50px;
+	width: 85%;
+}
+
+.addRecordDiv .active {
+	color: #2A2A8E;
 }
 
 .addRecordImg {
@@ -66,19 +102,6 @@
 	object-fit: contain;
 	height: auto;
 	width: 100%;
-}
-
-.recordMoreDetailsModal {
-	width: 65%;
-	height: 55%;
-}
-
-.recordPreloader {
-	visibility: hidden;
-	position: absolute !important;
-    top: 23px;
-    right: 23px;
-    display: inline !important;
 }
 
 .addRecordImgBtnDiv {
@@ -92,89 +115,28 @@
 	width: 22%;
 }
 
-.recordAddImgInput {
-	display: none;
-}
-
-#animeReview, #animeSynopsis,
-#bookReview, #bookSynopsis {
-	max-height: 400px;
-}
-
-#updateRecordPreloader {
-	display: none;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-}
-
-#filmMoreDetailsModal, #showMoreDetailsModal {
-	max-height: 75%;
-	height: 75%;
-}
-
-.recordFavoriteImageLink {
-	color: #2A2A8E;
-    position: absolute;
-    left: 5px;
-    top: 5px;
-    visibility: hidden;
-    cursor: initial;
-}
-
-.recordFavoriteImageLink i {
-	font-size: 30px;
-}
-
-#genresModal {
-	height: 35%;
-	width: 60%;
-}
-
-#bookFetchDetailsBtn {
-	margin-top: 3%;
-}
-
-#searchBarModal {
-	max-height: 85%;
-	height: 85%;
-	width: 90%;
-}
-
-#searchBarModal ul {
-	padding: revert;
-}
-
-#searchBarModal li {
-	list-style-type: disc;
-}
-
-.otherGenresDiv {
-	display: none;
-}
-
-.addRecordAnimeImgBtnContainer, .addRecordBookImgBtnContainer {
-	width: 20%;
-	display: inline-block;
+.addRecordImgBtn {
+	background-color: #2A2A8E !important;
+	width: 100%;
 }
 
 .addRecordFilesDiv {
 	background-color: #2A2A8E !important;
 }
 
-.addRecordBtn {
-	background-color: #2A2A8E !important;
-	margin-left: 1.5%;
+.addRecordSave {
+	position: fixed !important;
+	right: 23px;
+	bottom: 92px;
 }
 
-.addRecordImgBtn {
-	background-color: #2A2A8E !important;
-	width: 100%;
+.autocomplete-content {
+	max-height: 465%;
 }
 
-.addRecordDiv {
-	margin-left: 50px;
-	width: 85%;
+.categoryBottomForm {
+	position: relative;
+	bottom: 20px;
 }
 
 .categoryDiv {
@@ -183,20 +145,70 @@
     bottom: 20px;
 }
 
+.categoryDiv .formInfo {
+	position: relative;
+	bottom: 15px;
+}
+
+.categoryDiv .row {
+	position: relative;
+	bottom: 10px;
+}
+
+.categoryMoreDetailsForm {
+	display: inline-block;
+}
+
+.categoryTopForm {
+	margin-left: 5% !important;
+	display: inline-block;
+}
+
 .contentModal {
 	max-height: 75% !important;
 	height: 75% !important;
 	width: 75% !important;
 }
 
-.modalContentButtons {
+.file-path {
+	font-size: 12px !important;
+	color: #3E3E3E !important;
+}
+
+.formInfo {
+	margin-bottom: 15px;
+}
+
+.genresIcon {
+	font-size: 22px !important;
+}
+
+.infoIcon {
+	font-size: 16px !important;
+	color: #2A2A8E!important;
     position: relative;
-    top: 25%;
-    left: 25%;
+    top: 4px;
+    left: 4px;
+    cursor: pointer;
+}
+
+.mangaModalButtons {
+	left: 5%;
+}
+
+.mangaVolumeSynopsis {
+	max-height: 150px;
+	overflow-y: auto;
 }
 
 .modalContentAdd {
 	color: #2A2A8E;
+}
+
+.modalContentButtons {
+    position: relative;
+    top: 25%;
+    left: 25%;
 }
 
 .modalContentDelete {
@@ -212,60 +224,48 @@
 	cursor: pointer;
 }
 
-.infoIcon {
-	font-size: 16px !important;
-	color: #2A2A8E!important;
-    position: relative;
-    top: 4px;
-    left: 4px;
-    cursor: pointer;
+.otherGenresDiv {
+	display: none;
 }
 
-.genresIcon {
-	font-size: 22px !important;
+.recordAddImgInput {
+	display: none;
 }
 
-.file-path {
-	font-size: 12px !important;
-	color: #3E3E3E !important;
+.recordFavoriteImageLink {
+	color: #2A2A8E;
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    visibility: hidden;
+    cursor: initial;
 }
 
-.formInfo {
-	margin-bottom: 15px;
+.recordFavoriteImageLink i {
+	font-size: 30px;
+}
+
+.recordGenresTitle {
+	margin-top: 15px;
+	position: relative;
+	bottom: 20px;
+}
+
+.recordMoreDetailsModal {
+	width: 65%;
+	height: 55%;
+}
+
+.recordPreloader {
+	visibility: hidden;
+	position: absolute !important;
+    top: 23px;
+    right: 23px;
+    display: inline !important;
 }
 
 .text {
 	font-size: 18px !important;
 	margin-left: 50px !important;
 	width: 90% !important;
-}
-
-.autocomplete-content {
-	max-height: 465%;
-}
-
-.addRecordDiv .active {
-	color: #2A2A8E;
-}
-
-#mangaAddChapter {
-	display: none;
-}
-
-.mangaModalButtons {
-	left: 5%;
-}
-
-#volumeFetchPreloader {
-	visibility: hidden;
-	width: 35px;
-    height: 35px;
-    position: absolute;
-    right: 3%;
-    top: 4%;
-}
-
-.mangaVolumeSynopsis {
-	max-height: 150px;
-	overflow-y: auto;
 }

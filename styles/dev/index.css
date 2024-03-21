@@ -4,51 +4,6 @@
 
 
 
-#outerLayer {
-	position: relative;
-	margin: 8px 0 auto 0;
-	width: 95%;
-}
-
-#contentSearchDiv {
-	display: none;
-}
-
-#titlebarLogo {
-	height: 20px;
-}
-
-.tabDiv {
-	position: relative;
-	margin: 3% 0 auto 5%;
-	width: 90%;
-}
-
-.indicator {
-	background-color: white !important;
-}
-
-.tabDiv {
-	display: none;
-}
-
-.tabSearchLink {
-	color: white !important;
-}
-
-.tabs .tab a:focus.active {
-	background-color: rgba(0,0,0,0.1) !important;
-}
-
-#contentSearchDiv .select-dropdown span {
-	text-align: left;
-}
-
-#table, #headersTable {
-	width: 95%;
-	margin-left: 50px;
-}
-
 #add, #animeSearchSubmission, #bookSearchSubmission,
 #filmSearchSubmission, #mangaSearchSubmission, #showSearchSubmission {
 	position: fixed;
@@ -56,38 +11,8 @@
   	right: 23px;
 }
 
-#animeSearchSwitch {
-	position: fixed;
-  	bottom: 92px;
-  	right: 23px;
-}
-
-#remove {
-	background-color: #2A2A8E;
-	position: fixed;
-  	bottom: 23px;
-  	left: 23px;
-  	display: none;
-}
-
-#tableDiv, #headersTableDiv {
-	position: relative;
-	bottom: 15px;
-}
-
-#tableDiv {
-	height: 467px;
-	overflow-y: auto;
-	overflow-x: hidden;
-}
-
-#searchBarDiv1 {
-	margin-left: 40px;
-	margin-bottom: 0;
-}
-
-#searchBarDiv2 {
-	margin-bottom: 0;
+#animeNameSearchInnerDiv {
+	display: none;
 }
 
 #animeNameSearchInnerDiv1 {
@@ -98,17 +23,14 @@
 	margin-bottom: 0;
 }
 
-#preloader {
-	display: block !important;
-    position: fixed;
-    left: 47%;
-    top: 50%;
-  	margin: 0 auto;
+#animeSearchSwitch {
+	position: fixed;
+  	bottom: 92px;
+  	right: 23px;
 }
 
-#chunkPreloader {
-	display: none;
-    margin: 1% auto 5% auto;
+#animeSeasonSearchYearDiv ul {
+	height: 250px;
 }
 
 #chunkCheck {
@@ -121,57 +43,22 @@
 	color: #2A2A8E;
 }
 
-#synopsisModal {
-	width: 75%;
-    height: 60%;
-    top: 15% !important;
-}
-
-#synopsisPreloader {
+#chunkPreloader {
 	display: none;
-	margin-left: auto;
-    margin-right: auto;
-    margin-top: 20%;
+    margin: 1% auto 5% auto;
 }
 
-#updatePreloader {
-	display: block !important;
-	position: relative !important;
-	left: 46%;
-	margin-bottom: 3%;
-}
-
-#updatePreloaderDiv {
-	font-weight: bold;
+#contentSearchDiv {
 	display: none;
 }
 
-#updateAvailable, #notifications {
-	display: none;
+#contentSearchDiv .select-dropdown span {
+	text-align: left;
 }
 
-#tableBody {
-	font-size: 13px;
-}
-
-#updateModalContent ul {
-	padding-left: 50px;
-}
-
-#updateModalContent ul li {
-	list-style-type: disc;
-}
-
-#indexHome {
-	display: none;
-}
-
-#animeSeasonSearchYearDiv ul {
-	height: 250px;
-}
-
-#animeNameSearchInnerDiv {
-	display: none;
+#headersTableDiv, #tableDiv {
+	position: relative;
+	bottom: 15px;
 }
 
 #homeCounter {
@@ -188,14 +75,148 @@
     bottom: -5%;
 }
 
-.spinner-layer {
-	border-color: #2A2A8E !important;
+#indexHome {
+	display: none;
+}
+
+#notifications, #updateAvailable {
+	display: none;
+}
+
+#outerLayer {
+	position: relative;
+	margin: 8px 0 auto 0;
+	width: 95%;
+}
+
+#preloader {
+	display: block !important;
+    position: fixed;
+    left: 47%;
+    top: 50%;
+  	margin: 0 auto;
+}
+
+#remove {
+	background-color: #2A2A8E;
+	position: fixed;
+  	bottom: 23px;
+  	left: 23px;
+  	display: none;
+}
+
+#searchBarDiv1 {
+	margin-left: 40px;
+	margin-bottom: 0;
+}
+
+#searchBarDiv2 {
+	margin-bottom: 0;
+}
+
+#synopsisModal {
+	width: 75%;
+    height: 60%;
+    top: 15% !important;
+}
+
+#synopsisPreloader {
+	display: none;
+	margin-left: auto;
+    margin-right: auto;
+    margin-top: 20%;
+}
+
+#table, #headersTable {
+	width: 95%;
+	margin-left: 50px;
+}
+
+#tableBody {
+	font-size: 13px;
+}
+
+#tableDiv {
+	height: 467px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+#titlebarLogo {
+	height: 20px;
+}
+
+#updateModalContent ul {
+	padding-left: 50px;
+}
+
+#updateModalContent ul li {
+	list-style-type: disc;
+}
+
+#updatePreloader {
+	display: block !important;
+	position: relative !important;
+	left: 46%;
+	margin-bottom: 3%;
+}
+
+#updatePreloaderDiv {
+	font-weight: bold;
+	display: none;
+}
+
+.func {
+	margin-top: 50px;
+	margin-bottom: 50px;
+	display: block;
+	font-size: 18px !important;
+	background-color: #2A2A8E !important;
+  	color: white !important;
+  	border-radius: 12px !important;
+}
+
+.iconSorter {
+	position: relative;
+	top: 8px;
+	left: 8px;
+	cursor: pointer;
+}
+
+.indicator {
+	background-color: white !important;
+}
+
+.notificationCheck, .recordsChecks {
+	opacity: 1 !important;
+	position: relative !important;
+	top: 2px;
+	accent-color: #2A2A8E;
+	cursor: pointer;
+	pointer-events: initial !important;
 }
 
 .preloaderIndicator {
 	position: absolute !important;
 	bottom: 40px;
 	right: 40px;
+}
+
+.recordButtonsRowDiv {
+	height: 20px;
+	position: relative;
+	bottom: 58px;
+}
+
+.recordIcon {
+	border-radius: 50%;
+	width: 100px;
+	height: 100px;
+}
+
+.recordsNameContainer {
+	text-align: left;
+	padding-right: 25px;
 }
 
 .recordsNameRowDiv {
@@ -210,65 +231,8 @@
 	line-height: 20px;
 }
 
-.recordButtonsRowDiv {
-	height: 20px;
-	position: relative;
-	bottom: 58px;
-}
-
-.recordsChecks, .notificationCheck {
-	opacity: 1 !important;
-	position: relative !important;
-	top: 2px;
-	accent-color: #2A2A8E;
-	cursor: pointer;
-	pointer-events: initial !important;
-}
-
-.iconSorter {
-	position: relative;
-	top: 8px;
-	left: 8px;
-	cursor: pointer;
-}
-
-.func {
-	margin-top: 50px;
-	margin-bottom: 50px;
-	display: block;
-	font-size: 18px !important;
-	background-color: #2A2A8E !important;
-  	color: white !important;
-  	border-radius: 12px !important;
-}
-
-.topNavTapContainer {
-	display: inline-block;
-}
-
-.synopsisIconDiv {
-	display: inline;
-}
-
-.recordsNameContainer {
-	text-align: left;
-	padding-right: 25px;
-}
-
-.synopsisInfoIcon {
-	font-size: 15px !important;
-	color: #2A2A8E!important;
-    position: relative;
-    top: 4px;
-    left: 4px;
-    cursor: pointer;
-}
-
-.seasonItemImage {
-	width: 100%;
-	height: auto;
-	border: 2px solid black;
-	cursor: pointer;
+.searchInfoIcon {
+	margin-left: 5%;
 }
 
 .searchItemContainer {
@@ -279,17 +243,52 @@
     margin-right: 5%;
 }
 
+.seasonItemImage {
+	width: 100%;
+	height: auto;
+	border: 2px solid black;
+	cursor: pointer;
+}
+
 .seasonItemText {
     white-space: nowrap;
     overflow: hidden;
 }
 
-.searchInfoIcon {
-	margin-left: 5%;
+.spinner-layer {
+	border-color: #2A2A8E !important;
 }
 
-.recordIcon {
-	border-radius: 50%;
-	width: 100px;
-	height: 100px;
+.synopsisIconDiv {
+	display: inline;
+}
+
+
+
+.synopsisInfoIcon {
+	font-size: 15px !important;
+	color: #2A2A8E!important;
+    position: relative;
+    top: 4px;
+    left: 4px;
+    cursor: pointer;
+}
+
+.tabDiv {
+	position: relative;
+	margin: 3% 0 auto 5%;
+	width: 90%;
+	display: none;
+}
+
+.tabs .tab a:focus.active {
+	background-color: rgba(0,0,0,0.1) !important;
+}
+
+.tabSearchLink {
+	color: white !important;
+}
+
+.topNavTapContainer {
+	display: inline-block;
 }

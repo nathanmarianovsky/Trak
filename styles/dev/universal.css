@@ -4,17 +4,17 @@
 
 
 
-html {
-	background-color: #D9D9DB;
-	font-family: "Montserrat" !important;
-}
-
 body {
 	overflow-x: hidden;
 }
 
-nav {
-	background-color: #2A2A8E !important;
+button {
+	font-family: "Montserrat" !important;
+}
+
+html {
+	background-color: #D9D9DB;
+	font-family: "Montserrat" !important;
 }
 
 h2 {
@@ -23,8 +23,8 @@ h2 {
 	font-size: 25px !important;
 }
 
-button {
-	font-family: "Montserrat" !important;
+nav {
+	background-color: #2A2A8E !important;
 }
 
 [type="checkbox"].filled-in:checked+span:not(.lever):after {
@@ -32,10 +32,10 @@ button {
 	background-color: #2A2A8E !important;
 }
 
-#searchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
-#animeNameSearchInnerDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
-#searchBarDiv1 input.valid[type="text"]:not(.browser-default),
 #animeNameSearchInnerDiv1 input.valid[type="text"]:not(.browser-default),
+#animeNameSearchInnerDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
+#searchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
+#searchBarDiv1 input.valid[type="text"]:not(.browser-default),
 [type="text"]:not(.browser-default):focus:not([readonly]),
 input.valid[type="text"]:not(.browser-default),
 input[type="date"]:not(.browser-default):focus:not([readonly]),
@@ -46,13 +46,13 @@ textarea.materialize-textarea.valid {
 	box-shadow: 0 1px 0 0 #2A2A8E !important;
 }
 
-#searchBarDiv1 .input-field .prefix.active,
 #animeNameSearchInnerDiv1 .input-field .prefix.active,
+#associationsModal .input-field .prefix.active,
 #bookNameSearchInnerDiv1 .input-field .prefix.active,
 #filmNameSearchInnerDiv1 .input-field .prefix.active,
 #mangaNameSearchInnerDiv1 .input-field .prefix.active,
+#searchBarDiv1 .input-field .prefix.active,
 #showNameSearchInnerDiv1 .input-field .prefix.active,
-#associationsModal .input-field .prefix.active,
 input[type="text"]:not(.browser-default):focus:not([readonly])+label,
 input[type="date"]:not(.browser-default):focus:not([readonly])+label,
 textarea.materialize-textarea:focus:not([readonly])+label,

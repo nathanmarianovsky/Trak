@@ -14,6 +14,10 @@
 	border-radius: 17px;
 }
 
+.notificationsCheckDiv {
+	cursor: inherit;
+}
+
 .secondary-content {
 	cursor: pointer;
 }
@@ -26,8 +30,4 @@
 	position: absolute;
 	right: 60px;
 	top: 11px;
-}
-
-.notificationsCheckDiv {
-	cursor: inherit;
 }

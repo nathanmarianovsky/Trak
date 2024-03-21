@@ -4,10 +4,6 @@
 
 
 
-#introductionModal {
-	height: 35%;
-}
-
 #introductionCheckLabel {
 	position: relative;
 	top: 11px;
@@ -16,6 +12,10 @@
 
 #introductionCheckSpan {
 	line-height: 19px;
+}
+
+#introductionModal {
+	height: 35%;
 }
 
 .tap-target {

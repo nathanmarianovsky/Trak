@@ -4,6 +4,10 @@
 
 
 
+#filterForm .checkboxText {
+	font-size: 12px;
+}
+
 #filterModal {
 	width: 97%;
 	height: 85%;
@@ -16,8 +20,4 @@
 
 #filterModalGenreHeading {
 	margin-top: 25px;
-}
-
-#filterForm .checkboxText {
-	font-size: 12px;
 }
