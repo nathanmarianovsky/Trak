@@ -2,6 +2,7 @@
 
 BASIC DETAILS: This file serves as the collection of tools utilized by the various back-end requests.
 
+   - parseRecord: Handles the parsing of a record folder name to display.
    - formatFolderName: Formats a string into a proper folder name by removing forbidden characters and whitespaces.
    - objCreationImgs: Downloads images associated to a record and returns an array to their location.
    - writeDataFile: Handles the writing of files associated to a record.
@@ -38,6 +39,20 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
 
 
 var exports = {};
+
+
+
+/*
+
+Handles the parsing of a record folder name to display.
+
+    - folder is the string representing the name of the folder associated to a record.
+
+*/
+exports.parseRecord = folder => {
+    let hldr = folder.split("-")[0];
+    return nameStr = hldr.toLowerCase() + " " + folder.substring(hldr.length + 1);
+};
 
 
 

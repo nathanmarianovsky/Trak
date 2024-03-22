@@ -281,72 +281,82 @@ ipcRenderer.on("introduction", (event, response) => {
         const instancesTapAdd = M.TapTarget.init(document.getElementById("introductionTargetAdd"), { "onClose": () => {
             setTimeout(() => {
                 // Define the settings configuration data.
-                const configurationObj = JSON.parse(fs.readFileSync(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8"));
-                // Define the icon color to be utilized throughout the application tutorial.
-                let iconColor = "";
-                configurationObj.current != undefined ? iconColor = configurationObj.current.primaryColor : iconColor = configurationObj.original.primaryColor;
-                // Define the tutorial step for the filter button on the index page.
-                const instancesTapFilter = M.TapTarget.init(document.getElementById("introductionTargetFilter"), { "onClose": () => {
-                    setTimeout(() => {
-                        // Define the tutorial step for the anime search button on the index page.
-                        const instancesTapContentSearch = M.TapTarget.init(document.getElementById("introductionTargetContentSearch"), { "onClose": () => {
+                // const configurationObj = JSON.parse(fs.readFileSync(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8"));
+                ipcRenderer.send("getConfigurations");
+                ipcRenderer.on("sentConfigurations", (eve, configurationsFileStr) => {
+                    if(configurationsFileStr == "") {
+                        M.toast({"html": "There was an error in reading the settings configurations file.", "classes": "rounded"});
+                    }
+                    else {
+                        // Define the settings configuration data.
+                        const configurationObj = JSON.parse(configurationsFileStr);
+                        // Define the icon color to be utilized throughout the application tutorial.
+                        let iconColor = "";
+                        configurationObj.current != undefined ? iconColor = configurationObj.current.primaryColor : iconColor = configurationObj.original.primaryColor;
+                        // Define the tutorial step for the filter button on the index page.
+                        const instancesTapFilter = M.TapTarget.init(document.getElementById("introductionTargetFilter"), { "onClose": () => {
                             setTimeout(() => {
-                                // Define the tutorial step for the export/import button on the index page.
-                                const instancesTapDatabase = M.TapTarget.init(document.getElementById("introductionTargetDatabase"), { "onClose": () => {
+                                // Define the tutorial step for the anime search button on the index page.
+                                const instancesTapContentSearch = M.TapTarget.init(document.getElementById("introductionTargetContentSearch"), { "onClose": () => {
                                     setTimeout(() => {
-                                        // Define the tutorial step for the settings button on the index page.
-                                        const instancesTapSettings = M.TapTarget.init(document.getElementById("introductionTargetSettings"));
-                                        document.getElementById("openSettings").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
-                                        // Ensure that the tutorial step associated to the settings button opens only once no matter whether the database modal is opened or not.
-                                        let cnt = 0;
-                                        if(!document.getElementById("databaseModal").classList.contains("open")) {
-                                            // After a small delay open the tutorial step for the index page settings.
-                                            setTimeout(() => { instancesTapSettings.open(); }, 500);
-                                            cnt++;
-                                        }
-                                        let settingsObserver = new MutationObserver(mutations => {
-                                            if(cnt == 0) {
-                                                if(!mutations[0].target.classList.contains("open")) {
+                                        // Define the tutorial step for the export/import button on the index page.
+                                        const instancesTapDatabase = M.TapTarget.init(document.getElementById("introductionTargetDatabase"), { "onClose": () => {
+                                            setTimeout(() => {
+                                                // Define the tutorial step for the settings button on the index page.
+                                                const instancesTapSettings = M.TapTarget.init(document.getElementById("introductionTargetSettings"));
+                                                document.getElementById("openSettings").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
+                                                // Ensure that the tutorial step associated to the settings button opens only once no matter whether the database modal is opened or not.
+                                                let cnt = 0;
+                                                if(!document.getElementById("databaseModal").classList.contains("open")) {
+                                                    // After a small delay open the tutorial step for the index page settings.
                                                     setTimeout(() => { instancesTapSettings.open(); }, 500);
                                                     cnt++;
                                                 }
-                                            }
-                                        });
-                                        settingsObserver.observe(document.getElementById("databaseModal"), {
-                                            attributes: true,
-                                            attributeFilter: ["class"]
-                                        });
+                                                let settingsObserver = new MutationObserver(mutations => {
+                                                    if(cnt == 0) {
+                                                        if(!mutations[0].target.classList.contains("open")) {
+                                                            setTimeout(() => { instancesTapSettings.open(); }, 500);
+                                                            cnt++;
+                                                        }
+                                                    }
+                                                });
+                                                settingsObserver.observe(document.getElementById("databaseModal"), {
+                                                    attributes: true,
+                                                    attributeFilter: ["class"]
+                                                });
+                                            }, 500);
+                                        }});
+                                        document.getElementById("openDatabase").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
+                                        setTimeout(() => { instancesTapDatabase.open(); }, 500);
                                     }, 500);
                                 }});
-                                document.getElementById("openDatabase").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
-                                setTimeout(() => { instancesTapDatabase.open(); }, 500);
-                            }, 500);
-                        }});
-                        document.getElementById("contentSearch").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
-                        // Ensure that the tutorial step associated to the anime search button opens only once no matter whether the filter modal is opened or not.
-                        let count = 0;
-                        if(!document.getElementById("filterModal").classList.contains("open")) {
-                            // After a small delay open the tutorial step for the index page anime search.
-                            setTimeout(() => { instancesTapContentSearch.open(); }, 500);
-                            count++;
-                        }
-                        let animeSearchObserver = new MutationObserver(mutations => {
-                            if(count == 0) {
-                                if(!mutations[0].target.classList.contains("open")) {
+                                document.getElementById("contentSearch").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
+                                // Ensure that the tutorial step associated to the anime search button opens only once no matter whether the filter modal is opened or not.
+                                let count = 0;
+                                if(!document.getElementById("filterModal").classList.contains("open")) {
+                                    // After a small delay open the tutorial step for the index page anime search.
                                     setTimeout(() => { instancesTapContentSearch.open(); }, 500);
                                     count++;
                                 }
-                            }
-                        });
-                        animeSearchObserver.observe(document.getElementById("filterModal"), {
-                            attributes: true,
-                            attributeFilter: ["class"]
-                        });
-                    }, 500);
-                }});
-                // After a small delay open the tutorial step for the index page filter.
-                document.getElementById("setFilter").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
-                setTimeout(() => { instancesTapFilter.open(); }, 500);
+                                let animeSearchObserver = new MutationObserver(mutations => {
+                                    if(count == 0) {
+                                        if(!mutations[0].target.classList.contains("open")) {
+                                            setTimeout(() => { instancesTapContentSearch.open(); }, 500);
+                                            count++;
+                                        }
+                                    }
+                                });
+                                animeSearchObserver.observe(document.getElementById("filterModal"), {
+                                    attributes: true,
+                                    attributeFilter: ["class"]
+                                });
+                            }, 500);
+                        }});
+                        // After a small delay open the tutorial step for the index page filter.
+                        document.getElementById("setFilter").nextElementSibling.children[1].children[0].children[0].style.color = iconColor;
+                        setTimeout(() => { instancesTapFilter.open(); }, 500);
+                    }
+                });
             }, 500);
         }});
         // After a small delay open the tutorial step for the adding of a record.

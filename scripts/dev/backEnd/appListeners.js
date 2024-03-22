@@ -159,7 +159,8 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
         			for(; v < currentNotificationsFile.notifications.length; v++) {
         				// If a submitted notification already exists break out of the loop.
         				if(currentNotificationsFile.notifications[v].id == submissionContent[u][0]
-        					&& currentNotificationsFile.notifications[v].text == submissionContent[u][3]) { break; }
+        					&& currentNotificationsFile.notifications[v].text == submissionContent[u][3]
+        					&& currentNotificationsFile.notifications[v].date == submissionContent[u][4]) { break; }
         				// Otherwise, if a record no longer exists corresponding to the notification or the notification expired remove the record.
         				else if(!fs.existsSync(path.join(originalPath, "Trak", "data", currentNotificationsFile.notifications[v].id, "data.json"))
         					|| (new Date(currentNotificationsFile.notifications[v].date)).getTime() < (new Date()).getTime()) { removalList.push(v); }
@@ -816,6 +817,48 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	exports.addLogListeners(path, fs, log, ipc, tools, originalPath);
 	// Add the listeners which act as tools for the front-end.
 	exports.addHelperListeners(log, ipc, mainWindow);
+
+	ipc.on("getAssociations", event => {
+		fs.readFile(path.join(originalPath, "Trak", "config", "associations.json"), "UTF8", (err, file) => {
+			event.sender.send("sentAssociations", err ? "" : file);
+			if(err) { log.error("There was an issue reading the application associations configuration file."); }
+		});
+	});
+
+	ipc.on("getConfigurations", event => {
+		fs.readFile(path.join(originalPath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
+			event.sender.send("sentConfigurations", err ? "" : file);
+			if(err) { log.error("There was an issue reading the application settings configuration file."); }
+		});
+	});
+
+	ipc.on("getLibraryRecord", (event, submissionArr) => {
+		fs.readFile(path.join(originalPath, "Trak", "data", submissionArr[0], "data.json"), "UTF8", (err, file) => {
+			event.sender.send("sentLibraryRecord" + submissionArr[1], [submissionArr[0], err ? "" : file]);
+			if(err) { log.error("There was an issue reading the library record data file associated to the " + tools.parseFolder(submissionArr[0]) + "."); }
+		});
+	});
+
+	ipc.on("getNotifications", event => {
+		fs.readFile(path.join(originalPath, "Trak", "config", "notifications.json"), "UTF8", (err, file) => {
+			event.sender.send("sentNotifications", err ? "" : file);
+			if(err) { log.error("There was an issue reading the application notifications file."); }
+		});
+	});
+
+	ipc.on("getTutorial", event => {
+		fs.readFile(path.join(originalPath, "Trak", "config", "tutorial.json"), "UTF8", (err, file) => {
+			event.sender.send("sentTutorial", err ? "" : file);
+			if(err) { log.error("There was an issue reading the application settings tutorial file."); }
+		});
+	});
+
+	ipc.on("getVersion", event => {
+		fs.readFile(path.join(__dirname, "../../../package.json"), "UTF8", (err, file) => {
+			event.sender.send("sentVersion", err ? "" : file);
+			if(err) { log.error("There was an issue reading the application package.json file."); }
+		});
+	});
 };
 
 

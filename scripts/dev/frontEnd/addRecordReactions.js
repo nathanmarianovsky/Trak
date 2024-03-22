@@ -202,14 +202,15 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
     const updateRecordPreloader = document.getElementById("updateRecordPreloader");
     updateRecordPreloader.style.display = "block";
     // Attempt to read a record's data file.
-    fs.readFile(path.join(localPath, "Trak", "data", name, "data.json"), (err, file) => {
+    ipcRenderer.send("getLibraryRecord", [name, "Update"]);
+    ipcRenderer.on("sentLibraryRecordUpdate", (recordEvent, recordArr) => {
         // Display a notification if there was an error in reading the data file.
-        if(err) {
+        if(recordArr[1] == "") {
             M.toast({"html": "There was an error opening the data file associated to the " + toastParse(name) + ".", "classes": "rounded"});
         }
         // If the file loaded without issues populate the page with a record's information.
         else {
-            const recordData = JSON.parse(file),
+            const recordData = JSON.parse(recordArr[1]),
                 otherGenresDivs = Array.from(document.getElementsByClassName("otherGenresDiv"));
             otherGenresDivs.forEach(div => div.style.display = "none");
             // If the record is of category type anime then proceed.
@@ -711,16 +712,28 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     updateShowPreloader.style.visibility = "hidden";
                 }, 500);
             }
-            fs.readFile(path.join(localPath, "Trak", "config", "associations.json"), (er, associationsFile) => {
-                if(er) {
+            ipcRenderer.send("getAssociations");
+            ipcRenderer.on("sentAssociations", (associationsEvent, associationsFileStr) => {
+                if(associationsFileStr == "") {
                     M.toast({"html": "There was an error in reading the associations configuration file.", "classes": "rounded"});
                 }
                 else {
-                    const associationsFileList = JSON.parse(associationsFile).associations;
+                    const associationsFileList = JSON.parse(associationsFileStr).associations;
                     for(let t = 0; t < associationsFileList.length; t++) {
                         if(associationsFileList[t].includes(name)) {
                             for(let y = 0; y < associationsFileList[t].length; y++) {
                                 if(associationsFileList[t][y] != name) {
+                                    // ipcRenderer.send("getLibraryRecord", [associationsFileList[t][y], "Association"]);
+                                    // ipcRenderer.on("sentLibraryRecordAssociation", (recordEvent, recordArr) => {
+                                    //     if(recordArr[1] == "") {
+                                    //         M.toast({"html": "There was an error in reading the library record date file associated to the " + toastParse(recordArr[0]) + ".", "classes": "rounded"});
+                                    //     }
+                                    //     else {
+                                    //         let assocItem = JSON.parse(recordArr[1]);
+                                    //         console.log(assocItem);
+                                    //         associationCreation(recordArr[0], assocItem.category, assocItem.name, assocItem.img.length > 0 ? assocItem.img[0] : "");
+                                    //     }
+                                    // });
                                     let assocItem = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", associationsFileList[t][y], "data.json"), "UTF8"));
                                     associationCreation(associationsFileList[t][y], assocItem.category, assocItem.name, assocItem.img.length > 0 ? assocItem.img[0] : "");
                                 }
@@ -741,8 +754,6 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
 
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
-    // Update the titlebar color.
-    // document.getElementById("titleBar").style.backgroundColor = "#" + addAlpha(rgba2hex(getComputedStyle(document.querySelector("nav")).backgroundColor).substring(1), 0.6);
     // Initialize the select tags on the page.
     initSelect();
     // Initialize the floating action button on the page.
@@ -771,5 +782,5 @@ window.addEventListener("load", () => {
         initSynopsisObserver(document.getElementById(category.toLowerCase() + "Synopsis"));
     });
     // Initialize the autocomplete functionality for the associations modal.
-    associationsInit();
+    associationsInit(ipcRenderer);
 });

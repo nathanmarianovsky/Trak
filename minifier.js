@@ -34,11 +34,11 @@ const htmlSettingsList = ["index.html", "addRecord.html"],
 	htmlNotifications = fs.readFileSync(path.join(__dirname, "pages", "dev", "notifications.html")),
 	htmlFilter = fs.readFileSync(path.join(__dirname, "pages", "dev", "filter.html")),
 	htmlTitlebar = fs.readFileSync(path.join(__dirname, "pages", "dev", "titlebar.html"));
+let data = fs.readFileSync(path.join(__dirname, "pages", "dev", "index.html"), "UTF8"),
+	$ = cheerio.load(data);
 if(!fs.existsSync(path.join(__dirname, "pages", "dev", "sectionsAttached"))) {
 	fs.mkdirSync(path.join(__dirname, "pages", "dev", "sectionsAttached"), { "recursive": true });
 }
-let data = fs.readFileSync(path.join(__dirname, "pages", "dev", "index.html"), "UTF8"),
-	$ = cheerio.load(data);
 $("#settingsModal").html(htmlSettings);
 $("#updateModal").html(htmlUpdate);
 $("#synopsisModal").html(htmlSynopsis);

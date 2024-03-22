@@ -152,7 +152,8 @@ window.addEventListener("load", () => {
         ipcRenderer.send("aboutGithub");
     });
     // Read the settings configuration file.
-    fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
+    ipcRenderer.send("getConfigurations");
+    ipcRenderer.on("sentConfigurations", (configurationsEvent, configurationsFileStr) => {
     	// Define the inputs on the settings modal.
     	const primaryColor = document.getElementById("primaryColor"),
     		secondaryColor = document.getElementById("secondaryColor"),
@@ -166,7 +167,7 @@ window.addEventListener("load", () => {
             notificationsInterval = document.getElementById("notificationsInterval"),
             logoColor = document.getElementById("logoColor");
         // Display a notification if there was an error in reading the configuration file.
-        if(err) {
+        if(configurationsFileStr == "") {
             M.toast({"html": "There was an error opening the configuration file associated to the application settings.", "classes": "rounded"});
             // Load the original settings.
             primaryColor.value = "#2A2A8E";
@@ -194,72 +195,81 @@ window.addEventListener("load", () => {
         }
         // If the file loaded without issues populate the settings modal with the current application setup.
         else {
-        	const configData = JSON.parse(file),
-                notificationsData = JSON.parse(fs.readFileSync(path.join(basePath, "Trak", "config", "notifications.json"), "UTF8"));
-            primaryColor.value = configData[configData.current != undefined ? "current" : "original"].primaryColor;
-            primaryColor.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryColor);
-            secondaryColor.value = configData[configData.current != undefined ? "current" : "original"].secondaryColor;
-            secondaryColor.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryColor);
-            appPath.value = configData[configData.current != undefined ? "current" : "original"].path;
-            appPath.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].path);
-            primaryWindowWidth.value = configData[configData.current != undefined ? "current" : "original"].primaryWindowWidth;
-            primaryWindowWidth.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryWindowWidth);
-            primaryWindowHeight.value = configData[configData.current != undefined ? "current" : "original"].primaryWindowHeight;
-            primaryWindowHeight.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryWindowHeight);
-            primaryWindowFullscreen.checked = configData[configData.current != undefined ? "current" : "original"].primaryWindowFullscreen;
-            primaryWindowFullscreen.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryWindowFullscreen);
-            secondaryWindowWidth.value = configData[configData.current != undefined ? "current" : "original"].secondaryWindowWidth;
-            secondaryWindowWidth.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowWidth);
-            secondaryWindowHeight.value = configData[configData.current != undefined ? "current" : "original"].secondaryWindowHeight;
-            secondaryWindowHeight.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowHeight);
-            secondaryWindowFullscreen.checked = configData[configData.current != undefined ? "current" : "original"].secondaryWindowFullscreen;
-            secondaryWindowFullscreen.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowFullscreen);
-            notificationsInterval.value = notificationsData.interval;
-            notificationsInterval.setAttribute("lastValue", notificationsData.interval);
-            logoColor.value = configData[configData.current != undefined ? "current" : "original"].icon;
-            logoColor.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].icon);
-            initSelect();
-            // Listen for a click on the color reset button to restore the color inputs to the original values.
-            settingsColorReset.addEventListener("click", e => {
-                primaryColor.value = configData.original.primaryColor;
-                secondaryColor.value = configData.original.secondaryColor;
-            });
-            // Listen for a click on the path reset button to restore the directory input to the original destination.
-            settingsDataReset.addEventListener("click", e => {
-                appPath.value = configData.original.path;
-                appPath.classList.remove("validate", "valid");
-            });
-            // Listen for a click on the sizes reset button to restore the sizes of the windows to their original values.
-            settingsSizesReset.addEventListener("click", e => {
-                primaryWindowWidth.value = configData.original.primaryWindowWidth;
-                primaryWindowWidth.classList.remove("validate", "valid");
-                primaryWindowHeight.value = configData.original.primaryWindowHeight;
-                primaryWindowHeight.classList.remove("validate", "valid");
-                secondaryWindowWidth.value = configData.original.secondaryWindowWidth;
-                secondaryWindowWidth.classList.remove("validate", "valid");
-                secondaryWindowHeight.value = configData.original.secondaryWindowHeight;
-                secondaryWindowHeight.classList.remove("validate", "valid");
-            });
-            settingsIntervalReset.addEventListener("click", e => {
-                notificationsInterval.value = "14";
+            ipcRenderer.send("getNotifications");
+            ipcRenderer.on("sentNotifications", (notificationsEvent, notificationsFileStr) => {
+            	const configData = JSON.parse(configurationsFileStr),
+                    notificationsData = JSON.parse(notificationsFileStr);
+                primaryColor.value = configData[configData.current != undefined ? "current" : "original"].primaryColor;
+                primaryColor.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryColor);
+                secondaryColor.value = configData[configData.current != undefined ? "current" : "original"].secondaryColor;
+                secondaryColor.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryColor);
+                appPath.value = configData[configData.current != undefined ? "current" : "original"].path;
+                appPath.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].path);
+                primaryWindowWidth.value = configData[configData.current != undefined ? "current" : "original"].primaryWindowWidth;
+                primaryWindowWidth.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryWindowWidth);
+                primaryWindowHeight.value = configData[configData.current != undefined ? "current" : "original"].primaryWindowHeight;
+                primaryWindowHeight.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryWindowHeight);
+                primaryWindowFullscreen.checked = configData[configData.current != undefined ? "current" : "original"].primaryWindowFullscreen;
+                primaryWindowFullscreen.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryWindowFullscreen);
+                secondaryWindowWidth.value = configData[configData.current != undefined ? "current" : "original"].secondaryWindowWidth;
+                secondaryWindowWidth.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowWidth);
+                secondaryWindowHeight.value = configData[configData.current != undefined ? "current" : "original"].secondaryWindowHeight;
+                secondaryWindowHeight.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowHeight);
+                secondaryWindowFullscreen.checked = configData[configData.current != undefined ? "current" : "original"].secondaryWindowFullscreen;
+                secondaryWindowFullscreen.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowFullscreen);
+                if(notificationsFileStr == "") {
+                    M.toast({"html": "There was an error opening the notifications file associated to the application notifications.", "classes": "rounded"});
+                }
+                else {
+                    notificationsInterval.value = notificationsData.interval;
+                    notificationsInterval.setAttribute("lastValue", notificationsData.interval);
+                }
+                logoColor.value = configData[configData.current != undefined ? "current" : "original"].icon;
+                logoColor.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].icon);
                 initSelect();
+                // Listen for a click on the color reset button to restore the color inputs to the original values.
+                settingsColorReset.addEventListener("click", e => {
+                    primaryColor.value = configData.original.primaryColor;
+                    secondaryColor.value = configData.original.secondaryColor;
+                });
+                // Listen for a click on the path reset button to restore the directory input to the original destination.
+                settingsDataReset.addEventListener("click", e => {
+                    appPath.value = configData.original.path;
+                    appPath.classList.remove("validate", "valid");
+                });
+                // Listen for a click on the sizes reset button to restore the sizes of the windows to their original values.
+                settingsSizesReset.addEventListener("click", e => {
+                    primaryWindowWidth.value = configData.original.primaryWindowWidth;
+                    primaryWindowWidth.classList.remove("validate", "valid");
+                    primaryWindowHeight.value = configData.original.primaryWindowHeight;
+                    primaryWindowHeight.classList.remove("validate", "valid");
+                    secondaryWindowWidth.value = configData.original.secondaryWindowWidth;
+                    secondaryWindowWidth.classList.remove("validate", "valid");
+                    secondaryWindowHeight.value = configData.original.secondaryWindowHeight;
+                    secondaryWindowHeight.classList.remove("validate", "valid");
+                });
+                settingsIntervalReset.addEventListener("click", e => {
+                    notificationsInterval.value = "14";
+                    initSelect();
+                });
+                // By default load the options section of the settings modal.
+            	settingsDisplay.click();
             });
-            // By default load the options section of the settings modal.
-        	settingsDisplay.click();
         }
         // Read the tutorial.json file.
-        fs.readFile(path.join(basePath, "Trak", "config", "tutorial.json"), "UTF8", (err, tutorialInfo) => {
+        ipcRenderer.send("getTutorial");
+        ipcRenderer.on("sentTutorial", (tutorialEvent, tutorialFileStr) => {
             // Define the settings modal input for the tutorial option.
             const tutorialLoad = document.getElementById("tutorialLoad");
             // If there was an issue in reading the tutorial.json file notify the user.
-            if(err) {
+            if(tutorialFileStr == "") {
                 ipcRenderer.send("introductionFileSave", true);
                 tutorialLoad.checked = false;
                 tutorialLoad.setAttribute("lastValue", "false");
             }
             // If tutorial.json was read successfully, then populate the settings modal accordingly.
             else {
-                const tutorialData = JSON.parse(tutorialInfo);
+                const tutorialData = JSON.parse(tutorialFileStr);
                 tutorialLoad.checked = tutorialData.introduction;
                 tutorialLoad.setAttribute("lastValue", tutorialData.introduction);
             }
@@ -337,11 +347,10 @@ window.addEventListener("load", () => {
             // Listen for a change in the secondary window height input in order to highlight it accordingly.
         	secondaryWindowHeight.addEventListener("change", btnFunc);
             // Write the app version based on the version in the package.json file.
-            fs.readFile(path.join(basePath, "Trak", "config", "location.json"), "UTF8", (resp, fl) => {
-                if(resp) { M.toast({"html": "There was an issue reading the configurations location.json file.", "classes": "rounded"}); }
-                else {
-                    document.getElementById("appVersion").textContent = "App Version: " + JSON.parse(fs.readFileSync(path.join(JSON.parse(fl).appLocation, "package.json"), "UTF8")).version;
-                }
+            ipcRenderer.send("getVersion");
+            ipcRenderer.on("sentVersion", (versionEvent, versionFileStr) => {
+                if(versionFileStr == "") { M.toast({"html": "There was an issue reading the application package.json file.", "classes": "rounded"}); }
+                document.getElementById("appVersion").textContent = "App Version: " + (versionFileStr == "" ? "" : JSON.parse(versionFileStr).version);
             });
         });
     });

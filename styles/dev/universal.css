@@ -98,7 +98,11 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	padding: 4px;
 	color: white;
 	top: 0px;
-	z-index: 1;
+	z-index: 1000;
+}
+
+#titleBar .btn {
+	background-color: #2A2A8E !important;
 }
 
 #toast-container {
@@ -195,7 +199,6 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 }
 
 .navbar-fixed {
-	position: initial !important;
 	z-index: 1 !important;
 }
 

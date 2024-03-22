@@ -638,7 +638,7 @@ const relatedContentListeners = item => {
 Initializes the autocomplete functionality on the associations modal.
 
 */
-const associationsInit = () => {
+const associationsInit = ipcElec => {
     // Define the collection of library records and the associations modal autocomplete input.
     const dataDir = path.join(localPath, "Trak", "data"),
         dataList = fs.readdirSync(dataDir).filter(file => fs.statSync(path.join(dataDir, file)).isDirectory()),
@@ -651,17 +651,36 @@ const associationsInit = () => {
             // Iterate through the list of library records.
             for(let n = 0; n < dataList.length; n++) {
                 // Define the current library record data.
-                let selectedData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", dataList[n], "data.json"), "UTF8"));
-                // Proceed if the current library record is the one corresponding to the autocomplete search selection.
-                if(txt == selectedData.name + " (" + selectedData.category + ")") {
-                    // Create an association on the associations modal.
-                    associationCreation(dataList[n], selectedData.category, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "");
-                    // Clear the autocomplete input search bar.
-                    autocompleteInput.value = "";
-                    autocompleteInput.nextElementSibling.nextElementSibling.classList.remove("active");
-                    // Initialize the page listeners corresponding to an association.
-                    associationsListeners(ipcRenderer);
-                }
+                ipcElec.send("getLibraryRecord", [dataList[n], "Autocomplete"]);
+                ipcElec.on("sentLibraryRecordAutocomplete", (autoEvent, autoArr) => {
+                    if(autoArr[1] == "") {
+
+                    }
+                    else {
+                        let selectedData = JSON.parse(autoArr[1]);
+                        // Proceed if the current library record is the one corresponding to the autocomplete search selection.
+                        if(txt == selectedData.name + " (" + selectedData.category + ")") {
+                            // Create an association on the associations modal.
+                            associationCreation(dataList[n], selectedData.category, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "");
+                            // Clear the autocomplete input search bar.
+                            autocompleteInput.value = "";
+                            autocompleteInput.nextElementSibling.nextElementSibling.classList.remove("active");
+                            // Initialize the page listeners corresponding to an association.
+                            associationsListeners(ipcElec);
+                        }
+                    }
+                });
+                // let selectedData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", dataList[n], "data.json"), "UTF8"));
+                // // Proceed if the current library record is the one corresponding to the autocomplete search selection.
+                // if(txt == selectedData.name + " (" + selectedData.category + ")") {
+                //     // Create an association on the associations modal.
+                //     associationCreation(dataList[n], selectedData.category, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "");
+                //     // Clear the autocomplete input search bar.
+                //     autocompleteInput.value = "";
+                //     autocompleteInput.nextElementSibling.nextElementSibling.classList.remove("active");
+                //     // Initialize the page listeners corresponding to an association.
+                //     associationsListeners(ipcElec);
+                // }
             }
         }
     });

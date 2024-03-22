@@ -98,8 +98,6 @@ const bottomScrollRequest = (animeSearch, bookSearch, filmSearch, mangaSearch, s
 
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
-    // Update the titlebar color.
-    // document.getElementById("titleBar").style.backgroundColor = "#" + addAlpha(rgba2hex(getComputedStyle(document.querySelector("nav")).backgroundColor).substring(1), 0.6);
     // Define the buttons for all actions.
     const add = document.getElementById("add"),
         remove = document.getElementById("removeConfirm"),
