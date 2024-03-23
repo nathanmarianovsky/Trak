@@ -639,10 +639,8 @@ Initializes the autocomplete functionality on the associations modal.
 
 */
 const associationsInit = ipcElec => {
-    // Define the collection of library records and the associations modal autocomplete input.
-    const dataDir = path.join(localPath, "Trak", "data"),
-        dataList = fs.readdirSync(dataDir).filter(file => fs.statSync(path.join(dataDir, file)).isDirectory()),
-        autocompleteInput = document.getElementById("associationsAutocomplete");
+    // Define the associations modal autocomplete input.
+    const autocompleteInput = document.getElementById("associationsAutocomplete");
     // Initialize the autocomplete input on the associations modal.
     const associationsAutocomplete = M.Autocomplete.init(autocompleteInput, {
         "sortFunction": (a, b) => a.localeCompare(b),
@@ -672,15 +670,20 @@ const associationsInit = ipcElec => {
     });
     // Define the object which will house the list of options for the associations modal autocomplete search bar.
     let associationsDataObj = {};
-    // Iterate through the list of library records.
-    for(let m = 0; m < dataList.length; m++) {
-        // Define the current library record data.
-        let curData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", dataList[m], "data.json"), "UTF8"));
-        // Create an entry in the associations data object.
-        associationsDataObj[curData.name + " (" + curData.category + ")"] = (curData.img.length > 0 ? curData.img[0] : "");
-    }
-    // Update the associations autocomplete input options.
-    associationsAutocomplete.updateData(associationsDataObj);
+    // Send a request to the back-end to obtain all library records.
+    ipcElec.send("getAllRecords");
+    // Proceed once all library records have been obtained.
+    ipcElec.on("sentAllRecords", (recordsEvent, recordsArr) => {
+        // Iterate through the list of library records.
+        for(let m = 0; m < recordsArr.length; m++) {
+            // Define the current library record data.
+            let curData = JSON.parse(recordsArr[m][1]);
+            // Create an entry in the associations data object.
+            associationsDataObj[curData.name + " (" + curData.category + ")"] = (curData.img.length > 0 ? curData.img[0] : "");
+        }
+        // Update the associations autocomplete input options.
+        associationsAutocomplete.updateData(associationsDataObj);
+    });
 };
 
 
