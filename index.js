@@ -2,7 +2,7 @@
 
 Declare all of the necessary variables.
 
-	- app, BrowserWindow, Menu, MenuItem, Tray, and ipc provide the means to operate the Electron app.
+	- app, BrowserWindow, Menu, Tray, and ipc provide the means to operate the Electron app.
 	- fs and path provide the means to work with local files.
 	- https provides the means to download files.
 	- log provides the means to create application logs to keep track of what is going on.
@@ -12,7 +12,7 @@ Declare all of the necessary variables.
 	- localPath is the path to the local user data.
 
 */
-const { app, BrowserWindow, Menu, MenuItem, Tray } = require("electron"),
+const { app, BrowserWindow, Menu, Tray } = require("electron"),
 	ipc = require("electron").ipcMain,
 	dev = process.argv.includes("--dev"),
 	path = require("path"),
@@ -43,35 +43,6 @@ app.whenReady().then(() => {
 	splashWindow.webContents.on("did-finish-load", () => {
 		// Update the splash screen to indicate that the tray is being created.
 		splashWindow.webContents.send("loadBlink", 1);
-		// Create the Electron app menu.
-		const template = [
-			{"label": "Edit", "submenu": [
-					{ "role": "undo" },
-					{ "role": "redo" },
-					{ "type": "separator" },
-					{ "role": "cut" },
-					{ "role": "copy" },
-					{ "role": "paste" }
-				]
-			},
-			{"label": "View", "submenu": [
-					{ "role": "reload" },
-					{ "role": "toggledevtools" },
-					{ "type": "separator" },
-					{ "role": "resetzoom" },
-					{ "role": "zoomin" },
-					{ "role": "zoomout" },
-					{ "type": "separator" },
-					{ "role": "togglefullscreen" }
-				]
-			},
-			{"label": "Window", "submenu": [
-					{ "role": "minimize" },
-					{ "role": "quit" }
-				]
-			}
-		];
-		Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 		require("electron-context-menu")({
 			"showSearchWithGoogle": true,
 			"showSelectAll": true

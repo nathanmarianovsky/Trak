@@ -131,8 +131,7 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
 
 	// Send a request to the front-end to initialize the application tutorial.
 	ipc.once("tutorialReady", ev => {
-		let curWin = BrowserWindow.getFocusedWindow();
-		tools.tutorialLoad(fs, path, log, curWin, originalPath);
+		tools.tutorialLoad(fs, path, log, BrowserWindow.getFocusedWindow(), originalPath);
 	});
 
 	// Loads the creation of a primary window upon the activation of the app.
