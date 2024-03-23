@@ -78,6 +78,10 @@ app.whenReady().then(() => {
 		});
 		// Update the splash screen to indicate that the default files and folders are being created.
 		splashWindow.webContents.send("loadBlink", 2);
+		// Create the configurations folder if it does not exist.
+		if(!fs.existsSync(path.join(basePath, "Trak", "config", "assets"))) {
+			fs.mkdirSync(path.join(basePath, "Trak", "config", "assets"), { "recursive": true });
+		}
 		// Create the notifications file if it does not exist.
 		if(!fs.existsSync(path.join(basePath, "Trak", "config", "notifications.json"))) {
 			fs.writeFileSync(path.join(basePath, "Trak", "config", "notifications.json"), JSON.stringify({"interval": 14, "notifications": []}), "UTF8");
@@ -89,7 +93,6 @@ app.whenReady().then(() => {
 		// Create the configuration file if it does not exist.
 		if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
 			log.info("Creating the default configuration file. To be located at " + path.join(basePath, "Trak", "config", "configuration.json"));
-			fs.mkdirSync(path.join(basePath, "Trak", "config", "assets"), { "recursive": true });
 			const writeData = { "original": {
 					"path": path.join(basePath, "Trak", "data"),
 					"primaryColor": "#2A2A8E",
@@ -251,7 +254,7 @@ app.whenReady().then(() => {
 			}
 		});
 	});
-}).catch(err => log.error("The application failed to start."));
+}).catch(err => { log.error("The application failed to start."); console.log(err); });
 
 
 

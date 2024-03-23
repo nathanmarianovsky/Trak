@@ -203,7 +203,7 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
         			}
         			// Otherwise, send a request to the front-end to display the notifications, if any exist.
         			else {
-        				event.sender.send("notificationsReady");
+        				event.sender.send("notificationsReady", JSON.stringify(currentNotificationsFile));
         			}
         		});
         	}
@@ -818,12 +818,12 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	// Add the listeners which act as tools for the front-end.
 	exports.addHelperListeners(log, ipc, mainWindow);
 
-	ipc.on("getAssociations", event => {
-		fs.readFile(path.join(originalPath, "Trak", "config", "associations.json"), "UTF8", (err, file) => {
-			event.sender.send("sentAssociations", err ? "" : file);
-			if(err) { log.error("There was an issue reading the application associations configuration file."); }
-		});
-	});
+	// ipc.on("getAssociations", event => {
+	// 	fs.readFile(path.join(originalPath, "Trak", "config", "associations.json"), "UTF8", (err, file) => {
+	// 		event.sender.send("sentAssociations", err ? "" : file);
+	// 		if(err) { log.error("There was an issue reading the application associations configuration file."); }
+	// 	});
+	// });
 
 	ipc.on("getConfigurations", event => {
 		fs.readFile(path.join(originalPath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
@@ -857,6 +857,82 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 		fs.readFile(path.join(__dirname, "../../../package.json"), "UTF8", (err, file) => {
 			event.sender.send("sentVersion", err ? "" : file);
 			if(err) { log.error("There was an issue reading the application package.json file."); }
+		});
+	});
+
+	ipc.on("getSynopsis", (event, submissionArr) => {
+		fs.readFile(submissionArr[0], "UTF8", (err, file) => {
+			event.sender.send("sentSynopsis", [err ? "" : file, submissionArr[1]]);
+			if(err) {
+				const curRecord = JSON.parse(submissionArr[1]);
+				if(curRecord.category == "Anime" || curRecord.category == "Manga") {
+                    log.error("There was an issue reading the data file associated to the " + curRecord.category.toLowerCase() + " "
+                        + (curRecord.name != "" ? curRecord.name : curRecord.jname) + ".");
+                }
+                else if(curRecord.category == "Book") {
+                    log.error("There was an issue reading the data file associated to the book " +
+                        (curRecord.name != "" ? curRecord.name : curRecord.isbn) + ".");
+                }
+                else if(curRecord.category == "Film" || curRecord.category == "Show") {
+                    log.error("There was an issue reading the data file associated to the " + curRecord.category.toLowerCase() + " " + curRecord.name + ".");
+                }
+			}
+		});
+	});
+
+	ipc.on("getAssociations", (event, name) => {
+		fs.readFile(path.join(originalPath, "Trak", "config", "associations.json"), "UTF8", (err, file) => {
+			if(err) { log.error("There was an issue reading the application associations configuration file."); }
+			else {
+				const associationsFileList = JSON.parse(file).associations,
+					associationsArr = [];
+		        for(let t = 0; t < associationsFileList.length; t++) {
+		            if(associationsFileList[t].includes(name)) {
+		                for(let y = 0; y < associationsFileList[t].length; y++) {
+		                    if(associationsFileList[t][y] != name) {
+		                        associationsArr.push(new Promise((resolve, reject) => {
+		                        	fs.readFile(path.join(originalPath, "Trak", "data", associationsFileList[t][y], "data.json"), "UTF8", (err, fle) => {
+		                        		if(err) {
+		                        			log.error("There was an issue reading the data file associated to the " + parseFolder(associationsFileList[t][y]) + ".");
+		                        			resolve([associationsFileList[t][y], ""]);
+		                        		}
+		                        		else {
+		                        			resolve([associationsFileList[t][y], fle]);
+		                        		}
+		                        	});
+		                        }));
+		                    }
+		                }
+		                break;
+		            }
+		        }
+		        Promise.all(associationsArr).then(results => {
+		        	event.sender.send("sentAssociations", results);
+		        });
+			}
+		});
+	});
+
+	ipc.on("getAllRecords", event => {
+		let pathDir = path.join(originalPath, "Trak", "data"),
+			list = [],
+			submissionList = [];
+		if(fs.existsSync(pathDir)) { list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()); };
+		for(let r = 0; r < list.length; r++) {
+			submissionList.push(new Promise((resolve, reject) => {
+				fs.readFile(path.join(originalPath, "Trak", "data", list[r], "data.json"), "UTF8", (err, file) => {
+					if(err) {
+						log.error("There was an issue reading the data file associated to the " + parseFolder(list[r]) + ".");
+						resolve([list[r], ""]);
+					}
+					else {
+						resolve([list[r], file]);
+					}
+				});
+			}));
+		}
+		Promise.all(submissionList).then(results => {
+			event.sender.send("sentAllRecords", results);
 		});
 	});
 };

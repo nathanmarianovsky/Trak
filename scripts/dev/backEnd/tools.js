@@ -2004,9 +2004,14 @@ Executes the creation of the primary window with all necessary parameters.
 
 */
 exports.createWindow = (extension, dir, BrowserWindow, fs, path, log, devCheck, width = 1000, height = 800, fullscreen = false, resizable = true) => {
-  	const conData = JSON.parse(fs.readFileSync(path.join(dir, "Trak", "config", "configuration.json"), "UTF8"));
-  	// const cet = require('custom-electron-titlebar/main');
-  	// cet.setupTitlebar();
+  	let iconPath = "";
+  	if(fs.existsSync(path.join(dir, "Trak", "config", "configuration.json"))) {
+  		const conData = JSON.parse(fs.readFileSync(path.join(dir, "Trak", "config", "configuration.json"), "UTF8"));
+  		iconPath = path.join(__dirname, "../../../assets", (conData.current != undefined ? conData.current.icon : conData.original.icon) + "Logo.ico");
+  	}
+  	else {
+  		iconPath = path.join(__dirname, "../../../assets", "whiteLogo.ico");
+  	}
   	let win = new BrowserWindow({
 		"width": width,
     	"height": height,
@@ -2017,12 +2022,10 @@ exports.createWindow = (extension, dir, BrowserWindow, fs, path, log, devCheck, 
     		"nodeIntegration": true,
     		"contextIsolation": false
     	},
-    	"icon": path.join(__dirname, "../../../assets", (conData.current != undefined ? conData.current.icon : conData.original.icon) + "Logo.ico"),
-    	// "titleBarOverlay": true,
+    	"icon": iconPath,
     	"frame": extension != "splash",
     	"titleBarStyle": "hidden"
 	});
-	// cet.attachTitlebarToWindow(win);
 	extension != "splash" ? win.loadFile(path.join(dir, "Trak", "localPages", extension + ".html")) : win.loadFile(path.join(__dirname, "../../../pages", "dist", extension + ".html"));
 	win.setProgressBar(0.25);
 	if(fullscreen == true) { win.maximize(); }

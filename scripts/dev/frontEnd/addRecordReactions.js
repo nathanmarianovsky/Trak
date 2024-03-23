@@ -712,37 +712,20 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     updateShowPreloader.style.visibility = "hidden";
                 }, 500);
             }
-            ipcRenderer.send("getAssociations");
-            ipcRenderer.on("sentAssociations", (associationsEvent, associationsFileStr) => {
-                if(associationsFileStr == "") {
-                    M.toast({"html": "There was an error in reading the associations configuration file.", "classes": "rounded"});
-                }
-                else {
-                    const associationsFileList = JSON.parse(associationsFileStr).associations;
-                    for(let t = 0; t < associationsFileList.length; t++) {
-                        if(associationsFileList[t].includes(name)) {
-                            for(let y = 0; y < associationsFileList[t].length; y++) {
-                                if(associationsFileList[t][y] != name) {
-                                    // ipcRenderer.send("getLibraryRecord", [associationsFileList[t][y], "Association"]);
-                                    // ipcRenderer.on("sentLibraryRecordAssociation", (recordEvent, recordArr) => {
-                                    //     if(recordArr[1] == "") {
-                                    //         M.toast({"html": "There was an error in reading the library record date file associated to the " + toastParse(recordArr[0]) + ".", "classes": "rounded"});
-                                    //     }
-                                    //     else {
-                                    //         let assocItem = JSON.parse(recordArr[1]);
-                                    //         console.log(assocItem);
-                                    //         associationCreation(recordArr[0], assocItem.category, assocItem.name, assocItem.img.length > 0 ? assocItem.img[0] : "");
-                                    //     }
-                                    // });
-                                    let assocItem = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", associationsFileList[t][y], "data.json"), "UTF8"));
-                                    associationCreation(associationsFileList[t][y], assocItem.category, assocItem.name, assocItem.img.length > 0 ? assocItem.img[0] : "");
-                                }
-                            }
-                            associationsListeners(ipcRenderer);
-                            break;
-                        }
+            // Send a request to find record associations.
+            ipcRenderer.send("getAssociations", name);
+            // Create the associations on the page once the data has been provided.
+            ipcRenderer.on("sentAssociations", (associationsEvent, associationsArr) => {
+                // Iterate through all the provided associations.
+                for(let v = 0; v < associationsArr.length; v++) {
+                    // Create an association only if the associated data record has been read properly.
+                    if(associationsArr[v][1] != "") {
+                        let assocItem = JSON.parse(associationsArr[v][1]);
+                        associationCreation(associationsArr[v][0], assocItem.category, assocItem.name, assocItem.img.length > 0 ? assocItem.img[0] : "");
                     }
                 }
+                // Add the page listeners associations to the record associations.
+                associationsListeners(ipcRenderer);
             });
         }
         // Hide the addRecord preloader once the file data has been added.

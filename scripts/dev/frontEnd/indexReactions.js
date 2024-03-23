@@ -281,7 +281,6 @@ ipcRenderer.on("introduction", (event, response) => {
         const instancesTapAdd = M.TapTarget.init(document.getElementById("introductionTargetAdd"), { "onClose": () => {
             setTimeout(() => {
                 // Define the settings configuration data.
-                // const configurationObj = JSON.parse(fs.readFileSync(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8"));
                 ipcRenderer.send("getConfigurations");
                 ipcRenderer.on("sentConfigurations", (eve, configurationsFileStr) => {
                     if(configurationsFileStr == "") {
@@ -374,716 +373,727 @@ ipcRenderer.on("introduction", (event, response) => {
 
 // Load all of the records as rows in the table once the page has loaded.
 ipcRenderer.on("loadRows", (event, diff) => {
-    // Define the path for all items and get a list of all available records.
-    const pathDir = path.join(localPath, "Trak", "data"),
-        curTime = (new Date()).getTime(),
+    // Define the current date, notifications array, and an accumulation function.
+    const curTime = (new Date()).getTime(),
         notificationsArr = document.getElementById("notificationsCollection"),
         newNotificationsArr = [],
-        userInterval = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "config", "notifications.json"), "UTF8")).interval,
         sumFunc = (accum, cur) => accum + cur;
-    let list = [],
-        counters = [0, 0, 0, 0, 0],
+    // Define the counters utilized in the application analytics.
+    let counters = [0, 0, 0, 0, 0],
         globalRatingsArr = [[],[],[],[],[]],
         globalGenresArr = [[],[],[],[],[]],
         globalAnimeTypes = [0, 0, 0, 0, 0, 0],
         globalMangaTypes = [0, 0],
         globalShowTypes = [0, 0];
-    fs.existsSync(pathDir) ? list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()) : list = [];
-    if(list.length > 0) {
-        list = list.sort((lhs, rhs) => {
-            let lhsVal = lhs.substring(lhs.indexOf("-")),
-                rhsVal = rhs.substring(lhs.indexOf("-"));
-            return lhsVal.localeCompare(rhsVal);
+    // Send a request to the back-end to obtain all library records.
+    ipcRenderer.send("getAllRecords");
+    // Once the library records have been obtained properly attach them to the page.
+    ipcRenderer.on("sentAllRecords", (recordsEvent, recordsArr) => {
+        // Attach a row to the html table body for each record.
+        const tableDiv = document.getElementById("tableDiv"),
+            tableBody = document.getElementById("tableBody"),
+            synopsisPreloader = document.getElementById("synopsisPreloader"),
+            synopsisModalContent = document.getElementById("synopsisModalContent");
+        tableDiv.style.height = (diff + 506) + "px";
+        tableBody.textContent = "";
+        // Listen for a window resize event in order to change the table height.
+        window.addEventListener("resize", () => ipcRenderer.send("getAppHeight"));
+        ipcRenderer.on("appHeight", (ev, newTableDiff) => tableDiv.style.height = (newTableDiff + 467) + "px");
+        document.getElementById("preloader").style.setProperty("display", "none", "important");
+        // Hide the vertical scroll bar.
+        document.body.style.overflowY = "hidden";
+        // Sort the records alphabetically by default.
+        recordsArr.sort((a, b) => {
+            let nameFunc = str => str.split("-")[1];
+            return nameFunc(a[0]).localeCompare(nameFunc(b[0]));
         });
-    }
-    // Attach a row to the html table body for each record.
-    const tableDiv = document.getElementById("tableDiv"),
-        tableBody = document.getElementById("tableBody"),
-        synopsisPreloader = document.getElementById("synopsisPreloader"),
-        synopsisModalContent = document.getElementById("synopsisModalContent");
-    tableDiv.style.height = (diff + 506) + "px";
-    tableBody.textContent = "";
-    // Listen for a window resize event in order to change the table height.
-    window.addEventListener("resize", () => ipcRenderer.send("getAppHeight"));
-    ipcRenderer.on("appHeight", (ev, newTableDiff) => tableDiv.style.height = (newTableDiff + 467) + "px");
-    document.getElementById("preloader").style.setProperty("display", "none", "important");
-    // Hide the vertical scroll bar.
-    document.body.style.overflowY = "hidden";
-    // Sort the records alphabetically by default.
-    list.sort((a, b) => {
-        let nameFunc = str => str.split("-")[1];
-        return nameFunc(a).localeCompare(nameFunc(b));
-    });
-    // Iterate through each saved record and add a row for each one containing the name, category, and genres of the record.
-    for(let n = 0; n < list.length; n++) {
-        // Define the items needed to construct the row.
-        let tr = document.createElement("tr"),
-            tdName = document.createElement("td"),
-            tdNameOuterDiv = document.createElement("ul"),
-            tdNameDiv = document.createElement("li"),
-            tdCategory = document.createElement("td"),
-            tdCategoryDiv = document.createElement("div"),
-            tdRating = document.createElement("td"),
-            tdRatingDiv = document.createElement("div"),
-            tdGenres = document.createElement("td"),
-            tdGenresDiv = document.createElement("div"),
-            tdFiles = document.createElement("td"),
-            tdFilesDiv = document.createElement("div"),
-            filesButton = document.createElement("button"),
-            filesIcon = document.createElement("i"),
-            checkLabel = document.createElement("label"),
-            checkInput = document.createElement("input"),
-            tdCheck = document.createElement("td"),
-            recordData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", list[n], "data.json"), "UTF8"));
-        // Modify the name portion.
-        if(recordData.category == "Anime" || recordData.category == "Manga") {
-            tdNameDiv.textContent = recordData.name != "" ? recordData.name : recordData.jname;
-            if(recordData.category == "Anime") { counters[0]++; }
-            if(recordData.category == "Manga") { counters[3]++; }
-        }
-        else if(recordData.category == "Book") {
-            tdNameDiv.textContent = recordData.name != "" ? recordData.name : formatISBNString(recordData.isbn);
-            if(recordData.category == "Book") { counters[1]++; }
-        }
-        else if(recordData.category == "Film" || recordData.category == "Show") {
-            tdNameDiv.textContent = recordData.name;
-            if(recordData.category == "Film") { counters[2]++; }
-            if(recordData.category == "Show") { counters[4]++; }
-        }
-        tdNameDiv.classList.add("recordsNameRowDiv");
-        tdName.classList.add("left");
-        tdNameOuterDiv.classList.add("recordsNameContainer");
-        tdNameOuterDiv.append(tdNameDiv);
-        if(recordData.category == "Anime" && recordData.content.length > 0) {
-            let movieCount = 0, onaCount = 0, ovaCount = 0, specialCount = 0, unclassifiedCount = 0, seasonCount = 0, episodeCount = 0;
-            for(let t = 0; t < recordData.content.length; t++) {
-                if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Movie") { movieCount++; }
-                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "ONA") { onaCount++; }
-                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "OVA") { ovaCount++; }
-                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Special") { specialCount++; }
-                else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "") { unclassifiedCount++; }
-                else if(recordData.content[t].scenario == "Season") {
-                    seasonCount++;
-                    episodeCount += recordData.content[t].episodes.length;
-                    let curCheck = (new Date(recordData.content[t].start)).getTime();
-                    if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
-                        newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
+        // Send a request to the back-end to obtain all current application notifications.
+        ipcRenderer.send("getNotifications");
+        // Once all application notifications have been obtained proceed accordingly.
+        ipcRenderer.on("sentNotifications", (notificationsEvent, notificationsFileStr) => {
+            // If there was an issue in reading the notifications file notify the user.
+            if(notificationsFileStr == "") {
+                M.toast({"html": "There was an issue reading the application notifications file.", "classes": "rounded"});
+            }
+            // Otherwise proceed as normal.
+            else {
+                // Define the user interval for which notifications are to be displayed.
+                const userInterval = JSON.parse(notificationsFileStr).interval;
+                // Iterate through each saved record and add a row for each one containing the name, category, and genres of the record.
+                for(let n = 0; n < recordsArr.length; n++) {
+                    // Define the items needed to construct the row.
+                    let tr = document.createElement("tr"),
+                        tdName = document.createElement("td"),
+                        tdNameOuterDiv = document.createElement("ul"),
+                        tdNameDiv = document.createElement("li"),
+                        tdCategory = document.createElement("td"),
+                        tdCategoryDiv = document.createElement("div"),
+                        tdRating = document.createElement("td"),
+                        tdRatingDiv = document.createElement("div"),
+                        tdGenres = document.createElement("td"),
+                        tdGenresDiv = document.createElement("div"),
+                        tdFiles = document.createElement("td"),
+                        tdFilesDiv = document.createElement("div"),
+                        filesButton = document.createElement("button"),
+                        filesIcon = document.createElement("i"),
+                        checkLabel = document.createElement("label"),
+                        checkInput = document.createElement("input"),
+                        tdCheck = document.createElement("td"),
+                        recordData = JSON.parse(recordsArr[n][1]);
+                    // Modify the name portion.
+                    if(recordData.category == "Anime" || recordData.category == "Manga") {
+                        tdNameDiv.textContent = recordData.name != "" ? recordData.name : recordData.jname;
+                        if(recordData.category == "Anime") { counters[0]++; }
+                        if(recordData.category == "Manga") { counters[3]++; }
                     }
-                }
-                if(recordData.content[t].scenario == "Single") {
-                    let curCheck = (new Date(recordData.content[t].release)).getTime();
-                    if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
-                        newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].type, recordData.content[t].release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
+                    else if(recordData.category == "Book") {
+                        tdNameDiv.textContent = recordData.name != "" ? recordData.name : formatISBNString(recordData.isbn);
+                        if(recordData.category == "Book") { counters[1]++; }
                     }
-                }
-            }
-            globalAnimeTypes[0] += seasonCount;
-            globalAnimeTypes[1] += episodeCount;
-            globalAnimeTypes[2] += onaCount;
-            globalAnimeTypes[3] += ovaCount;
-            globalAnimeTypes[4] += specialCount;
-            globalAnimeTypes[5] += movieCount;
-            tdNameOuterDiv.classList.add("tooltipped");
-            tdNameOuterDiv.setAttribute("data-position", "right");
-            let movieStr = (movieCount == 1 ? "1 Movie" : movieCount + " Movies"),
-                onaStr = (onaCount == 1 ? "1 ONA" : onaCount + " ONAs"),
-                ovaStr = (ovaCount == 1 ? "1 OVA" : ovaCount + " OVAs"),
-                specialStr = (specialCount == 1 ? "1 Special" : specialCount + " Specials"),
-                unclassifiedStr = unclassifiedCount + " Unclassified",
-                seasonStr = (seasonCount == 1
-                    ? "1 Season with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")
-                    : seasonCount + " Seasons with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")),
-                tooltipStr = "";
-            if(movieCount > 0) {
-                tooltipStr = movieStr;
-            }
-            if(onaCount > 0) {
-                tooltipStr += tooltipStr.length > 0 ? ", " + onaStr : onaStr;
-            }
-            if(ovaCount > 0) {
-                tooltipStr += tooltipStr.length > 0 ? ", " + ovaStr : ovaStr;
-            }
-            if(specialCount > 0) {
-                tooltipStr += tooltipStr.length > 0 ? ", " + specialStr : specialStr;
-            }
-            if(unclassifiedCount > 0) {
-                tooltipStr += tooltipStr.length > 0 ? ", " + unclassifiedStr : unclassifiedStr;
-            }
-            if(seasonCount > 0) {
-                if(tooltipStr.length >= seasonStr.length) {
-                    tooltipStr += tooltipStr.length > 0 ? "<br>" + seasonStr : seasonStr;
-                }
-                else {
-                    tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "");
-                }
-            }
-            tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
-        }
-        else if(recordData.category == "Book") {
-            let curCheck = (new Date(recordData.publicationDate)).getTime();
-            if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
-                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Book", recordData.publicationDate, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
-            }
-        }
-        else if(recordData.category == "Film") {
-            let curCheck = (new Date(recordData.release)).getTime();
-            if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
-                newNotificationsArr.push([list[n], recordData.category, recordData.name, "Film", recordData.release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
-            }
-        }
-        else if(recordData.category == "Manga" && recordData.content.length > 0) {
-            let chapterCount = 0, volumeCount = 0;
-            for(let t = 0; t < recordData.content.length; t++) {
-                if(recordData.content[t].scenario == "Chapter") {
-                    chapterCount++;
-                }
-                else if(recordData.content[t].scenario == "Volume") {
-                    volumeCount++;
-                }
-                let curCheck = (new Date(recordData.content[t].release)).getTime();
-                if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
-                    newNotificationsArr.push([list[n], recordData.category, recordData.name, recordData.content[t].scenario, recordData.content[t].release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
-                }
-            }
-            globalMangaTypes[0] += volumeCount;
-            globalMangaTypes[1] += chapterCount;
-            tdNameOuterDiv.classList.add("tooltipped");
-            tdNameOuterDiv.setAttribute("data-position", "right");
-            let chapterStr = (chapterCount == 1 ? "1 Chapter" : chapterCount + " Chapters"),
-                volumeStr = (volumeCount == 1 ? "1 Volume" : volumeCount + " Volumes"),
-                tooltipStr = "";
-            if(chapterCount > 0) {
-                tooltipStr = chapterStr;
-            }
-            if(volumeCount > 0) {
-                tooltipStr += tooltipStr.length > 0 ? " and " + volumeStr : volumeStr;
-            }
-            tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
-        }
-        else if(recordData.category == "Show" && recordData.content.length > 0) {
-            let seasonCount = 0, episodeCount = 0;
-            for(let t = 0; t < recordData.content.length; t++) {
-                seasonCount++;
-                episodeCount += recordData.content[t].episodes.length;
-                let curCheck = (new Date(recordData.content[t].start)).getTime();
-                if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
-                    newNotificationsArr.push([list[n], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
-                }
-            }
-            globalShowTypes[0] += seasonCount;
-            globalShowTypes[1] += episodeCount;
-            tdNameOuterDiv.classList.add("tooltipped");
-            tdNameOuterDiv.setAttribute("data-position", "right");
-            let seasonStr = (seasonCount == 1
-                    ? "1 Season with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")
-                    : seasonCount + " Seasons with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")),
-                tooltipStr = "";
-            if(seasonCount > 0) {
-                tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "");
-            }
-            tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
-        }
-        // If a synopsis is availble then create link for it to open the synopsis modal.
-        if(recordData.synopsis != undefined && recordData.synopsis.length > 0) {
-            // Define the link and icon.
-            let tdNameLinkDiv = document.createElement("li"),
-                tdNameLink = document.createElement("a"),
-                tdNameIcon = document.createElement("i");
-            tdNameLink.setAttribute("href", "#synopsisModal");
-            tdNameLink.setAttribute("path", path.join(localPath, "Trak", "data", list[n], "data.json"));
-            tdNameLink.classList.add("modal-trigger");
-            tdNameIcon.textContent = "info";
-            tdNameIcon.classList.add("material-icons", "synopsisInfoIcon");
-            tdNameLinkDiv.classList.add("synopsisIconDiv");
-            // Append the icon and link accordingly.
-            tdNameLink.append(tdNameIcon);
-            tdNameLinkDiv.append(tdNameLink);
-            tdNameOuterDiv.append(tdNameLinkDiv);
-            // Listen for a click event on the icon in order to open the synopsis modal.
-            tdNameIcon.addEventListener("click", e => {
-                synopsisPreloader.style.display = "block";
-                fs.readFile(e.target.parentNode.getAttribute("path"), "UTF8", (err, synopsisFile) => {
-                    if(err) {
-                        if(recordData.category == "Anime" || recordData.category == "Manga") {
-                            M.toast({"html": "There was an issue reading the data file associated to the " + recordData.category.toLowerCase() + " "
-                                + (e.parentNode.parentNode.parentNode.getAttribute("name") != "" ? e.parentNode.parentNode.parentNode.getAttribute("name") : e.parentNode.parentNode.parentNode.getAttribute("jname")) + ".", "classes": "rounded"});
+                    else if(recordData.category == "Film" || recordData.category == "Show") {
+                        tdNameDiv.textContent = recordData.name;
+                        if(recordData.category == "Film") { counters[2]++; }
+                        if(recordData.category == "Show") { counters[4]++; }
+                    }
+                    tdNameDiv.classList.add("recordsNameRowDiv");
+                    tdName.classList.add("left");
+                    tdNameOuterDiv.classList.add("recordsNameContainer");
+                    tdNameOuterDiv.append(tdNameDiv);
+                    if(recordData.category == "Anime" && recordData.content.length > 0) {
+                        let movieCount = 0, onaCount = 0, ovaCount = 0, specialCount = 0, unclassifiedCount = 0, seasonCount = 0, episodeCount = 0;
+                        for(let t = 0; t < recordData.content.length; t++) {
+                            if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Movie") { movieCount++; }
+                            else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "ONA") { onaCount++; }
+                            else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "OVA") { ovaCount++; }
+                            else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Special") { specialCount++; }
+                            else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "") { unclassifiedCount++; }
+                            else if(recordData.content[t].scenario == "Season") {
+                                seasonCount++;
+                                episodeCount += recordData.content[t].episodes.length;
+                                let curCheck = (new Date(recordData.content[t].start)).getTime();
+                                if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
+                                    newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
+                                }
+                            }
+                            if(recordData.content[t].scenario == "Single") {
+                                let curCheck = (new Date(recordData.content[t].release)).getTime();
+                                if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
+                                    newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, recordData.content[t].type, recordData.content[t].release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
+                                }
+                            }
                         }
-                        else if(recordData.category == "Book") {
-                            M.toast({"html": "There was an issue reading the data file associated to the book " +
-                                (e.parentNode.parentNode.parentNode.getAttribute("name") != "" ? e.parentNode.parentNode.parentNode.getAttribute("name") : e.parentNode.parentNode.parentNode.getAttribute("isbn")) + ".", "classes": "rounded"});
+                        globalAnimeTypes[0] += seasonCount;
+                        globalAnimeTypes[1] += episodeCount;
+                        globalAnimeTypes[2] += onaCount;
+                        globalAnimeTypes[3] += ovaCount;
+                        globalAnimeTypes[4] += specialCount;
+                        globalAnimeTypes[5] += movieCount;
+                        tdNameOuterDiv.classList.add("tooltipped");
+                        tdNameOuterDiv.setAttribute("data-position", "right");
+                        let movieStr = (movieCount == 1 ? "1 Movie" : movieCount + " Movies"),
+                            onaStr = (onaCount == 1 ? "1 ONA" : onaCount + " ONAs"),
+                            ovaStr = (ovaCount == 1 ? "1 OVA" : ovaCount + " OVAs"),
+                            specialStr = (specialCount == 1 ? "1 Special" : specialCount + " Specials"),
+                            unclassifiedStr = unclassifiedCount + " Unclassified",
+                            seasonStr = (seasonCount == 1
+                                ? "1 Season with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")
+                                : seasonCount + " Seasons with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")),
+                            tooltipStr = "";
+                        if(movieCount > 0) {
+                            tooltipStr = movieStr;
                         }
-                        else if(recordData.category == "Film" || recordData.category == "Show") {
-                            M.toast({"html": "There was an issue reading the data file associated to the " + recordData.category.toLowerCase() + " " + e.parentNode.parentNode.parentNode.getAttribute("name")+ ".", "classes": "rounded"});
+                        if(onaCount > 0) {
+                            tooltipStr += tooltipStr.length > 0 ? ", " + onaStr : onaStr;
+                        }
+                        if(ovaCount > 0) {
+                            tooltipStr += tooltipStr.length > 0 ? ", " + ovaStr : ovaStr;
+                        }
+                        if(specialCount > 0) {
+                            tooltipStr += tooltipStr.length > 0 ? ", " + specialStr : specialStr;
+                        }
+                        if(unclassifiedCount > 0) {
+                            tooltipStr += tooltipStr.length > 0 ? ", " + unclassifiedStr : unclassifiedStr;
+                        }
+                        if(seasonCount > 0) {
+                            if(tooltipStr.length >= seasonStr.length) {
+                                tooltipStr += tooltipStr.length > 0 ? "<br>" + seasonStr : seasonStr;
+                            }
+                            else {
+                                tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "");
+                            }
+                        }
+                        tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
+                    }
+                    else if(recordData.category == "Book") {
+                        let curCheck = (new Date(recordData.publicationDate)).getTime();
+                        if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
+                            newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Book", recordData.publicationDate, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                         }
                     }
-                    else {
-                        synopsisPreloader.style.display = "none";
-                        synopsisModalContent.innerHTML = JSON.parse(synopsisFile).synopsis.split("").map(elem => elem == "\n" ? "<br>" : elem).join("");
+                    else if(recordData.category == "Film") {
+                        let curCheck = (new Date(recordData.release)).getTime();
+                        if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
+                            newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Film", recordData.release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
+                        }
+                    }
+                    else if(recordData.category == "Manga" && recordData.content.length > 0) {
+                        let chapterCount = 0, volumeCount = 0;
+                        for(let t = 0; t < recordData.content.length; t++) {
+                            if(recordData.content[t].scenario == "Chapter") {
+                                chapterCount++;
+                            }
+                            else if(recordData.content[t].scenario == "Volume") {
+                                volumeCount++;
+                            }
+                            let curCheck = (new Date(recordData.content[t].release)).getTime();
+                            if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
+                                newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, recordData.content[t].scenario, recordData.content[t].release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
+                            }
+                        }
+                        globalMangaTypes[0] += volumeCount;
+                        globalMangaTypes[1] += chapterCount;
+                        tdNameOuterDiv.classList.add("tooltipped");
+                        tdNameOuterDiv.setAttribute("data-position", "right");
+                        let chapterStr = (chapterCount == 1 ? "1 Chapter" : chapterCount + " Chapters"),
+                            volumeStr = (volumeCount == 1 ? "1 Volume" : volumeCount + " Volumes"),
+                            tooltipStr = "";
+                        if(chapterCount > 0) {
+                            tooltipStr = chapterStr;
+                        }
+                        if(volumeCount > 0) {
+                            tooltipStr += tooltipStr.length > 0 ? " and " + volumeStr : volumeStr;
+                        }
+                        tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
+                    }
+                    else if(recordData.category == "Show" && recordData.content.length > 0) {
+                        let seasonCount = 0, episodeCount = 0;
+                        for(let t = 0; t < recordData.content.length; t++) {
+                            seasonCount++;
+                            episodeCount += recordData.content[t].episodes.length;
+                            let curCheck = (new Date(recordData.content[t].start)).getTime();
+                            if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
+                                newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
+                            }
+                        }
+                        globalShowTypes[0] += seasonCount;
+                        globalShowTypes[1] += episodeCount;
+                        tdNameOuterDiv.classList.add("tooltipped");
+                        tdNameOuterDiv.setAttribute("data-position", "right");
+                        let seasonStr = (seasonCount == 1
+                                ? "1 Season with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")
+                                : seasonCount + " Seasons with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")),
+                            tooltipStr = "";
+                        if(seasonCount > 0) {
+                            tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "");
+                        }
+                        tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
+                    }
+                    // If a synopsis is availble then create a link for it to open the synopsis modal.
+                    if(recordData.synopsis != undefined && recordData.synopsis.length > 0) {
+                        // Define the link and icon.
+                        let tdNameLinkDiv = document.createElement("li"),
+                            tdNameLink = document.createElement("a"),
+                            tdNameIcon = document.createElement("i");
+                        tdNameLink.setAttribute("href", "#synopsisModal");
+                        // tdNameLink.setAttribute("path", path.join(localPath, "Trak", "data", recordsArr[n][0], "data.json"));
+                        tdNameLink.classList.add("modal-trigger");
+                        tdNameIcon.textContent = "info";
+                        tdNameIcon.classList.add("material-icons", "synopsisInfoIcon");
+                        tdNameLinkDiv.classList.add("synopsisIconDiv");
+                        // Append the icon and link accordingly.
+                        tdNameLink.append(tdNameIcon);
+                        tdNameLinkDiv.append(tdNameLink);
+                        tdNameOuterDiv.append(tdNameLinkDiv);
+                        // Listen for a click event on the icon in order to open the synopsis modal.
+                        tdNameIcon.addEventListener("click", e => {
+                            synopsisPreloader.style.display = "block";
+                            ipcRenderer.send("getSynopsis", [e.target.parentNode.getAttribute("path"), JSON.stringify(recordData)]);
+                            ipcRenderer.on("sentSynopsis", (synopsisEvent, synopsisArr) => {
+                                if(synopsisArr[0] == "") {
+                                    let curRecordData = JSON.parse(synopsisArr[1]);
+                                    if(curRecordData.category == "Anime" || curRecordData.category == "Manga") {
+                                        M.toast({"html": "There was an issue reading the data file associated to the " + curRecordData.category.toLowerCase() + " "
+                                            + (curRecordData.name != "" ? curRecordData.name : curRecordData.jname) + ".", "classes": "rounded"});
+                                    }
+                                    else if(curRecordData.category == "Book") {
+                                        M.toast({"html": "There was an issue reading the data file associated to the book " +
+                                            (curRecordData.name != "" ? curRecordData.name : curRecordData.isbn) + ".", "classes": "rounded"});
+                                    }
+                                    else if(curRecordData.category == "Film" || curRecordData.category == "Show") {
+                                        M.toast({"html": "There was an issue reading the data file associated to the " + curRecordData.category.toLowerCase() + " " + curRecordData.name + ".", "classes": "rounded"});
+                                    }
+                                }
+                                else {
+                                    synopsisPreloader.style.display = "none";
+                                    synopsisModalContent.innerHTML = JSON.parse(synopsisArr[0]).synopsis.split("").map(elem => elem == "\n" ? "<br>" : elem).join("");
+                                }
+                            });
+                        });
+                    }
+                    tdName.append(tdNameOuterDiv);
+                    // Modify the category portion.
+                    tdCategoryDiv.textContent = recordData.category;
+                    tdCategoryDiv.classList.add("recordsRowDiv", "left");
+                    tdCategory.append(tdCategoryDiv);
+                    // Modify the rating portion.
+                    if(recordData.category == "Anime") {
+                        let displayRating = "N/A",
+                            displayRatingArr = [];
+                        for(let a = 0; a < recordData.content.length; a++) {
+                            if(recordData.content[a].scenario == "Single") {
+                                if(recordData.content[a].rating != "") {
+                                    displayRatingArr.push(parseInt(recordData.content[a].rating));
+                                }
+                            }
+                            else if(recordData.content[a].scenario == "Season") {
+                                let ratingHolder = 0,
+                                    ratingHolderArr = [];
+                                for(let b = 0; b < recordData.content[a].episodes.length; b++) {
+                                    if(recordData.content[a].episodes[b].rating != "") {
+                                        ratingHolderArr.push(parseInt(recordData.content[a].episodes[b].rating));
+                                    }
+                                }
+                                if(ratingHolderArr.length > 0) {
+                                    ratingHolder = (ratingHolderArr.reduce(sumFunc, 0) / ratingHolderArr.length).toFixed(2);
+                                    displayRatingArr.push(ratingHolder);
+                                }
+                            }
+                        }
+                        if(displayRatingArr.length > 0) {
+                            displayRating = (displayRatingArr.reduce(sumFunc, 0) / displayRatingArr.length).toFixed(2);
+                            globalRatingsArr[0].push(parseFloat(displayRating));
+                        }
+                        tdRatingDiv.textContent = displayRating;
+                    }
+                    else if(recordData.category == "Book" || recordData.category == "Film") {
+                        tdRatingDiv.textContent = recordData.rating != "" ? parseInt(recordData.rating).toFixed(2) : "N/A";
+                        if(recordData.rating != "") { globalRatingsArr[recordData.category == "Book" ? 1 : 2].push(parseInt(recordData.rating)); }
+                    }
+                    else if(recordData.category == "Manga") {
+                        let displayRating = "N/A",
+                            displayRatingArr = [[],[]];
+                        for(let a = 0; a < recordData.content.length; a++) {
+                            if(recordData.content[a].rating != "") {
+                                if(recordData.content[a].scenario == "Chapter") {
+                                    displayRatingArr[0].push(parseInt(recordData.content[a].rating));
+                                }
+                                else if(recordData.content[a].scenario == "Volume") {
+                                    displayRatingArr[1].push(parseInt(recordData.content[a].rating));
+                                }
+                            }
+                        }
+                        displayRating = displayRatingArr[0].length + displayRatingArr[1].length == 0 ? "N/A" : (((displayRatingArr[0].length == 0 ? 0 : (displayRatingArr[0].reduce(sumFunc, 0) / displayRatingArr[0].length))
+                            + (displayRatingArr[1].length == 0 ? 0 : (displayRatingArr[1].reduce(sumFunc, 0) / displayRatingArr[1].length))) / (displayRatingArr[0].length != 0 && displayRatingArr[1].length != 0 ? 2 : 1)).toFixed(2);
+                        tdRatingDiv.textContent = displayRating;
+                        if(displayRating != "N/A") { globalRatingsArr[3].push(parseFloat(displayRating)); }
+                    }
+                    if(recordData.category == "Show") {
+                        let displayRating = "N/A",
+                            displayRatingArr = [];
+                        for(let a = 0; a < recordData.content.length; a++) {
+                            let ratingHolder = 0,
+                                ratingHolderArr = [];
+                            for(let b = 0; b < recordData.content[a].episodes.length; b++) {
+                                if(recordData.content[a].episodes[b].rating != "") {
+                                    ratingHolderArr.push(parseInt(recordData.content[a].episodes[b].rating));
+                                }
+                            }
+                            if(ratingHolderArr.length > 0) {
+                                ratingHolder = (ratingHolderArr.reduce(sumFunc, 0) / ratingHolderArr.length).toFixed(2);
+                                displayRatingArr.push(ratingHolder);
+                            }
+                        }
+                        if(displayRatingArr.length > 0) {
+                            displayRating = (displayRatingArr.reduce(sumFunc, 0) / displayRatingArr.length).toFixed(2);
+                            globalRatingsArr[4].push(parseFloat(displayRating));
+                        }
+                        tdRatingDiv.textContent = displayRating;
+                    }
+                    tdRatingDiv.classList.add("recordsRowDiv", "left");
+                    tdRating.append(tdRatingDiv);
+                    // Modify the genres portion.
+                    let count = 0,
+                        rowGenreStrArr = [],
+                        rowGenreInfo = "";
+                    for(let y = 0; y < recordData.genres[0].length; y++) {
+                        if(recordData.genres[1][y] == true) {
+                            rowGenreInfo.length == 0 ? rowGenreInfo = recordData.genres[0][y] : rowGenreInfo += "," + recordData.genres[0][y];
+                            if(count <= 3) {
+                                if(recordData.genres[0][y] == "CGDCT") {
+                                    rowGenreStrArr.push("CGDCT");
+                                }
+                                else if(recordData.genres[0][y] == "ComingOfAge") {
+                                    rowGenreStrArr.push("Coming-of-Age");
+                                }
+                                else if(recordData.genres[0][y] == "PostApocalyptic") {
+                                    rowGenreStrArr.push("Post-Apocalyptic");
+                                }
+                                else if(recordData.genres[0][y] == "SciFi") {
+                                    rowGenreStrArr.push("Sci-Fi");
+                                }
+                                else if(recordData.genres[0][y] == "SliceOfLife") {
+                                    rowGenreStrArr.push("Slice of Life");
+                                }
+                                else {
+                                    rowGenreStrArr.push(recordData.genres[0][y].split(/(?=[A-Z])/).join(" "));
+                                }
+                                count++;
+                            }
+                            if(recordData.category == "Anime" && !globalGenresArr[0].includes(recordData.genres[0][y])) {
+                                globalGenresArr[0].push(recordData.genres[0][y]);
+                            }
+                            else if(recordData.category == "Book" && !globalGenresArr[1].includes(recordData.genres[0][y])) {
+                                globalGenresArr[1].push(recordData.genres[0][y]);
+                            }
+                            else if(recordData.category == "Film" && !globalGenresArr[2].includes(recordData.genres[0][y])) {
+                                globalGenresArr[2].push(recordData.genres[0][y]);
+                            }
+                            else if(recordData.category == "Manga" && !globalGenresArr[3].includes(recordData.genres[0][y])) {
+                                globalGenresArr[3].push(recordData.genres[0][y]);
+                            }
+                            else if(recordData.category == "Show" && !globalGenresArr[4].includes(recordData.genres[0][y])) {
+                                globalGenresArr[4].push(recordData.genres[0][y]);
+                            }
+                        }
+                    }
+                    if(count < 3) {
+                        for(let z = 0; z < recordData.genres[2].length; z++) {
+                            if(count <= 3) {
+                                rowGenreStrArr.push(recordData.genres[2][z].split(/(?=[A-Z])/).join(" "));
+                                count++;
+                            }
+                            if(recordData.category == "Anime" && !globalGenresArr[0].includes(recordData.genres[2][z])) {
+                                globalGenresArr[0].push(recordData.genres[2][z]);
+                            }
+                            else if(recordData.category == "Book" && !globalGenresArr[1].includes(recordData.genres[2][z])) {
+                                globalGenresArr[1].push(recordData.genres[2][z]);
+                            }
+                            else if(recordData.category == "Film" && !globalGenresArr[2].includes(recordData.genres[2][z])) {
+                                globalGenresArr[2].push(recordData.genres[2][z]);
+                            }
+                            else if(recordData.category == "Manga" && !globalGenresArr[3].includes(recordData.genres[2][z])) {
+                                globalGenresArr[3].push(recordData.genres[2][z]);
+                            }
+                            else if(recordData.category == "Show" && !globalGenresArr[4].includes(recordData.genres[2][z])) {
+                                globalGenresArr[4].push(recordData.genres[2][z]);
+                            }
+                        }
+                    }
+                    rowGenreStrArr = rowGenreStrArr.filter(elem => elem != "");
+                    rowGenreStrArr.sort((a, b) => a.localeCompare(b));
+                    tdGenresDiv.textContent = count > 3 ? rowGenreStrArr.slice(0, 3).join(", ") + ", ..." : rowGenreStrArr.join(", ");
+                    tdGenresDiv.classList.add("recordsRowDiv", "left");
+                    tdGenres.append(tdGenresDiv);
+                    // Modify the files button to be used for opening the assets folder of a record.
+                    filesButton.setAttribute("type", "submit");
+                    filesButton.setAttribute("id", "remove_-_" + recordsArr[n][0]);
+                    filesButton.classList.add("btn", "waves-effect", "waves-light", "func");
+                    filesIcon.classList.add("material-icons", "center");
+                    filesIcon.textContent = "folder_open";
+                    filesIcon.setAttribute("id", "removeIcon_-_" + recordsArr[n][0]);
+                    filesButton.append(filesIcon);
+                    tdFilesDiv.append(filesButton);
+                    tdFilesDiv.classList.add("recordButtonsRowDiv");
+                    tdFilesDiv.setAttribute("id", "filesDiv-" + recordsArr[n][0]);
+                    // Modify the checks associated to each row.
+                    checkInput.setAttribute("type", "checkbox");
+                    checkInput.classList.add("filled-in", "recordsChecks");
+                    checkInput.setAttribute("id", "check_-_" + recordsArr[n][0]);
+                    checkLabel.append(checkInput);
+                    tdCheck.append(checkLabel);
+                    tdFiles.append(tdFilesDiv);
+                    // Append all portions of the row.
+                    tr.setAttribute("id", recordsArr[n][0]);
+                    tr.setAttribute("category", recordData.category);
+                    tr.setAttribute("name", recordData.name);
+                    tr.setAttribute("genres", rowGenreInfo);
+                    tr.setAttribute("genreFiltered", "1");
+                    if(recordData.category == "Anime") {
+                        tr.setAttribute("jname", recordData.jname);
+                        tr.setAttribute("license", recordData.license);
+                        tr.setAttribute("directors", recordData.directors);
+                        tr.setAttribute("musicians", recordData.musicians);
+                        tr.setAttribute("producers", recordData.producers);
+                        tr.setAttribute("studio", recordData.studio);
+                        tr.setAttribute("writers", recordData.writers);
+                    }
+                    else if(recordData.category == "Book") {
+                        tr.setAttribute("originalName", recordData.originalName);
+                        tr.setAttribute("isbn", recordData.isbn);
+                        tr.setAttribute("authors", recordData.authors);
+                        tr.setAttribute("publisher", recordData.publisher);
+                        tr.setAttribute("publicationDate", recordData.publicationDate);
+                        tr.setAttribute("pages", recordData.pages);
+                        tr.setAttribute("media", recordData.media);
+                        tr.setAttribute("read", recordData.lastRead);
+                    }
+                    if(recordData.category == "Film") {
+                        tr.setAttribute("alternateName", recordData.alternateName);
+                        tr.setAttribute("releaseDate", recordData.release);
+                        tr.setAttribute("runningTime", recordData.runTime);
+                        tr.setAttribute("directors", recordData.directors);
+                        tr.setAttribute("musicians", recordData.musicians);
+                        tr.setAttribute("producers", recordData.producers);
+                        tr.setAttribute("distributors", recordData.distributors);
+                        tr.setAttribute("editors", recordData.editors);
+                        tr.setAttribute("cinematographers", recordData.cinematographers);
+                        tr.setAttribute("productionCompanies", recordData.productionCompanies);
+                        tr.setAttribute("writers", recordData.writers);
+                        tr.setAttribute("stars", recordData.stars);
+                        tr.setAttribute("lastWatched", recordData.watched);
+                    }
+                    else if(recordData.category == "Manga") {
+                        tr.setAttribute("jname", recordData.jname);
+                        tr.setAttribute("publisher", recordData.publisher);
+                        tr.setAttribute("jpublisher", recordData.jpublisher);
+                        tr.setAttribute("demographic", recordData.demographic);
+                        tr.setAttribute("illustrators", recordData.illustrators);
+                        tr.setAttribute("writers", recordData.writers);
+                        tr.setAttribute("start", recordData.start);
+                        tr.setAttribute("end", recordData.end);
+                    }
+                    if(recordData.category == "Show") {
+                        tr.setAttribute("alternateName", recordData.alternateName);
+                        tr.setAttribute("releaseDate", recordData.release);
+                        tr.setAttribute("runningTime", recordData.runTime);
+                        tr.setAttribute("directors", recordData.directors);
+                        tr.setAttribute("musicians", recordData.musicians);
+                        tr.setAttribute("producers", recordData.producers);
+                        tr.setAttribute("distributors", recordData.distributors);
+                        tr.setAttribute("editors", recordData.editors);
+                        tr.setAttribute("cinematographers", recordData.cinematographers);
+                        tr.setAttribute("productionCompanies", recordData.productionCompanies);
+                        tr.setAttribute("writers", recordData.writers);
+                        tr.setAttribute("stars", recordData.stars);
+                    }
+                    tr.append(tdCheck, tdName, tdCategory, tdRating, tdGenres, tdFiles);
+                    tableBody.append(tr);
+                    // Reset the width of the headers table. 
+                    let difference = document.getElementById("tableDiv").offsetWidth - document.getElementById("tableDiv").clientWidth;
+                    document.getElementById("headersTable").style.width = "calc(95% - " + difference + "px)";
+                    // Listen for a change in the input associated to each row checkbox.
+                    checkInput.addEventListener("change", () => {
+                        let btn = document.getElementById("remove"),
+                            checkAllBtn = document.getElementById("checkAll"),
+                            homeSelected = document.getElementById("homeSelected"),
+                            checkArr = Array.from(document.querySelectorAll(".recordsChecks")),
+                            checkTotal = checkArr.length,
+                            checkedNum = checkArr.filter(elem => elem.checked).length;
+                        checkTotal - 1 == checkedNum && !checkAllBtn.checked ? checkAllBtn.checked = true : checkAllBtn.checked = false;
+                        if(checkedNum > 0) {
+                            btn.style.display = "inherit";
+                            if(checkTotal - 1 == checkedNum && !checkAllBtn.checked) { checkedNum--; }
+                            homeSelected.textContent = checkedNum + " Selected";
+                        }
+                        else {
+                            btn.style.display = "none";
+                            homeSelected.textContent = "";
+                        }
+                    });
+                    // Listen for a click on the name of a record in order to open the update page.
+                    tdNameDiv.addEventListener("click", e => {
+                        e.preventDefault();
+                        ipcRenderer.send("updateRecord", e.target.parentNode.parentNode.parentNode.id);
+                    });
+                    // Listen for a click on the files button in order to open the associated assets folder of a record.
+                    filesButton.addEventListener("click", e => {
+                        e.preventDefault();
+                        let holder = e.target.id.split("_-_");
+                        holder.shift();
+                        ipcRenderer.send("recordFiles", [holder.join(""), e.target.closest("tr").getAttribute("category") + "-" + e.target.closest("tr").getAttribute("name")]);
+                    });
+                }
+                let bottomStr = "Total Records: " + recordsArr.length;
+                if(counters.reduce(sumFunc, 0) > 0) {
+                    bottomStr += " (";
+                    for(let catIter = 0; catIter < counters.length; catIter++) {
+                        if(counters[catIter] > 0) {
+                            if(catIter == 0) {
+                                bottomStr += counters[0] + " Anime";
+                            }
+                            else {
+                                let prevSum = counters.slice(0, catIter).reduce(sumFunc, 0);
+                                if(prevSum != 0) {
+                                    bottomStr += ", ";
+                                }
+                                bottomStr += counters[catIter];
+                                if(catIter == 1) {
+                                    bottomStr += " Book";
+                                }
+                                else if(catIter == 2) {
+                                    bottomStr += " Film";
+                                }
+                                else if(catIter == 3) {
+                                    bottomStr += " Manga";
+                                }
+                                else if(catIter == 4) {
+                                    bottomStr += " Show";
+                                }
+                            }
+                        }
+                    }
+                    bottomStr += ")";
+                }
+                // Provide the settings modal with the library record analytics.
+                document.getElementById("homeCounter").textContent = bottomStr;
+                document.getElementById("settingsTotalAnime").textContent = counters[0];
+                document.getElementById("settingsTotalBook").textContent = counters[1];
+                document.getElementById("settingsTotalFilm").textContent = counters[2];
+                document.getElementById("settingsTotalManga").textContent = counters[3];
+                document.getElementById("settingsTotalShow").textContent = counters[4];
+                document.getElementById("settingsRatingAnime").textContent = (globalRatingsArr[0].length > 0 ? (globalRatingsArr[0].reduce(sumFunc, 0) / globalRatingsArr[0].length).toFixed(2) : "N/A");
+                document.getElementById("settingsRatingBook").textContent = (globalRatingsArr[1].length > 0 ? (globalRatingsArr[1].reduce(sumFunc, 0) / globalRatingsArr[1].length).toFixed(2) : "N/A");
+                document.getElementById("settingsRatingFilm").textContent = (globalRatingsArr[2].length > 0 ? (globalRatingsArr[2].reduce(sumFunc, 0) / globalRatingsArr[2].length).toFixed(2) : "N/A");
+                document.getElementById("settingsRatingManga").textContent = (globalRatingsArr[3].length > 0 ? (globalRatingsArr[3].reduce(sumFunc, 0) / globalRatingsArr[3].length).toFixed(2) : "N/A");
+                document.getElementById("settingsRatingShow").textContent = (globalRatingsArr[4].length > 0 ? (globalRatingsArr[4].reduce(sumFunc, 0) / globalRatingsArr[4].length).toFixed(2) : "N/A");
+                document.getElementById("settingsGenresAnime").textContent = globalGenresArr[0].length;
+                document.getElementById("settingsGenresBook").textContent = globalGenresArr[1].length;
+                document.getElementById("settingsGenresFilm").textContent = globalGenresArr[2].length;
+                document.getElementById("settingsGenresManga").textContent = globalGenresArr[3].length;
+                document.getElementById("settingsGenresShow").textContent = globalGenresArr[4].length;
+                document.getElementById("settingsSeasonsAnime").textContent = globalAnimeTypes[0];
+                document.getElementById("settingsEpisodesAnime").textContent = globalAnimeTypes[1];
+                document.getElementById("settingsONAsAnime").textContent = globalAnimeTypes[2];
+                document.getElementById("settingsOVAsAnime").textContent = globalAnimeTypes[3];
+                document.getElementById("settingsSpecialsAnime").textContent = globalAnimeTypes[4];
+                document.getElementById("settingsMoviesAnime").textContent = globalAnimeTypes[5];
+                document.getElementById("settingsMoviesFilm").textContent = counters[2];
+                document.getElementById("settingsVolumesManga").textContent = globalMangaTypes[0];
+                document.getElementById("settingsChaptersManga").textContent = globalMangaTypes[1];
+                document.getElementById("settingsSeasonsShow").textContent = globalShowTypes[0];
+                document.getElementById("settingsEpisodesShow").textContent = globalShowTypes[1];
+                // Send a request to the back-end to update the list of notifications based on the current list of records.
+                ipcRenderer.send("notificationsSave", newNotificationsArr);
+                // Once the back-end has processed the list of notifications sent over display the appropriate notifications on the home page.
+                ipcRenderer.on("notificationsReady", (event, currentNotificationsFileStr) => {
+                    // Read the notifications configuration file.
+                    const curNotifications = JSON.parse(currentNotificationsFileStr);
+                    // Clear any current notifications.
+                    document.getElementById("notificationsCollection").innerHTML = "";
+                    // Iterate through all application notifications.
+                    for(let k = 0; k < curNotifications.notifications.length; k++) {
+                        // Display an application notification only if it has not been cleared and snoozed and is within the desired interval.
+                        if(curNotifications.notifications[k].hidden == false && convertToDays((new Date(curNotifications.notifications[k].date)).getTime() - curTime) <= userInterval
+                            && (curNotifications.notifications[k].snooze == "" || (curTime >= (new Date(curNotifications.notifications[k].snooze)).getTime()))) {
+                            // Create a notification.
+                            notificationCreation(curNotifications.notifications[k].id, curNotifications.notifications[k].category,
+                                curNotifications.notifications[k].name, curNotifications.notifications[k].text, curNotifications.notifications[k].date, curNotifications.notifications[k].img, curNotifications.notifications[k].snooze);
+                        }
+                    }
+                    // If there are notifications to be displayed then show the notifications modal button, initialize the dropdown menu, and add notification listeners.
+                    if(notificationsArr.children.length > 0) {
+                        document.getElementById("notifications").style.display = "inline-block";
+                        initDropdown();
+                        notificationsListeners(ipcRenderer);
                     }
                 });
-            });
-        }
-        tdName.append(tdNameOuterDiv);
-        // Modify the category portion.
-        tdCategoryDiv.textContent = recordData.category;
-        tdCategoryDiv.classList.add("recordsRowDiv", "left");
-        tdCategory.append(tdCategoryDiv);
-        // Modify the rating portion.
-        if(recordData.category == "Anime") {
-            let displayRating = "N/A",
-                displayRatingArr = [];
-            for(let a = 0; a < recordData.content.length; a++) {
-                if(recordData.content[a].scenario == "Single") {
-                    if(recordData.content[a].rating != "") {
-                        displayRatingArr.push(parseInt(recordData.content[a].rating));
+                // Initialize the tooltips.
+                initTooltips();
+                // Initialize the filter genres/tags list.
+                genreListLoad("All", 5, true);
+                // Initialize the page modals.
+                initModal();
+                // Initialize the filter modal separately to add the functionality of filter application upon exit.
+                M.Modal.init(document.getElementById("filterModal"), { "onCloseStart": () => {
+                    window.scrollTo(0,0);
+                    const listHolder = Array.from(document.getElementsByClassName("tabSearchLink")).filter(elem => elem.classList.contains("active")),
+                        genresList = listHolder.length == 0 || document.getElementById("contentSearch").style.display != "none" ? genreList() : genreList(listHolder[0].textContent),
+                        genreCheck = [];
+                    // Define the filtered genres collection.
+                    for(let j = 0; j < genresList.length; j++) {
+                        if(document.getElementById("filterGenre" + genresList[j]).checked == true) { genreCheck.push(genresList[j]); }
                     }
-                }
-                else if(recordData.content[a].scenario == "Season") {
-                    let ratingHolder = 0,
-                        ratingHolderArr = [];
-                    for(let b = 0; b < recordData.content[a].episodes.length; b++) {
-                        if(recordData.content[a].episodes[b].rating != "") {
-                            ratingHolderArr.push(parseInt(recordData.content[a].episodes[b].rating));
+                    // Handle the filtering on the home page.
+                    if(document.getElementById("contentSearch").style.display != "none") {
+                        // Define the category and genre arrays along with the record rows.
+                        const categoryList = ["Anime", "Book", "Film", "Manga", "Show"],
+                            catCheck = [],
+                            pageTable = Array.from(document.getElementById("tableBody").children);
+                        // Define the filtered categories collection.
+                        for(let i = 0; i < categoryList.length; i++) {
+                            if(document.getElementById("filterCategory" + categoryList[i]).checked == true) { catCheck.push(categoryList[i]); }
                         }
+                        // Iterate through the records rows to determine if they pass the filter.
+                        for(let x = 0; x < pageTable.length; x++) {
+                            // Filter based on both categories and genres.
+                            if(catCheck.length > 0 && genreCheck.length > 0) {
+                                let genreOverall = true,
+                                    genreSplit = pageTable[x].getAttribute("genres").split(",");
+                                for(let y = 0; y < genreCheck.length; y++) {
+                                    if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
+                                }
+                                if(genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category"))) {
+                                    pageTable[x].style.display = "table-row";
+                                    pageTable[x].setAttribute("genreFiltered", "1");
+                                }
+                                else {
+                                    pageTable[x].style.display = "none";
+                                    pageTable[x].setAttribute("genreFiltered", "0");
+                                }
+                            }
+                            // Filter based only on categories.
+                            else if(catCheck.length > 0 && genreCheck.length == 0) {
+                                if(catCheck.includes(pageTable[x].getAttribute("category"))) {
+                                    pageTable[x].style.display = "table-row";
+                                    pageTable[x].setAttribute("genreFiltered", "1");
+                                }
+                                else {
+                                    pageTable[x].style.display = "none";
+                                    pageTable[x].setAttribute("genreFiltered", "0");
+                                }
+                            }
+                            // Filter based only on genres.
+                            else if(catCheck.length == 0 && genreCheck.length > 0) {
+                                let genreOverall = true,
+                                    genreSplit = pageTable[x].getAttribute("genres").split(",");
+                                for(let y = 0; y < genreCheck.length; y++) {
+                                    if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
+                                }
+                                if(genreOverall == true) {
+                                    pageTable[x].style.display = "table-row"
+                                    pageTable[x].setAttribute("genreFiltered", "1");
+                                }
+                                else {
+                                    pageTable[x].style.display = "none";
+                                    pageTable[x].setAttribute("genreFiltered", "0");
+                                }
+                            }
+                            // If the empty filter is applied then show all record rows.
+                            else { pageTable[x].style.display = "table-row"; pageTable[x].setAttribute("genreFiltered", "1"); }
+                        }
+                        // Upon the submission of a filter clear the search bar.
+                        searchBar.parentNode.children[0].classList.remove("active");
+                        searchBar.parentNode.children[2].classList.remove("active");
+                        searchBar.classList.remove("valid");
+                        searchBar.value = "";
                     }
-                    if(ratingHolderArr.length > 0) {
-                        ratingHolder = (ratingHolderArr.reduce(sumFunc, 0) / ratingHolderArr.length).toFixed(2);
-                        displayRatingArr.push(ratingHolder);
+                    // Handle the filtering on the anime search page.
+                    else if(document.getElementById("indexHome").style.display != "none") {
+                        // Define the anime search items.
+                        const pageContent = Array.from(document.getElementById("animeSearchContainer").children);
+                        // Iterate through the search items to determine if they pass the filter.
+                        for(let y = 0; y < pageContent.length; y++) {
+                            if(genreCheck.length > 0) {
+                                let genreOverall = true,
+                                    genreSplit = pageContent[y].getAttribute("genres").split(",");
+                                for(let y = 0; y < genreCheck.length; y++) {
+                                    if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
+                                }
+                                genreOverall == true ? pageContent[y].style.display = "inline-block" : pageContent[y].style.display = "none";
+                            }
+                            // If the empty filter is applied then show all anime search items.
+                            else { pageContent[y].style.display = "inline-block"; }
+                        }
+                        // Reset the tooltips in order to reset the page scroll height.
+                        clearTooltips();
+                        initTooltips();
                     }
-                }
-            }
-            if(displayRatingArr.length > 0) {
-                displayRating = (displayRatingArr.reduce(sumFunc, 0) / displayRatingArr.length).toFixed(2);
-                globalRatingsArr[0].push(parseFloat(displayRating));
-            }
-            tdRatingDiv.textContent = displayRating;
-        }
-        else if(recordData.category == "Book" || recordData.category == "Film") {
-            tdRatingDiv.textContent = recordData.rating != "" ? parseInt(recordData.rating).toFixed(2) : "N/A";
-            if(recordData.rating != "") { globalRatingsArr[recordData.category == "Book" ? 1 : 2].push(parseInt(recordData.rating)); }
-        }
-        else if(recordData.category == "Manga") {
-            let displayRating = "N/A",
-                displayRatingArr = [[],[]];
-            for(let a = 0; a < recordData.content.length; a++) {
-                if(recordData.content[a].rating != "") {
-                    if(recordData.content[a].scenario == "Chapter") {
-                        displayRatingArr[0].push(parseInt(recordData.content[a].rating));
-                    }
-                    else if(recordData.content[a].scenario == "Volume") {
-                        displayRatingArr[1].push(parseInt(recordData.content[a].rating));
-                    }
-                }
-            }
-            displayRating = displayRatingArr[0].length + displayRatingArr[1].length == 0 ? "N/A" : (((displayRatingArr[0].length == 0 ? 0 : (displayRatingArr[0].reduce(sumFunc, 0) / displayRatingArr[0].length))
-                + (displayRatingArr[1].length == 0 ? 0 : (displayRatingArr[1].reduce(sumFunc, 0) / displayRatingArr[1].length))) / (displayRatingArr[0].length != 0 && displayRatingArr[1].length != 0 ? 2 : 1)).toFixed(2);
-            tdRatingDiv.textContent = displayRating;
-            if(displayRating != "N/A") { globalRatingsArr[3].push(parseFloat(displayRating)); }
-        }
-        if(recordData.category == "Show") {
-            let displayRating = "N/A",
-                displayRatingArr = [];
-            for(let a = 0; a < recordData.content.length; a++) {
-                let ratingHolder = 0,
-                    ratingHolderArr = [];
-                for(let b = 0; b < recordData.content[a].episodes.length; b++) {
-                    if(recordData.content[a].episodes[b].rating != "") {
-                        ratingHolderArr.push(parseInt(recordData.content[a].episodes[b].rating));
-                    }
-                }
-                if(ratingHolderArr.length > 0) {
-                    ratingHolder = (ratingHolderArr.reduce(sumFunc, 0) / ratingHolderArr.length).toFixed(2);
-                    displayRatingArr.push(ratingHolder);
-                }
-            }
-            if(displayRatingArr.length > 0) {
-                displayRating = (displayRatingArr.reduce(sumFunc, 0) / displayRatingArr.length).toFixed(2);
-                globalRatingsArr[4].push(parseFloat(displayRating));
-            }
-            tdRatingDiv.textContent = displayRating;
-        }
-        tdRatingDiv.classList.add("recordsRowDiv", "left");
-        tdRating.append(tdRatingDiv);
-        // Modify the genres portion.
-        let count = 0,
-            rowGenreStrArr = [],
-            rowGenreInfo = "";
-        for(let y = 0; y < recordData.genres[0].length; y++) {
-            if(recordData.genres[1][y] == true) {
-                rowGenreInfo.length == 0 ? rowGenreInfo = recordData.genres[0][y] : rowGenreInfo += "," + recordData.genres[0][y];
-                if(count <= 3) {
-                    if(recordData.genres[0][y] == "CGDCT") {
-                        rowGenreStrArr.push("CGDCT");
-                    }
-                    else if(recordData.genres[0][y] == "ComingOfAge") {
-                        rowGenreStrArr.push("Coming-of-Age");
-                    }
-                    else if(recordData.genres[0][y] == "PostApocalyptic") {
-                        rowGenreStrArr.push("Post-Apocalyptic");
-                    }
-                    else if(recordData.genres[0][y] == "SciFi") {
-                        rowGenreStrArr.push("Sci-Fi");
-                    }
-                    else if(recordData.genres[0][y] == "SliceOfLife") {
-                        rowGenreStrArr.push("Slice of Life");
-                    }
-                    else {
-                        rowGenreStrArr.push(recordData.genres[0][y].split(/(?=[A-Z])/).join(" "));
-                    }
-                    count++;
-                }
-                if(recordData.category == "Anime" && !globalGenresArr[0].includes(recordData.genres[0][y])) {
-                    globalGenresArr[0].push(recordData.genres[0][y]);
-                }
-                else if(recordData.category == "Book" && !globalGenresArr[1].includes(recordData.genres[0][y])) {
-                    globalGenresArr[1].push(recordData.genres[0][y]);
-                }
-                else if(recordData.category == "Film" && !globalGenresArr[2].includes(recordData.genres[0][y])) {
-                    globalGenresArr[2].push(recordData.genres[0][y]);
-                }
-                else if(recordData.category == "Manga" && !globalGenresArr[3].includes(recordData.genres[0][y])) {
-                    globalGenresArr[3].push(recordData.genres[0][y]);
-                }
-                else if(recordData.category == "Show" && !globalGenresArr[4].includes(recordData.genres[0][y])) {
-                    globalGenresArr[4].push(recordData.genres[0][y]);
-                }
-            }
-        }
-        if(count < 3) {
-            for(let z = 0; z < recordData.genres[2].length; z++) {
-                if(count <= 3) {
-                    rowGenreStrArr.push(recordData.genres[2][z].split(/(?=[A-Z])/).join(" "));
-                    count++;
-                }
-                if(recordData.category == "Anime" && !globalGenresArr[0].includes(recordData.genres[2][z])) {
-                    globalGenresArr[0].push(recordData.genres[2][z]);
-                }
-                else if(recordData.category == "Book" && !globalGenresArr[1].includes(recordData.genres[2][z])) {
-                    globalGenresArr[1].push(recordData.genres[2][z]);
-                }
-                else if(recordData.category == "Film" && !globalGenresArr[2].includes(recordData.genres[2][z])) {
-                    globalGenresArr[2].push(recordData.genres[2][z]);
-                }
-                else if(recordData.category == "Manga" && !globalGenresArr[3].includes(recordData.genres[2][z])) {
-                    globalGenresArr[3].push(recordData.genres[2][z]);
-                }
-                else if(recordData.category == "Show" && !globalGenresArr[4].includes(recordData.genres[2][z])) {
-                    globalGenresArr[4].push(recordData.genres[2][z]);
-                }
-            }
-        }
-        rowGenreStrArr = rowGenreStrArr.filter(elem => elem != "");
-        rowGenreStrArr.sort((a, b) => a.localeCompare(b));
-        tdGenresDiv.textContent = count > 3 ? rowGenreStrArr.slice(0, 3).join(", ") + ", ..." : rowGenreStrArr.join(", ");
-        tdGenresDiv.classList.add("recordsRowDiv", "left");
-        tdGenres.append(tdGenresDiv);
-        // Modify the files button to be used for opening the assets folder of a record.
-        filesButton.setAttribute("type", "submit");
-        filesButton.setAttribute("id", "remove_-_" + list[n]);
-        filesButton.classList.add("btn", "waves-effect", "waves-light", "func");
-        filesIcon.classList.add("material-icons", "center");
-        filesIcon.textContent = "folder_open";
-        filesIcon.setAttribute("id", "removeIcon_-_" + list[n]);
-        filesButton.append(filesIcon);
-        tdFilesDiv.append(filesButton);
-        tdFilesDiv.classList.add("recordButtonsRowDiv");
-        tdFilesDiv.setAttribute("id", "filesDiv-" + list[n]);
-        // Modify the checks associated to each row.
-        checkInput.setAttribute("type", "checkbox");
-        checkInput.classList.add("filled-in", "recordsChecks");
-        checkInput.setAttribute("id", "check_-_" + list[n]);
-        checkLabel.append(checkInput);
-        tdCheck.append(checkLabel);
-        tdFiles.append(tdFilesDiv);
-        // Append all portions of the row.
-        tr.setAttribute("id", list[n]);
-        tr.setAttribute("category", recordData.category);
-        tr.setAttribute("name", recordData.name);
-        tr.setAttribute("genres", rowGenreInfo);
-        tr.setAttribute("genreFiltered", "1");
-        if(recordData.category == "Anime") {
-            tr.setAttribute("jname", recordData.jname);
-            tr.setAttribute("license", recordData.license);
-            tr.setAttribute("directors", recordData.directors);
-            tr.setAttribute("musicians", recordData.musicians);
-            tr.setAttribute("producers", recordData.producers);
-            tr.setAttribute("studio", recordData.studio);
-            tr.setAttribute("writers", recordData.writers);
-        }
-        else if(recordData.category == "Book") {
-            tr.setAttribute("originalName", recordData.originalName);
-            tr.setAttribute("isbn", recordData.isbn);
-            tr.setAttribute("authors", recordData.authors);
-            tr.setAttribute("publisher", recordData.publisher);
-            tr.setAttribute("publicationDate", recordData.publicationDate);
-            tr.setAttribute("pages", recordData.pages);
-            tr.setAttribute("media", recordData.media);
-            tr.setAttribute("read", recordData.lastRead);
-        }
-        if(recordData.category == "Film") {
-            tr.setAttribute("alternateName", recordData.alternateName);
-            tr.setAttribute("releaseDate", recordData.release);
-            tr.setAttribute("runningTime", recordData.runTime);
-            tr.setAttribute("directors", recordData.directors);
-            tr.setAttribute("musicians", recordData.musicians);
-            tr.setAttribute("producers", recordData.producers);
-            tr.setAttribute("distributors", recordData.distributors);
-            tr.setAttribute("editors", recordData.editors);
-            tr.setAttribute("cinematographers", recordData.cinematographers);
-            tr.setAttribute("productionCompanies", recordData.productionCompanies);
-            tr.setAttribute("writers", recordData.writers);
-            tr.setAttribute("stars", recordData.stars);
-            tr.setAttribute("lastWatched", recordData.watched);
-        }
-        else if(recordData.category == "Manga") {
-            tr.setAttribute("jname", recordData.jname);
-            tr.setAttribute("publisher", recordData.publisher);
-            tr.setAttribute("jpublisher", recordData.jpublisher);
-            tr.setAttribute("demographic", recordData.demographic);
-            tr.setAttribute("illustrators", recordData.illustrators);
-            tr.setAttribute("writers", recordData.writers);
-            tr.setAttribute("start", recordData.start);
-            tr.setAttribute("end", recordData.end);
-        }
-        if(recordData.category == "Show") {
-            tr.setAttribute("alternateName", recordData.alternateName);
-            tr.setAttribute("releaseDate", recordData.release);
-            tr.setAttribute("runningTime", recordData.runTime);
-            tr.setAttribute("directors", recordData.directors);
-            tr.setAttribute("musicians", recordData.musicians);
-            tr.setAttribute("producers", recordData.producers);
-            tr.setAttribute("distributors", recordData.distributors);
-            tr.setAttribute("editors", recordData.editors);
-            tr.setAttribute("cinematographers", recordData.cinematographers);
-            tr.setAttribute("productionCompanies", recordData.productionCompanies);
-            tr.setAttribute("writers", recordData.writers);
-            tr.setAttribute("stars", recordData.stars);
-        }
-        tr.append(tdCheck, tdName, tdCategory, tdRating, tdGenres, tdFiles);
-        tableBody.append(tr);
-        // Reset the width of the headers table. 
-        let difference = document.getElementById("tableDiv").offsetWidth - document.getElementById("tableDiv").clientWidth;
-        document.getElementById("headersTable").style.width = "calc(95% - " + difference + "px)";
-        // Listen for a change in the input associated to each row checkbox.
-        checkInput.addEventListener("change", () => {
-            let btn = document.getElementById("remove"),
-                checkAllBtn = document.getElementById("checkAll"),
-                homeSelected = document.getElementById("homeSelected"),
-                checkArr = Array.from(document.querySelectorAll(".recordsChecks")),
-                checkTotal = checkArr.length,
-                checkedNum = checkArr.filter(elem => elem.checked).length;
-            checkTotal - 1 == checkedNum && !checkAllBtn.checked ? checkAllBtn.checked = true : checkAllBtn.checked = false;
-            if(checkedNum > 0) {
-                btn.style.display = "inherit";
-                if(checkTotal - 1 == checkedNum && !checkAllBtn.checked) { checkedNum--; }
-                homeSelected.textContent = checkedNum + " Selected";
-            }
-            else {
-                btn.style.display = "none";
-                homeSelected.textContent = "";
+                }});
+                // Send a request to the back-end to close the splash screen once the library records have been loaded.
+                ipcRenderer.send("removeSplash");
             }
         });
-        // Listen for a click on the name of a record in order to open the update page.
-        tdNameDiv.addEventListener("click", e => {
-            e.preventDefault();
-            ipcRenderer.send("updateRecord", e.target.parentNode.parentNode.parentNode.id);
-        });
-        // Listen for a click on the files button in order to open the associated assets folder of a record.
-        filesButton.addEventListener("click", e => {
-            e.preventDefault();
-            let holder = e.target.id.split("_-_");
-            holder.shift();
-            ipcRenderer.send("recordFiles", [holder.join(""), e.target.closest("tr").getAttribute("category") + "-" + e.target.closest("tr").getAttribute("name")]);
-        });
-    }
-    let bottomStr = "Total Records: " + list.length;
-    if(counters.reduce(sumFunc, 0) > 0) {
-        bottomStr += " (";
-        for(let catIter = 0; catIter < counters.length; catIter++) {
-            if(counters[catIter] > 0) {
-                if(catIter == 0) {
-                    bottomStr += counters[0] + " Anime";
-                }
-                else {
-                    let prevSum = counters.slice(0, catIter).reduce(sumFunc, 0);
-                    if(prevSum != 0) {
-                        bottomStr += ", ";
-                    }
-                    bottomStr += counters[catIter];
-                    if(catIter == 1) {
-                        bottomStr += " Book";
-                    }
-                    else if(catIter == 2) {
-                        bottomStr += " Film";
-                    }
-                    else if(catIter == 3) {
-                        bottomStr += " Manga";
-                    }
-                    else if(catIter == 4) {
-                        bottomStr += " Show";
-                    }
-                }
-            }
-        }
-        bottomStr += ")";
-    }
-    // Provide the settings modal with the library record analytics.
-    document.getElementById("homeCounter").textContent = bottomStr;
-    document.getElementById("settingsTotalAnime").textContent = counters[0];
-    document.getElementById("settingsTotalBook").textContent = counters[1];
-    document.getElementById("settingsTotalFilm").textContent = counters[2];
-    document.getElementById("settingsTotalManga").textContent = counters[3];
-    document.getElementById("settingsTotalShow").textContent = counters[4];
-    document.getElementById("settingsRatingAnime").textContent = (globalRatingsArr[0].length > 0 ? (globalRatingsArr[0].reduce(sumFunc, 0) / globalRatingsArr[0].length).toFixed(2) : "N/A");
-    document.getElementById("settingsRatingBook").textContent = (globalRatingsArr[1].length > 0 ? (globalRatingsArr[1].reduce(sumFunc, 0) / globalRatingsArr[1].length).toFixed(2) : "N/A");
-    document.getElementById("settingsRatingFilm").textContent = (globalRatingsArr[2].length > 0 ? (globalRatingsArr[2].reduce(sumFunc, 0) / globalRatingsArr[2].length).toFixed(2) : "N/A");
-    document.getElementById("settingsRatingManga").textContent = (globalRatingsArr[3].length > 0 ? (globalRatingsArr[3].reduce(sumFunc, 0) / globalRatingsArr[3].length).toFixed(2) : "N/A");
-    document.getElementById("settingsRatingShow").textContent = (globalRatingsArr[4].length > 0 ? (globalRatingsArr[4].reduce(sumFunc, 0) / globalRatingsArr[4].length).toFixed(2) : "N/A");
-    document.getElementById("settingsGenresAnime").textContent = globalGenresArr[0].length;
-    document.getElementById("settingsGenresBook").textContent = globalGenresArr[1].length;
-    document.getElementById("settingsGenresFilm").textContent = globalGenresArr[2].length;
-    document.getElementById("settingsGenresManga").textContent = globalGenresArr[3].length;
-    document.getElementById("settingsGenresShow").textContent = globalGenresArr[4].length;
-    document.getElementById("settingsSeasonsAnime").textContent = globalAnimeTypes[0];
-    document.getElementById("settingsEpisodesAnime").textContent = globalAnimeTypes[1];
-    document.getElementById("settingsONAsAnime").textContent = globalAnimeTypes[2];
-    document.getElementById("settingsOVAsAnime").textContent = globalAnimeTypes[3];
-    document.getElementById("settingsSpecialsAnime").textContent = globalAnimeTypes[4];
-    document.getElementById("settingsMoviesAnime").textContent = globalAnimeTypes[5];
-    document.getElementById("settingsMoviesFilm").textContent = counters[2];
-    document.getElementById("settingsVolumesManga").textContent = globalMangaTypes[0];
-    document.getElementById("settingsChaptersManga").textContent = globalMangaTypes[1];
-    document.getElementById("settingsSeasonsShow").textContent = globalShowTypes[0];
-    document.getElementById("settingsEpisodesShow").textContent = globalShowTypes[1];
-    // Send a request to the back-end to update the list of notifications based on the current list of records.
-    ipcRenderer.send("notificationsSave", newNotificationsArr);
-    // Once the back-end has processed the list of notifications sent over display the appropriate notifications on the home page.
-    ipcRenderer.on("notificationsReady", event => {
-        // Read the notifications configuration file.
-        const curNotifications = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "config", "notifications.json"), "UTF8"));
-        // Clear any current notifications.
-        document.getElementById("notificationsCollection").innerHTML = "";
-        // Iterate through all application notifications.
-        for(let k = 0; k < curNotifications.notifications.length; k++) {
-            // Display an application notification only if it has not been cleared and snoozed and is within the desired interval.
-            if(curNotifications.notifications[k].hidden == false && convertToDays((new Date(curNotifications.notifications[k].date)).getTime() - curTime) <= userInterval
-                && (curNotifications.notifications[k].snooze == "" || (curTime >= (new Date(curNotifications.notifications[k].snooze)).getTime()))) {
-                // Create a notification.
-                notificationCreation(curNotifications.notifications[k].id, curNotifications.notifications[k].category,
-                    curNotifications.notifications[k].name, curNotifications.notifications[k].text, curNotifications.notifications[k].date, curNotifications.notifications[k].img, curNotifications.notifications[k].snooze);
-            }
-        }
-        // If there are notifications to be displayed then show the notifications modal button, initialize the dropdown menu, and add notification listeners.
-        if(notificationsArr.children.length > 0) {
-            document.getElementById("notifications").style.display = "inline-block";
-            initDropdown();
-            notificationsListeners(ipcRenderer);
-        }
     });
-    // Initialize the tooltips.
-    initTooltips();
-    // Initialize the filter genres/tags list.
-    genreListLoad("All", 5, true);
-    // Initialize the page modals.
-    initModal();
-    // Initialize the filter modal separately to add the functionality of filter application upon exit.
-    M.Modal.init(document.getElementById("filterModal"), { "onCloseStart": () => {
-        window.scrollTo(0,0);
-        const listHolder = Array.from(document.getElementsByClassName("tabSearchLink")).filter(elem => elem.classList.contains("active")),
-            genresList = listHolder.length == 0 || document.getElementById("contentSearch").style.display != "none" ? genreList() : genreList(listHolder[0].textContent),
-            genreCheck = [];
-        // Define the filtered genres collection.
-        for(let j = 0; j < genresList.length; j++) {
-            if(document.getElementById("filterGenre" + genresList[j]).checked == true) { genreCheck.push(genresList[j]); }
-        }
-        // Handle the filtering on the home page.
-        if(document.getElementById("contentSearch").style.display != "none") {
-            // Define the category and genre arrays along with the record rows.
-            const categoryList = ["Anime", "Book", "Film", "Manga", "Show"],
-                catCheck = [],
-                pageTable = Array.from(document.getElementById("tableBody").children);
-            // Define the filtered categories collection.
-            for(let i = 0; i < categoryList.length; i++) {
-                if(document.getElementById("filterCategory" + categoryList[i]).checked == true) { catCheck.push(categoryList[i]); }
-            }
-            // Iterate through the records rows to determine if they pass the filter.
-            for(let x = 0; x < pageTable.length; x++) {
-                // Filter based on both categories and genres.
-                if(catCheck.length > 0 && genreCheck.length > 0) {
-                    let genreOverall = true,
-                        genreSplit = pageTable[x].getAttribute("genres").split(",");
-                    for(let y = 0; y < genreCheck.length; y++) {
-                        if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
-                    }
-                    if(genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category"))) {
-                        pageTable[x].style.display = "table-row";
-                        pageTable[x].setAttribute("genreFiltered", "1");
-                    }
-                    else {
-                        pageTable[x].style.display = "none";
-                        pageTable[x].setAttribute("genreFiltered", "0");
-                    }
-                }
-                // Filter based only on categories.
-                else if(catCheck.length > 0 && genreCheck.length == 0) {
-                    if(catCheck.includes(pageTable[x].getAttribute("category"))) {
-                        pageTable[x].style.display = "table-row";
-                        pageTable[x].setAttribute("genreFiltered", "1");
-                    }
-                    else {
-                        pageTable[x].style.display = "none";
-                        pageTable[x].setAttribute("genreFiltered", "0");
-                    }
-                }
-                // Filter based only on genres.
-                else if(catCheck.length == 0 && genreCheck.length > 0) {
-                    let genreOverall = true,
-                        genreSplit = pageTable[x].getAttribute("genres").split(",");
-                    for(let y = 0; y < genreCheck.length; y++) {
-                        if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
-                    }
-                    if(genreOverall == true) {
-                        pageTable[x].style.display = "table-row"
-                        pageTable[x].setAttribute("genreFiltered", "1");
-                    }
-                    else {
-                        pageTable[x].style.display = "none";
-                        pageTable[x].setAttribute("genreFiltered", "0");
-                    }
-                }
-                // If the empty filter is applied then show all record rows.
-                else { pageTable[x].style.display = "table-row"; pageTable[x].setAttribute("genreFiltered", "1"); }
-            }
-            // Upon the submission of a filter clear the search bar.
-            searchBar.parentNode.children[0].classList.remove("active");
-            searchBar.parentNode.children[2].classList.remove("active");
-            searchBar.classList.remove("valid");
-            searchBar.value = "";
-        }
-        // Handle the filtering on the anime search page.
-        else if(document.getElementById("indexHome").style.display != "none") {
-            // Define the anime search items.
-            const pageContent = Array.from(document.getElementById("animeSearchContainer").children);
-            // Iterate through the search items to determine if they pass the filter.
-            for(let y = 0; y < pageContent.length; y++) {
-                if(genreCheck.length > 0) {
-                    let genreOverall = true,
-                        genreSplit = pageContent[y].getAttribute("genres").split(",");
-                    for(let y = 0; y < genreCheck.length; y++) {
-                        if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
-                    }
-                    genreOverall == true ? pageContent[y].style.display = "inline-block" : pageContent[y].style.display = "none";
-                }
-                // If the empty filter is applied then show all anime search items.
-                else { pageContent[y].style.display = "inline-block"; }
-            }
-            // Reset the tooltips in order to reset the page scroll height.
-            clearTooltips();
-            initTooltips();
-        }
-    }});
-    // Send a request to the back-end to close the splash screen once the library records have been loaded.
-    ipcRenderer.send("removeSplash");
 });
 
 
