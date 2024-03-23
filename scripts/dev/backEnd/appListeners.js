@@ -861,7 +861,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	});
 
 	ipc.on("getSynopsis", (event, submissionArr) => {
-		fs.readFile(submissionArr[0], "UTF8", (err, file) => {
+		fs.readFile(path.join(originalPath, "Trak", "data", submissionArr[0], "data.json"), "UTF8", (err, file) => {
 			event.sender.send("sentSynopsis", [err ? "" : file, submissionArr[1]]);
 			if(err) {
 				const curRecord = JSON.parse(submissionArr[1]);
@@ -917,7 +917,7 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 		let pathDir = path.join(originalPath, "Trak", "data"),
 			list = [],
 			submissionList = [];
-		if(fs.existsSync(pathDir)) { list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()); };
+		if(fs.existsSync(pathDir)) { list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()); }
 		for(let r = 0; r < list.length; r++) {
 			submissionList.push(new Promise((resolve, reject) => {
 				fs.readFile(path.join(originalPath, "Trak", "data", list[r], "data.json"), "UTF8", (err, file) => {
@@ -934,6 +934,24 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 		Promise.all(submissionList).then(results => {
 			event.sender.send("sentAllRecords", results);
 		});
+	});
+
+	ipc.on("getLibraryRecordAutocomplete", (event, txt) => {
+		let pathDir = path.join(originalPath, "Trak", "data"),
+			list = [];
+		if(fs.existsSync(pathDir)) { list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()); }
+		let n = 0;
+		for(; n < list.length; n++) {
+			let selectedData = JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "data", list[n], "data.json"), "UTF8"));
+	        // Proceed if the current library record is the one corresponding to the autocomplete search selection.
+	        if(txt == selectedData.name + " (" + selectedData.category + ")") {
+	            event.sender.send("sentLibraryRecordAutocomplete", [list[n], JSON.stringify(selectedData)]);
+	            break;
+	        }
+		}
+		if(n == list.length) {
+			event.sender.send("sentLibraryRecordAutocomplete", ["", ""]);
+		}
 	});
 };
 

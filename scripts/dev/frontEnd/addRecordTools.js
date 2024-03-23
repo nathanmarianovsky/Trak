@@ -648,40 +648,26 @@ const associationsInit = ipcElec => {
         "sortFunction": (a, b) => a.localeCompare(b),
         "data": {},
         "onAutocomplete": txt => {
-            // Iterate through the list of library records.
-            for(let n = 0; n < dataList.length; n++) {
-                // Define the current library record data.
-                ipcElec.send("getLibraryRecord", [dataList[n], "Autocomplete"]);
-                ipcElec.on("sentLibraryRecordAutocomplete", (autoEvent, autoArr) => {
-                    if(autoArr[1] == "") {
-
-                    }
-                    else {
-                        let selectedData = JSON.parse(autoArr[1]);
-                        // Proceed if the current library record is the one corresponding to the autocomplete search selection.
-                        if(txt == selectedData.name + " (" + selectedData.category + ")") {
-                            // Create an association on the associations modal.
-                            associationCreation(dataList[n], selectedData.category, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "");
-                            // Clear the autocomplete input search bar.
-                            autocompleteInput.value = "";
-                            autocompleteInput.nextElementSibling.nextElementSibling.classList.remove("active");
-                            // Initialize the page listeners corresponding to an association.
-                            associationsListeners(ipcElec);
-                        }
-                    }
-                });
-                // let selectedData = JSON.parse(fs.readFileSync(path.join(localPath, "Trak", "data", dataList[n], "data.json"), "UTF8"));
-                // // Proceed if the current library record is the one corresponding to the autocomplete search selection.
-                // if(txt == selectedData.name + " (" + selectedData.category + ")") {
-                //     // Create an association on the associations modal.
-                //     associationCreation(dataList[n], selectedData.category, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "");
-                //     // Clear the autocomplete input search bar.
-                //     autocompleteInput.value = "";
-                //     autocompleteInput.nextElementSibling.nextElementSibling.classList.remove("active");
-                //     // Initialize the page listeners corresponding to an association.
-                //     associationsListeners(ipcElec);
-                // }
-            }
+            // Send a request to the back-end to find a matching record.
+            ipcElec.send("getLibraryRecordAutocomplete", txt);
+            // Proceed once the library records have been searched.
+            ipcElec.on("sentLibraryRecordAutocomplete", (autoEvent, autoArr) => {
+                // If no associated library record has been found notify the user.
+                if(autoArr[1] == "") {
+                    M.toast({"html": "No library record was found associated to the submission " + txt + ".", "classes": "rounded"});
+                }
+                // Otherwise proceed to create an association on the page and initialize the appropriate listeners.
+                else {
+                    let selectedData = JSON.parse(autoArr[1]);
+                    // Create an association on the associations modal.
+                    associationCreation(autoArr[0], selectedData.category, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "");
+                    // Clear the autocomplete input search bar.
+                    autocompleteInput.value = "";
+                    autocompleteInput.nextElementSibling.nextElementSibling.classList.remove("active");
+                    // Initialize the page listeners corresponding to an association.
+                    associationsListeners(ipcElec);
+                }
+            });
         }
     });
     // Define the object which will house the list of options for the associations modal autocomplete search bar.
