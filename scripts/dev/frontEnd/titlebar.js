@@ -29,25 +29,30 @@ Initializes the listeners associated to the minimize, maximize, restore, and clo
 
 */
 const windowControls = () => {
-    // Make minimise/maximise/restore/close buttons work when they are clicked
-    document.getElementById('minButton').addEventListener("click", event => {
+    const minButton = document.getElementById("minButton"),
+        maxButton = document.getElementById("maxButton"),
+        restoreButton = document.getElementById("restoreButton"),
+        closeButton = document.getElementById("closeButton");
+    // Listen for a click event on the minimize button in order to minimize an application window.
+    minButton.addEventListener("click", event => {
         ipcRenderer.send("minimizeWindow");
     });
-
-    document.getElementById('maxButton').addEventListener("click", event => {
+    // Listen for a click event on the maximize button in order to maximize an application window.
+    maxButton.addEventListener("click", event => {
         ipcRenderer.send("maximizeWindow");
-        document.getElementById('maxButton').style.visibility = "hidden";
-        document.getElementById('restoreButton').style.visibility = "visible";
-
+        // Hide the maximize button and show the restore button.
+        maxButton.style.visibility = "hidden";
+        restoreButton.style.visibility = "visible";
     });
-
-    document.getElementById('restoreButton').addEventListener("click", event => {
+    // Listen for a click event on the restore button in order to restore an application window to the original size parameters.
+    restoreButton.addEventListener("click", event => {
         ipcRenderer.send("restoreWindow");
-        document.getElementById('restoreButton').style.visibility = "hidden";
-        document.getElementById('maxButton').style.visibility = "visible";
+        // Hide the restore button and show the maximize button.
+        restoreButton.style.visibility = "hidden";
+        maxButton.style.visibility = "visible";
     });
-
-    document.getElementById('closeButton').addEventListener("click", event => {
+    // Listen for a click event on the close button in order to close an application window.
+    closeButton.addEventListener("click", event => {
         ipcRenderer.send("closeWindow");
     });
 };

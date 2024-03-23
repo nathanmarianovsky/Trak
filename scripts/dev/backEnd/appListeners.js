@@ -2,6 +2,7 @@
 
 BASIC DETAILS: After the app loads up with index.js this file is meant to handle all calls made to the back-end.
 
+   - addConfigurationListeners: Driver function for adding all configuration listeners.
    - addTitlebarListeners: Driver function for adding all titlebar listeners.
    - addBasicListeners: Driver function for adding all basic listeners.
    - addRecordListeners: Driver function for adding all listeners associated to the maintenance of records.
@@ -24,6 +25,48 @@ BASIC DETAILS: After the app loads up with index.js this file is meant to handle
 
 
 var exports = {};
+
+
+
+/*
+
+Driver function for adding all configuration listeners.
+
+	- ipc provides the means to operate the Electron app.
+	- path and fs provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
+	- originalPath is the original path to the local user data.
+
+*/
+exports.addConfigurationListeners = (path, fs, log, ipc, originalPath) => {
+	ipc.on("getConfigurations", event => {
+		fs.readFile(path.join(originalPath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
+			event.sender.send("sentConfigurations", err ? "" : file);
+			if(err) { log.error("There was an issue reading the application settings configuration file."); }
+		});
+	});
+
+	ipc.on("getNotifications", event => {
+		fs.readFile(path.join(originalPath, "Trak", "config", "notifications.json"), "UTF8", (err, file) => {
+			event.sender.send("sentNotifications", err ? "" : file);
+			if(err) { log.error("There was an issue reading the application notifications file."); }
+		});
+	});
+
+	ipc.on("getTutorial", event => {
+		fs.readFile(path.join(originalPath, "Trak", "config", "tutorial.json"), "UTF8", (err, file) => {
+			event.sender.send("sentTutorial", err ? "" : file);
+			if(err) { log.error("There was an issue reading the application settings tutorial file."); }
+		});
+	});
+
+	ipc.on("getVersion", event => {
+		fs.readFile(path.join(__dirname, "../../../package.json"), "UTF8", (err, file) => {
+			event.sender.send("sentVersion", err ? "" : file);
+			if(err) { log.error("There was an issue reading the application package.json file."); }
+		});
+	});
+};
 
 
 
@@ -415,6 +458,144 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, mai
 		event.sender.send("recordFilesSuccess", params[1]);
 	});
 
+	// Handles the process of obtaining a library record based on a folder name.
+	ipc.on("getLibraryRecord", (event, submissionArr) => {
+		// Read the data file associated to the library record.
+		fs.readFile(path.join(originalPath, "Trak", "data", submissionArr[0], "data.json"), "UTF8", (err, file) => {
+			// Send the record data to the front-end.
+			event.sender.send("sentLibraryRecord" + submissionArr[1], [submissionArr[0], err ? "" : file]);
+			// Log that there was an issue reading the data file associated to the library record requested.
+			if(err) { log.error("There was an issue reading the library record data file associated to the " + tools.parseFolder(submissionArr[0]) + "."); }
+		});
+	});
+
+	// Handles the process of obtaining a synopsis associated to a library record based on a folder name.
+	ipc.on("getSynopsis", (event, submissionArr) => {
+		// Read the data file associated to the library record.
+		fs.readFile(path.join(originalPath, "Trak", "data", submissionArr[0], "data.json"), "UTF8", (err, file) => {
+			// Send the record data to the front-end.
+			event.sender.send("sentSynopsis", [err ? "" : file, submissionArr[1]]);
+			// If there was an issue in reading the data file associated to the requested library record log it.
+			if(err) {
+				const curRecord = JSON.parse(submissionArr[1]);
+				if(curRecord.category == "Anime" || curRecord.category == "Manga") {
+                    log.error("There was an issue reading the data file associated to the " + curRecord.category.toLowerCase() + " "
+                        + (curRecord.name != "" ? curRecord.name : curRecord.jname) + ".");
+                }
+                else if(curRecord.category == "Book") {
+                    log.error("There was an issue reading the data file associated to the book " +
+                        (curRecord.name != "" ? curRecord.name : curRecord.isbn) + ".");
+                }
+                else if(curRecord.category == "Film" || curRecord.category == "Show") {
+                    log.error("There was an issue reading the data file associated to the " + curRecord.category.toLowerCase() + " " + curRecord.name + ".");
+                }
+			}
+		});
+	});
+
+	// Handles the process of obtaining the list of library records which share an associated with a requested library record.
+	ipc.on("getAssociations", (event, name) => {
+		// Read the configurations associations file.
+		fs.readFile(path.join(originalPath, "Trak", "config", "associations.json"), "UTF8", (err, file) => {
+			// Log if there was an issue in reading the configurations associations file.
+			if(err) { log.error("There was an issue reading the application associations configuration file."); }
+			// Otherwise proceed by finding the desired associations.
+			else {
+				// Define the list of associations currently saved.
+				const associationsFileList = JSON.parse(file).associations,
+					associationsArr = [];
+				// Iterate through the list of library associations.
+		        for(let t = 0; t < associationsFileList.length; t++) {
+		        	// Proceed only if the current associations include the desired library record.
+		            if(associationsFileList[t].includes(name)) {
+		            	// Iterate through the current association which contains the desired library record.
+		                for(let y = 0; y < associationsFileList[t].length; y++) {
+		                	// Proceed only if the current record selected in the association is not the one provided.
+		                    if(associationsFileList[t][y] != name) {
+		                    	// For each associated record read the data file and push it into the overall collection.
+		                        associationsArr.push(new Promise((resolve, reject) => {
+		                        	// Read the record data file.
+		                        	fs.readFile(path.join(originalPath, "Trak", "data", associationsFileList[t][y], "data.json"), "UTF8", (err, fle) => {
+		                        		// Log if there was an issue in reading the record data file.
+		                        		if(err) {
+		                        			log.error("There was an issue reading the data file associated to the " + parseFolder(associationsFileList[t][y]) + ".");
+		                        			resolve([associationsFileList[t][y], ""]);
+		                        		}
+		                        		// Otherwise push the data as expected into the overall collection.
+		                        		else {
+		                        			resolve([associationsFileList[t][y], fle]);
+		                        		}
+		                        	});
+		                        }));
+		                    }
+		                }
+		                break;
+		            }
+		        }
+		        // Once all promises associated to the library records have been resolved send the final collection to the front-end.
+		        Promise.all(associationsArr).then(results => {
+		        	event.sender.send("sentAssociations", results);
+		        });
+			}
+		});
+	});
+
+	// Handles the process of obtaining all library records.
+	ipc.on("getAllRecords", event => {
+		// Define the library directory.
+		let pathDir = path.join(originalPath, "Trak", "data"),
+			list = [],
+			submissionList = [];
+		// Define the collection of library records if it exists.
+		if(fs.existsSync(pathDir)) { list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()); }
+		// Iterate through the collection of library records.
+		for(let r = 0; r < list.length; r++) {
+			// Read the library record data file and push a promise of the record data into the overall collection.
+			submissionList.push(new Promise((resolve, reject) => {
+				// Read the record data file.
+				fs.readFile(path.join(originalPath, "Trak", "data", list[r], "data.json"), "UTF8", (err, file) => {
+					// Log if there was an issue in reading the library record data file.
+					if(err) {
+						log.error("There was an issue reading the data file associated to the " + parseFolder(list[r]) + ".");
+						resolve([list[r], ""]);
+					}
+					// Otherwise push the data as expected into the overall collection.
+					else {
+						resolve([list[r], file]);
+					}
+				});
+			}));
+		}
+		// Once all promised associated to the library records have been resolved asend the final collection to the front-end.
+		Promise.all(submissionList).then(results => {
+			event.sender.send("sentAllRecords", results);
+		});
+	});
+
+	// Handles the process of obtaining a library record based upon an autocomplete search.
+	ipc.on("getLibraryRecordAutocomplete", (event, txt) => {
+		// Define the library directory.
+		let pathDir = path.join(originalPath, "Trak", "data"),
+			list = [];
+			// Define the collection of library records if it exists.
+		if(fs.existsSync(pathDir)) { list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()); }
+		let n = 0;
+		// Iterate through the collection of library records.
+		for(; n < list.length; n++) {
+			// Define the data associated to the current library record.
+			let selectedData = JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "data", list[n], "data.json"), "UTF8"));
+	        // Proceed if the current library record is the one corresponding to the autocomplete search selection.
+	        if(txt == selectedData.name + " (" + selectedData.category + ")") {
+	            event.sender.send("sentLibraryRecordAutocomplete", [list[n], JSON.stringify(selectedData)]);
+	            break;
+	        }
+		}
+		// If no library record was found to correspond to the autocomplete search send an empty response to the front-end.
+		if(n == list.length) {
+			event.sender.send("sentLibraryRecordAutocomplete", ["", ""]);
+		}
+	});
+
 	// Define the list of categories and the associated object containing the library import methods.
 	const categoryArr = ["anime", "book", "film", "manga", "show"];
 	const requireObj = {
@@ -795,6 +976,8 @@ Driver function for adding all app listeners.
 
 */
 exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, loadWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+	// Add the configuration listeners.
+	exports.addConfigurationListeners(path, fs, log, ipc, originalPath);
 	// Add the titlebar listeners.
 	exports.addTitlebarListeners(BrowserWindow, ipc);
 	// Add the basic listeners.
@@ -817,142 +1000,6 @@ exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, upda
 	exports.addLogListeners(path, fs, log, ipc, tools, originalPath);
 	// Add the listeners which act as tools for the front-end.
 	exports.addHelperListeners(log, ipc, mainWindow);
-
-	// ipc.on("getAssociations", event => {
-	// 	fs.readFile(path.join(originalPath, "Trak", "config", "associations.json"), "UTF8", (err, file) => {
-	// 		event.sender.send("sentAssociations", err ? "" : file);
-	// 		if(err) { log.error("There was an issue reading the application associations configuration file."); }
-	// 	});
-	// });
-
-	ipc.on("getConfigurations", event => {
-		fs.readFile(path.join(originalPath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
-			event.sender.send("sentConfigurations", err ? "" : file);
-			if(err) { log.error("There was an issue reading the application settings configuration file."); }
-		});
-	});
-
-	ipc.on("getLibraryRecord", (event, submissionArr) => {
-		fs.readFile(path.join(originalPath, "Trak", "data", submissionArr[0], "data.json"), "UTF8", (err, file) => {
-			event.sender.send("sentLibraryRecord" + submissionArr[1], [submissionArr[0], err ? "" : file]);
-			if(err) { log.error("There was an issue reading the library record data file associated to the " + tools.parseFolder(submissionArr[0]) + "."); }
-		});
-	});
-
-	ipc.on("getNotifications", event => {
-		fs.readFile(path.join(originalPath, "Trak", "config", "notifications.json"), "UTF8", (err, file) => {
-			event.sender.send("sentNotifications", err ? "" : file);
-			if(err) { log.error("There was an issue reading the application notifications file."); }
-		});
-	});
-
-	ipc.on("getTutorial", event => {
-		fs.readFile(path.join(originalPath, "Trak", "config", "tutorial.json"), "UTF8", (err, file) => {
-			event.sender.send("sentTutorial", err ? "" : file);
-			if(err) { log.error("There was an issue reading the application settings tutorial file."); }
-		});
-	});
-
-	ipc.on("getVersion", event => {
-		fs.readFile(path.join(__dirname, "../../../package.json"), "UTF8", (err, file) => {
-			event.sender.send("sentVersion", err ? "" : file);
-			if(err) { log.error("There was an issue reading the application package.json file."); }
-		});
-	});
-
-	ipc.on("getSynopsis", (event, submissionArr) => {
-		fs.readFile(path.join(originalPath, "Trak", "data", submissionArr[0], "data.json"), "UTF8", (err, file) => {
-			event.sender.send("sentSynopsis", [err ? "" : file, submissionArr[1]]);
-			if(err) {
-				const curRecord = JSON.parse(submissionArr[1]);
-				if(curRecord.category == "Anime" || curRecord.category == "Manga") {
-                    log.error("There was an issue reading the data file associated to the " + curRecord.category.toLowerCase() + " "
-                        + (curRecord.name != "" ? curRecord.name : curRecord.jname) + ".");
-                }
-                else if(curRecord.category == "Book") {
-                    log.error("There was an issue reading the data file associated to the book " +
-                        (curRecord.name != "" ? curRecord.name : curRecord.isbn) + ".");
-                }
-                else if(curRecord.category == "Film" || curRecord.category == "Show") {
-                    log.error("There was an issue reading the data file associated to the " + curRecord.category.toLowerCase() + " " + curRecord.name + ".");
-                }
-			}
-		});
-	});
-
-	ipc.on("getAssociations", (event, name) => {
-		fs.readFile(path.join(originalPath, "Trak", "config", "associations.json"), "UTF8", (err, file) => {
-			if(err) { log.error("There was an issue reading the application associations configuration file."); }
-			else {
-				const associationsFileList = JSON.parse(file).associations,
-					associationsArr = [];
-		        for(let t = 0; t < associationsFileList.length; t++) {
-		            if(associationsFileList[t].includes(name)) {
-		                for(let y = 0; y < associationsFileList[t].length; y++) {
-		                    if(associationsFileList[t][y] != name) {
-		                        associationsArr.push(new Promise((resolve, reject) => {
-		                        	fs.readFile(path.join(originalPath, "Trak", "data", associationsFileList[t][y], "data.json"), "UTF8", (err, fle) => {
-		                        		if(err) {
-		                        			log.error("There was an issue reading the data file associated to the " + parseFolder(associationsFileList[t][y]) + ".");
-		                        			resolve([associationsFileList[t][y], ""]);
-		                        		}
-		                        		else {
-		                        			resolve([associationsFileList[t][y], fle]);
-		                        		}
-		                        	});
-		                        }));
-		                    }
-		                }
-		                break;
-		            }
-		        }
-		        Promise.all(associationsArr).then(results => {
-		        	event.sender.send("sentAssociations", results);
-		        });
-			}
-		});
-	});
-
-	ipc.on("getAllRecords", event => {
-		let pathDir = path.join(originalPath, "Trak", "data"),
-			list = [],
-			submissionList = [];
-		if(fs.existsSync(pathDir)) { list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()); }
-		for(let r = 0; r < list.length; r++) {
-			submissionList.push(new Promise((resolve, reject) => {
-				fs.readFile(path.join(originalPath, "Trak", "data", list[r], "data.json"), "UTF8", (err, file) => {
-					if(err) {
-						log.error("There was an issue reading the data file associated to the " + parseFolder(list[r]) + ".");
-						resolve([list[r], ""]);
-					}
-					else {
-						resolve([list[r], file]);
-					}
-				});
-			}));
-		}
-		Promise.all(submissionList).then(results => {
-			event.sender.send("sentAllRecords", results);
-		});
-	});
-
-	ipc.on("getLibraryRecordAutocomplete", (event, txt) => {
-		let pathDir = path.join(originalPath, "Trak", "data"),
-			list = [];
-		if(fs.existsSync(pathDir)) { list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()); }
-		let n = 0;
-		for(; n < list.length; n++) {
-			let selectedData = JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "data", list[n], "data.json"), "UTF8"));
-	        // Proceed if the current library record is the one corresponding to the autocomplete search selection.
-	        if(txt == selectedData.name + " (" + selectedData.category + ")") {
-	            event.sender.send("sentLibraryRecordAutocomplete", [list[n], JSON.stringify(selectedData)]);
-	            break;
-	        }
-		}
-		if(n == list.length) {
-			event.sender.send("sentLibraryRecordAutocomplete", ["", ""]);
-		}
-	});
 };
 
 
