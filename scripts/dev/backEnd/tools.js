@@ -2027,7 +2027,6 @@ exports.createWindow = (extension, dir, BrowserWindow, fs, path, log, devCheck, 
     	"titleBarStyle": "hidden"
 	});
 	extension != "splash" ? win.loadFile(path.join(dir, "Trak", "localPages", extension + ".html")) : win.loadFile(path.join(__dirname, "../../../pages", "dist", extension + ".html"));
-	win.setProgressBar(0.25);
 	if(fullscreen == true) { win.maximize(); }
 	log.info("The " + extension + ".html page is now loading.");
 	if(devCheck == true) { win.webContents.openDevTools(); }

@@ -129,6 +129,12 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
 		}, 1000);
 	});
 
+	// Send a request to the front-end to initialize the application tutorial.
+	ipc.once("tutorialReady", ev => {
+		let curWin = BrowserWindow.getFocusedWindow();
+		tools.tutorialLoad(fs, path, log, curWin, originalPath);
+	});
+
 	// Loads the creation of a primary window upon the activation of the app.
   	app.on("activate", () => {
     	if(BrowserWindow.getAllWindows().length === 0) {
@@ -138,16 +144,6 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
 	   		win.webContents.on("did-finish-load", () => {
 	   			// Send a request to the front-end to initialize the loading of library records on the primary window.
 				win.webContents.send("loadRows", win.getContentSize()[1] - 800);
-				win.setProgressBar(0.50);
-				// Send a request to the front-end to initialize the application tutorial.
-  				tools.tutorialLoad(fs, path, log, win, originalPath);
-  				win.setProgressBar(0.75);
-  				// Check for an application update if necessary.
-  				if(updateCondition == false) {
-  					tools.checkForUpdate(require("os"), require("https"), fs, path, log, originalPath, win);
-  					updateCondition = true;
-  				}
-  				win.setProgressBar(1);
   			});
     	}
   	});
@@ -173,8 +169,6 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
   		mainWindow.webContents.on("did-finish-load", () => {
   			// Send a request to the front-end to initialize the loading of library records on the primary window.
   			mainWindow.webContents.send("loadRows", mainWindow.getContentSize()[1] - 800);
-			// Send a request to the front-end to initialize the application tutorial.
-  			tools.tutorialLoad(fs, path, log, mainWindow, originalPath);
   		});
   	});
 

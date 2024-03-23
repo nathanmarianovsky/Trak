@@ -217,21 +217,22 @@ app.whenReady().then(() => {
 																splashWindow.webContents.send("loadBlink", 4);
 																// Create the primary window.
 															  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, fs, path, log, dev, primWinWidth, primWinHeight, primWinFullscreen);
+															  	// Focus the application on the splash window.
 																splashWindow.focus();
+																// Proceed once the primary window has finished loading.
 																primaryWindow.webContents.on("did-finish-load", () => {
+																	// If the splash screen is still open update it.
 																	if(splashCheck == false) {
 																		splashWindow.webContents.send("loadBlink", 5);
 																		splashCheck = true;
 																	}
+																	// Load the library records on the primary window.
 																	primaryWindow.webContents.send("loadRows", [true, primaryWindow.getContentSize()[1] - 800]);
-																	primaryWindow.setProgressBar(0.50);
-																	tools.tutorialLoad(fs, path, log, primaryWindow, basePath);
-																	primaryWindow.setProgressBar(0.75);
+																	// Check for an available application update.
 																	if(updateCheck == false) {
 																		tools.checkForUpdate(require("os"), require("https"), fs, path, log, basePath, primaryWindow);
 																		updateCheck = true;
 																	}
-																	primaryWindow.setProgressBar(1);
 																});
 															  	// Create the system tray icon and menu. 
 															  	log.info("The application is creating the tray menu.");
