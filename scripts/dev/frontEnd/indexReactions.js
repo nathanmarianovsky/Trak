@@ -888,6 +888,9 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         ipcRenderer.send("recordFiles", [holder.join(""), e.target.closest("tr").getAttribute("category") + "-" + e.target.closest("tr").getAttribute("name")]);
                     });
                 }
+                // This handles a weird issue in which the counters are double of their expected value.
+                if(counters.reduce(sumFunc, 0) != recordsArr.length) { counters = counters.map(elem => elem / 2); };
+                // Attach the bottom text on the index page if there is at least one library record.
                 let bottomStr = "Total Records: " + recordsArr.length;
                 if(counters.reduce(sumFunc, 0) > 0) {
                     bottomStr += " (";
