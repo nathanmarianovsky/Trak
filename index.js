@@ -186,6 +186,10 @@ app.whenReady().then(() => {
 																log.info("The styles.css file has been successfully rewritten to the localStyles folder.");
 																// Update the splash screen to indicate that the primary window is being created.
 																splashWindow.webContents.send("loadBlink", 4);
+																// Load the libraries used for fetching record details.
+																const goodreadsScraper = require("goodreads-scraper"),
+																	malScraper = require("mal-scraper"),
+																	movier = require("movier");
 																// Create the primary window.
 															  	let primaryWindow = tools.createWindow("index", basePath, BrowserWindow, fs, path, log, dev, primWinWidth, primWinHeight, primWinFullscreen);
 															  	// Focus the application on the splash window.
@@ -210,7 +214,8 @@ app.whenReady().then(() => {
 															  	tray = new Tray(path.join(__dirname, "assets", iconChoice + "Logo.png"));
 																tools.createTrayMenu("h", primaryWindow, tray, Menu);
 																// Add all of the back-end listeners.
-																require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCheck, primaryWindow, splashWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
+																require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, goodreadsScraper, malScraper, movier,
+																	updateCheck, primaryWindow, splashWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 															}
 														});
 													}

@@ -12,6 +12,7 @@ This application was motivated by the simple thought that there is no such dedic
 
 The following is a list of features that are in the plans for future releases prior to a full release:
 * Auto change text color based on the background color.
+* Update installation process to ask if the user wants application shortcuts.
 
 
 ## Application Files

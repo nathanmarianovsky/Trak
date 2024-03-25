@@ -157,17 +157,17 @@ exports.showUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, da
 Handles the search of imdb show records based on a query.
 
    - log provides the means to create application logs to keep track of what is going on.
-   - imdbScraper provides the means to attain show records from imdb.
+   - movier provides the means to attain show records from imdb.
    - ev provides the means to interact with the front-end of the Electron app.
    - search is an array of strings corresponding to the previous and current queries used for a search.
 
 */
-exports.showSearch = (log, imdbScraper, ev, search) => {
+exports.showSearch = (log, movier, ev, search) => {
     // Use the imdb scraper to fetch show listings possibly matching what the user is looking for.
-    imdbScraper.simpleSearch(search[1]).then(data => {
-        log.info("imdb-scrapper has finished getting the search results for the query " + search[1] + ".");
+    movier.searchTitleByName(search[1]).then(data => {
+        log.info("movier has finished getting the search results for the query " + search[1] + ".");
         // Send the attained data to the front-end.
-        ev.sender.send("showSearchResults", [search[0], search[1], data.d.filter(elem => elem.qid == "tvSeries").map(elem => [elem.l, elem.i[0]])]);
+        ev.sender.send("showSearchResults", [search[0], search[1], data.filter(elem => elem.titleType == "series").map(elem => [elem.name, elem.thumbnailImageUrl])]);
     }).catch(err => log.error("There was an issue in obtaining the show search results for autocomplete options associated to the query " + search[1] + "."));
 };
 

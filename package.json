@@ -6,7 +6,6 @@
     "author": "Nathan Marianovsky",
     "license": "MIT",
     "dependencies": {
-        "@electron/remote": "^2.1.2",
         "@node-minify/core": "^8.0.6",
         "@node-minify/uglify-js": "^8.0.6",
         "@node-minify/yui": "^8.0.6",
