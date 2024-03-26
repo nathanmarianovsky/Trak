@@ -5,7 +5,12 @@
 
 
 body {
+	color: black;
 	overflow-x: hidden;
+}
+
+input {
+	color: black !important;
 }
 
 button {
@@ -165,7 +170,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 }
 
 .checkboxText {
-	color: initial;
+	color: black;
 	line-height: 20px !important;
 }
 
@@ -196,6 +201,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	margin-left: 3px !important;
 	border-radius: 30px !important;
 	color: white !important;
+}
+
+.modal .modal-content, .modal .modal-footer {
+	background-color: #D9D9DB !important;
 }
 
 .navbar-fixed {

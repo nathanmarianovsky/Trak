@@ -20,7 +20,6 @@
         "goodreads-scraper": "^1.4.4",
         "html-minifier": "^4.0.0",
         "i": "^0.3.7",
-        "imdb-scrapper": "^2.3.1",
         "is-valid-path": "^0.1.1",
         "mal-scraper": "^2.13.1",
         "movier": "^3.0.7",

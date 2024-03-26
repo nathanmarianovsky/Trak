@@ -159,7 +159,7 @@ const recordChoicesButtons = () => {
                         episodeName.nextElementSibling.classList.add("active");
                     }
                     // Hide the episodes by default.
-                    document.getElementById("li_" + listNum + "_Season").children[0].click();
+                    document.getElementById("li_" + listNum + "_AnimeSeason").children[0].click();
                 }
                 else {
                     // Attach a single film/ona/ova.

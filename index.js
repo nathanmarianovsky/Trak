@@ -175,9 +175,18 @@ app.whenReady().then(() => {
 														if(configObj.current != undefined) {
 															// If a current configuration exists then apply the primary and secondary colors to the styles.css file.
 															const reg1 = new RegExp(configObj.original.primaryColor.toLowerCase(), "g"),
-																reg2 = new RegExp(configObj.original.secondaryColor.toLowerCase(), "g");
+																reg2 = new RegExp(configObj.original.secondaryColor.toLowerCase(), "g"),
+																reg3 = new RegExp("color:black", "g");
+																// reg3 = new RegExp("body{color:black", "g"),
+																// reg4 = new RegExp("input{color:black", "g"),
+																// reg5 = new RegExp(".checkboxText{color:black", "g");
+															const lightCondition = tools.lightOrDark(configObj.current.secondaryColor) == "light";
 															stylesFile = stylesFile.replace(reg1, configObj.current.primaryColor);
 															stylesFile = stylesFile.replace(reg2, configObj.current.secondaryColor);
+															stylesFile = stylesFile.replace(reg3, lightCondition ? "color:black" : "color:white");
+															// stylesFile = stylesFile.replace(reg3, lightCondition ? "body{color:black" : "body{color:white");
+															// stylesFile = stylesFile.replace(reg4, lightCondition ? "input{color:black" : "input{color:white");
+															// stylesFile = stylesFile.replace(reg5, lightCondition ? ".checkboxText{color:black" : ".checkboxText{color:white");
 														}
 														fs.writeFile(path.join(basePath, "Trak", "localStyles", "styles.css"), stylesFile, "UTF8", err => {
 															// If there was an issue writing the styles.css file display a notification on the console.
