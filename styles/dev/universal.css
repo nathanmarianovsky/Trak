@@ -149,7 +149,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 }
 
 #windowTitle, .material-icons {
-	color: white !important;
+	color: white;
 }
 
 #windowTitle span {
@@ -188,7 +188,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 }
 
 .collapsible-header, .modal .modal-content,
-.modal .modal-footer {
+.modal .modal-footer, .dropdown-content {
 	background-color: #D9D9DB !important;
 }
 
@@ -207,6 +207,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 .genreRow {
 	margin-bottom: 10px !important;
+}
+
+.iconSorter, .prefix {
+	color: black;
 }
 
 .infoModal {
@@ -232,9 +236,9 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 .modalButtons {
 	background-color: #2A2A8E !important;
+	color: white !important;
 	margin-left: 3px !important;
 	border-radius: 30px !important;
-	color: white !important;
 }
 
 .navbar-fixed {

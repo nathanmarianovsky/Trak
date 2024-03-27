@@ -193,12 +193,12 @@ const imgButtons = (favLink, prevBtn, addBtn, addInput, remBtn, nextBtn, recordI
     const btnColorDefault = newSwitchBackground = "#" + addAlpha(rgba2hex(getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor).substring(1), 0.4);
     // Listen for a click event on the favorite image button in order to redefine the favorite image for a record.
     favLink.addEventListener("click", e => {
-        if(rgba2hex(favLink.style.color) == btnColorDefault) {
+        if(rgba2hex(favLink.children[0].style.color) == btnColorDefault) {
             let imgArr = recordImg.getAttribute("list").split(","),
                 imgArrIndex = imgArr.indexOf(recordImg.getAttribute("src"));
             arrayMove(imgArr, imgArrIndex, 0);
             recordImg.setAttribute("list", imgArr.join(","));
-            favLink.style.color = favColor;
+            favLink.children[0].style.setProperty("color", favColor, "important");
             favLink.style.cursor = "initial";
         }
     });
@@ -210,11 +210,11 @@ const imgButtons = (favLink, prevBtn, addBtn, addInput, remBtn, nextBtn, recordI
         if(curListArr.length > 1) {
             recordImg.setAttribute("src", index == 0 ? curListArr[curListArr.length - 1] : curListArr[index - 1]);
             if(curListArr[0] == (index == 0 ? curListArr[curListArr.length - 1] : curListArr[index - 1])) {
-                favLink.style.color = favColor;
+                favLink.children[0].style.setProperty("color", favColor, "important");
                 favLink.style.cursor = "initial";
             }
             else {
-                favLink.style.color = btnColorDefault;
+                favLink.children[0].style.setProperty("color", btnColorDefault, "important");
                 favLink.style.cursor = "pointer";
             }
         }
@@ -262,11 +262,11 @@ const imgButtons = (favLink, prevBtn, addBtn, addInput, remBtn, nextBtn, recordI
             curListArr.splice(index, 1);
             recordImg.setAttribute("list", curListArr.join(","));
             if(curListArr[0] == recordImg.getAttribute("src")) {
-                favLink.style.color = favColor;
+                favLink.children[0].style.setProperty("color", favColor, "important");
                 favLink.style.cursor = "initial";
             }
             else {
-                favLink.style.color = btnColorDefault;
+                favLink.children[0].style.setProperty("color", btnColorDefault, "important");
                 favLink.style.cursor = "pointer";
             }
         }
@@ -279,11 +279,11 @@ const imgButtons = (favLink, prevBtn, addBtn, addInput, remBtn, nextBtn, recordI
         if(curListArr.length > 1) {
             recordImg.setAttribute("src", index == curListArr.length - 1 ? curListArr[0] : curListArr[index + 1]);
             if(curListArr[0] == (index == curListArr.length - 1 ? curListArr[0] : curListArr[index + 1])) {
-                favLink.style.color = favColor;
+                favLink.children[0].style.setProperty("color", favColor, "important");
                 favLink.style.cursor = "initial";
             }
             else {
-                favLink.style.color = btnColorDefault;
+                favLink.children[0].style.setProperty("color", btnColorDefault, "important");
                 favLink.style.cursor = "pointer";
             }
         }

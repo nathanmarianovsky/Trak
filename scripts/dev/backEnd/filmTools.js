@@ -171,7 +171,7 @@ exports.filmFetchDetails = (log, movier, tools, ev, name) => {
         const runtimeNum = parseInt(filmData.runtime.seconds / 60);
         // Send the attained data to the front-end.
         ev.sender.send("filmFetchDetailsResult", [
-            filmData.name, filmData.otherNames.join(", "), [filmData.posterImage.url, filmData.allImages.slice(0, 10).map(elem => elem.url)],
+            filmData.name, filmData.otherNames.join(", "), [filmData.posterImage.url, [filmData.posterImage.url].concat(filmData.allImages.slice(0, 9).map(elem => elem.url))],
             String(filmData.dates.startDate), runtimeNum, filmData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),
             filmData.directors.map(director => director.name), filmData.writers.map(director => director.name),
             filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), filmData.producers.map(producers => producers.name),

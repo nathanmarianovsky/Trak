@@ -196,8 +196,8 @@
 	overflow-y: auto;
 }
 
-.modalContentAdd {
-	color: #2A2A8E;
+.modalContentAdd .material-icons {
+	color: #2A2A8E !important;
 }
 
 .modalContentButtons {
@@ -206,8 +206,8 @@
     left: 25%;
 }
 
-.modalContentDelete {
-	color: red;
+.modalContentDelete .material-icons {
+	color: red !important;
 }
 
 .modalContentEpisodeDelete {
@@ -228,7 +228,6 @@
 }
 
 .recordFavoriteImageLink {
-	color: #2A2A8E;
     position: absolute;
     left: 5px;
     top: 5px;
@@ -238,6 +237,7 @@
 
 .recordFavoriteImageLink i {
 	font-size: 30px;
+	color: #2A2A8E !important;
 }
 
 .recordGenresTitle {

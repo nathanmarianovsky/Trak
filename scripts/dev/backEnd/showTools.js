@@ -191,7 +191,7 @@ exports.showFetchDetails = (log, movier, tools, ev, name) => {
         const runtimeNum = parseInt(showData.runtime.seconds / 60);
         // Send the attained data to the front-end.
         ev.sender.send("showFetchDetailsResult", [
-            showData.name, showData.otherNames.join(", "), [showData.posterImage.url, showData.allImages.slice(0, 10).map(elem => elem.url)],
+            showData.name, showData.otherNames.join(", "), [showData.posterImage.url, [showData.posterImage.url].concat(showData.allImages.slice(0, 9).map(elem => elem.url))],
             String(showData.dates.startDate), runtimeNum, showData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),
             showData.directors.map(director => director.name), showData.writers.map(director => director.name),
             showData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), showData.producers.map(producers => producers.name),
