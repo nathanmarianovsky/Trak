@@ -10,6 +10,10 @@
 	height: 80%;
 }
 
+#notificationsCollection {
+	border-width: 3px;
+}
+
 #notificationsTitle {
 	padding-left: 17px;
 	padding-right: 17px;
@@ -18,6 +22,11 @@
 #snoozeDropdown {
 	width: 110px !important;
 	border-radius: 17px;
+}
+
+.collection-item {
+	background-color: #D9D9DB !important;
+	border-bottom-width: 3px !important;
 }
 
 .notificationsCheckDiv {

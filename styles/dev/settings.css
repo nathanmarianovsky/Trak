@@ -66,11 +66,15 @@ footer {
 }
 
 #settingsAnalyticsTable tr {
-	border-bottom: 1px solid #0000001f;
+	border-bottom-color: black;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
 }
 
 #settingsAnalyticsTable tr td {
-	border-right: 1px solid #0000001f;
+	border-right-color: black;
+	border-right-style: solid;
+	border-right-width: 1px;
 }
 
 #settingsColorDiv {
@@ -117,12 +121,6 @@ footer {
 
 .fullScreenRow {
 	margin-top: 15px;
-}
-
-.hyperlink {
-	color: blue;
-    text-decoration: underline;
-    cursor: pointer;
 }
 
 .settingsAnalyticsInput {

@@ -9,8 +9,9 @@ body {
 	overflow-x: hidden;
 }
 
-input {
+input, textarea {
 	color: black !important;
+	color-scheme: light !important;
 }
 
 button {
@@ -158,6 +159,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	background-color: #2A2A8E !important;
 }
 
+.caret {
+	fill: black !important;
+}
+
 .checkboxLabel {
 	display: block;
 }
@@ -174,8 +179,25 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	line-height: 20px !important;
 }
 
+.collapsible {
+	border-width: 3px !important;
+}
+
+.collapsible-header, .modal .modal-content,
+.modal .modal-footer {
+	background-color: #D9D9DB !important;
+}
+
+.collapsible li {
+	border-bottom-width: 3px !important;
+}
+
 .dropdown-content li>span, .select-wrapper span {
 	color: #2A2A8E !important;
+}
+
+.file-path {
+	font-size: 12px !important;
 }
 
 .genreRow {
@@ -192,6 +214,13 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	height: 25px;
 }
 
+.hyperlink {
+	color: blue;
+    text-decoration: underline;
+    font-weight: bold;
+    cursor: pointer;
+}
+
 .modal {
 	border-radius: 30px !important;
 }
@@ -201,10 +230,6 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	margin-left: 3px !important;
 	border-radius: 30px !important;
 	color: white !important;
-}
-
-.modal .modal-content, .modal .modal-footer {
-	background-color: #D9D9DB !important;
 }
 
 .navbar-fixed {
