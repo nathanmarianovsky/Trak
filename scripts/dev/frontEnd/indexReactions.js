@@ -192,21 +192,33 @@ ipcRenderer.on("updateAvailable", (event, response) => {
     // Display the update available button on the top nav of the index page.
     document.getElementById("updateAvailable").style.display = "inline-block";
     // Fill the update modal with content obtained from the github api.
-    document.getElementById("updateModalContent").innerHTML = response[3] + "<br>"
-        + "More information can be found at: <a id='updateLink' val='" + response[0] + "' class='hyperlink'>Github Release</a>" + "." + "<br><br>"
-        + "Current Version: " + response[2] + "<br>" + "Update Version: " + response[1];
+    document.getElementById("updateModalContent").innerHTML = response[0][3] + "<br>"
+        + "More information can be found at: <a id='updateLink' val='" + response[0][0] + "' class='hyperlink'>Github Release</a>" + "." + "<br><br>"
+        + "Current Version: " + response[0][2] + "<br>" + "Update Version: " + response[0][1];
+    // Fill the update modal with changelog content.
+    const changelog = document.getElementById("updateModalChangelog");
+    for(let r = 0; r < response[1].length; r++) {
+        // document.getElementById("updateModalChangelog").innerHTML += "<h6>" + response[1][r][0] + "</h6><br>";
+        let changelogHeading = document.createElement("h6"),
+            changelogBody = document.createElement("div");
+        changelogHeading.textContent = response[1][r][0];
+        changelogHeading.classList.add("center");
+        changelogBody.innerHTML = response[1][r][1];
+        changelog.append(changelogHeading, changelogBody);
+    }
     // Listen for a click on the update modal submission button in order to start downloading the updated installer.
     document.getElementById("appUpdate").addEventListener("click", e => {
+        document.getElementById("updateCurrent").click();
         // Display the download preloader.
         document.getElementById("updatePreloaderDiv").style.display = "block";
         let updateModalContentDiv = document.getElementById("updateModal").children[0];
         updateModalContentDiv.scrollTo(0, updateModalContentDiv.scrollHeight);
         // Send a request to the back-end for the update process to start.
-        ipcRenderer.send("appUpdate", response.slice(4));
+        ipcRenderer.send("appUpdate", response[0].slice(4));
     });
     // Listen for a click on the github release link in order to open it in the default browser.
     document.getElementById("updateLink").addEventListener("click", e => {
-        ipcRenderer.send("githubRelease", response[0]);
+        ipcRenderer.send("githubRelease", response[0][0]);
     });
 });
 

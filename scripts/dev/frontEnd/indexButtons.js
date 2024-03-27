@@ -130,7 +130,9 @@ window.addEventListener("load", () => {
         bookSearchSubmission = document.getElementById("bookSearchSubmission"),
         filmSearchSubmission = document.getElementById("filmSearchSubmission"),
         mangaSearchSubmission = document.getElementById("mangaSearchSubmission"),
-        clearNotifications = document.getElementById("clearNotifications");
+        clearNotifications = document.getElementById("clearNotifications"),
+        updateCurrent = document.getElementById("updateCurrent"),
+        updateChangelog = document.getElementById("updateChangelog");
     // Define all page components which will be utilized.
     const tableBody = document.getElementById("tableBody"),
         XLSXTypeSwitchDiv = document.getElementById("XLSXTypeSwitchDiv"),
@@ -162,7 +164,9 @@ window.addEventListener("load", () => {
         databaseModal = document.getElementById("databaseModal"),
         chunkLoad = document.getElementById("chunkPreloader"),
         notifications = document.getElementById("notifications"),
-        notificationsCollection = document.getElementById("notificationsCollection");
+        notificationsCollection = document.getElementById("notificationsCollection"),
+        updateCurrentDiv = document.getElementById("updateCurrentDiv"),
+        updateChangelogDiv = document.getElementById("updateChangelogDiv");
     let submissionList = [],
         tabsLoader = false;
     // Listen for a click on any search tab in order to hide the default search div.
@@ -195,6 +199,22 @@ window.addEventListener("load", () => {
         filterModalGenreHeadingSiblings[1].style.display = "none";
         filterModalGenreHeading.style.marginTop = "0px";
     });
+
+
+    updateCurrent.addEventListener("click", e => {
+        updateCurrentDiv.style.display = "block";
+        updateChangelogDiv.style.display = "none";
+        updateCurrent.parentNode.classList.add("active");
+        updateChangelog.parentNode.classList.remove("active");
+    });
+    updateChangelog.addEventListener("click", e => {
+        updateCurrentDiv.style.display = "none";
+        updateChangelogDiv.style.display = "block";
+        updateCurrent.parentNode.classList.remove("active");
+        updateChangelog.parentNode.classList.add("active");
+    });
+
+
     // Listen for a click event on the home button.
     indexHome.addEventListener("click", e => {
         window.scrollTo(0,0);

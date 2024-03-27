@@ -2202,7 +2202,7 @@ exports.checkForUpdate = (os, https, fs, path, log, dir, win) => {
 	                		}
 	                	}
 	                	// With an update available send a request to the front-end to display the associated update button on the top nav.
-	                	win.webContents.send("updateAvailable", [githubData.html_url, githubData.tag_name.substring(1), curVer, githubData.body, downloadURL, fileName]);
+	                	win.webContents.send("updateAvailable", [[githubData.html_url, githubData.tag_name.substring(1), curVer, githubData.body, downloadURL, fileName], JSON.parse(body).slice(1).map(entry => [entry.name, entry.body.split("introduces the following features:")[1]])]);
 	                }
 	            });
 		    });

@@ -1,6 +1,22 @@
-<div class="modal-content">
-    <h4 class="center">Update Available</h4>
-    <p id="updateModalContent"></p>
+<div class="navbar">
+    <nav id="updateNav" class="z-depth-2">
+        <div class="nav-wrapper">
+            <ul id="updateSelection">
+                <li class="tooltipped active" data-position="below" data-tooltip="Newest Update"><a id="updateCurrent" class="updateSelectionItems"><i class="material-icons">install_desktop</i></a></li>
+                <li class="tooltipped" data-position="below" data-tooltip="Changelog"><a id="updateChangelog" class="updateSelectionItems"><i class="material-icons">manage_history</i></a></li>
+            </ul>
+        </div>
+    </nav>
+</div>
+<div id="updateModalContentDiv" class="modal-content">
+    <div id="updateCurrentDiv">
+        <h4 class="center">Update Available</h4>
+        <p id="updateModalContent"></p>
+    </div>
+    <div id="updateChangelogDiv">
+        <h4 class="center">Previous Versions</h4>
+        <p id="updateModalChangelog"></p>
+    </div>
     <div id="updatePreloaderDiv" class="center">
         <div id="updatePreloader" class="preloader-wrapper big active">
             <div class="spinner-layer">

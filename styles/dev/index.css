@@ -146,12 +146,31 @@
 	height: 20px;
 }
 
-#updateModalContent ul {
+#updateModal {
+	width: 80%;
+	overflow-y: hidden;
+}
+
+#updateChangelogDiv {
+	display: none;
+}
+
+#updateModalContentDiv {
+	height: calc(100% - 120px);
+	padding-top: 30px;
+}
+
+#updateModalContentDiv ul {
 	padding-left: 50px;
 }
 
-#updateModalContent ul li {
+#updateModalContentDiv ul li {
 	list-style-type: disc;
+}
+
+#updateNav {
+	border-top-right-radius: 30px;
+	border-top-left-radius: 30px;
 }
 
 #updatePreloader {
@@ -164,6 +183,11 @@
 #updatePreloaderDiv {
 	font-weight: bold;
 	display: none;
+}
+
+#updateSelection li {
+	width: 50%;
+    text-align: center;
 }
 
 .func {
