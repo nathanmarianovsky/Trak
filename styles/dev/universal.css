@@ -148,6 +148,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	font-size: 12px;
 }
 
+#windowTitle, .material-icons {
+	color: white !important;
+}
+
 #windowTitle span {
 	overflow: hidden;
 	text-overflow: ellipsis;

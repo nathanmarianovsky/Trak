@@ -119,7 +119,9 @@ app.whenReady().then(() => {
 				    	secWinWidth = parseInt(configObj.current.secondaryWindowWidth),
 				    	secWinHeight = parseInt(configObj.current.secondaryWindowHeight),
 				    	secWinFullscreen = configObj.current.secondaryWindowFullscreen,
-				    	iconChoice = configObj.current.icon;
+				    	iconChoice = configObj.current.icon,
+				    	lightCondition = tools.lightOrDark(configObj.current.secondaryColor) == "light",
+						darkCondition = tools.lightOrDark(configObj.current.primaryColor) == "dark";
 			    }
 			    else {
 			    	var primWinWidth = parseInt(configObj.original.primaryWindowWidth),
@@ -130,7 +132,7 @@ app.whenReady().then(() => {
 				    	secWinFullscreen = configObj.original.secondaryWindowFullscreen,
 				    	iconChoice = configObj.original.icon;
 			    }
-			    fs.copyFileSync(path.join(__dirname, "assets", iconChoice + "Logo.png"), path.join(basePath, "Trak", "config", "assets", "logo.png"));
+			    fs.copyFileSync(path.join(__dirname, "assets", (darkCondition ? "white" : "black") + "Logo.png"), path.join(basePath, "Trak", "config", "assets", "logo.png"));
 			    // Read the index.html file.
 			    fs.readFile(path.join(__dirname, "pages", "dist", "index.html"), "UTF8", (issue, indexPage) => {
 			    	// If there was an issue reading the index.html file display a notification on the console.
@@ -145,6 +147,7 @@ app.whenReady().then(() => {
 						indexPage = indexPage.replace(regJS, path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "scripts", "dist", "frontEnd", " ").trim());
 						indexPage = indexPage.replace(new RegExp("../../assets/logo.png", "g"), path.join(basePath, "Trak", "config", "assets", "logo.png"));
 						indexPage = indexPage.replace(regIcons, path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "assets", "titlebarIcons"));
+						if(!darkCondition) { indexPage = indexPage.replace(new RegExp("-w-", "g"), "-k-"); }
 						fs.writeFile(path.join(basePath, "Trak", "localPages", "index.html"), indexPage, "UTF8", prob => {
 							// If there was an issue writing the index.html file display a notification on the console.
 							if(prob) { log.error("There was an issue writing the index.html file to the localPages folder."); }
@@ -177,18 +180,19 @@ app.whenReady().then(() => {
 															const reg1 = new RegExp(configObj.original.primaryColor.toLowerCase(), "g"),
 																reg2 = new RegExp(configObj.original.secondaryColor.toLowerCase(), "g"),
 																reg3 = new RegExp("color:black", "g"),
-																reg4 = new RegExp("border-bottom-color:black", "g"),
-																reg5 = new RegExp("border-right-color:black", "g"),
-																reg6 = new RegExp("fill:black", "g"),
-																reg7 = new RegExp("color-scheme:light", "g");
-															const lightCondition = tools.lightOrDark(configObj.current.secondaryColor) == "light";
+																reg4 = new RegExp(".material-icons{color:white", "g"),
+																reg5 = new RegExp("border-bottom-color:black", "g"),
+																reg6 = new RegExp("border-right-color:black", "g"),
+																reg7 = new RegExp("fill:black", "g"),
+																reg8 = new RegExp("color-scheme:light", "g");
 															stylesFile = stylesFile.replace(reg1, configObj.current.primaryColor);
 															stylesFile = stylesFile.replace(reg2, configObj.current.secondaryColor);
 															stylesFile = stylesFile.replace(reg3, lightCondition ? "color:black" : "color:white");
-															stylesFile = stylesFile.replace(reg4, lightCondition ? "border-bottom-color:black" : "border-bottom-color:white");
-															stylesFile = stylesFile.replace(reg5, lightCondition ? "border-right-color:black" : "border-right-color:white");
-															stylesFile = stylesFile.replace(reg6, lightCondition ? "fill:black" : "fill:white");
-															stylesFile = stylesFile.replace(reg7, lightCondition ? "color-scheme:light" : "color-scheme:dark");
+															stylesFile = stylesFile.replace(reg4, darkCondition ? ".material-icons{color:white" : ".material-icons{color:black");
+															stylesFile = stylesFile.replace(reg5, lightCondition ? "border-bottom-color:black" : "border-bottom-color:white");
+															stylesFile = stylesFile.replace(reg6, lightCondition ? "border-right-color:black" : "border-right-color:white");
+															stylesFile = stylesFile.replace(reg7, lightCondition ? "fill:black" : "fill:white");
+															stylesFile = stylesFile.replace(reg8, lightCondition ? "color-scheme:light" : "color-scheme:dark");
 														}
 														fs.writeFile(path.join(basePath, "Trak", "localStyles", "styles.css"), stylesFile, "UTF8", err => {
 															// If there was an issue writing the styles.css file display a notification on the console.
