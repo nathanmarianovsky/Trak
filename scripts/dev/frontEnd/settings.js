@@ -165,7 +165,8 @@ window.addEventListener("load", () => {
     		secondaryWindowHeight = document.getElementById("secondaryWindowHeight"),
             secondaryWindowFullscreen = document.getElementById("secondaryWindowFullscreen"),
             notificationsInterval = document.getElementById("notificationsInterval"),
-            logoColor = document.getElementById("logoColor");
+            logoColor = document.getElementById("logoColor"),
+            updateLoad = document.getElementById("updateLoad");
         // Display a notification if there was an error in reading the configuration file.
         if(configurationsFileStr == "") {
             M.toast({"html": "There was an error opening the configuration file associated to the application settings.", "classes": "rounded"});
@@ -192,6 +193,8 @@ window.addEventListener("load", () => {
             notificationsInterval.setAttribute("lastValue", "14");
             logoColor.value = "white";
             logoColor.setAttribute("lastValue", "white");
+            updateLoad.checked = true;
+            updateLoad.setAttribute("lastValue", "true");
         }
         // If the file loaded without issues populate the settings modal with the current application setup.
         else {
@@ -226,6 +229,8 @@ window.addEventListener("load", () => {
                 }
                 logoColor.value = configData[configData.current != undefined ? "current" : "original"].icon;
                 logoColor.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].icon);
+                updateLoad.checked = configData[configData.current != undefined ? "current" : "original"].update;
+                updateLoad.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].update);
                 initSelect();
                 // Listen for a click on the color reset button to restore the color inputs to the original values.
                 settingsColorReset.addEventListener("click", e => {
@@ -292,6 +297,7 @@ window.addEventListener("load", () => {
                     secondaryWindowFullscreen.checked = secondaryWindowFullscreen.getAttribute("lastValue") == "true";
                     tutorialLoad.checked = tutorialLoad.getAttribute("lastValue") == "true";
                     notificationsInterval.value = notificationsInterval.getAttribute("lastValue");
+                    updateLoad.checked = updateLoad.getAttribute("lastValue") == "true";
         		}
         	});
             // Listen for a click on the apply button in order to submit a back-end request to update the configuration files.
@@ -312,6 +318,7 @@ window.addEventListener("load", () => {
         				secondaryWindowHeight.value,
                         secondaryWindowFullscreen.checked,
                         logoColor.value,
+                        updateLoad.checked,
                         tutorialLoad.checked
             		]);
                     ipcRenderer.send("notificationsIntervalSave", notificationsInterval.value);

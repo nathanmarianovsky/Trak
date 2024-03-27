@@ -41,7 +41,8 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
         "secondaryWindowWidth": dataArr[6],
         "secondaryWindowHeight": dataArr[7],
         "secondaryWindowFullscreen": dataArr[8],
-        "icon": dataArr[9]
+        "icon": dataArr[9],
+        "update": dataArr[10]
     };
     // Read the settings tutorial.json file.
     fs.readFile(path.join(appDirectory, "Trak", "config", "tutorial.json"), "UTF8", (er, tutorialFile) => {
@@ -156,7 +157,8 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                     && configurationData.original.secondaryColor == writeData.secondaryColor && configurationData.original.primaryWindowWidth == writeData.primaryWindowWidth
                                     && configurationData.original.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.original.secondaryWindowWidth == writeData.secondaryWindowWidth
                                     && configurationData.original.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.original.primaryWindowFullscreen == writeData.primaryWindowFullscreen
-                                    && configurationData.original.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && configurationData.original.icon == writeData.icon && origIntro == dataArr[dataArr.length - 1]) {
+                                    && configurationData.original.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && configurationData.original.icon == writeData.icon
+                                    && configurationData.original.update == writeData.update && origIntro == dataArr[dataArr.length - 1]) {
                                     writeData.previousPrimaryColor = configurationData.original.primaryColor;
                                     writeData.previousSecondaryColor = configurationData.original.secondaryColor;
                                     configurationData.current = writeData;
@@ -223,7 +225,8 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                     && configurationData.current.secondaryColor == writeData.secondaryColor && configurationData.current.primaryWindowWidth == writeData.primaryWindowWidth
                                     && configurationData.current.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.current.secondaryWindowWidth == writeData.secondaryWindowWidth
                                     && configurationData.current.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.current.primaryWindowFullscreen == writeData.primaryWindowFullscreen
-                                    && configurationData.current.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && configurationData.current.icon == writeData.icon && origIntro == dataArr[dataArr.length - 1]) {
+                                    && configurationData.current.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && configurationData.current.icon == writeData.icon
+                                    && configurationData.current.update == writeData.update && origIntro == dataArr[dataArr.length - 1]) {
                                     writeData.previousPrimaryColor = configurationData.current.primaryColor;
                                     writeData.previousSecondaryColor = configurationData.current.secondaryColor;
                                     configurationData.current = writeData;

@@ -74,7 +74,8 @@ app.whenReady().then(() => {
 					"secondaryWindowWidth": 1400,
 					"secondaryWindowHeight": 1000,
 					"secondaryWindowFullscreen": false,
-					"icon": "white"
+					"icon": "white",
+					"update": true
 				}
 			};
 			fs.writeFileSync(path.join(basePath, "Trak", "config", "configuration.json"), JSON.stringify(writeData), "UTF8");
@@ -120,6 +121,7 @@ app.whenReady().then(() => {
 				    	secWinHeight = parseInt(configObj.current.secondaryWindowHeight),
 				    	secWinFullscreen = configObj.current.secondaryWindowFullscreen,
 				    	iconChoice = configObj.current.icon,
+				    	updateConfig = configObj.current.update,
 				    	lightCondition = tools.lightOrDark(configObj.current.secondaryColor) == "light",
 						darkCondition = tools.lightOrDark(configObj.current.primaryColor) == "dark";
 			    }
@@ -130,7 +132,8 @@ app.whenReady().then(() => {
 				    	secWinWidth = parseInt(configObj.original.secondaryWindowWidth),
 				    	secWinHeight = parseInt(configObj.original.secondaryWindowHeight),
 				    	secWinFullscreen = configObj.original.secondaryWindowFullscreen,
-				    	iconChoice = configObj.original.icon;
+				    	iconChoice = configObj.original.icon,
+				    	updateConfig = configObj.original.update;
 			    }
 			    fs.copyFileSync(path.join(__dirname, "assets", (darkCondition ? "white" : "black") + "Logo.png"), path.join(basePath, "Trak", "config", "assets", "logo.png"));
 			    // Read the index.html file.
@@ -139,7 +142,7 @@ app.whenReady().then(() => {
 			    	if(issue) { log.error("There was an issue reading the index.html file."); }
 			    	else {
 			    		log.info("The index.html file has been successfully read.");
-			    		// Update the href values of the css and js files referenced in the index.html file.
+			    		// Update the href values of the css and js files referenced in the index.html file and icon references as needed.
 			    		const regCSS = new RegExp("../../styles/dist/styles.css", "g"),
 			    			regIcons = new RegExp("../../assets/titlebarIcons", "g"),
 							regJS = new RegExp("../../scripts/dist/frontEnd/", "g");
@@ -219,7 +222,7 @@ app.whenReady().then(() => {
 																	// Load the library records on the primary window.
 																	primaryWindow.webContents.send("loadRows", [true, primaryWindow.getContentSize()[1] - 800]);
 																	// Check for an available application update.
-																	if(updateCheck == false) {
+																	if(updateCheck == false && updateConfig == true) {
 																		tools.checkForUpdate(require("os"), require("https"), fs, path, log, basePath, primaryWindow);
 																		updateCheck = true;
 																	}

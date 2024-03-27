@@ -71,14 +71,18 @@
         </div>
     </div>
     <div id="settingsInterfaceContainer" class="settingsContainer">
-        <h5 class="center settingsHeaders">Tutorial</h5>
-        <p>Select whether the application tutorial is to be shown by default on an application launch.</p>
+        <h5 class="center settingsHeaders">Tutorial/Update</h5>
+        <p>Select options for an application launch.</p>
         <div class="row settingsWindowDiv">
             <form class="col s12">
                 <div class="row fullScreenRow">
-                    <label class="col s12">
-                        <input type="checkbox" id="tutorialLoad" class="filled-in">
-                        <span class="checkboxText">Show on Launch</span>
+                    <label class="col s6">
+                        <input type="checkbox" id="tutorialLoad" class="filled-in" checked>
+                        <span class="checkboxText">Show Tutorial</span>
+                    </label>
+                    <label class="col s6">
+                        <input type="checkbox" id="updateLoad" class="filled-in" checked>
+                        <span class="checkboxText">Check for Available Update</span>
                     </label>
                 </div>
             </form>
