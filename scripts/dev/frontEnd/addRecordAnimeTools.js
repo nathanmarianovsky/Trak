@@ -63,7 +63,7 @@ var animeSave = () => {
                     animeListChildCondition = animeListChild.id.split("_")[2],
                     curContent = [];
                 // Attain the details on a film/ONA/OVA.
-                if(animeListChildCondition == "Single") {
+                if(animeListChildCondition == "AnimeSingle") {
                     let singleName = document.getElementById("li_" + q + "_AnimeSingle_Name").value,
                         singleType = document.getElementById("li_" + q + "_AnimeSingle_Type").value,
                         singleRelease = document.getElementById("li_" + q + "_AnimeSingle_Release").value,
@@ -73,7 +73,7 @@ var animeSave = () => {
                     curContent.push("Single", singleName, singleType, singleRelease, singleLastWatched, singleRating, singleReview);
                 }
                 // Attain the details on a season and its episodes.
-                else if(animeListChildCondition == "Season") {
+                else if(animeListChildCondition == "AnimeSeason") {
                     let seasonName = document.getElementById("li_" + q + "_AnimeSeason_Name").value,
                         seasonStart = document.getElementById("li_" + q + "_AnimeSeason_Start").value,
                         seasonEnd = document.getElementById("li_" + q + "_AnimeSeason_End").value,
@@ -154,7 +154,7 @@ const resetAnimeContentCounters = () => {
     let movieCount = 0, onaCount = 0, ovaCount = 0, specialCount = 0, unclassifiedCount = 0, seasonCount = 0, episodeCount = 0;
     for(let w = 0; w < itemList.length; w++) {
         let scenario = itemList[w].getAttribute("id").split("_")[2];
-        if(scenario == "Single") {
+        if(scenario == "AnimeSingle") {
             let curType = itemList[w].children[0].children[1].children[0].children[0].value;
             if(curType == "Movie") {
                 movieCount++;
@@ -169,7 +169,7 @@ const resetAnimeContentCounters = () => {
                 specialCount++;
             }
         }
-        else if(scenario == "Season") {
+        else if(scenario == "AnimeSeason") {
             seasonCount++;
             episodeCount += itemList[w].children[1].children[0].children.length;
         }
@@ -199,14 +199,14 @@ const calculateAnimeRating = () => {
     for(let k = 0; k < relevantList.children.length; k++) {
         let itemType = relevantList.children[k].id.split("_")[2];
         // Pick out the required input based on whether the item is of a type single or season.
-        if(itemType == "Single") {
+        if(itemType == "AnimeSingle") {
             let singleValue = relevantList.children[k].children[0].children[4].children[0].children[3].value;
             if(singleValue != "") {
                 sum += parseInt(singleValue);
                 count++;
             }
         }
-        else if(itemType == "Season") {
+        else if(itemType == "AnimeSeason") {
             let seasonValue = relevantList.children[k].children[0].children[4].children[0].value;
             if(seasonValue != "N/A") {
                 sum += parseFloat(seasonValue);
@@ -237,7 +237,7 @@ const animeListReorganize = () => {
             childHeader = child.children[0],
             childBody = child.children[1];
         // If the item is of type single then change the id and for attributes accordingly.
-        if(childType == "Single" && parseInt(currentNum) != i) {
+        if(childType == "AnimeSingle" && parseInt(currentNum) != i) {
             let singleNameInput = childHeader.children[0].children[0],
                 singleNameLabel = childHeader.children[0].children[1],
                 singleTypeSelect = childHeader.children[1].children[0].children[3],
@@ -261,7 +261,7 @@ const animeListReorganize = () => {
             singleReviewLabel.setAttribute("for", "li_" + i + "_AnimeSingle_Review");
         }
         // If the item is of type season then change the id and for attributes accordingly.
-        else if(childType == "Season") {
+        else if(childType == "AnimeSeason") {
             let seasonNameInput = childHeader.children[0].children[0],
                 seasonNameLabel = childHeader.children[0].children[1],
                 seasonStartInput = childHeader.children[1].children[0],

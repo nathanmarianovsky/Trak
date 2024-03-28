@@ -11,7 +11,7 @@ This application was motivated by the simple thought that there is no such dedic
 ## Future Features
 
 The following is a list of features that are in the plans for future releases prior to a full release:
-* Update installation process to ask if the user wants application shortcuts.
+* Update Windows installation process to ask if the user wants application shortcuts.
 
 
 ## Application Files
