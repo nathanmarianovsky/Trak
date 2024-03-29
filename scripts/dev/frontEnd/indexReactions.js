@@ -187,7 +187,7 @@ ipcRenderer.on("updateDownloadComplete", event => {
 
 
 
-// IF there is an update then display the button on the index page and wait for the user to confirm that they want to update.
+// If there is an update then display the button on the index page and wait for the user to confirm that they want to update.
 ipcRenderer.on("updateAvailable", (event, response) => {
     // Display the update available button on the top nav of the index page.
     document.getElementById("updateAvailable").style.display = "inline-block";
@@ -224,14 +224,25 @@ ipcRenderer.on("updateAvailable", (event, response) => {
 
 
 
+// Hides record categories on the index page if the user has chosen to hide them.
 ipcRenderer.on("activeCategories", (event, activeArr) => {
-    const settingsAnalyticsTable = document.getElementById("settingsAnalyticsTable");
+    // Define the settings analytics table, content search container, and import database tabs container.
+    const settingsAnalyticsTable = document.getElementById("settingsAnalyticsTable"),
+        contentSearchDiv = document.getElementById("contentSearchDiv"),
+        databaseTabs = document.getElementById("databaseTabs");
+    // Iterate through all record categories.
     for(let k = 0; k < activeArr.length; k++) {
+        // Proceed only if the user has actively chosen to hide the record category.
         if(activeArr[k] == false) {
+            // Hide the appropriate analytics table column to hide.
             settingsAnalyticsTable.children[0].children[0].children[k + 1].style.display = "none";
             for(let j = 0; j < settingsAnalyticsTable.children[1].children.length; j++) {
                 settingsAnalyticsTable.children[1].children[j].children[k + 1].style.display = "none";
             }
+            // Hide the appropriate tab on the content search container.
+            contentSearchDiv.children[0].children[k].style.display = "none";
+            // Hide the appropriate tab on the import database tabs container.
+            databaseTabs.children[0].children[k].style.display = "none";
         }
     }
 });

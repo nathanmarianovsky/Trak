@@ -110,6 +110,7 @@ Driver function for adding all basic listeners.
 	- log provides the means to create application logs to keep track of what is going on.
 	- dev is a boolean representing whether the app is being run in a development mode.
 	- tools provides a collection of local functions.
+	- hiddenArr is an array containing booleans which indicate whether a category type is to be hidden in the application.
 	- updateCondition is a boolean used to ensure that a check for an update occurs only once per application load.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- loadWindow is an object referencing the splash window of the Electron app.
@@ -117,7 +118,7 @@ Driver function for adding all basic listeners.
 	- primaryWindowWidth, primaryWindowHeight, and primaryWindowFullscreen are the window parameters.
 
 */
-exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, loadWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen) => {
+exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, hiddenArr, updateCondition, mainWindow, loadWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen) => {
 	// Close the splash screen once the application is ready.
 	ipc.once("removeSplash", event => {
 		// Update the splash screen to indicate that the application has finished loading and is ready.
@@ -143,6 +144,7 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
 	   		win.webContents.on("did-finish-load", () => {
 	   			// Send a request to the front-end to initialize the loading of library records on the primary window.
 				win.webContents.send("loadRows", win.getContentSize()[1] - 800);
+				win.webContents.send("activeCategories", hiddenArr);
   			});
     	}
   	});
@@ -327,6 +329,7 @@ Driver function for adding all listeners associated to the maintenance of record
 	- log provides the means to create application logs to keep track of what is going on.
 	- dev is a boolean representing whether the app is being run in a development mode.
 	- tools provides a collection of local functions.
+	- hiddenArr is an array containing booleans which indicate whether a category type is to be hidden in the application.
 	- goodreadsScraper, malScraper, and movier provide the means to obtain record details from goodreads, myanimelist, or imdb, respectively.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- dataPath is the current path to the local user data.
@@ -334,7 +337,7 @@ Driver function for adding all listeners associated to the maintenance of record
 	- secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, goodreadsScraper, malScraper, movier, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hiddenArr, goodreadsScraper, malScraper, movier, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Handles the load of the addRecord.html page for the creation of a record.
   	ipc.on("addLoad", (event, scenario) => {
   		// Have the secondary window load the corresponding html structure.
@@ -346,6 +349,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, goo
   				log.info("Loading the application tutorial for the addRecord.html page.");
   				addWindow.webContents.send("addIntroduction");
   			}
+  			addWindow.webContents.send("activeCategories", hiddenArr);
   			// Tell the front-end to display the default message for adding a new record.
   			addWindow.webContents.send("addRecordInitialMessage");
   			// Save the record upon a request from the front-end.
@@ -361,6 +365,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, goo
   		let recordUpdateWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, fs, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 		// Proceed once the window has finished loading.
   		recordUpdateWindow.webContents.on("did-finish-load", () => {
+  			recordUpdateWindow.webContents.send("activeCategories", hiddenArr);
   			// Send a request to the front-end to load the record's details.
   			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
   			// Save the record upon a request from the front-end.
@@ -628,6 +633,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, goo
 			let recordWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, fs, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 			// Proceed once the window has finished loading.
 	  		recordWindow.webContents.on("did-finish-load", () => {
+	  			recordWindow.webContents.send("activeCategories", hiddenArr);
 	  			// Fetch the record details from the corresponding online resource.
 	  			recordWindow.webContents.send("searchRecordStart", categoryArr[w].charAt(0).toUpperCase() + categoryArr[w].substring(1));
 	  			requireObj["tools"](categoryArr[w])[categoryArr[w] + "RecordRequest"](BrowserWindow, ipc, path, fs, log, require("https"), requireObj[categoryArr[w] + "Lib"](), tools, mainWindow, recordWindow, dataPath, submission, requireObj["bookLib"]());
@@ -964,6 +970,7 @@ Driver function for adding all app listeners.
 	- log provides the means to create application logs to keep track of what is going on.
 	- dev is a boolean representing whether the app is being run in a development mode.
 	- tools provides a collection of local functions.
+	- hiddenArr is an array containing booleans which indicate whether a category type is to be hidden in the application.
 	- goodreadsScraper, malScraper, and movier provide the means to obtain record details from goodreads, myanimelist, or imdb, respectively.
 	- updateCondition is a boolean used to ensure that a check for an update occurs only once per application load.
 	- mainWindow is an object referencing the primary window of the Electron app.
@@ -973,15 +980,15 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, goodreadsScraper, malScraper, movier, updateCondition, mainWindow, loadWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, hiddenArr, goodreadsScraper, malScraper, movier, updateCondition, mainWindow, loadWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Add the configuration listeners.
 	exports.addConfigurationListeners(path, fs, log, ipc, originalPath);
 	// Add the titlebar listeners.
 	exports.addTitlebarListeners(BrowserWindow, ipc);
 	// Add the basic listeners.
-	exports.addBasicListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, updateCondition, mainWindow, loadWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
+	exports.addBasicListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, hiddenArr, updateCondition, mainWindow, loadWindow, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen);
 	// Add the listeners associated to all types of records.
-	exports.addRecordListeners(BrowserWindow, path, fs, log, dev, ipc, tools, goodreadsScraper, malScraper, movier, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+	exports.addRecordListeners(BrowserWindow, path, fs, log, dev, ipc, tools, hiddenArr, goodreadsScraper, malScraper, movier, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to anime records.
 	exports.addAnimeListeners(BrowserWindow, path, fs, log, dev, ipc, tools, malScraper, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to book records.

@@ -120,6 +120,13 @@ app.whenReady().then(() => {
 				log.info("The settings configuration file has been successfully read.");
 				// Define the proper window parameters based on whether a current configuration exists.
 			    const configObj = JSON.parse(file);
+			    const categoryActiveArr = [
+					configObj[configObj.current != undefined ? "current" : "original"].active.anime,
+					configObj[configObj.current != undefined ? "current" : "original"].active.book,
+					configObj[configObj.current != undefined ? "current" : "original"].active.film,
+					configObj[configObj.current != undefined ? "current" : "original"].active.manga,
+					configObj[configObj.current != undefined ? "current" : "original"].active.show,
+				];
 			    if(configObj.current != undefined) {
 			    	var primWinWidth = parseInt(configObj.current.primaryWindowWidth),
 				    	primWinHeight = parseInt(configObj.current.primaryWindowHeight),
@@ -228,13 +235,7 @@ app.whenReady().then(() => {
 																	}
 																	// Load the library records on the primary window.
 																	primaryWindow.webContents.send("loadRows", [true, primaryWindow.getContentSize()[1] - 800]);
-																	primaryWindow.webContents.send("activeCategories", [
-																		configObj[configObj.current != undefined ? "current" : "original"].active.anime,
-																		configObj[configObj.current != undefined ? "current" : "original"].active.book,
-																		configObj[configObj.current != undefined ? "current" : "original"].active.film,
-																		configObj[configObj.current != undefined ? "current" : "original"].active.manga,
-																		configObj[configObj.current != undefined ? "current" : "original"].active.show,
-																	]);
+																	primaryWindow.webContents.send("activeCategories", categoryActiveArr);
 																	// Check for an available application update.
 																	if(updateCheck == false && updateConfig == true) {
 																		tools.checkForUpdate(require("os"), require("https"), fs, path, log, basePath, primaryWindow);
@@ -246,7 +247,7 @@ app.whenReady().then(() => {
 															  	tray = new Tray(path.join(__dirname, "assets", iconChoice + "Logo.png"));
 																tools.createTrayMenu("h", primaryWindow, tray, Menu);
 																// Add all of the back-end listeners.
-																require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, goodreadsScraper, malScraper, movier,
+																require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, categoryActiveArr, goodreadsScraper, malScraper, movier,
 																	updateCheck, primaryWindow, splashWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 															}
 														});

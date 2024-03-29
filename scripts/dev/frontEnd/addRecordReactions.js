@@ -92,6 +92,26 @@ ipcRenderer.on("animeFetchDetailsResultName", (event, name) => {
 
 
 
+// Hides record categories on the addRecord page if the user has chosen to hide them.
+ipcRenderer.on("activeCategories", (event, activeArr) => {
+    // Define the category selection container.
+    const categorySelection = document.getElementById("categorySelection");
+    // Iterate through all record categories.
+    for(let k = 0; k < activeArr.length; k++) {
+        // Proceed only if the user has actively chosen to hide the record category.
+        if(activeArr[k] == false) {
+            // Hide the category selection on the navbar.
+            categorySelection.children[k].style.display = "none";
+        }
+        else {
+            // If the category is not to be hidden then adjust its width accordingly.
+            categorySelection.children[k].style.width = (100 / activeArr.reduce((accum, cur) => accum + (cur == true ? 1 : 0), 0)) + "%";
+        }
+    }
+});
+
+
+
 // On a record details fetch update the page accordingly if the addRecord page opened from the index page content search.
 ipcRenderer.on("searchRecordStart", (event, type) => {
     // Hide the top nav of the addRecord page.

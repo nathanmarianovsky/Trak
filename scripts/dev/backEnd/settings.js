@@ -2,6 +2,7 @@
 
 BASIC DETAILS: Provides all actions associated to working with the app settings.
 
+   - configRecordTypeCompare: Compares two application configuration objects to determine whether they have the same active record categories.
    - updateSettings: Handles the update of the settings configuration file.
 
 */
@@ -16,6 +17,13 @@ var exports = {};
 
 
 
+/*
+
+Compares two application configuration objects to determine whether they have the same active record categories.
+
+    - lhs and rhs are objects representing an application configuration.
+
+*/
 exports.configRecordTypeCompare = (lhs, rhs) => {
     return lhs.active.anime == rhs.active.anime
         && lhs.active.book == rhs.active.book
