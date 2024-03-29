@@ -75,7 +75,14 @@ app.whenReady().then(() => {
 					"secondaryWindowHeight": 1000,
 					"secondaryWindowFullscreen": false,
 					"icon": "white",
-					"update": true
+					"update": true,
+					"active": {
+						"anime": true,
+						"book": true,
+						"film": true,
+						"manga": true,
+						"show": true
+					}
 				}
 			};
 			fs.writeFileSync(path.join(basePath, "Trak", "config", "configuration.json"), JSON.stringify(writeData), "UTF8");
@@ -221,6 +228,13 @@ app.whenReady().then(() => {
 																	}
 																	// Load the library records on the primary window.
 																	primaryWindow.webContents.send("loadRows", [true, primaryWindow.getContentSize()[1] - 800]);
+																	primaryWindow.webContents.send("activeCategories", [
+																		configObj[configObj.current != undefined ? "current" : "original"].active.anime,
+																		configObj[configObj.current != undefined ? "current" : "original"].active.book,
+																		configObj[configObj.current != undefined ? "current" : "original"].active.film,
+																		configObj[configObj.current != undefined ? "current" : "original"].active.manga,
+																		configObj[configObj.current != undefined ? "current" : "original"].active.show,
+																	]);
 																	// Check for an available application update.
 																	if(updateCheck == false && updateConfig == true) {
 																		tools.checkForUpdate(require("os"), require("https"), fs, path, log, basePath, primaryWindow);

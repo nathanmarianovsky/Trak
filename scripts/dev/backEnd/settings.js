@@ -16,6 +16,16 @@ var exports = {};
 
 
 
+exports.configRecordTypeCompare = (lhs, rhs) => {
+    return lhs.active.anime == rhs.active.anime
+        && lhs.active.book == rhs.active.book
+        && lhs.active.film == rhs.active.film
+        && lhs.active.manga == rhs.active.manga
+        && lhs.active.show == rhs.active.show;
+};
+
+
+
 /*
 
 Handles the update of all settings files.
@@ -42,7 +52,14 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
         "secondaryWindowHeight": dataArr[7],
         "secondaryWindowFullscreen": dataArr[8],
         "icon": dataArr[9],
-        "update": dataArr[10]
+        "update": dataArr[10],
+        "active": {
+            "anime": dataArr[11],
+            "book": dataArr[12],
+            "film": dataArr[13],
+            "manga": dataArr[14],
+            "show": dataArr[15]
+        }
     };
     // Read the settings tutorial.json file.
     fs.readFile(path.join(appDirectory, "Trak", "config", "tutorial.json"), "UTF8", (er, tutorialFile) => {
@@ -158,7 +175,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                     && configurationData.original.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.original.secondaryWindowWidth == writeData.secondaryWindowWidth
                                     && configurationData.original.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.original.primaryWindowFullscreen == writeData.primaryWindowFullscreen
                                     && configurationData.original.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && configurationData.original.icon == writeData.icon
-                                    && configurationData.original.update == writeData.update && origIntro == dataArr[dataArr.length - 1]) {
+                                    && exports.configRecordTypeCompare(configurationData.original, writeData) && configurationData.original.update == writeData.update && origIntro == dataArr[dataArr.length - 1]) {
                                     writeData.previousPrimaryColor = configurationData.original.primaryColor;
                                     writeData.previousSecondaryColor = configurationData.original.secondaryColor;
                                     configurationData.current = writeData;
@@ -226,7 +243,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                     && configurationData.current.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.current.secondaryWindowWidth == writeData.secondaryWindowWidth
                                     && configurationData.current.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.current.primaryWindowFullscreen == writeData.primaryWindowFullscreen
                                     && configurationData.current.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && configurationData.current.icon == writeData.icon
-                                    && configurationData.current.update == writeData.update && origIntro == dataArr[dataArr.length - 1]) {
+                                    && exports.configRecordTypeCompare(configurationData.current, writeData) && configurationData.current.update == writeData.update && origIntro == dataArr[dataArr.length - 1]) {
                                     writeData.previousPrimaryColor = configurationData.current.primaryColor;
                                     writeData.previousSecondaryColor = configurationData.current.secondaryColor;
                                     configurationData.current = writeData;

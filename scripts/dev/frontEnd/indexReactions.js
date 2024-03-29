@@ -224,6 +224,20 @@ ipcRenderer.on("updateAvailable", (event, response) => {
 
 
 
+ipcRenderer.on("activeCategories", (event, activeArr) => {
+    const settingsAnalyticsTable = document.getElementById("settingsAnalyticsTable");
+    for(let k = 0; k < activeArr.length; k++) {
+        if(activeArr[k] == false) {
+            settingsAnalyticsTable.children[0].children[0].children[k + 1].style.display = "none";
+            for(let j = 0; j < settingsAnalyticsTable.children[1].children.length; j++) {
+                settingsAnalyticsTable.children[1].children[j].children[k + 1].style.display = "none";
+            }
+        }
+    }
+});
+
+
+
 // Display the import modal in order to ask the user on whether an imported record should overwrite a record with the same name in the current library.
 ipcRenderer.on("importRecordExists", (event, response) => {
     // Define the form to which record checkboxes will be appended for user approval.

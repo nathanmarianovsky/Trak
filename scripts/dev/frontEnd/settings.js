@@ -166,7 +166,12 @@ window.addEventListener("load", () => {
             secondaryWindowFullscreen = document.getElementById("secondaryWindowFullscreen"),
             notificationsInterval = document.getElementById("notificationsInterval"),
             logoColor = document.getElementById("logoColor"),
-            updateLoad = document.getElementById("updateLoad");
+            updateLoad = document.getElementById("updateLoad"),
+            animeActive = document.getElementById("animeActive"),
+            bookActive = document.getElementById("bookActive"),
+            filmActive = document.getElementById("filmActive"),
+            mangaActive = document.getElementById("mangaActive"),
+            showActive = document.getElementById("showActive");
         // Display a notification if there was an error in reading the configuration file.
         if(configurationsFileStr == "") {
             M.toast({"html": "There was an error opening the configuration file associated to the application settings.", "classes": "rounded"});
@@ -195,6 +200,16 @@ window.addEventListener("load", () => {
             logoColor.setAttribute("lastValue", "white");
             updateLoad.checked = true;
             updateLoad.setAttribute("lastValue", "true");
+            animeActive.checked = true;
+            animeActive.setAttribute("lastValue", "true");
+            bookActive.checked = true;
+            bookActive.setAttribute("lastValue", "true");
+            filmActive.checked = true;
+            filmActive.setAttribute("lastValue", "true");
+            mangaActive.checked = true;
+            mangaActive.setAttribute("lastValue", "true");
+            showActive.checked = true;
+            showActive.setAttribute("lastValue", "true");
         }
         // If the file loaded without issues populate the settings modal with the current application setup.
         else {
@@ -220,6 +235,16 @@ window.addEventListener("load", () => {
                 secondaryWindowHeight.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowHeight);
                 secondaryWindowFullscreen.checked = configData[configData.current != undefined ? "current" : "original"].secondaryWindowFullscreen;
                 secondaryWindowFullscreen.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowFullscreen);
+                animeActive.checked = configData[configData.current != undefined ? "current" : "original"].active.anime;
+                animeActive.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].active.anime);
+                bookActive.checked = configData[configData.current != undefined ? "current" : "original"].active.book;
+                bookActive.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].active.book);
+                filmActive.checked = configData[configData.current != undefined ? "current" : "original"].active.film;
+                filmActive.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].active.film);
+                mangaActive.checked = configData[configData.current != undefined ? "current" : "original"].active.manga;
+                mangaActive.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].active.manga);
+                showActive.checked = configData[configData.current != undefined ? "current" : "original"].active.show;
+                showActive.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].active.show);
                 if(notificationsFileStr == "") {
                     M.toast({"html": "There was an error opening the notifications file associated to the application notifications.", "classes": "rounded"});
                 }
@@ -298,6 +323,11 @@ window.addEventListener("load", () => {
                     tutorialLoad.checked = tutorialLoad.getAttribute("lastValue") == "true";
                     notificationsInterval.value = notificationsInterval.getAttribute("lastValue");
                     updateLoad.checked = updateLoad.getAttribute("lastValue") == "true";
+                    animeActive.checked = animeActive.getAttribute("lastValue") == "true";
+                    bookActive.checked = bookActive.getAttribute("lastValue") == "true";
+                    filmActive.checked = filmActive.getAttribute("lastValue") == "true";
+                    mangaActive.checked = mangaActive.getAttribute("lastValue") == "true";
+                    showActive.checked = showActive.getAttribute("lastValue") == "true";
         		}
         	});
             // Listen for a click on the apply button in order to submit a back-end request to update the configuration files.
@@ -305,7 +335,8 @@ window.addEventListener("load", () => {
                 // Format the submitted directory.
         		const submitPath = appPath.value.substring(appPath.value.length - 10) == "\\Trak\\data" ? appPath.value : appPath.value + "\\Trak\\data";
                 // Check that the window sizes meet the minimal requirements.
-                if(parseInt(primaryWindowWidth.value) >= 1000 && parseInt(primaryWindowHeight.value) >= 800 && parseInt(secondaryWindowWidth.value) >= 1400 && parseInt(secondaryWindowHeight.value) >= 1000) {
+                if(parseInt(primaryWindowWidth.value) >= 1000 && parseInt(primaryWindowHeight.value) >= 800 && parseInt(secondaryWindowWidth.value) >= 1400 && parseInt(secondaryWindowHeight.value) >= 1000
+                    && Array.from(document.getElementsByClassName("categoryActiveCheckbox")).map(elem => elem.children[0].checked).reduce((accum, cur) => accum || cur, false)) {
             		// Submit a back-end request to update the configuration files.
                     ipcRenderer.send("settingsSave", [
             			submitPath,
@@ -319,6 +350,11 @@ window.addEventListener("load", () => {
                         secondaryWindowFullscreen.checked,
                         logoColor.value,
                         updateLoad.checked,
+                        animeActive.checked,
+                        bookActive.checked,
+                        filmActive.checked,
+                        mangaActive.checked,
+                        showActive.checked,
                         tutorialLoad.checked
             		]);
                     ipcRenderer.send("notificationsIntervalSave", notificationsInterval.value);
@@ -340,6 +376,9 @@ window.addEventListener("load", () => {
                 // Display a notification if the secondary window height is too small.
                 else if(parseInt(secondaryWindowHeight.value) < 1000) {
                     M.toast({"html": "The secondary window height has to be at least 1000.", "classes": "rounded"});
+                }
+                else {
+                    M.toast({"html": "At least one record category has to be selected for the application to function properly.", "classes": "rounded"});
                 }
         	});
             // Listen for a change in the path input in order to highlight it accordingly.

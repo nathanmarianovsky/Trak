@@ -119,6 +119,10 @@ footer {
     text-align: center;
 }
 
+.categoryActiveCheckbox {
+	width: 20% !important;
+}
+
 .fullScreenRow {
 	margin-top: 15px;
 }
