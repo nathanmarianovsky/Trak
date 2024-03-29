@@ -469,7 +469,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 relatedContentListeners(filmProductionCompanies);
                 updateFetchedDataString(filmStarring, recordData.stars, true);
                 relatedContentListeners(filmStarring);
-                filmRating.value = recordData.rating + " m";
+                filmRating.value = recordData.rating;
                 updateImgLoad("Film", filmImg, recordData.img);
                 updateGenreLoad("Film", filmOtherGenres, recordData.genres);
                 relatedContentListeners(filmOtherGenres);

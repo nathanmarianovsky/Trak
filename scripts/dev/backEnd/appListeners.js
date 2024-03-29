@@ -306,7 +306,7 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
         			associationsFileList.push([focusItem].concat(submissionArr[2]).sort((a, b) => a.split("-").slice(1).join("-").localeCompare(b.split("-").slice(1).join("-"))))
         		}
         		// Write the new associations to the associations configuration file.
-        		fs.writeFile(associationsPath, JSON.stringify({"associations": associationsFileList.filter(arrElem => arrElem.length > 1)}), "UTF8", er => {
+        		fs.writeFile(associationsPath, JSON.stringify({"associations": associationsFileList.filter(arrElem => arrElem.length > 1 && !arrElem.every( (val, i, arr) => val === arr[0] ))}), "UTF8", er => {
         			// If an error occured in writing the associations configuration file then log it and notify the user.
         			if(er) {
         				log.error("There was an issue writing to the associations configuration file.");
