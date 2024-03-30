@@ -229,20 +229,33 @@ ipcRenderer.on("activeCategories", (event, activeArr) => {
     // Define the settings analytics table, content search container, and import database tabs container.
     const settingsAnalyticsTable = document.getElementById("settingsAnalyticsTable"),
         contentSearchDiv = document.getElementById("contentSearchDiv"),
-        databaseTabs = document.getElementById("databaseTabs");
+        databaseTabs = document.getElementById("databaseTabs"),
+        contentSearchTabsContainer = document.getElementById("contentSearchTabsContainer"),
+        databaseTabsContainer = document.getElementById("databaseTabsContainer"),
+        tabDivs = document.getElementsByClassName("tabDiv"),
+        structureCondition = activeArr.filter(elem => elem == true).length == 1;
     // Iterate through all record categories.
     for(let k = 0; k < activeArr.length; k++) {
-        // Proceed only if the user has actively chosen to hide the record category.
-        if(activeArr[k] == false) {
-            // Hide the appropriate analytics table column to hide.
-            settingsAnalyticsTable.children[0].children[0].children[k + 1].style.display = "none";
-            for(let j = 0; j < settingsAnalyticsTable.children[1].children.length; j++) {
-                settingsAnalyticsTable.children[1].children[j].children[k + 1].style.display = "none";
+        if(structureCondition && activeArr[k] == true) {
+            contentSearchTabsContainer.style.display = "none";
+            databaseTabsContainer.style.display = "none";
+            document.getElementById("defaultSearchDiv").classList.add("permHidden");
+            tabDivs[k].classList.add("permShow");
+            document.getElementById("animeSearchSwitch").click();
+        }
+        else if(!structureCondition) {
+            // Proceed only if the user has actively chosen to hide the record category.
+            if(activeArr[k] == false) {
+                // Hide the appropriate analytics table column to hide.
+                settingsAnalyticsTable.children[0].children[0].children[k + 1].style.display = "none";
+                for(let j = 0; j < settingsAnalyticsTable.children[1].children.length; j++) {
+                    settingsAnalyticsTable.children[1].children[j].children[k + 1].style.display = "none";
+                }
+                // Hide the appropriate tab on the content search container.
+                contentSearchDiv.children[0].children[k].style.display = "none";
+                // Hide the appropriate tab on the import database tabs container.
+                databaseTabs.children[0].children[k].style.display = "none";
             }
-            // Hide the appropriate tab on the content search container.
-            contentSearchDiv.children[0].children[k].style.display = "none";
-            // Hide the appropriate tab on the import database tabs container.
-            databaseTabs.children[0].children[k].style.display = "none";
         }
     }
 });

@@ -95,17 +95,24 @@ ipcRenderer.on("animeFetchDetailsResultName", (event, name) => {
 // Hides record categories on the addRecord page if the user has chosen to hide them.
 ipcRenderer.on("activeCategories", (event, activeArr) => {
     // Define the category selection container.
-    const categorySelection = document.getElementById("categorySelection");
+    const categorySelection = document.getElementById("categorySelection"),
+        structureCondition = activeArr.filter(elem => elem == true).length == 1;
     // Iterate through all record categories.
     for(let k = 0; k < activeArr.length; k++) {
-        // Proceed only if the user has actively chosen to hide the record category.
-        if(activeArr[k] == false) {
-            // Hide the category selection on the navbar.
-            categorySelection.children[k].style.display = "none";
+        if(structureCondition && activeArr[k] == true) {
+            document.getElementById("categoryInitial").classList.add("permHidden");
+            categorySelection.children[k].children[0].click();
         }
-        else {
-            // If the category is not to be hidden then adjust its width accordingly.
-            categorySelection.children[k].style.width = (100 / activeArr.reduce((accum, cur) => accum + (cur == true ? 1 : 0), 0)) + "%";
+        else if(!structureCondition) {
+            // Proceed only if the user has actively chosen to hide the record category.
+            if(activeArr[k] == false) {
+                // Hide the category selection on the navbar.
+                categorySelection.children[k].style.display = "none";
+            }
+            else {
+                // If the category is not to be hidden then adjust its width accordingly.
+                categorySelection.children[k].style.width = (100 / activeArr.reduce((accum, cur) => accum + (cur == true ? 1 : 0), 0)) + "%";
+            }
         }
     }
 });

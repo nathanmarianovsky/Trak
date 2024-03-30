@@ -223,6 +223,14 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	height: 25px;
 }
 
+.permHidden {
+	display: none !important;
+}
+
+.permShow {
+	display: block !important;
+}
+
 .hyperlink {
 	color: blue;
     text-decoration: underline;

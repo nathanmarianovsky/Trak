@@ -164,7 +164,7 @@ app.whenReady().then(() => {
 						indexPage = indexPage.replace(regJS, path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "scripts", "dist", "frontEnd", " ").trim());
 						indexPage = indexPage.replace(new RegExp("../../assets/logo.png", "g"), path.join(basePath, "Trak", "config", "assets", "logo.png"));
 						indexPage = indexPage.replace(regIcons, path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "assets", "titlebarIcons"));
-						if(!darkCondition) { indexPage = indexPage.replace(new RegExp("-w-", "g"), "-k-"); }
+						if(!darkCondition && configObj.current != undefined) { indexPage = indexPage.replace(new RegExp("-w-", "g"), "-k-"); }
 						fs.writeFile(path.join(basePath, "Trak", "localPages", "index.html"), indexPage, "UTF8", prob => {
 							// If there was an issue writing the index.html file display a notification on the console.
 							if(prob) { log.error("There was an issue writing the index.html file to the localPages folder."); }
@@ -193,7 +193,7 @@ app.whenReady().then(() => {
 													else {
 														log.info("The styles.css file has been successfully read.");
 														if(configObj.current != undefined) {
-															// If a current configuration exists then apply the primary and secondary colors to the styles.css file.
+															// If a current configuration exists then edit the appropriate styles in the styles.css file.
 															const reg1 = new RegExp(configObj.original.primaryColor.toLowerCase(), "g"),
 																reg2 = new RegExp(configObj.original.secondaryColor.toLowerCase(), "g"),
 																reg3 = new RegExp("color:black", "g"),
@@ -210,6 +210,9 @@ app.whenReady().then(() => {
 															stylesFile = stylesFile.replace(reg6, lightCondition ? "border-right-color:black" : "border-right-color:white");
 															stylesFile = stylesFile.replace(reg7, lightCondition ? "fill:black" : "fill:white");
 															stylesFile = stylesFile.replace(reg8, lightCondition ? "color-scheme:light" : "color-scheme:dark");
+															if(categoryActiveArr.filter(elem => elem == true).length == 1) {
+																stylesFile += "#addRecordsNav{display:none;}";
+															}
 														}
 														fs.writeFile(path.join(basePath, "Trak", "localStyles", "styles.css"), stylesFile, "UTF8", err => {
 															// If there was an issue writing the styles.css file display a notification on the console.
