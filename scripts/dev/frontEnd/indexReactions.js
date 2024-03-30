@@ -233,17 +233,18 @@ ipcRenderer.on("activeCategories", (event, activeArr) => {
         contentSearchTabsContainer = document.getElementById("contentSearchTabsContainer"),
         databaseTabsContainer = document.getElementById("databaseTabsContainer"),
         tabDivs = document.getElementsByClassName("tabDiv"),
-        structureCondition = activeArr.filter(elem => elem == true).length == 1;
+        structureCondition = activeArr.filter(elem => elem == true).length == 1,
+        secondaryCondition = activeArr.filter(elem => elem == false).length > 0;
     // Iterate through all record categories.
     for(let k = 0; k < activeArr.length; k++) {
         if(structureCondition && activeArr[k] == true) {
             contentSearchTabsContainer.style.display = "none";
-            databaseTabsContainer.style.display = "none";
+            // databaseTabsContainer.style.display = "none";
             document.getElementById("defaultSearchDiv").classList.add("permHidden");
             tabDivs[k].classList.add("permShow");
             document.getElementById("animeSearchSwitch").click();
         }
-        else if(!structureCondition) {
+        else if(secondaryCondition) {
             // Proceed only if the user has actively chosen to hide the record category.
             if(activeArr[k] == false) {
                 // Hide the appropriate analytics table column to hide.

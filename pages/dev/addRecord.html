@@ -183,7 +183,7 @@
                                         <span>
                                             File<i class="material-icons right">add</i>
                                         </span>
-                                        <input id="animeAddRecordFiles" type="file" multiple>
+                                        <input id="animeAddRecordFiles" class="addRecordFilesInput" type="file" multiple>
                                     </div>
                                     <div class="file-path-wrapper">
                                         <input id="animeAddRecordFilesText" class="file-path validate" type="text">
@@ -208,15 +208,15 @@
                     </div>
                 </div>
                 <div class="fixed-action-btn">
-                    <a id="animeOptions" class="btn-floating btn-large waves-effect waves-light"><i class="large material-icons">add</i></a>
+                    <a id="animeOptions" class="btn-floating btn-large waves-effect waves-light optionsBtn"><i class="large material-icons">add</i></a>
                     <div id="introductionTargetAnimeOptions" class="tap-target" data-target="animeOptions">
                         <div class="tap-target-content">
                             <p>Use the options to add associated content.</p>
                         </div>
                     </div>
                     <ul>
-                        <li><a id="animeAssociations" href="#associationsModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Associations"><i class="material-icons">local_library</i></a></li>
-                        <li><a id="animeSeasons" href="#animeModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
+                        <li><a id="animeAssociations" href="#associationsModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger associationsBtn" data-position="left" data-tooltip="Associations"><i class="material-icons">local_library</i></a></li>
+                        <li><a id="animeSeasons" href="#animeModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger relatedContentBtn" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
                     </ul>
                 </div>
                 <div id="animeGlobalRatingModal" class="modal infoModal">
@@ -302,7 +302,7 @@
                             </div>
                             <div class="input-field col s4">
                                 <select id="bookMediaType">
-                                    <option value="" disabled selected>N/A</option>
+                                    <option value="" selected>N/A</option>
                                     <option value="audiobook">Audiobook</option>
                                     <option value="ebook">eBook</option>
                                     <option value="hardcover">Hardcover</option>
@@ -349,7 +349,7 @@
                                 <span>
                                     File<i class="material-icons right">add</i>
                                 </span>
-                                <input id="bookAddRecordFiles" type="file" multiple>
+                                <input id="bookAddRecordFiles" class="addRecordFilesInput" type="file" multiple>
                             </div>
                             <div class="file-path-wrapper">
                                 <input id="bookAddRecordFilesText" class="file-path validate" type="text">
@@ -372,7 +372,7 @@
                     </div>
                 </div>
                 <div class="fixed-action-btn">
-                    <a id="bookAssociations" href="#associationsModal" class="btn-floating btn-large waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Associations"><i class="large material-icons">local_library</i></a>
+                    <a id="bookAssociations" href="#associationsModal" class="btn-floating btn-large waves-effect waves-light tooltipped modal-trigger associationsBtn" data-position="left" data-tooltip="Associations"><i class="large material-icons">local_library</i></a>
                     <div id="introductionTargetBookAssociations" class="tap-target" data-target="bookAssociations">
                         <div class="tap-target-content">
                             <p>Connect records of distinct category type.</p>
@@ -536,7 +536,7 @@
                                         <span>
                                             File<i class="material-icons right">add</i>
                                         </span>
-                                        <input id="filmAddRecordFiles" type="file" multiple>
+                                        <input id="filmAddRecordFiles" class="addRecordFilesInput" type="file" multiple>
                                     </div>
                                     <div class="file-path-wrapper">
                                         <input id="filmAddRecordFilesText" class="file-path validate" type="text">
@@ -561,7 +561,7 @@
                     </div>
                 </div>
                 <div class="fixed-action-btn">
-                    <a id="filmAssociations" href="#associationsModal" class="btn-floating btn-large waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Associations"><i class="large material-icons">local_library</i></a>
+                    <a id="filmAssociations" href="#associationsModal" class="btn-floating btn-large waves-effect waves-light tooltipped modal-trigger associationsBtn" data-position="left" data-tooltip="Associations"><i class="large material-icons">local_library</i></a>
                     <div id="introductionTargetFilmAssociations" class="tap-target" data-target="filmAssociations">
                         <div class="tap-target-content">
                             <p>Connect records of distinct category type.</p>
@@ -707,7 +707,7 @@
                                         <span>
                                             File<i class="material-icons right">add</i>
                                         </span>
-                                        <input id="mangaAddRecordFiles" type="file" multiple>
+                                        <input id="mangaAddRecordFiles" class="addRecordFilesInput" type="file" multiple>
                                     </div>
                                     <div class="file-path-wrapper">
                                         <input id="mangaAddRecordFilesText" class="file-path validate" type="text">
@@ -732,15 +732,15 @@
                     </div>
                 </div>
                 <div class="fixed-action-btn">
-                    <a id="mangaOptions" class="btn-floating btn-large waves-effect waves-light"><i class="large material-icons">add</i></a>
+                    <a id="mangaOptions" class="btn-floating btn-large waves-effect waves-light optionsBtn"><i class="large material-icons">add</i></a>
                     <div id="introductionTargetMangaOptions" class="tap-target" data-target="mangaOptions">
                         <div class="tap-target-content">
                             <p>Use the options to add associated content.</p>
                         </div>
                     </div>
                     <ul>
-                        <li><a id="mangaAssociations" href="#associationsModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Associations"><i class="material-icons">local_library</i></a></li>
-                        <li><a id="mangaContent" href="#mangaModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
+                        <li><a id="mangaAssociations" href="#associationsModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger associationsBtn" data-position="left" data-tooltip="Associations"><i class="material-icons">local_library</i></a></li>
+                        <li><a id="mangaContent" href="#mangaModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger relatedContentBtn" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
                     </ul>
                 </div>
                 <div id="mangaGlobalRatingModal" class="modal infoModal">
@@ -916,7 +916,7 @@
                                         <span>
                                             File<i class="material-icons right">add</i>
                                         </span>
-                                        <input id="showAddRecordFiles" type="file" multiple>
+                                        <input id="showAddRecordFiles" class="addRecordFilesInput" type="file" multiple>
                                     </div>
                                     <div class="file-path-wrapper">
                                         <input id="showAddRecordFilesText" class="file-path validate" type="text">
@@ -941,15 +941,15 @@
                     </div>
                 </div>
                 <div class="fixed-action-btn">
-                    <a id="showOptions" class="btn-floating btn-large waves-effect waves-light"><i class="large material-icons">add</i></a>
+                    <a id="showOptions" class="btn-floating btn-large waves-effect waves-light optionsBtn"><i class="large material-icons">add</i></a>
                     <div id="introductionTargetShowOptions" class="tap-target" data-target="showOptions">
                         <div class="tap-target-content">
                             <p>Use the options to add associated content.</p>
                         </div>
                     </div>
                     <ul>
-                        <li><a id="showAssociations" href="#associationsModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Associations"><i class="material-icons">local_library</i></a></li>
-                        <li><a id="showSeasons" href="#showModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
+                        <li><a id="showAssociations" href="#associationsModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger associationsBtn" data-position="left" data-tooltip="Associations"><i class="material-icons">local_library</i></a></li>
+                        <li><a id="showSeasons" href="#showModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger relatedContentBtn" data-position="left" data-tooltip="Related Content"><i class="material-icons">library_add</i></a></li>
                     </ul>
                 </div>
                 <div id="showGlobalRatingModal" class="modal infoModal">

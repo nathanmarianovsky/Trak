@@ -147,7 +147,9 @@ app.whenReady().then(() => {
 				    	secWinHeight = parseInt(configObj.original.secondaryWindowHeight),
 				    	secWinFullscreen = configObj.original.secondaryWindowFullscreen,
 				    	iconChoice = configObj.original.icon,
-				    	updateConfig = configObj.original.update;
+				    	updateConfig = configObj.original.update,
+				    	lightCondition = false,
+				    	darkCondition = false;
 			    }
 			    fs.copyFileSync(path.join(__dirname, "assets", (darkCondition ? "white" : "black") + "Logo.png"), path.join(basePath, "Trak", "config", "assets", "logo.png"));
 			    // Read the index.html file.
@@ -181,6 +183,7 @@ app.whenReady().then(() => {
 										addRecordPage = addRecordPage.replace(regJS, path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "scripts", "dist", "frontEnd", " ").trim());
 										addRecordPage = addRecordPage.replace(new RegExp("../../assets/imgDef.png", "g"), path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "assets", "imgDef.png"));
 										addRecordPage = addRecordPage.replace(regIcons, path.join(__dirname.replace(new RegExp(" ", "g"), "%20"), "assets", "titlebarIcons"));
+										if(!darkCondition && configObj.current != undefined) { addRecordPage = addRecordPage.replace(new RegExp("-w-", "g"), "-k-"); }
 										fs.writeFile(path.join(basePath, "Trak", "localPages", "addRecord.html"), addRecordPage, "UTF8", problem => {
 											// If there was an issue writing the addRecord.html file display a notification on the console.
 											if(problem) { log.error("There was an issue writing the addRecord.html file to the localPages folder."); }
@@ -198,18 +201,20 @@ app.whenReady().then(() => {
 																reg2 = new RegExp(configObj.original.secondaryColor.toLowerCase(), "g"),
 																reg3 = new RegExp("color:black", "g"),
 																reg4 = new RegExp(".material-icons{color:white", "g"),
-																reg5 = new RegExp("border-bottom-color:black", "g"),
-																reg6 = new RegExp("border-right-color:black", "g"),
-																reg7 = new RegExp("fill:black", "g"),
-																reg8 = new RegExp("color-scheme:light", "g");
+																reg5 = new RegExp(".relatedContentBtn i{color:white", "g"),
+																reg6 = new RegExp("border-bottom-color:black", "g"),
+																reg7 = new RegExp("border-right-color:black", "g"),
+																reg8 = new RegExp("fill:black", "g"),
+																reg9 = new RegExp("color-scheme:light", "g");
 															stylesFile = stylesFile.replace(reg1, configObj.current.primaryColor);
 															stylesFile = stylesFile.replace(reg2, configObj.current.secondaryColor);
 															stylesFile = stylesFile.replace(reg3, lightCondition ? "color:black" : "color:white");
 															stylesFile = stylesFile.replace(reg4, darkCondition ? ".material-icons{color:white" : ".material-icons{color:black");
-															stylesFile = stylesFile.replace(reg5, lightCondition ? "border-bottom-color:black" : "border-bottom-color:white");
-															stylesFile = stylesFile.replace(reg6, lightCondition ? "border-right-color:black" : "border-right-color:white");
-															stylesFile = stylesFile.replace(reg7, lightCondition ? "fill:black" : "fill:white");
-															stylesFile = stylesFile.replace(reg8, lightCondition ? "color-scheme:light" : "color-scheme:dark");
+															stylesFile = stylesFile.replace(reg5, darkCondition ? ".relatedContentBtn i{color:white" : ".relatedContentBtn i{color:black");
+															stylesFile = stylesFile.replace(reg6, lightCondition ? "border-bottom-color:black" : "border-bottom-color:white");
+															stylesFile = stylesFile.replace(reg7, lightCondition ? "border-right-color:black" : "border-right-color:white");
+															stylesFile = stylesFile.replace(reg8, lightCondition ? "fill:black" : "fill:white");
+															stylesFile = stylesFile.replace(reg9, lightCondition ? "color-scheme:light" : "color-scheme:dark");
 															if(categoryActiveArr.filter(elem => elem == true).length == 1) {
 																stylesFile += "#addRecordsNav{display:none;}";
 															}

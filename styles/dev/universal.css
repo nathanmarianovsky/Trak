@@ -42,6 +42,17 @@ nav {
 	z-index: 1;
 }
 
+.addRecordBtn, .addRecordFilesDiv span, .addRecordSave i,
+.associationsBtn i, .modalButtons, .optionsBtn i,
+.relatedContentBtn i {
+	color: white !important;
+}
+
+#add i, #windowTitle,
+.categoryLink, .material-icons {
+	color: white;
+}
+
 #animeNameSearchInnerDiv1 input.valid[type="text"]:not(.browser-default),
 #animeNameSearchInnerDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
 #searchBarDiv1 input[type="text"]:not(.browser-default):focus:not([readonly]),
@@ -148,10 +159,6 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	font-size: 12px;
 }
 
-#windowTitle, .material-icons {
-	color: white;
-}
-
 #windowTitle span {
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -244,7 +251,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 
 .modalButtons {
 	background-color: #2A2A8E !important;
-	color: white !important;
+/*	color: white !important;*/
 	margin-left: 3px !important;
 	border-radius: 30px !important;
 }

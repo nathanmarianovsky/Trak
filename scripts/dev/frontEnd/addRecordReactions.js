@@ -96,14 +96,15 @@ ipcRenderer.on("animeFetchDetailsResultName", (event, name) => {
 ipcRenderer.on("activeCategories", (event, activeArr) => {
     // Define the category selection container.
     const categorySelection = document.getElementById("categorySelection"),
-        structureCondition = activeArr.filter(elem => elem == true).length == 1;
+        structureCondition = activeArr.filter(elem => elem == true).length == 1,
+        secondaryCondition = activeArr.filter(elem => elem == false).length > 0;
     // Iterate through all record categories.
     for(let k = 0; k < activeArr.length; k++) {
         if(structureCondition && activeArr[k] == true) {
             document.getElementById("categoryInitial").classList.add("permHidden");
             categorySelection.children[k].children[0].click();
         }
-        else if(!structureCondition) {
+        else if(secondaryCondition) {
             // Proceed only if the user has actively chosen to hide the record category.
             if(activeArr[k] == false) {
                 // Hide the category selection on the navbar.
