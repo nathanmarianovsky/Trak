@@ -102,6 +102,7 @@
 	object-fit: contain;
 	height: auto;
 	width: 100%;
+	mix-blend-mode: color;
 }
 
 .addRecordImgBtnDiv {

@@ -227,35 +227,29 @@ ipcRenderer.on("updateAvailable", (event, response) => {
 // Hides record categories on the index page if the user has chosen to hide them.
 ipcRenderer.on("activeCategories", (event, activeArr) => {
     // Define the settings analytics table, content search container, and import database tabs container.
-    const settingsAnalyticsTable = document.getElementById("settingsAnalyticsTable"),
-        contentSearchDiv = document.getElementById("contentSearchDiv"),
-        databaseTabs = document.getElementById("databaseTabs"),
+    const contentSearchDiv = document.getElementById("contentSearchDiv"),
         contentSearchTabsContainer = document.getElementById("contentSearchTabsContainer"),
-        databaseTabsContainer = document.getElementById("databaseTabsContainer"),
         tabDivs = document.getElementsByClassName("tabDiv"),
         structureCondition = activeArr.filter(elem => elem == true).length == 1,
         secondaryCondition = activeArr.filter(elem => elem == false).length > 0;
     // Iterate through all record categories.
     for(let k = 0; k < activeArr.length; k++) {
+        // Proceed only if there is only one active category.
         if(structureCondition && activeArr[k] == true) {
+            // Hide the content search tabs.
             contentSearchTabsContainer.style.display = "none";
-            // databaseTabsContainer.style.display = "none";
+            // Permanently hide the default message for the content search.
             document.getElementById("defaultSearchDiv").classList.add("permHidden");
+            // Permanently show the appropriate category content search.
             tabDivs[k].classList.add("permShow");
+            // For anime content search specifically change the default search option to a query rather than a season.
             document.getElementById("animeSearchSwitch").click();
         }
         else if(secondaryCondition) {
             // Proceed only if the user has actively chosen to hide the record category.
             if(activeArr[k] == false) {
-                // Hide the appropriate analytics table column to hide.
-                settingsAnalyticsTable.children[0].children[0].children[k + 1].style.display = "none";
-                for(let j = 0; j < settingsAnalyticsTable.children[1].children.length; j++) {
-                    settingsAnalyticsTable.children[1].children[j].children[k + 1].style.display = "none";
-                }
                 // Hide the appropriate tab on the content search container.
                 contentSearchDiv.children[0].children[k].style.display = "none";
-                // Hide the appropriate tab on the import database tabs container.
-                databaseTabs.children[0].children[k].style.display = "none";
             }
         }
     }

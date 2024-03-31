@@ -189,11 +189,24 @@ Adds the functionality for all image buttons based on the category currently cho
 
 */
 const imgButtons = (favLink, prevBtn, addBtn, addInput, remBtn, nextBtn, recordImg, favColor) => {
+    // Define the observer which will check for a source change in a record image.
+    let srcObserver = new MutationObserver(changes => {
+        // Iterate through all changes detected.
+        changes.forEach(change => {
+            // Proceed only if the change detected has to do with the image source.
+            if(change.attributeName.includes("src")) {
+                // Modfy the mix-blend-mode style depending on whether the image source is set to the default.
+                recordImg.src.includes("imgDef.png") == true ? recordImg.style.mixBlendMode = "color" : recordImg.style.mixBlendMode = "normal";
+            }
+        });
+    });
+    // Set the source observer to start detecting changes.
+    srcObserver.observe(recordImg, {attributes : true});
     // Define the default color which will be applied to the favorite image icon.
     const btnColorDefault = newSwitchBackground = "#" + addAlpha(rgba2hex(getComputedStyle(document.getElementById("categorySelection").parentNode.parentNode).backgroundColor).substring(1), 0.4);
     // Listen for a click event on the favorite image button in order to redefine the favorite image for a record.
     favLink.addEventListener("click", e => {
-        if(rgba2hex(favLink.children[0].style.color) == btnColorDefault) {
+        if(favLink.children[0].style.color == "" || rgba2hex(favLink.children[0].style.color) == btnColorDefault) {
             let imgArr = recordImg.getAttribute("list").split(","),
                 imgArrIndex = imgArr.indexOf(recordImg.getAttribute("src"));
             arrayMove(imgArr, imgArrIndex, 0);
