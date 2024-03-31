@@ -2,6 +2,7 @@
 
 BASIC DETAILS: This file serves as the collection of tools utilized by the various back-end requests.
 
+   - compatibilityCheck: Checks the configuration setup to ensure that all proper parameters exist if upgrading from a previous version.
    - lightOrDark: Determines whether a given color represents a dark or light one.
    - parseRecord: Handles the parsing of a record folder name to display.
    - formatFolderName: Formats a string into a proper folder name by removing forbidden characters and whitespaces.
@@ -40,6 +41,68 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
 
 
 var exports = {};
+
+
+
+/*
+
+Checks the configuration setup to ensure that all proper parameters exist if upgrading from a previous version.
+
+	- path and fs provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
+	- dir is the path to the local user data.
+
+*/
+exports.compatibilityCheck = (fs, path, log, dir) => {
+	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, curConfig) => {
+		if(err) {
+			log.error("There was an error in reading the application configuration file.");
+		}
+		else {
+			const typeArr = ["current", "original"],
+				curConfigObj = JSON.parse(curConfig);
+			for(let t = 0; t < typeArr.length; t++) {
+				if(!("path" in curConfigObj[typeArr[t]])) {
+					curConfigObj[typeArr[t]]["path"] = path.join(dir, "Trak", "data");
+				}
+				else if(!("primaryColor" in curConfigObj[typeArr[t]])) {
+					curConfigObj[typeArr[t]]["primaryColor"] = "#2A2A8E";
+				}
+				else if(!("secondaryColor" in curConfigObj[typeArr[t]])) {
+					curConfigObj[typeArr[t]]["secondaryColor"] = "#D9D9DB";
+				}
+				else if(!("primaryWindowWidth" in curConfigObj[typeArr[t]])) {
+					curConfigObj[typeArr[t]]["primaryWindowWidth"] = 1000;
+				}
+				else if(!("primaryWindowHeight" in curConfigObj[typeArr[t]])) {
+					curConfigObj[typeArr[t]]["primaryWindowHeight"] = 800;
+				}
+				else if(!("primaryWindowFullscreen" in curConfigObj[typeArr[t]])) {
+					curConfigObj[typeArr[t]]["primaryWindowFullscreen"] = false;
+				}
+				else if(!("secondaryWindowWidth" in curConfigObj[typeArr[t]])) {
+					curConfigObj[typeArr[t]]["secondaryWindowWidth"] = 1400;
+				}
+				else if(!("secondaryWindowHeight" in curConfigObj[typeArr[t]])) {
+					curConfigObj[typeArr[t]]["secondaryWindowHeight"] = 1000;
+				}
+				else if(!("secondaryWindowFullscreen" in curConfigObj[typeArr[t]])) {
+					curConfigObj[typeArr[t]]["secondaryWindowFullscreen"] = false;
+				}
+				else if(!("icon" in curConfigObj[typeArr[t]])) {
+					curConfigObj[typeArr[t]]["icon"] = "white";
+				}
+				else if(!("update" in curConfigObj[typeArr[t]])) {
+					curConfigObj[typeArr[t]]["update"] = true;
+				}
+				else if(!("active" in curConfigObj[typeArr[t]])) {
+					curConfigObj[typeArr[t]]["active"] = { "anime": true, "book": true, "film": true, "manga": true, "show": true };
+				}
+			}
+			fs.writeFileSync(path.join(dir, "Trak", "config", "configuration.json"), JSON.stringify(curConfigObj), "UTF8");
+		}
+	});
+};
 
 
 

@@ -87,6 +87,7 @@ app.whenReady().then(() => {
 			};
 			fs.writeFileSync(path.join(basePath, "Trak", "config", "configuration.json"), JSON.stringify(writeData), "UTF8");
 		}
+		else { tools.compatibilityCheck(fs, path, log, basePath); }
 		// Create the location file if it does not exist.
 		if(!fs.existsSync(path.join(basePath, "Trak", "config", "location.json"))) {
 			log.info("Creating the location.json file. To be located at " + path.join(basePath, "Trak", "config", "location.json"));

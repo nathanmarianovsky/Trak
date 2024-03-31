@@ -915,12 +915,6 @@ window.addEventListener("load", () => {
             else {
                 databaseCheckLabel.style.left = "90px";
             }
-            // let activeArr = Array.from(document.getElementById("databaseTabsContainer").children).filter(elem => elem.style.display != "none");
-            // if(activeArr.length == 1) {
-            //     document.getElementById("databaseTabs").style.display = "none";
-            //     console.log(activeArr);
-            //     activeArr[0].children[0].click();
-            // }
         }
         // Proceed if the user chooses for zip file type.
         else {
