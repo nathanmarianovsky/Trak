@@ -902,24 +902,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                     let difference = document.getElementById("tableDiv").offsetWidth - document.getElementById("tableDiv").clientWidth;
                     document.getElementById("headersTable").style.width = "calc(95% - " + difference + "px)";
                     // Listen for a change in the input associated to each row checkbox.
-                    checkInput.addEventListener("change", () => {
-                        let btn = document.getElementById("remove"),
-                            checkAllBtn = document.getElementById("checkAll"),
-                            homeSelected = document.getElementById("homeSelected"),
-                            checkArr = Array.from(document.querySelectorAll(".recordsChecks")),
-                            checkTotal = checkArr.length,
-                            checkedNum = checkArr.filter(elem => elem.checked).length;
-                        checkTotal - 1 == checkedNum && !checkAllBtn.checked ? checkAllBtn.checked = true : checkAllBtn.checked = false;
-                        if(checkedNum > 0) {
-                            btn.style.display = "inherit";
-                            if(checkTotal - 1 == checkedNum && !checkAllBtn.checked) { checkedNum--; }
-                            homeSelected.textContent = checkedNum + " Selected";
-                        }
-                        else {
-                            btn.style.display = "none";
-                            homeSelected.textContent = "";
-                        }
-                    });
+                    checkInput.addEventListener("change", recordCheckFunc);
                     // Listen for a click on the name of a record in order to open the update page.
                     tdNameDiv.addEventListener("click", e => {
                         e.preventDefault();
@@ -1099,11 +1082,24 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         searchBar.parentNode.children[2].classList.remove("active");
                         searchBar.classList.remove("valid");
                         searchBar.value = "";
+                        const globalCheck = document.getElementById("checkAll");
+                        globalCheck.removeEventListener("click", checkAllFunc);
+                        globalCheck.addEventListener("click", checkAllFunc);
+                        Array.from(document.getElementsByClassName("recordsChecks")).forEach(checkElem => {
+                            if(checkElem.id != "checkAll") {
+                                checkElem.removeEventListener("change", recordCheckFunc);
+                                checkElem.addEventListener("change", recordCheckFunc);
+                            }
+                        });
                     }
-                    // Handle the filtering on the anime search page.
+                    // Handle the filtering on the content search page.
                     else if(document.getElementById("indexHome").style.display != "none") {
-                        // Define the anime search items.
-                        const pageContent = Array.from(document.getElementById("animeSearchContainer").children);
+                        // Define the content search items.
+                        const pageContent = [].concat(Array.from(document.getElementById("animeSearchContainer").children),
+                            Array.from(document.getElementById("bookSearchContainer").children),
+                            Array.from(document.getElementById("filmSearchContainer").children),
+                            Array.from(document.getElementById("mangaSearchContainer").children),
+                            Array.from(document.getElementById("showSearchContainer").children));
                         // Iterate through the search items to determine if they pass the filter.
                         for(let y = 0; y < pageContent.length; y++) {
                             if(genreCheck.length > 0) {
@@ -1114,7 +1110,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 }
                                 genreOverall == true ? pageContent[y].style.display = "inline-block" : pageContent[y].style.display = "none";
                             }
-                            // If the empty filter is applied then show all anime search items.
+                            // If the empty filter is applied then show all content search items.
                             else { pageContent[y].style.display = "inline-block"; }
                         }
                         // Reset the tooltips in order to reset the page scroll height.

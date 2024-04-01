@@ -199,22 +199,24 @@ window.addEventListener("load", () => {
         filterModalGenreHeadingSiblings[1].style.display = "none";
         filterModalGenreHeading.style.marginTop = "0px";
     });
-
-
+    // Listen for a click event on the current update tab.
     updateCurrent.addEventListener("click", e => {
+        // Show the content for the current update tab.
         updateCurrentDiv.style.display = "block";
-        updateChangelogDiv.style.display = "none";
         updateCurrent.parentNode.classList.add("active");
+        // Hide the content for the update changelog tab.
+        updateChangelogDiv.style.display = "none";
         updateChangelog.parentNode.classList.remove("active");
     });
+    // Listen for a click event on the update changelog tab.
     updateChangelog.addEventListener("click", e => {
+        // Hide the content for the current update tab.
         updateCurrentDiv.style.display = "none";
-        updateChangelogDiv.style.display = "block";
         updateCurrent.parentNode.classList.remove("active");
+        // Show the content for the update changelog tab.
+        updateChangelogDiv.style.display = "block";
         updateChangelog.parentNode.classList.add("active");
     });
-
-
     // Listen for a click event on the home button.
     indexHome.addEventListener("click", e => {
         window.scrollTo(0,0);
@@ -588,32 +590,17 @@ window.addEventListener("load", () => {
                 rowList[i].getAttribute("genreFiltered") == "1" && rowDiv.textContent.toLowerCase().includes(curSearch) ? rowList[i].style.display = "table-row" : rowList[i].style.display = "none";
             }
         }
+        checkAll.removeEventListener("click", checkAllFunc);
+        checkAll.addEventListener("click", checkAllFunc);
+        Array.from(document.getElementsByClassName("recordsChecks")).forEach(checkElem => {
+            if(checkElem.id != "checkAll") {
+                checkElem.removeEventListener("change", recordCheckFunc);
+                checkElem.addEventListener("change", recordCheckFunc);
+            }
+        });
     });
     // Listen for a click event on the check all checkbox in order to check or uncheck all record checkboxes.
-    checkAll.addEventListener("click", e => {
-        // Define the collection of all record rows and the remove button.
-        const bodyList = tableBody.children,
-            homeSelected = document.getElementById("homeSelected");
-            btn = document.getElementById("remove");
-        // If the checkAll is checked then check all records.
-        if(checkAll.checked) {
-            for(let i = 0; i < bodyList.length; i++) {
-                bodyList[i].children[0].children[0].children[0].checked = true;
-            }
-            if(bodyList.length > 0) {
-                btn.style.display = "inherit";
-            }
-            homeSelected.textContent = bodyList.length + " Selected";
-        }
-        // Otherwise, if the checkAll is unchecked then uncheck all records.
-        else {
-            for(let i = 0; i < bodyList.length; i++) {
-                bodyList[i].children[0].children[0].children[0].checked = false;
-            }
-            btn.style.display = "none";
-            homeSelected.textContent = "";
-        }
-    });
+    checkAll.addEventListener("click", checkAllFunc);
     // Listen for a click event on the name sorter to reorder the records.
     nameSort.addEventListener("click", e => {
         e.preventDefault();

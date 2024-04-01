@@ -36,6 +36,55 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
 
 
 
+const checkAllFunc = e => {
+    // Define the collection of all record rows and the remove button.
+    const bodyList = Array.from(document.getElementById("tableBody").children).filter(item => item.style.display != "none"),
+        homeSelected = document.getElementById("homeSelected"),
+        btn = document.getElementById("remove"),
+        checkAll = document.getElementById("checkAll");
+    // If the checkAll is checked then check all records.
+    if(checkAll.checked) {
+        for(let i = 0; i < bodyList.length; i++) {
+            bodyList[i].children[0].children[0].children[0].checked = true;
+        }
+        if(bodyList.length > 0) {
+            btn.style.display = "inherit";
+        }
+        homeSelected.textContent = bodyList.length + " Selected";
+    }
+    // Otherwise, if the checkAll is unchecked then uncheck all records.
+    else {
+        for(let i = 0; i < bodyList.length; i++) {
+            bodyList[i].children[0].children[0].children[0].checked = false;
+        }
+        btn.style.display = "none";
+        homeSelected.textContent = "";
+    }
+};
+
+
+
+const recordCheckFunc = () => {
+    let btn = document.getElementById("remove"),
+        checkAllBtn = document.getElementById("checkAll"),
+        homeSelected = document.getElementById("homeSelected"),
+        checkArr = Array.from(document.querySelectorAll(".recordsChecks")).filter(item => item.parentNode.parentNode.parentNode.style.display != "none"),
+        checkTotal = checkArr.length,
+        checkedNum = checkArr.filter(elem => elem.checked).length;
+    checkTotal - 1 == checkedNum && !checkAllBtn.checked ? checkAllBtn.checked = true : checkAllBtn.checked = false;
+    if(checkedNum > 0) {
+        btn.style.display = "inherit";
+        if(checkTotal - 1 == checkedNum && !checkAllBtn.checked) { checkedNum--; }
+        homeSelected.textContent = checkedNum + " Selected";
+    }
+    else {
+        btn.style.display = "none";
+        homeSelected.textContent = "";
+    }
+};
+
+
+
 /*
 
 Convert a RGBA color to hex.
