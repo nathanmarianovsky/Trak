@@ -171,7 +171,7 @@ const calculateShowRating = () => {
 Reorganize the list items in the associated show modal.
 
 */
-const showListReorganize = () => {
+var showListReorganize = () => {
     // Define the related content list.
     const showModalList = document.getElementById("showList");
     // Iterate through all related content items.

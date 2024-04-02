@@ -2,6 +2,8 @@
 
 BASIC DETAILS: This file provides front-end functions designed to be used by multiple aspects of the app.
 
+    - checkAllFunc: Handler associated to the click event listener on the index page checkAll checkbox.
+    - recordCheckFunc: Handler associated to the change event listener on the index page record checkboxes.
     - rgba2hex: Convert a RGBA color to hex.
     - addAlpha: Provides a hex representing a color with a certain opacity of the given hex color.
     - clearTooltips: Remove all tooltips on the page.
@@ -36,8 +38,15 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
 
 
 
+/*
+
+Handler associated to the click event listener on the index page checkAll checkbox.
+
+   - e is the event object associated to a click event.
+
+*/
 const checkAllFunc = e => {
-    // Define the collection of all record rows and the remove button.
+    // Define the collection of all record rows, the remove button, and checkAll button.
     const bodyList = Array.from(document.getElementById("tableBody").children).filter(item => item.style.display != "none"),
         homeSelected = document.getElementById("homeSelected"),
         btn = document.getElementById("remove"),
@@ -64,19 +73,28 @@ const checkAllFunc = e => {
 
 
 
+/*
+
+Handler associated to the change event listener on the index page record checkboxes.
+
+*/
 const recordCheckFunc = () => {
+    // Define the collection of all record rows, the remove button, checkAll button, and the associated lengths.
     let btn = document.getElementById("remove"),
         checkAllBtn = document.getElementById("checkAll"),
         homeSelected = document.getElementById("homeSelected"),
         checkArr = Array.from(document.querySelectorAll(".recordsChecks")).filter(item => item.parentNode.parentNode.parentNode.style.display != "none"),
         checkTotal = checkArr.length,
         checkedNum = checkArr.filter(elem => elem.checked).length;
+    // Check if the checkAll checkbox should be checked.
     checkTotal - 1 == checkedNum && !checkAllBtn.checked ? checkAllBtn.checked = true : checkAllBtn.checked = false;
+    // Proceed only if at least one record is checked.
     if(checkedNum > 0) {
         btn.style.display = "inherit";
         if(checkTotal - 1 == checkedNum && !checkAllBtn.checked) { checkedNum--; }
         homeSelected.textContent = checkedNum + " Selected";
     }
+    // Otherwise proceed for the case where no records are checked.
     else {
         btn.style.display = "none";
         homeSelected.textContent = "";

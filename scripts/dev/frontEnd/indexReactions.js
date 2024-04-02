@@ -489,7 +489,10 @@ ipcRenderer.on("loadRows", (event, diff) => {
                     tdName.classList.add("left");
                     tdNameOuterDiv.classList.add("recordsNameContainer");
                     tdNameOuterDiv.append(tdNameDiv);
-                    if(recordData.category == "Anime" && recordData.content.length > 0) {
+                    tdNameOuterDiv.classList.add("tooltipped");
+                    tdNameOuterDiv.setAttribute("data-position", "right");
+                    // if(recordData.category == "Anime" && recordData.content.length > 0) {
+                    if(recordData.category == "Anime") {
                         let movieCount = 0, onaCount = 0, ovaCount = 0, specialCount = 0, unclassifiedCount = 0, seasonCount = 0, episodeCount = 0;
                         for(let t = 0; t < recordData.content.length; t++) {
                             if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Movie") { movieCount++; }
@@ -518,8 +521,6 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         globalAnimeTypes[3] += ovaCount;
                         globalAnimeTypes[4] += specialCount;
                         globalAnimeTypes[5] += movieCount;
-                        tdNameOuterDiv.classList.add("tooltipped");
-                        tdNameOuterDiv.setAttribute("data-position", "right");
                         let movieStr = (movieCount == 1 ? "1 Movie" : movieCount + " Movies"),
                             onaStr = (onaCount == 1 ? "1 ONA" : onaCount + " ONAs"),
                             ovaStr = (ovaCount == 1 ? "1 OVA" : ovaCount + " OVAs"),
@@ -552,21 +553,24 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "");
                             }
                         }
-                        tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
+                        tdNameOuterDiv.setAttribute("data-tooltip", '<img width="150" height="auto" src="' + recordData.img[0] + '"><br>' + tooltipStr);
                     }
                     else if(recordData.category == "Book") {
                         let curCheck = (new Date(recordData.publicationDate)).getTime();
                         if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                             newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Book", recordData.publicationDate, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                         }
+                        tdNameOuterDiv.setAttribute("data-tooltip", '<img width="150" height="auto" src="' + recordData.img[0] + '">');
                     }
                     else if(recordData.category == "Film") {
                         let curCheck = (new Date(recordData.release)).getTime();
                         if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                             newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Film", recordData.release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                         }
+                        tdNameOuterDiv.setAttribute("data-tooltip", '<img width="150" height="auto" src="' + recordData.img[0] + '">');
                     }
-                    else if(recordData.category == "Manga" && recordData.content.length > 0) {
+                    // else if(recordData.category == "Manga" && recordData.content.length > 0) {
+                    else if(recordData.category == "Manga") {
                         let chapterCount = 0, volumeCount = 0;
                         for(let t = 0; t < recordData.content.length; t++) {
                             if(recordData.content[t].scenario == "Chapter") {
@@ -582,8 +586,6 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         }
                         globalMangaTypes[0] += volumeCount;
                         globalMangaTypes[1] += chapterCount;
-                        tdNameOuterDiv.classList.add("tooltipped");
-                        tdNameOuterDiv.setAttribute("data-position", "right");
                         let chapterStr = (chapterCount == 1 ? "1 Chapter" : chapterCount + " Chapters"),
                             volumeStr = (volumeCount == 1 ? "1 Volume" : volumeCount + " Volumes"),
                             tooltipStr = "";
@@ -593,9 +595,10 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         if(volumeCount > 0) {
                             tooltipStr += tooltipStr.length > 0 ? " and " + volumeStr : volumeStr;
                         }
-                        tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
+                        tdNameOuterDiv.setAttribute("data-tooltip", '<img width="150" height="auto" src="' + recordData.img[0] + '"><br>' + tooltipStr);
                     }
-                    else if(recordData.category == "Show" && recordData.content.length > 0) {
+                    // else if(recordData.category == "Show" && recordData.content.length > 0) {
+                    else if(recordData.category == "Show") {
                         let seasonCount = 0, episodeCount = 0;
                         for(let t = 0; t < recordData.content.length; t++) {
                             seasonCount++;
@@ -607,8 +610,6 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         }
                         globalShowTypes[0] += seasonCount;
                         globalShowTypes[1] += episodeCount;
-                        tdNameOuterDiv.classList.add("tooltipped");
-                        tdNameOuterDiv.setAttribute("data-position", "right");
                         let seasonStr = (seasonCount == 1
                                 ? "1 Season with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")
                                 : seasonCount + " Seasons with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")),
@@ -616,7 +617,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         if(seasonCount > 0) {
                             tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "");
                         }
-                        tdNameOuterDiv.setAttribute("data-tooltip", tooltipStr);
+                        tdNameOuterDiv.setAttribute("data-tooltip", '<img width="150" height="auto" src="' + recordData.img[0] + '"><br>' + tooltipStr);
                     }
                     // If a synopsis is availble then create a link for it to open the synopsis modal.
                     if(recordData.synopsis != undefined && recordData.synopsis.length > 0) {
@@ -1082,9 +1083,11 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         searchBar.parentNode.children[2].classList.remove("active");
                         searchBar.classList.remove("valid");
                         searchBar.value = "";
+                        // Reset the checkAll listener.
                         const globalCheck = document.getElementById("checkAll");
                         globalCheck.removeEventListener("click", checkAllFunc);
                         globalCheck.addEventListener("click", checkAllFunc);
+                        // Reset the record checkboxes.
                         Array.from(document.getElementsByClassName("recordsChecks")).forEach(checkElem => {
                             if(checkElem.id != "checkAll") {
                                 checkElem.removeEventListener("change", recordCheckFunc);

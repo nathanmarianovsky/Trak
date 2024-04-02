@@ -205,7 +205,7 @@ const calculateMangaRating = () => {
 Reorganize the list items in the associated manga modal.
 
 */
-const mangaListReorganize = () => {
+var mangaListReorganize = () => {
     // Define the related content list.
     const mangaModalList = document.getElementById("mangaList");
     // Iterate through all related content items.

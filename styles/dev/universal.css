@@ -231,6 +231,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	height: 25px;
 }
 
+.material-tooltip {
+	font-size: 12px !important;
+}
+
 .permHidden {
 	display: none !important;
 }

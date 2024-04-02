@@ -590,8 +590,10 @@ window.addEventListener("load", () => {
                 rowList[i].getAttribute("genreFiltered") == "1" && rowDiv.textContent.toLowerCase().includes(curSearch) ? rowList[i].style.display = "table-row" : rowList[i].style.display = "none";
             }
         }
+        // Reset the checkAll listener.
         checkAll.removeEventListener("click", checkAllFunc);
         checkAll.addEventListener("click", checkAllFunc);
+        // Reset the record checkboxes.
         Array.from(document.getElementsByClassName("recordsChecks")).forEach(checkElem => {
             if(checkElem.id != "checkAll") {
                 checkElem.removeEventListener("change", recordCheckFunc);

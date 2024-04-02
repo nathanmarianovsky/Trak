@@ -225,7 +225,7 @@ const calculateAnimeRating = () => {
 Reorganize the list items in the associated anime modal.
 
 */
-const animeListReorganize = () => {
+var animeListReorganize = () => {
     // Define the related content list.
     const animeModalList = document.getElementById("animeList");
     // Iterate through all related content items.
