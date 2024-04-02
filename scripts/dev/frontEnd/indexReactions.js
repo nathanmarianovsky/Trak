@@ -418,14 +418,14 @@ ipcRenderer.on("loadRows", (event, diff) => {
     // Send a request to the back-end to obtain all library records.
     ipcRenderer.send("getAllRecords");
     // Once the library records have been obtained properly attach them to the page.
-    ipcRenderer.on("sentAllRecords", (recordsEvent, recordsArr) => {
+    ipcRenderer.once("sentAllRecords", (recordsEvent, recordsArr) => {
         // Attach a row to the html table body for each record.
         const tableDiv = document.getElementById("tableDiv"),
             tableBody = document.getElementById("tableBody"),
             synopsisPreloader = document.getElementById("synopsisPreloader"),
             synopsisModalContent = document.getElementById("synopsisModalContent");
         tableDiv.style.height = (diff + 506) + "px";
-        tableBody.textContent = "";
+        tableBody.innerHTML = "";
         // Listen for a window resize event in order to change the table height.
         window.addEventListener("resize", () => ipcRenderer.send("getAppHeight"));
         ipcRenderer.on("appHeight", (ev, newTableDiff) => tableDiv.style.height = (newTableDiff + 467) + "px");
@@ -440,7 +440,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
         // Send a request to the back-end to obtain all current application notifications.
         ipcRenderer.send("getNotifications");
         // Once all application notifications have been obtained proceed accordingly.
-        ipcRenderer.on("sentNotifications", (notificationsEvent, notificationsFileStr) => {
+        ipcRenderer.once("sentNotifications", (notificationsEvent, notificationsFileStr) => {
             // If there was an issue in reading the notifications file notify the user.
             if(notificationsFileStr == "") {
                 M.toast({"html": "There was an issue reading the application notifications file.", "classes": "rounded"});
@@ -491,8 +491,8 @@ ipcRenderer.on("loadRows", (event, diff) => {
                     tdNameOuterDiv.append(tdNameDiv);
                     tdNameOuterDiv.classList.add("tooltipped");
                     tdNameOuterDiv.setAttribute("data-position", "right");
-                    // if(recordData.category == "Anime" && recordData.content.length > 0) {
-                    if(recordData.category == "Anime") {
+                    let imgStr = '<img width="150" height="auto" src="' + recordData.img[0] + '">';
+                    if(recordData.category == "Anime" && recordData.content.length > 0) {
                         let movieCount = 0, onaCount = 0, ovaCount = 0, specialCount = 0, unclassifiedCount = 0, seasonCount = 0, episodeCount = 0;
                         for(let t = 0; t < recordData.content.length; t++) {
                             if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Movie") { movieCount++; }
@@ -553,24 +553,21 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "");
                             }
                         }
-                        tdNameOuterDiv.setAttribute("data-tooltip", '<img width="150" height="auto" src="' + recordData.img[0] + '"><br>' + tooltipStr);
+                        imgStr += '<br>' + tooltipStr;
                     }
                     else if(recordData.category == "Book") {
                         let curCheck = (new Date(recordData.publicationDate)).getTime();
                         if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                             newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Book", recordData.publicationDate, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                         }
-                        tdNameOuterDiv.setAttribute("data-tooltip", '<img width="150" height="auto" src="' + recordData.img[0] + '">');
                     }
                     else if(recordData.category == "Film") {
                         let curCheck = (new Date(recordData.release)).getTime();
                         if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                             newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Film", recordData.release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                         }
-                        tdNameOuterDiv.setAttribute("data-tooltip", '<img width="150" height="auto" src="' + recordData.img[0] + '">');
                     }
-                    // else if(recordData.category == "Manga" && recordData.content.length > 0) {
-                    else if(recordData.category == "Manga") {
+                    else if(recordData.category == "Manga" && recordData.content.length > 0) {
                         let chapterCount = 0, volumeCount = 0;
                         for(let t = 0; t < recordData.content.length; t++) {
                             if(recordData.content[t].scenario == "Chapter") {
@@ -595,10 +592,9 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         if(volumeCount > 0) {
                             tooltipStr += tooltipStr.length > 0 ? " and " + volumeStr : volumeStr;
                         }
-                        tdNameOuterDiv.setAttribute("data-tooltip", '<img width="150" height="auto" src="' + recordData.img[0] + '"><br>' + tooltipStr);
+                        imgStr += '<br>' + tooltipStr;
                     }
-                    // else if(recordData.category == "Show" && recordData.content.length > 0) {
-                    else if(recordData.category == "Show") {
+                    else if(recordData.category == "Show" && recordData.content.length > 0) {
                         let seasonCount = 0, episodeCount = 0;
                         for(let t = 0; t < recordData.content.length; t++) {
                             seasonCount++;
@@ -617,8 +613,9 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         if(seasonCount > 0) {
                             tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "");
                         }
-                        tdNameOuterDiv.setAttribute("data-tooltip", '<img width="150" height="auto" src="' + recordData.img[0] + '"><br>' + tooltipStr);
+                        imgStr += '<br>' + tooltipStr;
                     }
+                    tdNameOuterDiv.setAttribute("data-tooltip", imgStr);
                     // If a synopsis is availble then create a link for it to open the synopsis modal.
                     if(recordData.synopsis != undefined && recordData.synopsis.length > 0) {
                         // Define the link and icon.
@@ -917,8 +914,6 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         ipcRenderer.send("recordFiles", [holder.join(""), e.target.closest("tr").getAttribute("category") + "-" + e.target.closest("tr").getAttribute("name")]);
                     });
                 }
-                // This handles a weird issue in which the counters are double of their expected value.
-                if(counters.reduce(sumFunc, 0) != recordsArr.length) { counters = counters.map(elem => elem / 2); };
                 // Attach the bottom text on the index page if there is at least one library record.
                 let bottomStr = "Total Records: " + recordsArr.length;
                 if(counters.reduce(sumFunc, 0) > 0) {
@@ -982,7 +977,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                 // Send a request to the back-end to update the list of notifications based on the current list of records.
                 ipcRenderer.send("notificationsSave", newNotificationsArr);
                 // Once the back-end has processed the list of notifications sent over display the appropriate notifications on the home page.
-                ipcRenderer.on("notificationsReady", (event, currentNotificationsFileStr) => {
+                ipcRenderer.once("notificationsReady", (event, currentNotificationsFileStr) => {
                     // Read the notifications configuration file.
                     const curNotifications = JSON.parse(currentNotificationsFileStr);
                     // Clear any current notifications.
