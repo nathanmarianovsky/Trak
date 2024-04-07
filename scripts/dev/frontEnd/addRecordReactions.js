@@ -733,8 +733,9 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 for(let v = 0; v < associationsArr.length; v++) {
                     // Create an association only if the associated data record has been read properly.
                     if(associationsArr[v][1] != "") {
-                        let assocItem = JSON.parse(associationsArr[v][1]);
-                        associationCreation(associationsArr[v][0], assocItem.category, assocItem.name, assocItem.img.length > 0 ? assocItem.img[0] : "");
+                        let assocItem = JSON.parse(associationsArr[v][1]),
+                            itemRelease = getRecordRelease(assocItem);
+                        associationCreation(associationsArr[v][0], assocItem.category, itemRelease, assocItem.name, assocItem.img.length > 0 ? assocItem.img[0] : "");
                     }
                 }
                 // Add the page listeners associations to the record associations.

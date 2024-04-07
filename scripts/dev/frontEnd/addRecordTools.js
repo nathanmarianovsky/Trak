@@ -648,6 +648,64 @@ const relatedContentListeners = item => {
 
 /*
 
+Calculate the earliest release date of an anime record based on the related content information.
+
+    - contentArr is an array containing the related content details for a library record.
+
+*/ 
+const findAnimeReleaseDate = contentArr => {
+    // Define the variable which will represent the earliest release date.
+    let candidate = "";
+    // Iterate through all record related content.
+    for(let z = 0; z < contentArr.length; z++) {
+        let candidateHolder = "";
+        // If the related content entry has a start or release date then save it to compare to the current earliest date.
+        if((contentArr[z].scenario == "Season" ? contentArr[z].start : contentArr[z].release) != "") {
+            candidateHolder = new Date(contentArr[z].scenario == "Season" ? contentArr[z].start : contentArr[z].release);
+        }
+        // If the current earliest date has not been defined yet, then set it to the current start or release date.
+        if(candidate == "" && candidateHolder != "") {
+            candidate = new Date(contentArr[z].scenario == "Season" ? contentArr[z].start : contentArr[z].release);
+        }
+        // Compare the current earliest date and compare it to the current related content date.
+        else if(candidate != "" && candidateHolder != "") {
+            // Update the earliest date if the new date found references an earlier date.
+            if(candidateHolder < candidate) {
+                candidate = new Date(contentArr[z].scenario == "Season" ? contentArr[z].start : contentArr[z].release);
+            }
+        }
+    }
+    // Return the earliest date found or N/A if none were found.
+    return candidate != "" ? candidate.toJSON().split("T")[0] : "N/A";
+};
+
+
+
+const getRecordRelease = rec => {
+    let relDate = "";
+    if(rec.category == "Anime") {
+        relDate = findAnimeReleaseDate(rec.content);
+    }
+    else if(rec.category == "Book") {
+        relDate = rec.publicationDate != "" ? rec.publicationDate : "N/A";
+    }
+    else if(rec.category == "Film" || rec.category == "Show") {
+        relDate = rec.release != "" ? rec.release : "N/A";
+    }
+    else if(rec.category == "Manga") {
+        relDate = rec.start != "" ? rec.start : "N/A";
+    }
+    if(relDate != "N/A") {
+        let dateArr = relDate.split("-");
+        relDate = dateArr[1] + "/" + dateArr[2] + "/" + dateArr[0];
+    }
+    return relDate;
+};
+
+
+
+/*
+
 Initializes the autocomplete functionality on the associations modal.
 
 */
@@ -669,9 +727,10 @@ const associationsInit = ipcElec => {
                 }
                 // Otherwise proceed to create an association on the page and initialize the appropriate listeners.
                 else {
-                    let selectedData = JSON.parse(autoArr[1]);
+                    let selectedData = JSON.parse(autoArr[1]),
+                        itemRelease = getRecordRelease(selectedData);
                     // Create an association on the associations modal.
-                    associationCreation(autoArr[0], selectedData.category, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "");
+                    associationCreation(autoArr[0], selectedData.category, itemRelease, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "");
                     // Clear the autocomplete input search bar.
                     autocompleteInput.value = "";
                     autocompleteInput.nextElementSibling.nextElementSibling.classList.remove("active");
@@ -707,13 +766,15 @@ Creates an association listing in the notifications modal.
 
    - itemId is a string corresponding to the id of a record.
    - itemCategory is a string corresponding to the category of a record.
+   - itemRel is a string corresponding to the release date of a record.
    - itemTitle is a string corresponding to the name of a record.
    - itemImg is a string corresponding to the image of a record.
 
 */
-const associationCreation = (itemId, itemCategory, itemTitle, itemImg) => {
+const associationCreation = (itemId, itemCategory, itemRel, itemTitle, itemImg) => {
     // Define the portions of the association listed item.
     const associationsCollection = document.getElementById("associationsCollection");
+    let hldr = [];
     if(!Array.from(associationsCollection.children).map(elem => elem.getAttribute("associationId")).includes(itemId)) {
         const outerLI = document.createElement("li"),
             img = document.createElement("img"),
@@ -727,6 +788,10 @@ const associationCreation = (itemId, itemCategory, itemTitle, itemImg) => {
         outerLI.setAttribute("associationId", itemId);
         outerLI.setAttribute("associationCategory", itemCategory);
         outerLI.setAttribute("associationTitle", itemTitle);
+        if(itemRel != "N/A") {
+            hldr = itemRel.split("/");
+        }
+        outerLI.setAttribute("associationRelease", itemRel == "N/A" ? "" : hldr[2] + "-" + hldr[0] + "-" + hldr[1]);
         img.setAttribute("src", itemImg);
         img.classList.add("circle");
         imgIcon.classList.add("material-icons", "circle");
@@ -734,7 +799,7 @@ const associationCreation = (itemId, itemCategory, itemTitle, itemImg) => {
         span.classList.add("title", "recordsNameRowDiv", "associationTitle");
         span.textContent = itemTitle;
         span.setAttribute("id", itemId);
-        par.innerHTML = itemCategory;
+        par.innerHTML = itemCategory + "<br>Released: " + itemRel;
         link.classList.add("secondary-content");
         linkIcon.classList.add("material-icons", "associationDelete");
         linkIcon.textContent = "close";
@@ -744,7 +809,9 @@ const associationCreation = (itemId, itemCategory, itemTitle, itemImg) => {
         associationsCollection.append(outerLI);
         // Sort the associations alphabetically on the associations modal.
         let newLst = Array.from(associationsCollection.children);
-        newLst.sort((lhs, rhs) => lhs.getAttribute("associationTitle").localeCompare(rhs.getAttribute("associationTitle")));
+        // newLst.sort((lhs, rhs) => lhs.getAttribute("associationTitle").localeCompare(rhs.getAttribute("associationTitle")));
+        console.log(newLst);
+        newLst.sort((lhs, rhs) => (new Date(lhs.getAttribute("associationRelease"))).getTime() - (new Date(rhs.getAttribute("associationRelease"))).getTime());
         associationsCollection.innerHTML = "";
         newLst.forEach(elem => associationsCollection.append(elem));
     }
