@@ -44,7 +44,7 @@ nav {
 
 .addRecordBtn, .addRecordFilesDiv span, .addRecordSave i,
 .associationsBtn i, #databaseExport, #databaseImport,
-.modalButtons, .optionsBtn i, .searchSubmissionBtn i,
+.material-tooltip, .modalButtons, .optionsBtn i, .searchSubmissionBtn i,
 .relatedContentBtn i {
 	color: white !important;
 }
@@ -119,7 +119,7 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	z-index: 1000;
 }
 
-#titleBar .btn {
+#titleBar .btn, .material-tooltip {
 	background-color: #2A2A8E !important;
 }
 

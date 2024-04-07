@@ -2,6 +2,8 @@
 
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page.
 
+    - updateGenreLoad: Updates the current record genres.
+    - updateImgLoad: Updates the current record image input.
     - counterAssignment: Updates a record counter on the addRecord page associated a record's related content.
     - updateFetchedDataString: Updates a page text input.
     - updateFetchedDataTextArea: Updates a page textarea input.
@@ -21,6 +23,8 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
     - genreFill: Checks the appropriate genres on the addRecord page for fetched data.
     - relatedContentFinisher: Initializes select tags and tooltips. Designed to be executed after all related content items have been added.
     - relatedContentListeners: Addes the appropriate event listeners to ensure that page items are highlighted only in the event that a change in the original value is detected.
+    - findAnimeReleaseDate: Calculate the earliest release date of an anime record based on the related content information.
+    - getRecordRelease: Determines the release/start date for a record of any type of category.
     - associationsInit: Initializes the autocomplete functionality on the associations modal.
     - associationCreation: Creates an association listing in the notifications modal.
     - associationsListeners: Adds the listeners associated to an association listing.
@@ -35,6 +39,15 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
 
 
 
+/*
+
+Updates the current record genres.
+
+   - category is a string representing whether the current record if an anime, book, film, manga, or show.
+   - otherGenres is the page element corresponding to the extra genres input.
+   - genreData is an array of arrays corresponding to the record genres list and which are checked.
+
+*/
 const updateGenreLoad = (category, otherGenres, genreData) => {
     for(let v = 0; v < genreData[0].length; v++) {
         document.getElementById(category.toLowerCase() + "Genre" + genreData[0][v]).checked = genreData[1][v];
@@ -48,6 +61,15 @@ const updateGenreLoad = (category, otherGenres, genreData) => {
 
 
 
+/*
+
+Updates the current record image input.
+
+   - category is a string representing whether the current record if an anime, book, film, manga, or show.
+   - imgElem is the page input corresponding to the record image.
+   - imgData is an array containing the source links to record images.
+
+*/
 const updateImgLoad = (category, imgElem, imgData) => {
     imgElem.setAttribute("list", imgData.join(","));
     imgElem.setAttribute("previous", imgData.join(","));
@@ -681,6 +703,13 @@ const findAnimeReleaseDate = contentArr => {
 
 
 
+/*
+
+Determines the release/start date for a record of any type of category.
+
+   - rec is an object representing a library record.
+
+*/
 const getRecordRelease = rec => {
     let relDate = "";
     if(rec.category == "Anime") {
@@ -707,6 +736,8 @@ const getRecordRelease = rec => {
 /*
 
 Initializes the autocomplete functionality on the associations modal.
+
+   - ipcElec provides the means to operate the Electron app.
 
 */
 const associationsInit = ipcElec => {
