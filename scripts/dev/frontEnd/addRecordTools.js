@@ -814,7 +814,7 @@ const associationCreation = (itemId, itemCategory, itemRel, itemTitle, itemImg) 
             par = document.createElement("p"),
             link = document.createElement("a"),
             linkIcon = document.createElement("i");
-        // Modify the notification components appropriately.
+        // Modify the association components appropriately.
         outerLI.classList.add("collection-item", "avatar");
         outerLI.setAttribute("associationId", itemId);
         outerLI.setAttribute("associationCategory", itemCategory);
@@ -918,55 +918,38 @@ const introInit = (hldr, tgt1, tgt2) => {
 
 Creates a store listing in the store modal.
 
-   - itemId is a string corresponding to the id of a record.
-   - itemCategory is a string corresponding to the category of a record.
-   - itemRel is a string corresponding to the release date of a record.
-   - itemTitle is a string corresponding to the name of a record.
-   - itemImg is a string corresponding to the image of a record.
+   - itemLink is a string corresponding to the link of a store listing.
+   - itemPrice is a string corresponding to the price of a store listing.
+   - itemTitle is a string corresponding to the name of a store listing.
+   - itemImg is a string corresponding to the image of a store listing.
 
 */
-const associationCreation = (itemId, itemCategory, itemRel, itemTitle, itemImg) => {
-    // Define the portions of the association listed item.
-    const associationsCollection = document.getElementById("associationsCollection");
+const storeListingCreation = (itemLink, itemPrice, itemTitle, itemImg) => {
+    // Define the portions of the store listed item.
+    const storeCollection = document.getElementById("storeCollection");
     let hldr = [];
-    if(!Array.from(associationsCollection.children).map(elem => elem.getAttribute("associationId")).includes(itemId)) {
-        const outerLI = document.createElement("li"),
-            img = document.createElement("img"),
-            imgIcon = document.createElement("i"),
-            span = document.createElement("span"),
-            par = document.createElement("p"),
-            link = document.createElement("a"),
-            linkIcon = document.createElement("i");
-        // Modify the notification components appropriately.
-        outerLI.classList.add("collection-item", "avatar");
-        outerLI.setAttribute("associationId", itemId);
-        outerLI.setAttribute("associationCategory", itemCategory);
-        outerLI.setAttribute("associationTitle", itemTitle);
-        if(itemRel != "N/A") {
-            hldr = itemRel.split("/");
-        }
-        outerLI.setAttribute("associationRelease", itemRel == "N/A" ? "" : hldr[2] + "-" + hldr[0] + "-" + hldr[1]);
-        img.setAttribute("src", itemImg);
-        img.classList.add("circle");
-        imgIcon.classList.add("material-icons", "circle");
-        imgIcon.textContent = "bookmark";
-        span.classList.add("title", "recordsNameRowDiv", "associationTitle");
-        span.textContent = itemTitle;
-        span.setAttribute("id", itemId);
-        par.innerHTML = itemCategory + "<br>Released: " + itemRel;
-        link.classList.add("secondary-content");
-        linkIcon.classList.add("material-icons", "associationDelete");
-        linkIcon.textContent = "close";
-        link.append(linkIcon);
-        // Attach the association to the associations modal.
-        outerLI.append(itemImg != "" ? img : imgIcon, span, par, link);
-        associationsCollection.append(outerLI);
-        // Sort the associations alphabetically on the associations modal.
-        let newLst = Array.from(associationsCollection.children);
-        // newLst.sort((lhs, rhs) => lhs.getAttribute("associationTitle").localeCompare(rhs.getAttribute("associationTitle")));
-        console.log(newLst);
-        newLst.sort((lhs, rhs) => (new Date(lhs.getAttribute("associationRelease"))).getTime() - (new Date(rhs.getAttribute("associationRelease"))).getTime());
-        associationsCollection.innerHTML = "";
-        newLst.forEach(elem => associationsCollection.append(elem));
-    }
+    const outerLI = document.createElement("li"),
+        img = document.createElement("img"),
+        imgIcon = document.createElement("i"),
+        span = document.createElement("span"),
+        par = document.createElement("p");
+    // Modify the listing components appropriately.
+    outerLI.classList.add("collection-item", "avatar");
+    outerLI.setAttribute("storeLink", itemLink);
+    outerLI.setAttribute("storeTitle", itemTitle);
+    img.setAttribute("src", itemImg);
+    img.classList.add("circle");
+    imgIcon.classList.add("material-icons", "circle");
+    imgIcon.textContent = "bookmark";
+    span.classList.add("title", "recordsNameRowDiv", "storeTitle");
+    span.textContent = itemTitle;
+    par.innerHTML = "Amazon<br>" + itemPrice;
+    // Attach the listing to the store modal.
+    outerLI.append(itemImg != "" ? img : imgIcon, span, par);
+    storeCollection.append(outerLI);
+    // Sort the listings alphabetically on the store modal.
+    let newLst = Array.from(storeCollection.children);
+    // newLst.sort((lhs, rhs) => lhs.getAttribute("storeTitle").localeCompare(rhs.getAttribute("storeTitle")));
+    storeCollection.innerHTML = "";
+    newLst.forEach(elem => storeCollection.append(elem));
 };

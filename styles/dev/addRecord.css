@@ -13,7 +13,7 @@
 	max-height: 400px;
 }
 
-#associationsCollection {
+#associationsCollection, #storeCollection {
 	position: relative;
     left: 14px;
     width: calc(100% - 24px);
@@ -57,6 +57,10 @@
 
 #searchBarModal ul {
 	padding: revert;
+}
+
+#storeCollection {
+	border-width: 3px;
 }
 
 #updateRecordPreloader {

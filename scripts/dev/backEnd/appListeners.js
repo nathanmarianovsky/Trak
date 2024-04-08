@@ -319,16 +319,24 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
 
   	ipc.on("getStoreListings", (event, query) => {
   		const amazonScraper = require("amazon-buddy");
-		amazonScraper.products({"keyword": query}).then(res => {
-			console.log(res.result);
-			// console.log(res.result[0].title);
-			let newRes = res.result.slice(0, 10).map(elem => amazonScraper.asin({"asin": elem.asin}));
-			// console.log(newRes);
+		amazonScraper.products({"keyword": query, "randomUa": true}).then(res => {
+			let newRes = res.result.slice(0, 5).map(elem => amazonScraper.asin({"asin": elem.asin}));
 			Promise.all(newRes).then(finalElem => {
-				let arr = finalElem.filter(arrElem => arrElem.result[0].title.includes("Gahi-chan")).map(finalItem => finalItem.result[0]);
-				event.sender.send("sentStoreListings", arr.map(elem => [elem.title, elem.url, elem.main_image, elem.price.currency == "USD" ? "$" + elem.price.current_price : elem.price.current_price + elem.price.symbol]));
+				// let arr = finalElem.filter(arrElem => arrElem.result[0].title.includes(query)).map(finalItem => finalItem.result[0]);
+				let arr = finalElem.map(finalItem => finalItem.result[0]);
+				event.sender.send("sentStoreListings", arr.map(elem => [
+					elem.title,
+					elem.url,
+					elem.main_image != "" ? elem.main_image : (elem.images.length > 0 ? elem.images[0] : ""),
+					elem.price.currency == "USD" ? "$" + elem.price.current_price.toFixed(2) : elem.price.current_price.toFixed(2) + elem.price.symbol
+				]));
 			});
 		});
+  	});
+
+  	ipc.on("openStoreLink", (event, externalLink) => {
+  		log.info("Opening the store page " + externalLink + " in the default browser.");
+  		require("electron").shell.openExternal(externalLink);
   	});
 };
 
