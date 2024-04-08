@@ -9,6 +9,7 @@
         "@node-minify/core": "^8.0.6",
         "@node-minify/uglify-js": "^8.0.6",
         "@node-minify/yui": "^8.0.6",
+        "amazon-buddy": "^2.2.45",
         "check-internet-connected": "^2.0.6",
         "cheerio": "^1.0.0-rc.12",
         "cli-progress": "^3.12.0",
@@ -24,12 +25,12 @@
         "mal-scraper": "^2.13.1",
         "movier": "^3.0.7",
         "node-minify": "^3.6.0",
-        "npm": "^10.5.0",
+        "npm": "^10.5.1",
         "semver": "^7.6.0",
         "zip-local": "^0.3.5"
     },
     "devDependencies": {
-        "electron": "^29.1.6",
+        "electron": "^29.2.0",
         "electron-installer-debian": "^3.2.0",
         "electron-packager": "^17.1.2",
         "electron-wix-msi": "^5.1.3"

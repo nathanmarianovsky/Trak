@@ -33,7 +33,10 @@ const htmlSettingsList = ["index.html", "addRecord.html"],
 	htmlDatabase = fs.readFileSync(path.join(__dirname, "pages", "dev", "database.html")),
 	htmlNotifications = fs.readFileSync(path.join(__dirname, "pages", "dev", "notifications.html")),
 	htmlFilter = fs.readFileSync(path.join(__dirname, "pages", "dev", "filter.html")),
-	htmlTitlebar = fs.readFileSync(path.join(__dirname, "pages", "dev", "titlebar.html"));
+	htmlTitlebar = fs.readFileSync(path.join(__dirname, "pages", "dev", "titlebar.html")),
+	htmlGenres = fs.readFileSync(path.join(__dirname, "pages", "dev", "genres.html")),
+	htmlAssociations = fs.readFileSync(path.join(__dirname, "pages", "dev", "associations.html")),
+	htmlStore = fs.readFileSync(path.join(__dirname, "pages", "dev", "store.html"));
 let data = fs.readFileSync(path.join(__dirname, "pages", "dev", "index.html"), "UTF8"),
 	$ = cheerio.load(data);
 if(!fs.existsSync(path.join(__dirname, "pages", "dev", "sectionsAttached"))) {
@@ -52,6 +55,9 @@ fs.writeFileSync(path.join(__dirname, "pages", "dev", "sectionsAttached", "secti
 data = fs.readFileSync(path.join(__dirname, "pages", "dev", "addRecord.html"), "UTF8");
 $ = cheerio.load(data);
 $("#titleBar").html(htmlTitlebar);
+$("#genresModal").html(htmlGenres);
+$("#associationsModal").html(htmlAssociations);
+$("#storeModal").html(htmlStore);
 fs.writeFileSync(path.join(__dirname, "pages", "dev", "sectionsAttached", "sectionsAttached" + "addRecord.html".charAt(0).toUpperCase() + "addRecord.html".slice(1)), $.html(), "UTF8");
 
 

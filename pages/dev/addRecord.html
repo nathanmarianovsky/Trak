@@ -142,6 +142,7 @@
                         <div class="row">
                             <a id="animeMoreDetailsBtn" class="waves-effect waves-light btn addRecordBtn modal-trigger" href="#animeMoreDetailsModal"><i class="material-icons right">add</i>More Details</a>
                             <a id="animeFetchDetailsBtn" class="waves-effect waves-light btn addRecordBtn"><i class="material-icons right">refresh</i>Fetch Details</a>
+                            <a id="animeAmazonSearchBtn" class="waves-effect waves-light btn addRecordBtn amazonBtn modal-trigger" href="#storeModal"><i class="material-icons right">store</i>Amazon Search</a>
                         </div>
                     </form>
                     <div id="animeMoreDetailsModal" class="modal modal-fixed-footer recordMoreDetailsModal">
@@ -358,6 +359,7 @@
                         </div>
                         <div class="row">
                             <a id="bookFetchDetailsBtn" class="waves-effect waves-light btn addRecordBtn" data-position="right" data-tooltip="Fetch details from GoodReads."><i class="material-icons right">refresh</i>Fetch Details</a>
+                            <a id="bookAmazonSearchBtn" class="waves-effect waves-light btn addRecordBtn amazonBtn modal-trigger" href="#storeModal"><i class="material-icons right">store</i>Amazon Search</a>
                         </div>
                     </form>
                 </div>
@@ -479,6 +481,7 @@
                         <div class="row">
                             <a id="filmMoreDetailsBtn" class="waves-effect waves-light btn addRecordBtn modal-trigger" href="#filmMoreDetailsModal"><i class="material-icons right">add</i>More Details</a>
                             <a id="filmFetchDetailsBtn" class="waves-effect waves-light btn addRecordBtn"><i class="material-icons right">refresh</i>Fetch Details</a>
+                            <a id="filmAmazonSearchBtn" class="waves-effect waves-light btn addRecordBtn amazonBtn modal-trigger" href="#storeModal"><i class="material-icons right">store</i>Amazon Search</a>
                         </div>
                     </form>
                     <div id="filmMoreDetailsModal" class="modal modal-fixed-footer recordMoreDetailsModal">
@@ -655,6 +658,7 @@
                         <div class="row">
                             <a id="mangaMoreDetailsBtn" class="waves-effect waves-light btn addRecordBtn modal-trigger" href="#mangaMoreDetailsModal"><i class="material-icons right">add</i>More Details</a>
                             <a id="mangaFetchDetailsBtn" class="waves-effect waves-light btn addRecordBtn"><i class="material-icons right">refresh</i>Fetch Details</a>
+                            <a id="mangaAmazonSearchBtn" class="waves-effect waves-light btn addRecordBtn amazonBtn modal-trigger" href="#storeModal"><i class="material-icons right">store</i>Amazon Search</a>
                         </div>
                     </form>
                     <div id="mangaMoreDetailsModal" class="modal modal-fixed-footer recordMoreDetailsModal">
@@ -859,6 +863,7 @@
                         <div class="row">
                             <a id="showMoreDetailsBtn" class="waves-effect waves-light btn addRecordBtn modal-trigger" href="#showMoreDetailsModal"><i class="material-icons right">add</i>More Details</a>
                             <a id="showFetchDetailsBtn" class="waves-effect waves-light btn addRecordBtn"><i class="material-icons right">refresh</i>Fetch Details</a>
+                            <a id="showAmazonSearchBtn" class="waves-effect waves-light btn addRecordBtn amazonBtn modal-trigger" href="#storeModal"><i class="material-icons right">store</i>Amazon Search</a>
                         </div>
                     </form>
                     <div id="showMoreDetailsModal" class="modal modal-fixed-footer recordMoreDetailsModal">
@@ -988,69 +993,9 @@
                     </div>
                 </div>
             </div>
-            <div id="genresModal" class="modal modal-fixed-footer">
-                <div class="modal-content">
-                    <h4 class="center">Extra</h4>
-                    <p>Any genres/tags not shown on the primary collection can be listed below as a comma separated list.</p>
-                    <form class="col s12">
-                        <div id="animeOtherGenresDiv" class="row otherGenresDiv">
-                            <div class="input-field col s12">
-                                <input id="animeOtherGenres" type="text" class="validate left">
-                                <label for="animeOtherGenres">Genres/Tags:</label>
-                            </div>
-                        </div>
-                        <div id="bookOtherGenresDiv" class="row otherGenresDiv">
-                            <div class="input-field col s12">
-                                <input id="bookOtherGenres" type="text" class="validate left">
-                                <label for="bookOtherGenres">Genres/Tags:</label>
-                            </div>
-                        </div>
-                        <div id="filmOtherGenresDiv" class="row otherGenresDiv">
-                            <div class="input-field col s12">
-                                <input id="filmOtherGenres" type="text" class="validate left">
-                                <label for="filmOtherGenres">Genres/Tags:</label>
-                            </div>
-                        </div>
-                        <div id="mangaOtherGenresDiv" class="row otherGenresDiv">
-                            <div class="input-field col s12">
-                                <input id="mangaOtherGenres" type="text" class="validate left">
-                                <label for="mangaOtherGenres">Genres/Tags:</label>
-                            </div>
-                        </div>
-                        <div id="showOtherGenresDiv" class="row otherGenresDiv">
-                            <div class="input-field col s12">
-                                <input id="showOtherGenres" type="text" class="validate left">
-                                <label for="showOtherGenres">Genres/Tags:</label>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
-                </div>
-            </div>
-            <div id="associationsModal" class="modal contentModal modal-fixed-footer">
-                <div class="modal-content">
-                    <h4 class="center">Associations</h4>
-                    <p id="associationsModalPar">Create a list of library records associated to the current one.</p>
-                    <div class="row">
-                        <div class="col s12">
-                            <div class="row">
-                                <div class="input-field col s12">
-                                    <i class="material-icons prefix">search</i>
-                                    <input type="text" id="associationsAutocomplete" class="autocomplete">
-                                    <label for="associationsAutocomplete">Use this search bar to find the desired records:</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <ul id="associationsCollection" class="collection"></ul>
-                </div>
-                <div class="modal-footer">
-                    <a id="clearAssociations" class="waves-effect waves-light btn-flat left modalButtons">Clear All</a>
-                    <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
-                </div>
-            </div>
+            <div id="genresModal" class="modal modal-fixed-footer"></div>
+            <div id="associationsModal" class="modal contentModal modal-fixed-footer"></div>
+            <div id="storeModal" class="modal contentModal modal-fixed-footer"></div>
         </div>
     </body>
 </html>
