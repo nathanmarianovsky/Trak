@@ -317,24 +317,26 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
   		});
   	});
 
-  	ipc.on("getStoreListings", (event, query) => {
-  		const amazonScraper = require("amazon-buddy");
-		amazonScraper.products({"keyword": query, "randomUa": true}).then(res => {
-			let newRes = res.result.slice(0, 5).map(elem => amazonScraper.asin({"asin": elem.asin}));
-			Promise.all(newRes).then(finalElem => {
-				// let arr = finalElem.filter(arrElem => arrElem.result[0].title.includes(query)).map(finalItem => finalItem.result[0]);
-				let arr = finalElem.map(finalItem => finalItem.result[0]);
-				event.sender.send("sentStoreListings", arr.map(elem => [
-					elem.title,
-					elem.url,
-					elem.main_image != "" ? elem.main_image : (elem.images.length > 0 ? elem.images[0] : ""),
-					elem.price.currency == "USD" ? "$" + elem.price.current_price.toFixed(2) : elem.price.current_price.toFixed(2) + elem.price.symbol
-				]));
-			});
-		});
-  	});
+  	// ipc.on("getStoreListings", (event, query) => {
+  	// 	const amazonScraper = require("amazon-buddy");
+	// 	amazonScraper.products({"keyword": query, "randomUa": true}).then(res => {
+	// 		let newRes = res.result.slice(0, 5).map(elem => amazonScraper.asin({"asin": elem.asin}));
+	// 		Promise.all(newRes).then(finalElem => {
+	// 			// let arr = finalElem.filter(arrElem => arrElem.result[0].title.includes(query)).map(finalItem => finalItem.result[0]);
+	// 			let arr = finalElem.map(finalItem => finalItem.result[0]);
+	// 			event.sender.send("sentStoreListings", arr.map(elem => [
+	// 				elem.url,
+	// 				"Amazon.com",
+	// 				elem.price.currency == "USD" ? "$" + elem.price.current_price.toFixed(2) : elem.price.current_price.toFixed(2) + elem.price.symbol,
+	// 				elem.title,
+	// 				elem.main_image != "" ? elem.main_image : (elem.images.length > 0 ? elem.images[0] : "")
+	// 			]));
+	// 		});
+	// 	});
+  	// });
 
-  	ipc.on("openStoreLink", (event, externalLink) => {
+  	ipc.on("openStoreLink", (event, name) => {
+  		const externalLink = "https://www.amazon.com/s?k=" + name.replace(/ /g, "+");
   		log.info("Opening the store page " + externalLink + " in the default browser.");
   		require("electron").shell.openExternal(externalLink);
   	});

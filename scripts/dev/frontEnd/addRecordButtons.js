@@ -599,4 +599,10 @@ const recordChoicesButtons = () => {
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         introShowHolder = introInit(introShowHolder, document.getElementById("introductionTargetShowSave"), document.getElementById("introductionTargetShowOptions"));
     });
+    Array.from(document.getElementsByClassName("amazonBtn")).forEach(searchBtn => {
+        searchBtn.addEventListener("click", e => {
+            const curIdentifier = e.target.getAttribute("category");
+            ipcRenderer.send("openStoreLink", document.getElementById(curIdentifier != "book" ? curIdentifier + "Name" : curIdentifier + "Title").value);
+        });
+    });
 };

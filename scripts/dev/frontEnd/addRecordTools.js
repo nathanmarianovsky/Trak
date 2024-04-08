@@ -919,12 +919,13 @@ const introInit = (hldr, tgt1, tgt2) => {
 Creates a store listing in the store modal.
 
    - itemLink is a string corresponding to the link of a store listing.
+   - itemStore is a string corresponding to the store name of a store listing.
    - itemPrice is a string corresponding to the price of a store listing.
    - itemTitle is a string corresponding to the name of a store listing.
    - itemImg is a string corresponding to the image of a store listing.
 
 */
-const storeListingCreation = (itemLink, itemPrice, itemTitle, itemImg) => {
+const storeListingCreation = (itemLink, itemStore, itemPrice, itemTitle, itemImg) => {
     // Define the portions of the store listed item.
     const storeCollection = document.getElementById("storeCollection");
     let hldr = [];
@@ -940,16 +941,11 @@ const storeListingCreation = (itemLink, itemPrice, itemTitle, itemImg) => {
     img.setAttribute("src", itemImg);
     img.classList.add("circle");
     imgIcon.classList.add("material-icons", "circle");
-    imgIcon.textContent = "bookmark";
+    imgIcon.textContent = "sell";
     span.classList.add("title", "recordsNameRowDiv", "storeTitle");
     span.textContent = itemTitle;
-    par.innerHTML = "Amazon<br>" + itemPrice;
+    par.innerHTML = itemStore + "<br>" + itemPrice;
     // Attach the listing to the store modal.
     outerLI.append(itemImg != "" ? img : imgIcon, span, par);
     storeCollection.append(outerLI);
-    // Sort the listings alphabetically on the store modal.
-    let newLst = Array.from(storeCollection.children);
-    // newLst.sort((lhs, rhs) => lhs.getAttribute("storeTitle").localeCompare(rhs.getAttribute("storeTitle")));
-    storeCollection.innerHTML = "";
-    newLst.forEach(elem => storeCollection.append(elem));
 };

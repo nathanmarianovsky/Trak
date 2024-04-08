@@ -231,7 +231,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 const animeSave = document.getElementById("animeSave"),
                     animeOptions = document.getElementById("animeOptions"),
                     animeMoreDetailsBtn = document.getElementById("animeMoreDetailsBtn"),
-                    animeFetchDetailsBtn = document.getElementById("animeFetchDetailsBtn");
+                    animeFetchDetailsBtn = document.getElementById("animeFetchDetailsBtn"),
+                    animeAmazonSearchBtn = document.getElementById("animeAmazonSearchBtn");
                 // Hide the page buttons until all data has loaded in.
                 animeSave.style.visibility = "hidden";
                 animeOptions.style.visibility = "hidden";
@@ -359,9 +360,9 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     animeOptions.style.visibility = "visible";
                     animeMoreDetailsBtn.style.visibility = "visible";
                     animeFetchDetailsBtn.style.visibility = "visible";
+                    animeAmazonSearchBtn.style.visibility = "visible";
                     // Hide the anime preloader to indicate that the related content has finished loading.
                     updateAnimePreloader.style.visibility = "hidden";
-                    ipcRenderer.send("getStoreListings", recordData.name);
                 }, 500);
                 animeName.setAttribute("oldName", recordData.name != "" ? recordData.name : recordData.jname);
             }
@@ -381,7 +382,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     bookRating = document.getElementById("bookRating"),
                     bookReview = document.getElementById("bookReview"),
                     bookImg = document.getElementById("addRecordBookImg"),
-                    bookOtherGenres = document.getElementById("bookOtherGenres");
+                    bookOtherGenres = document.getElementById("bookOtherGenres"),
+                    bookAmazonSearchBtn = document.getElementById("bookAmazonSearchBtn");
                 // Load the book record portion of the addRecord page.
                 document.getElementById("categoryBook").click();
                 document.getElementById("categoryBookDiv").children[0].style.marginTop = "3%";
@@ -414,15 +416,16 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 updateBookPreloader.style.top = "-32px";
                 bookTitle.setAttribute("oldISBN", recordData.isbn);
                 bookTitle.setAttribute("oldName", recordData.name);
+                bookAmazonSearchBtn.style.visibility = "visible";
                 // Initialize the select tags.
                 initSelect();
-                ipcRenderer.send("getStoreListings", recordData.name);
             }
             // If the record is of category type film then proceed.
             else if(recordData.category == "Film") {
                 const filmSave = document.getElementById("filmSave"),
                     filmMoreDetailsBtn = document.getElementById("filmMoreDetailsBtn"),
-                    filmFetchDetailsBtn = document.getElementById("filmFetchDetailsBtn");
+                    filmFetchDetailsBtn = document.getElementById("filmFetchDetailsBtn"),
+                    filmAmazonSearchBtn = document.getElementById("filmAmazonSearchBtn");
                 // Define the relevant film record inputs.
                 const filmName = document.getElementById("filmName"),
                     filmAlternateName = document.getElementById("filmAlternateName"),
@@ -486,16 +489,17 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 const updateFilmPreloader = document.getElementById("filmPreloader");
                 updateFilmPreloader.style.top = "-32px";
                 filmName.setAttribute("oldName", recordData.name);
+                filmAmazonSearchBtn.style.visibility = "visible";
                 // Initialize the select tags.
                 initSelect();
-                ipcRenderer.send("getStoreListings", recordData.name);
             }
             // If a record is of category type manga then proceed.
             else if(recordData.category == "Manga") {
                 const mangaSave = document.getElementById("mangaSave"),
                     mangaOptions = document.getElementById("mangaOptions"),
                     mangaMoreDetailsBtn = document.getElementById("mangaMoreDetailsBtn"),
-                    mangaFetchDetailsBtn = document.getElementById("mangaFetchDetailsBtn");
+                    mangaFetchDetailsBtn = document.getElementById("mangaFetchDetailsBtn"),
+                    mangaAmazonSearchBtn = document.getElementById("mangaAmazonSearchBtn");
                 // Hide the page buttons until all data has loaded in.
                 mangaSave.style.visibility = "hidden";
                 mangaOptions.style.visibility = "hidden";
@@ -599,9 +603,9 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     mangaOptions.style.visibility = "visible";
                     mangaMoreDetailsBtn.style.visibility = "visible";
                     mangaFetchDetailsBtn.style.visibility = "visible";
+                    mangaAmazonSearchBtn.style.visibility = "visible";
                     // Hide the manga preloader to indicate that the related content has finished loading.
                     updateMangaPreloader.style.visibility = "hidden";
-                    ipcRenderer.send("getStoreListings", recordData.name);
                 }, 500);
                 mangaName.setAttribute("oldName", recordData.name != "" ? recordData.name : recordData.jname);
             }
@@ -609,7 +613,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
             else if(recordData.category == "Show") {
                 const showSave = document.getElementById("showSave"),
                     showMoreDetailsBtn = document.getElementById("showMoreDetailsBtn"),
-                    showFetchDetailsBtn = document.getElementById("showFetchDetailsBtn");
+                    showFetchDetailsBtn = document.getElementById("showFetchDetailsBtn"),
+                    showAmazonSearchBtn = document.getElementById("showAmazonSearchBtn");
                 // Define the relevant show record inputs.
                 const showName = document.getElementById("showName"),
                     showAlternateName = document.getElementById("showAlternateName"),
@@ -725,9 +730,9 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     showOptions.style.visibility = "visible";
                     showMoreDetailsBtn.style.visibility = "visible";
                     showFetchDetailsBtn.style.visibility = "visible";
+                    showAmazonSearchBtn.style.visibility = "visible";
                     // Hide the show preloader to indicate that the related content has finished loading.
                     updateShowPreloader.style.visibility = "hidden";
-                    ipcRenderer.send("getStoreListings", recordData.name);
                 }, 500);
             }
             // Send a request to find record associations.
@@ -745,16 +750,6 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 }
                 // Add the page listeners associations to the record associations.
                 associationsListeners(ipcRenderer);
-            });
-            ipcRenderer.on("sentStoreListings", (storeEvent, storeArr) => {
-                Array.from(document.getElementsByClassName("amazonBtn")).forEach(elem => elem.style.visibility = "visible");
-                console.log(storeArr);
-                storeArr.forEach(listing => storeListingCreation(listing[1], listing[3], listing[0], listing[2]));
-                Array.from(document.getElementsByClassName("storeTitle")).forEach(titleLink => {
-                    titleLink.addEventListener("click", e => {
-                        ipcRenderer.send("openStoreLink", e.target.parentNode.getAttribute("storeLink"));
-                    });
-                });
             });
         }
         // Hide the addRecord preloader once the file data has been added.
