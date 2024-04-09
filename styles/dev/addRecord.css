@@ -23,7 +23,8 @@
 	margin-left: 14px;
 }
 
-#bookAmazonSearchBtn, #bookFetchDetailsBtn {
+#bookAmazonSearchBtn, #bookFetchDetailsBtn,
+#bookGoodreadsSearchBtn {
 	margin-top: 3%;
 }
 
@@ -134,7 +135,7 @@
 	bottom: 92px;
 }
 
-.amazonBtn {
+.storeBtn {
 	visibility: hidden;
 }
 

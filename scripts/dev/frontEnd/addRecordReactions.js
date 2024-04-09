@@ -383,7 +383,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     bookReview = document.getElementById("bookReview"),
                     bookImg = document.getElementById("addRecordBookImg"),
                     bookOtherGenres = document.getElementById("bookOtherGenres"),
-                    bookAmazonSearchBtn = document.getElementById("bookAmazonSearchBtn");
+                    bookAmazonSearchBtn = document.getElementById("bookAmazonSearchBtn"),
+                    bookGoodreadsSearchBtn = document.getElementById("bookGoodreadsSearchBtn");
                 // Load the book record portion of the addRecord page.
                 document.getElementById("categoryBook").click();
                 document.getElementById("categoryBookDiv").children[0].style.marginTop = "3%";
@@ -417,6 +418,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 bookTitle.setAttribute("oldISBN", recordData.isbn);
                 bookTitle.setAttribute("oldName", recordData.name);
                 bookAmazonSearchBtn.style.visibility = "visible";
+                bookGoodreadsSearchBtn.style.visibility = "visible";
                 // Initialize the select tags.
                 initSelect();
             }
@@ -499,7 +501,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     mangaOptions = document.getElementById("mangaOptions"),
                     mangaMoreDetailsBtn = document.getElementById("mangaMoreDetailsBtn"),
                     mangaFetchDetailsBtn = document.getElementById("mangaFetchDetailsBtn"),
-                    mangaAmazonSearchBtn = document.getElementById("mangaAmazonSearchBtn");
+                    mangaAmazonSearchBtn = document.getElementById("mangaAmazonSearchBtn"),
+                    mangaGoodreadsSearchBtn = document.getElementById("mangaGoodreadsSearchBtn");
                 // Hide the page buttons until all data has loaded in.
                 mangaSave.style.visibility = "hidden";
                 mangaOptions.style.visibility = "hidden";
@@ -604,6 +607,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     mangaMoreDetailsBtn.style.visibility = "visible";
                     mangaFetchDetailsBtn.style.visibility = "visible";
                     mangaAmazonSearchBtn.style.visibility = "visible";
+                    mangaGoodreadsSearchBtn.style.visibility = "visible";
                     // Hide the manga preloader to indicate that the related content has finished loading.
                     updateMangaPreloader.style.visibility = "hidden";
                 }, 500);

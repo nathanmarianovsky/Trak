@@ -602,7 +602,13 @@ const recordChoicesButtons = () => {
     Array.from(document.getElementsByClassName("amazonBtn")).forEach(searchBtn => {
         searchBtn.addEventListener("click", e => {
             const curIdentifier = e.target.getAttribute("category");
-            ipcRenderer.send("openStoreLink", document.getElementById(curIdentifier != "book" ? curIdentifier + "Name" : curIdentifier + "Title").value);
+            ipcRenderer.send("openStoreLink", ["Amazon", document.getElementById(curIdentifier != "book" ? curIdentifier + "Name" : curIdentifier + "Title").value]);
+        });
+    });
+    Array.from(document.getElementsByClassName("goodreadsBtn")).forEach(searchBtn => {
+        searchBtn.addEventListener("click", e => {
+            const curIdentifier = e.target.getAttribute("category");
+            ipcRenderer.send("openStoreLink", ["Goodreads", document.getElementById(curIdentifier != "book" ? curIdentifier + "Name" : curIdentifier + "Title").value]);
         });
     });
 };
