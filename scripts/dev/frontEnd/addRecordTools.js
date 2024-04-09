@@ -30,6 +30,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
     - associationsListeners: Adds the listeners associated to an association listing.
     - saveAssociations: Handles the save request of a record's associations.
     - introInit: Initializes the tutorial on the addRecord.html page.
+    - storeListingCreation: Creates a store listing in the store modal.
 
 */
 

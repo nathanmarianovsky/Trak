@@ -489,17 +489,24 @@ ipcRenderer.on("loadRows", (event, diff) => {
                     tdName.classList.add("left");
                     tdNameOuterDiv.classList.add("recordsNameContainer");
                     tdNameOuterDiv.append(tdNameDiv);
-                    tdNameOuterDiv.classList.add("tooltipped");
-                    tdNameOuterDiv.setAttribute("data-position", "right");
-                    let imgStr = '<img width="150" height="auto" src="' + recordData.img[0] + '">';
+                    // Define the record tooltip image if available.
+                    let imgStr = "";
+                    if(recordData.img[0] != "") {
+                        imgStr = '<img width="150" height="auto" src="' + recordData.img[0] + '">';
+                    }
+                    // Proceed only if the record is an anime with related content.
                     if(recordData.category == "Anime" && recordData.content.length > 0) {
+                        // Define the anime related content counters.
                         let movieCount = 0, onaCount = 0, ovaCount = 0, specialCount = 0, unclassifiedCount = 0, seasonCount = 0, episodeCount = 0;
+                        // Iterate through the related content.
                         for(let t = 0; t < recordData.content.length; t++) {
+                            // Update the counters.
                             if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Movie") { movieCount++; }
                             else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "ONA") { onaCount++; }
                             else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "OVA") { ovaCount++; }
                             else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "Special") { specialCount++; }
                             else if(recordData.content[t].scenario == "Single" && recordData.content[t].type == "") { unclassifiedCount++; }
+                            // Update the season counter and create notifications for future releases if available.
                             else if(recordData.content[t].scenario == "Season") {
                                 seasonCount++;
                                 episodeCount += recordData.content[t].episodes.length;
@@ -515,12 +522,14 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 }
                             }
                         }
+                        // Update the global counters used in the settings analytics.
                         globalAnimeTypes[0] += seasonCount;
                         globalAnimeTypes[1] += episodeCount;
                         globalAnimeTypes[2] += onaCount;
                         globalAnimeTypes[3] += ovaCount;
                         globalAnimeTypes[4] += specialCount;
                         globalAnimeTypes[5] += movieCount;
+                        // Update the record tooltip string as necessary.
                         let movieStr = (movieCount == 1 ? "1 Movie" : movieCount + " Movies"),
                             onaStr = (onaCount == 1 ? "1 ONA" : onaCount + " ONAs"),
                             ovaStr = (ovaCount == 1 ? "1 OVA" : ovaCount + " OVAs"),
@@ -555,34 +564,41 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         }
                         imgStr += '<br>' + tooltipStr;
                     }
+                    // Proceed only if the record is a book.
                     else if(recordData.category == "Book") {
                         let curCheck = (new Date(recordData.publicationDate)).getTime();
+                        // Create notifications for future releases if available.
                         if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                             newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Book", recordData.publicationDate, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                         }
                     }
+                    // Proceed only if the record is a film.
                     else if(recordData.category == "Film") {
                         let curCheck = (new Date(recordData.release)).getTime();
+                        // Creates notifications for future releases if available.
                         if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                             newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Film", recordData.release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                         }
                     }
+                    // Proceed only if the record is a manga with related content.
                     else if(recordData.category == "Manga" && recordData.content.length > 0) {
+                        // Define the manga related content counters.
                         let chapterCount = 0, volumeCount = 0;
+                        // Iterate through the manga related content.
                         for(let t = 0; t < recordData.content.length; t++) {
-                            if(recordData.content[t].scenario == "Chapter") {
-                                chapterCount++;
-                            }
-                            else if(recordData.content[t].scenario == "Volume") {
-                                volumeCount++;
-                            }
+                            // Update the counters.
+                            if(recordData.content[t].scenario == "Chapter") { chapterCount++; }
+                            else if(recordData.content[t].scenario == "Volume") { volumeCount++; }
                             let curCheck = (new Date(recordData.content[t].release)).getTime();
+                            // Creates notifications for future releases if available.
                             if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                                 newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, recordData.content[t].scenario, recordData.content[t].release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                             }
                         }
+                        // Update the global counters used in the settings analytics.
                         globalMangaTypes[0] += volumeCount;
                         globalMangaTypes[1] += chapterCount;
+                        // Update the record tooltip string as necessary.
                         let chapterStr = (chapterCount == 1 ? "1 Chapter" : chapterCount + " Chapters"),
                             volumeStr = (volumeCount == 1 ? "1 Volume" : volumeCount + " Volumes"),
                             tooltipStr = "";
@@ -594,18 +610,25 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         }
                         imgStr += '<br>' + tooltipStr;
                     }
+                    // Proceed only if the record is a show.
                     else if(recordData.category == "Show" && recordData.content.length > 0) {
+                        // Define the show related content counters.
                         let seasonCount = 0, episodeCount = 0;
+                        // Iterate through the show related content.
                         for(let t = 0; t < recordData.content.length; t++) {
+                            // Update the counters.
                             seasonCount++;
                             episodeCount += recordData.content[t].episodes.length;
                             let curCheck = (new Date(recordData.content[t].start)).getTime();
+                            // Creates notifications for future releases if available.
                             if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                                 newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                             }
                         }
+                        // Update the global counters used in the settings analytics.
                         globalShowTypes[0] += seasonCount;
                         globalShowTypes[1] += episodeCount;
+                        // Update the record tooltip string as necessary.
                         let seasonStr = (seasonCount == 1
                                 ? "1 Season with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")
                                 : seasonCount + " Seasons with " + episodeCount + (episodeCount == 1 ? " Episode" : " Episodes")),
@@ -615,7 +638,12 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         }
                         imgStr += '<br>' + tooltipStr;
                     }
-                    tdNameOuterDiv.setAttribute("data-tooltip", imgStr);
+                    // Attach the record tooltip only if there is something to display, either an image and/or text.
+                    if(imgStr != "") {
+                        tdNameOuterDiv.classList.add("tooltipped");
+                        tdNameOuterDiv.setAttribute("data-position", "right");
+                        tdNameOuterDiv.setAttribute("data-tooltip", imgStr);
+                    }
                     // If a synopsis is availble then create a link for it to open the synopsis modal.
                     if(recordData.synopsis != undefined && recordData.synopsis.length > 0) {
                         // Define the link and icon.

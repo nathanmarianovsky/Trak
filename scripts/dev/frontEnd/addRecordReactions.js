@@ -417,6 +417,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 updateBookPreloader.style.top = "-32px";
                 bookTitle.setAttribute("oldISBN", recordData.isbn);
                 bookTitle.setAttribute("oldName", recordData.name);
+                // Display all page buttons now that all data has loaded.
                 bookAmazonSearchBtn.style.visibility = "visible";
                 bookGoodreadsSearchBtn.style.visibility = "visible";
                 // Initialize the select tags.
@@ -491,6 +492,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 const updateFilmPreloader = document.getElementById("filmPreloader");
                 updateFilmPreloader.style.top = "-32px";
                 filmName.setAttribute("oldName", recordData.name);
+                // Display all page buttons now that all data has loaded.
                 filmAmazonSearchBtn.style.visibility = "visible";
                 // Initialize the select tags.
                 initSelect();

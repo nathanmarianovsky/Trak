@@ -317,7 +317,9 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
   		});
   	});
 
+  	// Handle the opening of store links in the default browser.
   	ipc.on("openStoreLink", (event, submissionArr) => {
+  		// Define the external link depending on what store the user desires to search.
   		let externalLink = "";
   		if(submissionArr[0] == "Amazon") {
   			externalLink = "https://www.amazon.com/s?k=";
@@ -325,8 +327,10 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
   		else if(submissionArr[0] == "Goodreads") {
   			externalLink = "https://www.goodreads.com/search?query=";
   		}
+  		// Replace all whitespace in the store query with plus signs.
   		externalLink += submissionArr[1].replace(/ /g, "+");
   		log.info("Opening the store page " + externalLink + " in the default browser.");
+  		// Open the external link.
   		require("electron").shell.openExternal(externalLink);
   	});
 };
@@ -993,7 +997,8 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, hiddenArr, goodreadsScraper, malScraper, movier, updateCondition, mainWindow, loadWindow, dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools, hiddenArr, goodreadsScraper, malScraper, movier, updateCondition, mainWindow, loadWindow,
+	dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Add the configuration listeners.
 	exports.addConfigurationListeners(path, fs, log, ipc, originalPath);
 	// Add the titlebar listeners.

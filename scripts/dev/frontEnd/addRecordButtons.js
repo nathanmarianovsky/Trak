@@ -599,12 +599,14 @@ const recordChoicesButtons = () => {
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         introShowHolder = introInit(introShowHolder, document.getElementById("introductionTargetShowSave"), document.getElementById("introductionTargetShowOptions"));
     });
+    // Listen for a click event on the amazon search buttons in order to open an external link in the default browser.
     Array.from(document.getElementsByClassName("amazonBtn")).forEach(searchBtn => {
         searchBtn.addEventListener("click", e => {
             const curIdentifier = e.target.getAttribute("category");
             ipcRenderer.send("openStoreLink", ["Amazon", document.getElementById(curIdentifier != "book" ? curIdentifier + "Name" : curIdentifier + "Title").value]);
         });
     });
+    // Listen for a click event on the goodreads search buttons in order to open an external link in the default browser.
     Array.from(document.getElementsByClassName("goodreadsBtn")).forEach(searchBtn => {
         searchBtn.addEventListener("click", e => {
             const curIdentifier = e.target.getAttribute("category");
