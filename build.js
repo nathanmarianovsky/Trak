@@ -31,7 +31,7 @@ var windowsBuild = () => {
         "shortcutFolderName": "Trak",
         "upgradeCode": "31415926-5358-9793-2384-626433832795",
         "version": JSON.parse(fs.readFileSync(path.join(__dirname, "package.json"), "UTF8")).version,
-        "icon": path.join(__dirname, "assets", "whiteLogo.ico"),
+        "icon": path.join(__dirname, "assets", "greyLogo.ico"),
         "arch": "x64",
         "ui": {
             "chooseDirectory": true
@@ -59,7 +59,7 @@ var debBuild = arch => {
     const options = {
         "src": arch == "amd64" ? path.join(__dirname, "Trak-linux-x64") : path.join(__dirname, "Trak-linux-arm64"),
         "dest": path.join(__dirname, "build", "Installer-Debian-" + (arch == "amd64" ? "amd64" : "arm64")),
-        "icon": path.join(__dirname, "assets", "whiteLogo.ico"),
+        "icon": path.join(__dirname, "assets", "greyLogo.ico"),
         "productName": "Trak",
         "arch": arch
     }

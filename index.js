@@ -74,7 +74,7 @@ app.whenReady().then(() => {
 					"secondaryWindowWidth": 1400,
 					"secondaryWindowHeight": 1000,
 					"secondaryWindowFullscreen": false,
-					"icon": "white",
+					"icon": "grey",
 					"update": true,
 					"active": {
 						"anime": true,

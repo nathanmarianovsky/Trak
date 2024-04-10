@@ -304,7 +304,8 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
         		for(; w < associationsFileList.length; w++) {
         			// If the current association contains any of the records in the submitted association then update the current association.
         			if(associationsFileList[w].includes(focusItem) || associationsFileList[w].some(r => submissionArr[2].includes(r))) {
-        				associationsFileList[w] = [focusItem].concat(submissionArr[2]).sort((a, b) => a.split("-").slice(1).join("-").localeCompare(b.split("-").slice(1).join("-")));
+        				associationsFileList[w] = [...new Set([focusItem].concat(submissionArr[2], associationsFileList[w]))]
+        					.sort((a, b) => a.split("-").slice(1).join("-").localeCompare(b.split("-").slice(1).join("-")));
         				break;
         			}
         		}
