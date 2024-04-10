@@ -1147,7 +1147,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                 // Send a request to the back-end to close the splash screen once the library records have been loaded.
                 ipcRenderer.send("removeSplash");
                 // Send a request to the back-end to load the application tutorial if necessary.
-                ipcRenderer.send("tutorialReady");
+                setTimeout(() => ipcRenderer.send("tutorialReady"), 500);
             }
         });
     });

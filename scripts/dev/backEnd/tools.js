@@ -59,8 +59,11 @@ exports.compatibilityCheck = (fs, path, log, dir) => {
 			log.error("There was an error in reading the application configuration file.");
 		}
 		else {
-			const typeArr = ["current", "original"],
+			const typeArr = ["original"],
 				curConfigObj = JSON.parse(curConfig);
+			if(curConfigObj.current != undefined) {
+				typeArr.push("current");
+			}
 			for(let t = 0; t < typeArr.length; t++) {
 				if(!("path" in curConfigObj[typeArr[t]])) {
 					curConfigObj[typeArr[t]]["path"] = path.join(dir, "Trak", "data");

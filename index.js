@@ -150,7 +150,7 @@ app.whenReady().then(() => {
 				    	iconChoice = configObj.original.icon,
 				    	updateConfig = configObj.original.update,
 				    	lightCondition = false,
-				    	darkCondition = false;
+				    	darkCondition = true;
 			    }
 			    fs.copyFileSync(path.join(__dirname, "assets", (darkCondition ? "white" : "black") + "Logo.png"), path.join(basePath, "Trak", "config", "assets", "logo.png"));
 			    // Read the index.html file.

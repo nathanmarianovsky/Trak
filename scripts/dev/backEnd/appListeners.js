@@ -54,10 +54,17 @@ exports.addConfigurationListeners = (path, fs, log, ipc, originalPath) => {
 	});
 
 	ipc.on("getTutorial", event => {
-		fs.readFile(path.join(originalPath, "Trak", "config", "tutorial.json"), "UTF8", (err, file) => {
-			event.sender.send("sentTutorial", err ? "" : file);
-			if(err) { log.error("There was an issue reading the application settings tutorial file."); }
-		});
+		if(fs.existsSync(path.join(originalPath, "Trak", "config", "tutorial.json"))) {
+			fs.readFile(path.join(originalPath, "Trak", "config", "tutorial.json"), "UTF8", (err, file) => {
+				event.sender.send("sentTutorial", err ? "" : file);
+				if(err) { log.error("There was an issue reading the application settings tutorial file."); }
+			});
+		}
+		else {
+			const fle = JSON.stringify({"introduction": true});
+			fs.writeFileSync(path.join(originalPath, "Trak", "config", "tutorial.json"), fle, "UTF8");
+			event.sender.send("sentTutorial", fle);
+		}
 	});
 
 	ipc.on("getVersion", event => {
