@@ -327,7 +327,7 @@ const recordChoicesButtons = () => {
         filmName.addEventListener("click", e => nameAutoCompleteFunc("Film", e.target, previousName, filmNameAutocomplete, false));
         // Provide the autocomplete listener associated to film records.
         autoCompleteListener("Film", filmName, filmNameUL, filmNameAutocomplete);
-        filmRunTimeInput.addEventListener("input", e => e.target.value = formatRunningTime(e.target.value));
+        filmRunTimeInput.addEventListener("input", e => e.target.value = formatRunningTime(String(e.target.value)));
         // Update the page accordingly based on the fetched film details.
         ipcRenderer.on("filmFetchDetailsResult", (newEve, newResponse) => {
             const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none",
@@ -344,7 +344,7 @@ const recordChoicesButtons = () => {
             updateFetchedDataString(filmAlternateName, newResponse[1], updateDetector);
             setFetchedImages("Film", btnColorFavorite, newResponse[2]);
             updateFetchedDataDate(filmReleaseDate, newResponse[3], updateDetector);
-            updateFetchedDataString(filmRunTimeInput, formatRunningTime(newResponse[4]), updateDetector);
+            updateFetchedDataString(filmRunTimeInput, formatRunningTime(String(newResponse[4])), updateDetector);
             updateFetchedDataString(directorsInput, newResponse[6].join(", "), updateDetector);
             updateFetchedDataString(writersInput, newResponse[7].join(", "), updateDetector);
             updateFetchedDataString(distributorsInput, newResponse[8].join(", "), updateDetector);
@@ -562,7 +562,7 @@ const recordChoicesButtons = () => {
         showName.addEventListener("click", e => nameAutoCompleteFunc("Show", e.target, previousName, showNameAutocomplete, false));
         // Provide the autocomplete listener associated to show records.
         autoCompleteListener("Show", showName, showNameUL, showNameAutocomplete);
-        showRunTimeInput.addEventListener("input", e => e.target.value = formatRunningTime(e.target.value));
+        showRunTimeInput.addEventListener("input", e => e.target.value = formatRunningTime(String(e.target.value)));
         // Update the page accordingly based on the fetched show details.
         ipcRenderer.on("showFetchDetailsResult", (newEve, newResponse) => {
             const updateDetector = document.getElementById("categorySelection").parentNode.parentNode.parentNode.style.display == "none",
@@ -579,7 +579,7 @@ const recordChoicesButtons = () => {
             updateFetchedDataString(showAlternateName, newResponse[1], updateDetector);
             setFetchedImages("Show", btnColorFavorite, newResponse[2]);
             updateFetchedDataDate(showReleaseDate, newResponse[3], updateDetector);
-            updateFetchedDataString(showRunTimeInput, formatRunningTime(newResponse[4]), updateDetector);
+            updateFetchedDataString(showRunTimeInput, formatRunningTime(String(newResponse[4])), updateDetector);
             updateFetchedDataString(directorsInput, newResponse[6].join(", "), updateDetector);
             updateFetchedDataString(writersInput, newResponse[7].join(", "), updateDetector);
             updateFetchedDataString(distributorsInput, newResponse[8].join(", "), updateDetector);

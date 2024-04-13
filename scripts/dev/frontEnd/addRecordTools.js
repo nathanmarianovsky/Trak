@@ -358,12 +358,12 @@ const navReset = (def, divs, links, choiceDiv, choiceLink) => {
 
 /*
 
-Formats a string to be in the format "XXX m" in order to represent a record runtime.
+Formats a string to be in the format "XXX" in order to represent a record runtime.
 
    - str is a string representing a record's runtime.
 
 */
-const formatRunningTime = str => String(parseInt(str)) + " m";
+const formatRunningTime = str => str.replace(/\D/g, "");
 
 
 
