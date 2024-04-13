@@ -46,6 +46,38 @@ var exports = {};
 
 /*
 
+Inverts a given color by flipping the rgb values.
+
+   - hex is a string representing a color via its hexadecimal identifier.
+
+*/
+exports.invertColor = hex => {
+	// Define a function to appropriately pad a component.
+	const padZero = (str, len) => {
+	    len = len || 2;
+	    const zeros = new Array(len).join('0');
+	    return (zeros + str).slice(-len);
+	};
+    if(hex.indexOf('#') == 0) { hex = hex.slice(1); }
+    // Convert 3-digit hex to 6-digits.
+    if(hex.length === 3) {
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    let r = parseInt(hex.slice(0, 2), 16),
+        g = parseInt(hex.slice(2, 4), 16),
+        b = parseInt(hex.slice(4, 6), 16);
+    // Invert the color components
+    r = (255 - r).toString(16);
+    g = (255 - g).toString(16);
+    b = (255 - b).toString(16);
+    // Pad each of the components with zeros when returning.
+    return "#" + padZero(r) + padZero(g) + padZero(b);
+};
+
+
+
+/*
+
 Checks the configuration setup to ensure that all proper parameters exist if upgrading from a previous version.
 
 	- path and fs provide the means to work with local files.

@@ -206,7 +206,8 @@ app.whenReady().then(() => {
 																reg6 = new RegExp("border-bottom-color:black", "g"),
 																reg7 = new RegExp("border-right-color:black", "g"),
 																reg8 = new RegExp("fill:black", "g"),
-																reg9 = new RegExp("color-scheme:light", "g");
+																reg9 = new RegExp("color-scheme:light", "g"),
+																reg10 = new RegExp(".autocomplete-content li .highlight{color:#444", "g");
 															stylesFile = stylesFile.replace(reg1, configObj.current.primaryColor);
 															stylesFile = stylesFile.replace(reg2, configObj.current.secondaryColor);
 															stylesFile = stylesFile.replace(reg3, lightCondition ? "color:black" : "color:white");
@@ -216,6 +217,7 @@ app.whenReady().then(() => {
 															stylesFile = stylesFile.replace(reg7, lightCondition ? "border-right-color:black" : "border-right-color:white");
 															stylesFile = stylesFile.replace(reg8, lightCondition ? "fill:black" : "fill:white");
 															stylesFile = stylesFile.replace(reg9, lightCondition ? "color-scheme:light" : "color-scheme:dark");
+															stylesFile = stylesFile.replace(reg10, lightCondition ? ".autocomplete-content li .highlight{color:#444" : ".autocomplete-content li .highlight{color:" + tools.invertColor("#444"));
 															if(categoryActiveArr.filter(elem => elem == true).length == 1) {
 																stylesFile += "#addRecordsNav{display:none;}";
 															}
