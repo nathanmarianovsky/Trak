@@ -18,7 +18,8 @@ footer {
     bottom: 35px;
 }
 
-#logsFolder, #settingsDataReset {
+#libraryFolder, #logsFolder,
+#settingsDataReset {
 	display: none;
 }
 

@@ -77,10 +77,17 @@ ipcRenderer.on("logsFileReadFailure", event => {
 
 
 
-// Display a notification for the successful opening of the logs file.
-ipcRenderer.on("logsFileSuccess", event => {
+// Display a notification for the successful opening of the logs folder.
+ipcRenderer.on("logsFolderSuccess", event => {
     M.toast({"html": "The folder containing the log files has been opened.", "classes": "rounded"});
     ipcRenderer.send("logsRequest");
+});
+
+
+
+// Display a notification for the successful opening of the logs file.
+ipcRenderer.on("libraryFolderSuccess", event => {
+    M.toast({"html": "The folder containing the library records has been opened.", "classes": "rounded"});
 });
 
 
@@ -113,6 +120,7 @@ window.addEventListener("load", () => {
         settingsAbout = document.getElementById("settingsAbout"),
         settingsColorReset = document.getElementById("settingsColorReset"),
         settingsDataReset = document.getElementById("settingsDataReset"),
+        libraryFolder = document.getElementById("libraryFolder"),
         settingsSizesReset = document.getElementById("settingsSizesReset"),
         settingsIntervalReset = document.getElementById("settingsIntervalReset"),
         aboutGithub = document.getElementById("aboutGithub"),
@@ -126,7 +134,10 @@ window.addEventListener("load", () => {
         settingsContainers = Array.from(document.getElementsByClassName("settingsContainer")),
         settingsSelectionItems = Array.from(document.getElementsByClassName("settingsSelectionItems"));
     logsFolder.addEventListener("click", e => {
-        ipcRenderer.send("logsFile");
+        ipcRenderer.send("logsFolder");
+    });
+    libraryFolder.addEventListener("click", e => {
+        ipcRenderer.send("libraryFolder");
     });
     // Listen for a click event on the settingsDisplay button on the top bar to display the display settings.
     settingsBtnsInit(ipcRenderer, settingsDisplay, settingsContainers, settingsSelectionItems, settingsDisplayContainer,

@@ -180,6 +180,13 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
   		});
   	});
 
+  	// Handles the opening of the library records folder.
+  	ipc.on("libraryFolder", event => {
+  		require("child_process").exec(tools.startCommandLineFolder() + " " + path.join(originalPath, "Trak", "data"));
+  		log.info("The folder containing the library records has been opened.");
+		event.sender.send("libraryFolderSuccess");
+  	});
+
   	// Handle the update of the notifications configuration file.
     ipc.on("notificationsSave", (event, submissionContent) => {
     	// Define the path to the notifications configuration file.
@@ -952,11 +959,11 @@ exports.addLogListeners = (path, fs, log, ipc, tools, originalPath) => {
         });
 	});
 
-	// Handles the opening of the logs file.
-  	ipc.on("logsFile", event => {
+	// Handles the opening of the logs folder.
+  	ipc.on("logsFolder", event => {
   		require("child_process").exec(tools.startCommandLineFolder() + " " + path.join(originalPath, "Trak", "logs"));
   		log.info("The folder containing the log files has been opened.");
-		event.sender.send("logsFileSuccess");
+		event.sender.send("logsFolderSuccess");
   	});
 };
 
