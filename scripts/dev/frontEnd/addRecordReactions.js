@@ -226,6 +226,9 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
             const recordData = JSON.parse(recordArr[1]),
                 otherGenresDivs = Array.from(document.getElementsByClassName("otherGenresDiv"));
             otherGenresDivs.forEach(div => div.style.display = "none");
+            document.getElementById(recordData.category.toLowerCase() + "Title").style.display = "none";
+            document.getElementById(recordData.category.toLowerCase() + "Directions").style.display = "none";
+            document.getElementById("category" + recordData.category + "Div").style.top = "40px";
             // If the record is of category type anime then proceed.
             if(recordData.category == "Anime") {
                 const animeSave = document.getElementById("animeSave"),
