@@ -104,7 +104,7 @@ Handles the saving of an anime record by creating the associated folders and dat
    - data is the information associated to the record.
 
 */
-exports.animeSave = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
+exports.animeAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
     // Check to see that the folder associated to the new record does not exist.
     if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]))) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[2])))) {
         // Create a new directory for the assets associated to the new record.

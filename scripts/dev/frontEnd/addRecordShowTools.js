@@ -89,7 +89,7 @@ var showSave = () => {
             const submissionMaterial = ["Show", showName, showAlternateName, showReview, showDirectors, showProducers, showWriters, showMusicians, showEditors,
                 showCinematographers, showFiles, showDistributors, showProductionCompanies, showStarring, [genresLst, genres, otherGenres], showSynopsis, showRating, showReleaseDate, showRunningTime,
                 [document.getElementById("addRecordShowImg").getAttribute("list") == document.getElementById("addRecordShowImg").getAttribute("previous"), showImg], content, oldTitle];
-            ipcRenderer.send("performSave", submissionMaterial);
+            ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial]);
             saveAssociations("Show", showName, ipcRenderer);
         }
         // If no name has been provided then notify the user.

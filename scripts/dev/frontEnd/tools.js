@@ -631,7 +631,7 @@ const notificationsListeners = ipcElec => {
     Array.from(document.getElementsByClassName("notificationsTitle")).forEach(itemLink => {
         itemLink.addEventListener("click", e => {
             e.preventDefault();
-            ipcElec.send("updateRecord", e.target.id);
+            ipcElec.send("updateRecord", [false, e.target.id]);
         });
     });
 };

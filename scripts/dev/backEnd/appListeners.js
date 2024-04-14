@@ -370,42 +370,77 @@ Driver function for adding all listeners associated to the maintenance of record
 
 */
 exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hiddenArr, goodreadsScraper, malScraper, movier, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
-	// Handles the load of the addRecord.html page for the creation of a record.
-  	ipc.on("addLoad", (event, scenario) => {
-  		// Have the secondary window load the corresponding html structure.
-  		let addWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, fs, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
-		// Proceed once the window has finished loading.
-  		addWindow.webContents.on("did-finish-load", () => {
-  			// Send a request to the front-end if the tutorial is chosen to be shown.
-  			if(scenario == true) {
-  				log.info("Loading the application tutorial for the addRecord.html page.");
-  				addWindow.webContents.send("addIntroduction");
-  			}
-  			addWindow.webContents.send("activeCategories", hiddenArr);
-  			// Tell the front-end to display the default message for adding a new record.
-  			addWindow.webContents.send("addRecordInitialMessage");
-  			// Save the record upon a request from the front-end.
-  			ipc.once("performSave", (event, submission) => {
-  				require("./" + submission[0].toLowerCase() + "Tools")[submission[0].toLowerCase() + "Save"](BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
-  			});
-  		});
-  	});
+	// // Handles the load of the addRecord.html page for the creation of a record.
+  	// ipc.on("addLoad", (event, scenario) => {
+  	// 	// Have the secondary window load the corresponding html structure.
+  	// 	let addWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, fs, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+	// 	// Proceed once the window has finished loading.
+  	// 	addWindow.webContents.on("did-finish-load", () => {
+  	// 		// Send a request to the front-end if the tutorial is chosen to be shown.
+  	// 		if(scenario == true) {
+  	// 			log.info("Loading the application tutorial for the addRecord.html page.");
+  	// 			addWindow.webContents.send("addIntroduction");
+  	// 		}
+  	// 		addWindow.webContents.send("activeCategories", hiddenArr);
+  	// 		// Tell the front-end to display the default message for adding a new record.
+  	// 		addWindow.webContents.send("addRecordInitialMessage");
+  	// 		// Save the record upon a request from the front-end.
+  	// 		// ipc.once("performSave", (event, submission) => {
+  	// 		// 	require("./" + submission[0].toLowerCase() + "Tools")[submission[0].toLowerCase() + "Save"](BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
+  	// 		// });
+  	// 	});
+  	// });
 
-  	// Handles the load of the addRecord.html page for the update of a record.
-  	ipc.on("updateRecord", (event, fldrName) => {
-  		// Have the secondary window load the corresponding html structure.
-  		let recordUpdateWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, fs, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
-		// Proceed once the window has finished loading.
-  		recordUpdateWindow.webContents.on("did-finish-load", () => {
-  			recordUpdateWindow.webContents.send("activeCategories", hiddenArr);
-  			// Send a request to the front-end to load the record's details.
-  			recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
-  			// Save the record upon a request from the front-end.
-  			ipc.once("performSave", (event, submission) => {
-  				require("./" + submission[0].toLowerCase() + "Tools")[submission[0].toLowerCase() + "Update"](BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
-  			});
-  		});
-  	});
+  	// ipc.on("performSave", (event, submission) => {
+	// 	require("./" + submission[0].toLowerCase() + "Tools")[submission[0].toLowerCase() + "Save"](BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
+	// });
+
+  	// // Handles the load of the addRecord.html page for the update of a record.
+  	// ipc.on("updateRecord", (event, fldrName) => {
+  	// 	// Have the secondary window load the corresponding html structure.
+  	// 	let recordUpdateWindow = tools.createWindow("addRecord", originalPath, BrowserWindow, fs, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+	// 	// Proceed once the window has finished loading.
+  	// 	recordUpdateWindow.webContents.on("did-finish-load", () => {
+  	// 		recordUpdateWindow.webContents.send("activeCategories", hiddenArr);
+  	// 		// Send a request to the front-end to load the record's details.
+  	// 		recordUpdateWindow.webContents.send("recordUpdateInfo", fldrName);
+  	// 		// Save the record upon a request from the front-end.
+  	// 		// ipc.once("performSave", (event, submission) => {
+  	// 		// 	require("./" + submission[0].toLowerCase() + "Tools")[submission[0].toLowerCase() + "Update"](BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
+  	// 		// });
+  	// 	});
+  	// });
+
+  	// ipc.on("performSave", (event, submission) => {
+	// 	require("./" + submission[0].toLowerCase() + "Tools")[submission[0].toLowerCase() + "Update"](BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission);
+	// });
+
+	const operationsArr = ["Add", "Update"];
+	for(let p = 0; p < operationsArr.length; p++) {
+		// Handles the load of the addRecord.html page for the update of a record.
+	  	ipc.on(operationsArr[p].toLowerCase() + "Record", (event, info) => {
+	  		// Have the secondary window load the corresponding html structure.
+	  		let secondaryWin = tools.createWindow("addRecord", originalPath, BrowserWindow, fs, path, log, dev, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+			// Proceed once the window has finished loading.
+	  		secondaryWin.webContents.on("did-finish-load", () => {
+	  			// Send a request to the front-end if the tutorial is chosen to be shown.
+	  			if(info[0] == true) {
+	  				log.info("Loading the application tutorial for the addRecord.html page.");
+	  				addWindow.webContents.send("addIntroduction");
+	  			}
+	  			// Send a request to the update which record categories are displayed according to the application settings.
+	  			secondaryWin.webContents.send("activeCategories", hiddenArr);
+	  			// Send a request to display the associated content for adding a new record or updating an existing one.
+				secondaryWin.webContents.send("record" + operationsArr[p] + "Info", info[1]);
+	  		});
+	  	});
+	}
+
+  	// Save the record upon a request from the front-end.
+	ipc.on("performSave", (event, submission) => {
+		require("./" + submission[1][0].toLowerCase() + "Tools")[submission[1][0].toLowerCase() + (submission[0] == true ? "Update" : "Add")]
+			(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission[1]);
+	});
 
   	// Handles the deletion of multiple records and updates the associations configuration file accodingly.
   	ipc.on("removeRecords", (event, list) => {

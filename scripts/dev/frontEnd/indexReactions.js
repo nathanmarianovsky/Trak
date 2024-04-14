@@ -393,7 +393,7 @@ ipcRenderer.on("introduction", (event, response) => {
             instancesTapAdd.open();
             // If the step is exited via the click of the focused button, then open the addRecord page with the tutorial continued.
             document.getElementById("introductionTargetAdd").nextElementSibling.children[0].addEventListener("click", e => {
-                ipcRenderer.send("addLoad", true);
+                ipcRenderer.send("addRecord", [true, ""]);
             });
         }, 500);
     });
@@ -932,7 +932,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                     // Listen for a click on the name of a record in order to open the update page.
                     tdNameDiv.addEventListener("click", e => {
                         e.preventDefault();
-                        ipcRenderer.send("updateRecord", e.target.parentNode.parentNode.parentNode.id);
+                        ipcRenderer.send("updateRecord", [false, e.target.parentNode.parentNode.parentNode.id]);
                     });
                     // Listen for a click on the files button in order to open the associated assets folder of a record.
                     filesButton.addEventListener("click", e => {

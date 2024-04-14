@@ -58,7 +58,7 @@ var filmSave = () => {
             const submissionMaterial = ["Film", filmName, filmAlternateName, filmReview, filmDirectors, filmProducers, filmWriters, filmMusicians, filmEditors,
                 filmCinematographers, filmFiles, filmDistributors, filmProductionCompanies, filmStarring, [genresLst, genres, otherGenres], filmSynopsis, filmRating, filmReleaseDate, filmRunningTime,
                 filmLastWatched, [document.getElementById("addRecordFilmImg").getAttribute("list") == document.getElementById("addRecordFilmImg").getAttribute("previous"), filmImg], oldTitle];
-            ipcRenderer.send("performSave", submissionMaterial);
+            ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial]);
             saveAssociations("Film", filmName, ipcRenderer);
         }
         // If no name has been provided then notify the user.

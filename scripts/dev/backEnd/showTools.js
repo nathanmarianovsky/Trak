@@ -97,7 +97,7 @@ Handles the saving of a show record by creating the associated folders and data 
    - data is the information associated to the record.
 
 */
-exports.showSave = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
+exports.showAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
     // Check to see that the folder associated to the new record does not exist.
     if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1])))) {
         // Create a new directory for the assets associated to the new record.

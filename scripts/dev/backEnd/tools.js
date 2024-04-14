@@ -2,6 +2,7 @@
 
 BASIC DETAILS: This file serves as the collection of tools utilized by the various back-end requests.
 
+   - invertColor: Inverts a given color by flipping the rgb values.
    - compatibilityCheck: Checks the configuration setup to ensure that all proper parameters exist if upgrading from a previous version.
    - lightOrDark: Determines whether a given color represents a dark or light one.
    - parseRecord: Handles the parsing of a record folder name to display.

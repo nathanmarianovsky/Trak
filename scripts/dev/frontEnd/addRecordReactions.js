@@ -78,7 +78,7 @@ ipcRenderer.on("recordFolderRenameFailure", (event, response) => {
 
 
 // If the addRecord page is loading for a new addition then show the initial messanging.
-ipcRenderer.on("addRecordInitialMessage", event => {
+ipcRenderer.on("recordAddInfo", event => {
     document.getElementById("categoryInitial").style.display = "initial";
 });
 

@@ -861,7 +861,7 @@ const associationsListeners = ipcElec => {
     Array.from(document.getElementsByClassName("associationTitle")).forEach(itemLink => {
         itemLink.addEventListener("click", e => {
             e.preventDefault();
-            ipcElec.send("updateRecord", e.target.id);
+            ipcElec.send("updateRecord", [false, e.target.id]);
         });
     });
     // Listen for a click on the delete icon of an association in order to remove the association.

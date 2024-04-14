@@ -83,7 +83,7 @@ var mangaSave = () => {
             const submissionMaterial = ["Manga", mangaName, mangaJapaneseName, mangaReview, mangaWriters, mangaIllustrator, mangaPublisher, mangaJapanesePublisher,
                 mangaDemographic, mangaStart, mangaFiles, mangaEnd, content, [genresLst, genres, otherGenres], mangaSynopsis,
                 [document.getElementById("addRecordMangaImg").getAttribute("list") == document.getElementById("addRecordMangaImg").getAttribute("previous"), mangaImg], oldTitle];
-            ipcRenderer.send("performSave", submissionMaterial);
+            ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial]);
             saveAssociations("Manga", mangaName, ipcRenderer);
         }
         // If no name has been provided then notify the user.
