@@ -489,8 +489,9 @@ ipcRenderer.on("loadRows", (event, diff) => {
                     tdName.classList.add("left");
                     tdNameOuterDiv.classList.add("recordsNameContainer");
                     tdNameOuterDiv.append(tdNameDiv);
-                    // Define the variable which will indicate whether a record is currently ongoing.
-                    let visibilityCheck = false;
+                    // Define the variables which will indicate whether a record is currently being watched and ongoing.
+                    let visibilityCheck = "",
+                        ongoingCheck = "";
                     // Define the record tooltip image if available.
                     let imgStr = "";
                     if(recordData.img[0] != "") {
@@ -517,21 +518,27 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                     newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                                 }
                                 if(recordData.content[t].status == "Watching" || recordData.content[t].status == "Plan To Watch") {
-                                    visibilityCheck = true;
+                                    visibilityCheck = recordData.content[t].status;
                                 }
                                 else if(recordData.content[t].start != "" && recordData.content[t].end != "") {
                                     if(((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
-                                        visibilityCheck = true;
+                                        ongoingCheck = "Filled";
+                                    }
+                                    else if((new Date(recordData.content[t].start)).getTime() > (new Date()).getTime()) {
+                                        ongoingCheck = "Empty";
                                     }
                                 }
                                 else if(recordData.content[t].end != "") {
                                     if((new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
-                                        visibilityCheck = true;
+                                        ongoingCheck = "Filled";
                                     }
                                 }
                                 else if(recordData.content[t].start != "") {
                                     if((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) {
-                                        visibilityCheck = true;
+                                        ongoingCheck = "Filled";
+                                    }
+                                    else {
+                                        ongoingCheck = "Empty";
                                     }
                                 }
                             }
@@ -651,21 +658,27 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                             }
                             if(recordData.content[t].status == "Watching" || recordData.content[t].status == "Plan To Watch") {
-                                visibilityCheck = true;
+                                visibilityCheck = recordData.content[t].status;
                             }
                             else if(recordData.content[t].start != "" && recordData.content[t].end != "") {
                                 if(((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
-                                    visibilityCheck = true;
+                                    ongoingCheck = "Filled";
+                                }
+                                else if((new Date(recordData.content[t].start)).getTime() > (new Date()).getTime()) {
+                                    ongoingCheck = "Empty";
                                 }
                             }
                             else if(recordData.content[t].end != "") {
                                 if((new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
-                                    visibilityCheck = true;
+                                    ongoingCheck = "Filled";
                                 }
                             }
                             else if(recordData.content[t].start != "") {
                                 if((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) {
-                                    visibilityCheck = true;
+                                    ongoingCheck = "Filled";
+                                }
+                                else {
+                                    ongoingCheck = "Empty";
                                 }
                             }
                         }
@@ -688,17 +701,23 @@ ipcRenderer.on("loadRows", (event, diff) => {
                     if(recordData.category == "Manga") {
                         if(recordData.start != "" && recordData.end != "") {
                             if(((new Date(recordData.start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.end)).getTime()) {
-                                visibilityCheck = true;
+                                ongoingCheck = "Filled";
+                            }
+                            else if((new Date(recordData.start)).getTime() > (new Date()).getTime()) {
+                                ongoingCheck = "Empty";
                             }
                         }
                         else if(recordData.end != "") {
                             if((new Date()).getTime() <= (new Date(recordData.end)).getTime()) {
-                                visibilityCheck = true;
+                                ongoingCheck = "Filled";
                             }
                         }
                         else if(recordData.start != "") {
                             if((new Date(recordData.start)).getTime() <= (new Date()).getTime()) {
-                                visibilityCheck = true;
+                                ongoingCheck = "Filled";
+                            }
+                            else {
+                                ongoingCheck = "Empty"
                             }
                         }
                     }
@@ -750,13 +769,28 @@ ipcRenderer.on("loadRows", (event, diff) => {
                             });
                         });
                     }
-                    // If the current record is being read/watched then create an icon for it.
-                    if(visibilityCheck == true) {
+                    // If the current record is currently ongoing then create an icon for it.
+                    if(ongoingCheck != "") {
+                        // Define the link and icon.
+                        let tdNameOngoingLinkDiv = document.createElement("li"),
+                            tdNameOngoingLink = document.createElement("a"),
+                            tdNameOngoingIcon = document.createElement("i");
+                        tdNameOngoingIcon.textContent = ongoingCheck == "Filled" ? "circle" : "panorama_fish_eye";
+                        tdNameOngoingIcon.classList.add("material-icons", "extraInfoIcon");
+                        tdNameOngoingLinkDiv.classList.add("extraIconDiv");
+                        // Append the icon and link accordingly.
+                        tdNameOngoingLink.append(tdNameOngoingIcon);
+                        tdNameOngoingLinkDiv.append(tdNameOngoingLink);
+                        tdNameOuterDiv.append(tdNameOngoingLinkDiv);
+                    }
+                    tr.setAttribute("visibilityCheck", visibilityCheck.toLowerCase().replace(/ /g, ""));
+                    // If the current record is being/will be watched then create an icon for it.
+                    if(visibilityCheck != "") {
                         // Define the link and icon.
                         let tdNameVisibilityLinkDiv = document.createElement("li"),
                             tdNameVisibilityLink = document.createElement("a"),
                             tdNameVisibilityIcon = document.createElement("i");
-                        tdNameVisibilityIcon.textContent = "visibility";
+                        tdNameVisibilityIcon.textContent = (visibilityCheck == "Watching" ? "visibility" : "visibility_off");
                         tdNameVisibilityIcon.classList.add("material-icons", "extraInfoIcon");
                         tdNameVisibilityLinkDiv.classList.add("extraIconDiv");
                         // Append the icon and link accordingly.
@@ -764,7 +798,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         tdNameVisibilityLinkDiv.append(tdNameVisibilityLink);
                         tdNameOuterDiv.append(tdNameVisibilityLinkDiv);
                     }
-                    tr.setAttribute("visibilityCheck", visibilityCheck);
+                    tr.setAttribute("visibilityCheck", visibilityCheck.toLowerCase().replace(/ /g, ""));
                     // If the current record is bookmarked then create an icon for it.
                     if(recordData.bookmark == true) {
                         // Define the link and icon.
