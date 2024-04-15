@@ -635,21 +635,6 @@ ipcRenderer.on("loadRows", (event, diff) => {
                             if(imgStr != "") { imgStr += "<br>"; }
                             imgStr += tooltipStr;
                         }
-                        if(recordData.start != "" && recordData.end != "") {
-                            if(((new Date(recordData.start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.end)).getTime()) {
-                                visibilityCheck = true;
-                            }
-                        }
-                        else if(recordData.end != "") {
-                            if((new Date()).getTime() <= (new Date(recordData.end)).getTime()) {
-                                visibilityCheck = true;
-                            }
-                        }
-                        else if(recordData.start != "") {
-                            if((new Date(recordData.start)).getTime() <= (new Date()).getTime()) {
-                                visibilityCheck = true;
-                            }
-                        }
                     }
                     // Proceed only if the record is a show.
                     else if(recordData.category == "Show" && recordData.content.length > 0) {
@@ -698,6 +683,23 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         if(tooltipStr != "") {
                             if(imgStr != "") { imgStr += "<br>"; }
                             imgStr += tooltipStr;
+                        }
+                    }
+                    if(recordData.category == "Manga") {
+                        if(recordData.start != "" && recordData.end != "") {
+                            if(((new Date(recordData.start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.end)).getTime()) {
+                                visibilityCheck = true;
+                            }
+                        }
+                        else if(recordData.end != "") {
+                            if((new Date()).getTime() <= (new Date(recordData.end)).getTime()) {
+                                visibilityCheck = true;
+                            }
+                        }
+                        else if(recordData.start != "") {
+                            if((new Date(recordData.start)).getTime() <= (new Date()).getTime()) {
+                                visibilityCheck = true;
+                            }
                         }
                     }
                     // Attach the record tooltip only if there is something to display, either an image and/or text.

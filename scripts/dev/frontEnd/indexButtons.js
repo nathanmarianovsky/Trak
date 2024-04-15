@@ -132,7 +132,9 @@ window.addEventListener("load", () => {
         mangaSearchSubmission = document.getElementById("mangaSearchSubmission"),
         clearNotifications = document.getElementById("clearNotifications"),
         updateCurrent = document.getElementById("updateCurrent"),
-        updateChangelog = document.getElementById("updateChangelog");
+        updateChangelog = document.getElementById("updateChangelog"),
+        addBookmark = document.getElementById("addBookmark"),
+        removeBookmark = document.getElementById("removeBookmark");
     // Define all page components which will be utilized.
     const tableBody = document.getElementById("tableBody"),
         XLSXTypeSwitchDiv = document.getElementById("XLSXTypeSwitchDiv"),
@@ -169,6 +171,16 @@ window.addEventListener("load", () => {
         updateChangelogDiv = document.getElementById("updateChangelogDiv");
     let submissionList = [],
         tabsLoader = false;
+    // Listen for a click event on the add bookmarks button in order to send a request to bookmark all checked records.
+    addBookmark.addEventListener("click", e => {
+        const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
+        ipcRenderer.send("addBookmark", checkAll.checked ? list.slice(1) : list);
+    });
+    // Listen for a click event on the remove bookmarks button in order to send a request to unbookmark all checked records.
+    removeBookmark.addEventListener("click", e => {
+        const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
+        ipcRenderer.send("removeBookmark", checkAll.checked ? list.slice(1) : list);
+    });
     // Listen for a click on any search tab in order to hide the default search div.
     tabSearchLinks.forEach(tab => tab.addEventListener("click", e => defaultSearchDiv.style.display = "none"));
     // Listen for a click event on the content search button.
@@ -418,7 +430,7 @@ window.addEventListener("load", () => {
         e.preventDefault();
         ipcRenderer.send("addRecord", [false, ""]);
     });
-    // Listen for a click event on the remove button in order to open a confirmation window asking for the deletion of all checked records.
+    // Listen for a click event on the remove button in order to send a request for the deletion of all checked records.
     remove.addEventListener("click", e => {
         const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
         ipcRenderer.send("removeRecords", checkAll.checked ? list.slice(1) : list);
