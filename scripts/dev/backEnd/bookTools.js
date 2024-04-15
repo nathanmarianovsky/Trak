@@ -51,7 +51,8 @@ exports.bookObjCreation = (path, fs, https, tools, dir, providedData) => {
         "rating": providedData[12],
         "review": providedData[13],
         "genres": providedData[14],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]) + "-" + providedData[3], providedData[15])
+        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]) + "-" + providedData[3], providedData[15]),
+        "bookmark": providedData[16]
     };
 };
 

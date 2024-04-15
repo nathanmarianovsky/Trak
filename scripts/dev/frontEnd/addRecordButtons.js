@@ -613,4 +613,10 @@ const recordChoicesButtons = () => {
             ipcRenderer.send("openStoreLink", ["Goodreads", document.getElementById(curIdentifier != "book" ? curIdentifier + "Name" : curIdentifier + "Title").value]);
         });
     });
+    Array.from(document.getElementsByClassName("addRecordBookmark")).forEach(bkmkBtn => {
+        bkmkBtn.addEventListener("click", e => {
+            let curIcon = e.target;
+            curIcon.textContent == "check_box" ? curIcon.textContent = "check_box_outline_blank" : curIcon.textContent = "check_box";
+        });
+    });
 };

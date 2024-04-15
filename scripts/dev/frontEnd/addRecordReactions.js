@@ -226,18 +226,20 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
             const recordData = JSON.parse(recordArr[1]),
                 otherGenresDivs = Array.from(document.getElementsByClassName("otherGenresDiv"));
             otherGenresDivs.forEach(div => div.style.display = "none");
-            document.getElementById(recordData.category.toLowerCase() + "Title").style.display = "none";
-            document.getElementById(recordData.category.toLowerCase() + "Directions").style.display = "none";
+            document.getElementById(recordData.category.toLowerCase() + "TitleHeader").style.display = "none";
+            document.getElementById(recordData.category.toLowerCase() + "DirectionsDiv").style.display = "none";
             document.getElementById("category" + recordData.category + "Div").style.top = "40px";
             // If the record is of category type anime then proceed.
             if(recordData.category == "Anime") {
                 const animeSave = document.getElementById("animeSave"),
+                    animeBookmark = document.getElementById("animeBookmark"),
                     animeOptions = document.getElementById("animeOptions"),
                     animeMoreDetailsBtn = document.getElementById("animeMoreDetailsBtn"),
                     animeFetchDetailsBtn = document.getElementById("animeFetchDetailsBtn"),
                     animeAmazonSearchBtn = document.getElementById("animeAmazonSearchBtn");
                 // Hide the page buttons until all data has loaded in.
                 animeSave.style.visibility = "hidden";
+                animeBookmark.style.visibility = "hidden";
                 animeOptions.style.visibility = "hidden";
                 animeMoreDetailsBtn.style.visibility = "hidden";
                 animeFetchDetailsBtn.style.visibility = "hidden";
@@ -360,6 +362,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     document.getElementById("animeRating").value = animeRtng;
                     // Display all page buttons now that all data has loaded.
                     animeSave.style.visibility = "visible";
+                    if(recordData.bookmark == true) { animeBookmark.children[0].textContent = "check_box"; }
+                    animeBookmark.style.visibility = "visible";
                     animeOptions.style.visibility = "visible";
                     animeMoreDetailsBtn.style.visibility = "visible";
                     animeFetchDetailsBtn.style.visibility = "visible";
@@ -421,6 +425,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 bookTitle.setAttribute("oldISBN", recordData.isbn);
                 bookTitle.setAttribute("oldName", recordData.name);
                 // Display all page buttons now that all data has loaded.
+                if(recordData.bookmark == true) { document.getElementById("bookBookmark").children[0].textContent = "check_box"; }
                 bookAmazonSearchBtn.style.visibility = "visible";
                 bookGoodreadsSearchBtn.style.visibility = "visible";
                 // Initialize the select tags.
@@ -496,6 +501,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 updateFilmPreloader.style.top = "-32px";
                 filmName.setAttribute("oldName", recordData.name);
                 // Display all page buttons now that all data has loaded.
+                if(recordData.bookmark == true) { document.getElementById("filmBookmark").children[0].textContent = "check_box"; }
                 filmAmazonSearchBtn.style.visibility = "visible";
                 // Initialize the select tags.
                 initSelect();
@@ -503,6 +509,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
             // If a record is of category type manga then proceed.
             else if(recordData.category == "Manga") {
                 const mangaSave = document.getElementById("mangaSave"),
+                    mangaBookmark = document.getElementById("mangaBookmark"),
                     mangaOptions = document.getElementById("mangaOptions"),
                     mangaMoreDetailsBtn = document.getElementById("mangaMoreDetailsBtn"),
                     mangaFetchDetailsBtn = document.getElementById("mangaFetchDetailsBtn"),
@@ -510,6 +517,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     mangaGoodreadsSearchBtn = document.getElementById("mangaGoodreadsSearchBtn");
                 // Hide the page buttons until all data has loaded in.
                 mangaSave.style.visibility = "hidden";
+                mangaBookmark.style.visibility = "hidden";
                 mangaOptions.style.visibility = "hidden";
                 mangaMoreDetailsBtn.style.visibility = "hidden";
                 mangaFetchDetailsBtn.style.visibility = "hidden";
@@ -608,6 +616,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     document.getElementById("mangaRating").value = mangaRtng;
                     // Display all page buttons now that all data has loaded.
                     mangaSave.style.visibility = "visible";
+                    if(recordData.bookmark == true) { mangaBookmark.children[0].textContent = "check_box"; }
+                    mangaBookmark.style.visibility = "visible";
                     mangaOptions.style.visibility = "visible";
                     mangaMoreDetailsBtn.style.visibility = "visible";
                     mangaFetchDetailsBtn.style.visibility = "visible";
@@ -621,9 +631,16 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
             // If the record is of category type show then proceed.
             else if(recordData.category == "Show") {
                 const showSave = document.getElementById("showSave"),
+                    showBookmark = document.getElementById("showBookmark"),
                     showMoreDetailsBtn = document.getElementById("showMoreDetailsBtn"),
                     showFetchDetailsBtn = document.getElementById("showFetchDetailsBtn"),
                     showAmazonSearchBtn = document.getElementById("showAmazonSearchBtn");
+                // Hide the page buttons until all data has loaded in.
+                showBookmark.style.visibility = "hidden";
+                showOptions.style.visibility = "hidden";
+                showMoreDetailsBtn.style.visibility = "hidden";
+                showFetchDetailsBtn.style.visibility = "hidden";
+                showAmazonSearchBtn.style.visibility = "hidden";
                 // Define the relevant show record inputs.
                 const showName = document.getElementById("showName"),
                     showAlternateName = document.getElementById("showAlternateName"),
@@ -736,6 +753,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     document.getElementById("showRating").value = showRtng;
                     // Display all page buttons now that all data has loaded.
                     showSave.style.visibility = "visible";
+                    if(recordData.bookmark == true) { showBookmark.children[0].textContent = "check_box"; }
+                    showBookmark.style.visibility = "visible";
                     showOptions.style.visibility = "visible";
                     showMoreDetailsBtn.style.visibility = "visible";
                     showFetchDetailsBtn.style.visibility = "visible";

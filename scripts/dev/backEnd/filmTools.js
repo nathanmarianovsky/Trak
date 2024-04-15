@@ -56,7 +56,8 @@ exports.filmObjCreation = (path, fs, https, tools, dir, providedData) => {
         "release": providedData[17],
         "runTime": providedData[18],
         "watched": providedData[19],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]), providedData[20])
+        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]), providedData[20]),
+        "bookmark": providedData[21]
     };
 };
 

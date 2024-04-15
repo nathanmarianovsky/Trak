@@ -31,6 +31,7 @@ var mangaSave = () => {
         e.preventDefault();
         // Define the page components which will contain all associated details.
         const mangaList = document.getElementById("mangaList"),
+            mangaBookmarkValue = document.getElementById("mangaBookmark").children[0].textContent == "check_box",
             mangaName = document.getElementById("mangaName").value,
             mangaJapaneseName = document.getElementById("mangaJapaneseName").value,
             mangaReview = document.getElementById("mangaReview").value,
@@ -82,7 +83,8 @@ var mangaSave = () => {
             // Send the request to the back-end portion of the app.
             const submissionMaterial = ["Manga", mangaName, mangaJapaneseName, mangaReview, mangaWriters, mangaIllustrator, mangaPublisher, mangaJapanesePublisher,
                 mangaDemographic, mangaStart, mangaFiles, mangaEnd, content, [genresLst, genres, otherGenres], mangaSynopsis,
-                [document.getElementById("addRecordMangaImg").getAttribute("list") == document.getElementById("addRecordMangaImg").getAttribute("previous"), mangaImg], oldTitle];
+                [document.getElementById("addRecordMangaImg").getAttribute("list") == document.getElementById("addRecordMangaImg").getAttribute("previous"), mangaImg],
+                mangaBookmarkValue, oldTitle];
             ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial]);
             saveAssociations("Manga", mangaName, ipcRenderer);
         }

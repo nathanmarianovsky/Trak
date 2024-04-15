@@ -35,6 +35,7 @@ var animeSave = () => {
         e.preventDefault();
         // Define the page components which will contain all associated details.
         const animeList = document.getElementById("animeList"),
+            animeBookmarkValue = document.getElementById("animeBookmark").children[0].textContent == "check_box",
             animeName = document.getElementById("animeName").value,
             animeJapaneseName = document.getElementById("animeJapaneseName").value,
             animeReview = document.getElementById("animeReview").value,
@@ -96,7 +97,8 @@ var animeSave = () => {
             // Send the request to the back-end portion of the app.
             const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers, animeWriters,
                 animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres, otherGenres], content, animeSynopsis,
-                [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), animeImg], oldTitle];
+                [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), animeImg],
+                animeBookmarkValue, oldTitle];
             ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial]);
             saveAssociations("Anime", animeName, ipcRenderer);
         }

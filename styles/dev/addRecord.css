@@ -85,6 +85,12 @@
 	display: inline-block;
 }
 
+.addRecordBookmark {
+	position: fixed !important;
+	right: 23px;
+	bottom: 92px;
+}
+
 .addRecordBtn {
 	background-color: #2A2A8E !important;
 	margin-left: 1.5%;
@@ -132,7 +138,8 @@
 .addRecordSave {
 	position: fixed !important;
 	right: 23px;
-	bottom: 92px;
+	bottom: 161px;
+/*	bottom: 92px;*/
 }
 
 .storeBtn {

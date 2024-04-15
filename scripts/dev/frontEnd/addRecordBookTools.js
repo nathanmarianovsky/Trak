@@ -24,7 +24,8 @@ var bookSave = () => {
     bookSaveBtn.addEventListener("click", e => {
         e.preventDefault();
         // Define the page components which will contain all associated details.
-        const bookTitle = document.getElementById("bookTitle").value,
+        const bookBookmarkValue = document.getElementById("bookBookmark").children[0].textContent == "check_box",
+            bookTitle = document.getElementById("bookTitle").value,
             bookOriginalTitle = document.getElementById("bookOriginalTitle").value,
             bookISBN = document.getElementById("bookISBN").value.replace(/\W/g,""),
             bookAuthors = document.getElementById("bookAuthor").value,
@@ -54,7 +55,8 @@ var bookSave = () => {
             // Send the request to the back-end portion of the app.
             const submissionMaterial = ["Book", bookTitle, bookOriginalTitle, bookISBN, bookAuthors, bookPublisher, bookPublicationDate,
                 bookPages, bookLastRead, bookMediaType, bookFiles, bookSynopsis, bookRating, bookReview, [genresLst, genres, otherGenres],
-                [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), bookImg], [oldISBN, oldTitle]];
+                [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), bookImg],
+                bookBookmarkValue, [oldISBN, oldTitle]];
             ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial]);
             saveAssociations("Book", bookTitle, ipcRenderer);
         }

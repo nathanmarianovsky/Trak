@@ -56,6 +56,7 @@ exports.showObjCreation = (path, fs, https, tools, dir, providedData) => {
         "release": providedData[17],
         "runTime": providedData[18],
         "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]), providedData[19]),
+        "bookmark": providedData[21],
         "content": []
     };
     for(let m = 0; m < providedData[20].length; m++) {

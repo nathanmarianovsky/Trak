@@ -52,6 +52,7 @@ exports.mangaObjCreation = (path, fs, https, tools, dir, providedData) => {
         "genres": providedData[13],
         "synopsis": providedData[14],
         "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1] != "" ? providedData[1] : providedData[2]), providedData[15]),
+        "bookmark": providedData[16],
         "content": []
     };
     for(let m = 0; m < providedData[12].length; m++) {

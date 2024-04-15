@@ -42,15 +42,15 @@ nav {
 	z-index: 1;
 }
 
-.addRecordBtn, .addRecordFilesDiv span, .addRecordSave i,
+.addRecordBtn, .addRecordFilesDiv span, .addRecordBookmark i, .addRecordSave i,
 .associationsBtn i, #databaseExport, #databaseImport,
 .material-tooltip, .modalButtons, .optionsBtn i, .searchSubmissionBtn i,
 .toast, .relatedContentBtn i {
 	color: white !important;
 }
 
-#add i, #remove i, #windowTitle,
-.categoryLink, .material-icons {
+#add i, #animeSearchSwitch i, #remove i,
+#windowTitle, .categoryLink, .material-icons {
 	color: white;
 }
 

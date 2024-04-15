@@ -24,7 +24,8 @@ var filmSave = () => {
     filmSaveBtn.addEventListener("click", e => {
         e.preventDefault();
         // Define the page components which will contain all associated details.
-        const filmName = document.getElementById("filmName").value,
+        const filmBookmarkValue = document.getElementById("filmBookmark").children[0].textContent == "check_box",
+            filmName = document.getElementById("filmName").value,
             filmAlternateName = document.getElementById("filmAlternateName").value,
             filmReview = document.getElementById("filmReview").value,
             filmDirectors = document.getElementById("filmDirectors").value,
@@ -57,7 +58,8 @@ var filmSave = () => {
             // Send the request to the back-end portion of the app.
             const submissionMaterial = ["Film", filmName, filmAlternateName, filmReview, filmDirectors, filmProducers, filmWriters, filmMusicians, filmEditors,
                 filmCinematographers, filmFiles, filmDistributors, filmProductionCompanies, filmStarring, [genresLst, genres, otherGenres], filmSynopsis, filmRating, filmReleaseDate, filmRunningTime,
-                filmLastWatched, [document.getElementById("addRecordFilmImg").getAttribute("list") == document.getElementById("addRecordFilmImg").getAttribute("previous"), filmImg], oldTitle];
+                filmLastWatched, [document.getElementById("addRecordFilmImg").getAttribute("list") == document.getElementById("addRecordFilmImg").getAttribute("previous"), filmImg],
+                filmBookmarkValue, oldTitle];
             ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial]);
             saveAssociations("Film", filmName, ipcRenderer);
         }

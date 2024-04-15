@@ -33,6 +33,7 @@ var showSave = () => {
         e.preventDefault();
         // Define the page components which will contain all associated details.
         const showList = document.getElementById("showList"),
+            showBookmarkValue = document.getElementById("showBookmark").children[0].textContent == "check_box",
             showName = document.getElementById("showName").value,
             showAlternateName = document.getElementById("showAlternateName").value,
             showReview = document.getElementById("showReview").value,
@@ -88,7 +89,8 @@ var showSave = () => {
             // Send the request to the back-end portion of the app.
             const submissionMaterial = ["Show", showName, showAlternateName, showReview, showDirectors, showProducers, showWriters, showMusicians, showEditors,
                 showCinematographers, showFiles, showDistributors, showProductionCompanies, showStarring, [genresLst, genres, otherGenres], showSynopsis, showRating, showReleaseDate, showRunningTime,
-                [document.getElementById("addRecordShowImg").getAttribute("list") == document.getElementById("addRecordShowImg").getAttribute("previous"), showImg], content, oldTitle];
+                [document.getElementById("addRecordShowImg").getAttribute("list") == document.getElementById("addRecordShowImg").getAttribute("previous"), showImg], content,
+                showBookmarkValue, oldTitle];
             ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial]);
             saveAssociations("Show", showName, ipcRenderer);
         }

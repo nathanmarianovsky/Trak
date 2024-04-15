@@ -50,6 +50,7 @@ exports.animeObjCreation = (path, fs, https, tools, dir, providedData) => {
         "genres": providedData[11],
         "synopsis": providedData[13],
         "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1] != "" ? providedData[1] : providedData[2]), providedData[14]),
+        "bookmark": providedData[15],
         "content": []
     };
     for(let m = 0; m < providedData[12].length; m++) {

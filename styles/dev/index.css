@@ -190,6 +190,19 @@
     text-align: center;
 }
 
+.extraIconDiv, .synopsisIconDiv {
+	display: inline;
+}
+
+.extraInfoIcon {
+	color: #2A2A8E !important;
+	font-size: 15px !important;
+    position: relative;
+    top: 4px;
+    left: 4px;
+    cursor: initial;
+}
+
 .func {
 	margin-top: 50px;
 	margin-bottom: 50px;
@@ -283,12 +296,6 @@
 .spinner-layer {
 	border-color: #2A2A8E !important;
 }
-
-.synopsisIconDiv {
-	display: inline;
-}
-
-
 
 .synopsisInfoIcon {
 	font-size: 15px !important;

@@ -489,6 +489,8 @@ ipcRenderer.on("loadRows", (event, diff) => {
                     tdName.classList.add("left");
                     tdNameOuterDiv.classList.add("recordsNameContainer");
                     tdNameOuterDiv.append(tdNameDiv);
+                    // Define the variable which will indicate whether a record is currently ongoing.
+                    let visibilityCheck = false;
                     // Define the record tooltip image if available.
                     let imgStr = "";
                     if(recordData.img[0] != "") {
@@ -513,6 +515,24 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 let curCheck = (new Date(recordData.content[t].start)).getTime();
                                 if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                                     newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
+                                }
+                                if(recordData.content[t].status == "Watching" || recordData.content[t].status == "Plan To Watch") {
+                                    visibilityCheck = true;
+                                }
+                                else if(recordData.content[t].start != "" && recordData.content[t].end != "") {
+                                    if(((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
+                                        visibilityCheck = true;
+                                    }
+                                }
+                                else if(recordData.content[t].end != "") {
+                                    if((new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
+                                        visibilityCheck = true;
+                                    }
+                                }
+                                else if(recordData.content[t].start != "") {
+                                    if((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) {
+                                        visibilityCheck = true;
+                                    }
                                 }
                             }
                             if(recordData.content[t].scenario == "Single") {
@@ -562,7 +582,10 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "");
                             }
                         }
-                        imgStr += '<br>' + tooltipStr;
+                        if(tooltipStr != "") {
+                            if(imgStr != "") { imgStr += "<br>"; }
+                            imgStr += tooltipStr;
+                        }
                     }
                     // Proceed only if the record is a book.
                     else if(recordData.category == "Book") {
@@ -608,7 +631,25 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         if(volumeCount > 0) {
                             tooltipStr += tooltipStr.length > 0 ? " and " + volumeStr : volumeStr;
                         }
-                        imgStr += '<br>' + tooltipStr;
+                        if(tooltipStr != "") {
+                            if(imgStr != "") { imgStr += "<br>"; }
+                            imgStr += tooltipStr;
+                        }
+                        if(recordData.start != "" && recordData.end != "") {
+                            if(((new Date(recordData.start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.end)).getTime()) {
+                                visibilityCheck = true;
+                            }
+                        }
+                        else if(recordData.end != "") {
+                            if((new Date()).getTime() <= (new Date(recordData.end)).getTime()) {
+                                visibilityCheck = true;
+                            }
+                        }
+                        else if(recordData.start != "") {
+                            if((new Date(recordData.start)).getTime() <= (new Date()).getTime()) {
+                                visibilityCheck = true;
+                            }
+                        }
                     }
                     // Proceed only if the record is a show.
                     else if(recordData.category == "Show" && recordData.content.length > 0) {
@@ -624,6 +665,24 @@ ipcRenderer.on("loadRows", (event, diff) => {
                             if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                                 newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                             }
+                            if(recordData.content[t].status == "Watching" || recordData.content[t].status == "Plan To Watch") {
+                                visibilityCheck = true;
+                            }
+                            else if(recordData.content[t].start != "" && recordData.content[t].end != "") {
+                                if(((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
+                                    visibilityCheck = true;
+                                }
+                            }
+                            else if(recordData.content[t].end != "") {
+                                if((new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
+                                    visibilityCheck = true;
+                                }
+                            }
+                            else if(recordData.content[t].start != "") {
+                                if((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) {
+                                    visibilityCheck = true;
+                                }
+                            }
                         }
                         // Update the global counters used in the settings analytics.
                         globalShowTypes[0] += seasonCount;
@@ -636,7 +695,10 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         if(seasonCount > 0) {
                             tooltipStr = seasonStr + (tooltipStr.length > 0 ? "<br>" + tooltipStr : "");
                         }
-                        imgStr += '<br>' + tooltipStr;
+                        if(tooltipStr != "") {
+                            if(imgStr != "") { imgStr += "<br>"; }
+                            imgStr += tooltipStr;
+                        }
                     }
                     // Attach the record tooltip only if there is something to display, either an image and/or text.
                     if(imgStr != "") {
@@ -685,6 +747,36 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 }
                             });
                         });
+                    }
+                    // If the current record is being read/watched then create an icon for it.
+                    console.log(recordData.name);
+                    console.log(visibilityCheck);
+                    if(visibilityCheck == true) {
+                        // Define the link and icon.
+                        let tdNameVisibilityLinkDiv = document.createElement("li"),
+                            tdNameVisibilityLink = document.createElement("a"),
+                            tdNameVisibilityIcon = document.createElement("i");
+                        tdNameVisibilityIcon.textContent = "visibility";
+                        tdNameVisibilityIcon.classList.add("material-icons", "extraInfoIcon");
+                        tdNameVisibilityLinkDiv.classList.add("extraIconDiv");
+                        // Append the icon and link accordingly.
+                        tdNameVisibilityLink.append(tdNameVisibilityIcon);
+                        tdNameVisibilityLinkDiv.append(tdNameVisibilityLink);
+                        tdNameOuterDiv.append(tdNameVisibilityLinkDiv);
+                    }
+                    // If the current record is bookmarked then create an icon for it.
+                    if(recordData.bookmark == true) {
+                        // Define the link and icon.
+                        let tdNameBookmarkLinkDiv = document.createElement("li"),
+                            tdNameBookmarkLink = document.createElement("a"),
+                            tdNameBookmarkIcon = document.createElement("i");
+                        tdNameBookmarkIcon.textContent = "bookmark";
+                        tdNameBookmarkIcon.classList.add("material-icons", "extraInfoIcon");
+                        tdNameBookmarkLinkDiv.classList.add("extraIconDiv");
+                        // Append the icon and link accordingly.
+                        tdNameBookmarkLink.append(tdNameBookmarkIcon);
+                        tdNameBookmarkLinkDiv.append(tdNameBookmarkLink);
+                        tdNameOuterDiv.append(tdNameBookmarkLinkDiv);
                     }
                     tdName.append(tdNameOuterDiv);
                     // Modify the category portion.
