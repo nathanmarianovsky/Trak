@@ -18,6 +18,6 @@
 	width: 20%;
 }
 
-#filterModalGenreHeading {
-	margin-top: 25px;
+.filterModalHeading {
+	margin-top: 25px !important;
 }

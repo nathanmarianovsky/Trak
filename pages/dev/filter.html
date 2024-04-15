@@ -1,5 +1,20 @@
 <div class="modal-content">
-    <h4 class="center">Filter by Category</h4>
+    <h4 class="center">Filter by Status</h4>
+    <div class="row">
+        <form class="col s12">
+            <div class="genreRow">
+                <label class="col s2">
+                    <input type="checkbox" id="filterBookmark" class="filled-in filterCheckbox"/>
+                    <span class="checkboxText">Bookmarked</span>
+                </label>
+                <label class="col s6">
+                    <input type="checkbox" id="filterCurrent" class="filled-in filterCheckbox"/>
+                    <span class="checkboxText">Currently Being Released and/or Reading/Watching</span>
+                </label>
+            </div>
+        </form>
+    </div>
+    <h4 class="center filterModalHeading">Filter by Category</h4>
     <div class="row">
         <form class="col s12">
             <div class="genreRow">
@@ -26,7 +41,7 @@
             </div>
         </form>
     </div>
-    <h4 id="filterModalGenreHeading" class="center">Filter by Genres/Tags</h4>
+    <h4 id="filterModalGenreHeading" class="center filterModalHeading">Filter by Genres/Tags</h4>
     <div class="row"><form id="filterForm" class="col s12"></form></div>
 </div>
 <div class="modal-footer">

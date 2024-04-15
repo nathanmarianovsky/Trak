@@ -749,8 +749,6 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         });
                     }
                     // If the current record is being read/watched then create an icon for it.
-                    console.log(recordData.name);
-                    console.log(visibilityCheck);
                     if(visibilityCheck == true) {
                         // Define the link and icon.
                         let tdNameVisibilityLinkDiv = document.createElement("li"),
@@ -764,6 +762,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         tdNameVisibilityLinkDiv.append(tdNameVisibilityLink);
                         tdNameOuterDiv.append(tdNameVisibilityLinkDiv);
                     }
+                    tr.setAttribute("visibilityCheck", visibilityCheck);
                     // If the current record is bookmarked then create an icon for it.
                     if(recordData.bookmark == true) {
                         // Define the link and icon.
@@ -778,6 +777,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         tdNameBookmarkLinkDiv.append(tdNameBookmarkLink);
                         tdNameOuterDiv.append(tdNameBookmarkLinkDiv);
                     }
+                    tr.setAttribute("bookmarkCheck", recordData.bookmark != undefined ? recordData.bookmark : false);
                     tdName.append(tdNameOuterDiv);
                     // Modify the category portion.
                     tdCategoryDiv.textContent = recordData.category;
@@ -1140,6 +1140,8 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         // Define the category and genre arrays along with the record rows.
                         const categoryList = ["Anime", "Book", "Film", "Manga", "Show"],
                             catCheck = [],
+                            bookmarkRequirement = document.getElementById("filterBookmark").checked,
+                            currentRequirement = document.getElementById("filterCurrent").checked,
                             pageTable = Array.from(document.getElementById("tableBody").children);
                         // Define the filtered categories collection.
                         for(let i = 0; i < categoryList.length; i++) {
@@ -1147,6 +1149,8 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         }
                         // Iterate through the records rows to determine if they pass the filter.
                         for(let x = 0; x < pageTable.length; x++) {
+                            let bookmarkCondition = bookmarkRequirement == true ? pageTable[x].getAttribute("bookmarkCheck") == "true" : true,
+                                currentCondition = currentRequirement == true ? pageTable[x].getAttribute("visibilityCheck") == "true" : true;
                             // Filter based on both categories and genres.
                             if(catCheck.length > 0 && genreCheck.length > 0) {
                                 let genreOverall = true,
@@ -1154,7 +1158,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 for(let y = 0; y < genreCheck.length; y++) {
                                     if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
                                 }
-                                if(genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category"))) {
+                                if(genreOverall == true && catCheck.includes(pageTable[x].getAttribute("category")) && bookmarkCondition && currentCondition) {
                                     pageTable[x].style.display = "table-row";
                                     pageTable[x].setAttribute("genreFiltered", "1");
                                 }
@@ -1165,7 +1169,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                             }
                             // Filter based only on categories.
                             else if(catCheck.length > 0 && genreCheck.length == 0) {
-                                if(catCheck.includes(pageTable[x].getAttribute("category"))) {
+                                if(catCheck.includes(pageTable[x].getAttribute("category")) && bookmarkCondition && currentCondition) {
                                     pageTable[x].style.display = "table-row";
                                     pageTable[x].setAttribute("genreFiltered", "1");
                                 }
@@ -1181,7 +1185,40 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 for(let y = 0; y < genreCheck.length; y++) {
                                     if(!genreSplit.includes(genreCheck[y])) { genreOverall = false; }
                                 }
-                                if(genreOverall == true) {
+                                if(genreOverall == true && bookmarkCondition && currentCondition) {
+                                    pageTable[x].style.display = "table-row"
+                                    pageTable[x].setAttribute("genreFiltered", "1");
+                                }
+                                else {
+                                    pageTable[x].style.display = "none";
+                                    pageTable[x].setAttribute("genreFiltered", "0");
+                                }
+                            }
+                            // Filter based on the bookmarked and current status.
+                            else if(bookmarkRequirement == true && currentRequirement == true) {
+                                if(bookmarkCondition && currentCondition) {
+                                    pageTable[x].style.display = "table-row"
+                                    pageTable[x].setAttribute("genreFiltered", "1");
+                                }
+                                else {
+                                    pageTable[x].style.display = "none";
+                                    pageTable[x].setAttribute("genreFiltered", "0");
+                                }
+                            }
+                            // Filter based on the bookmarked requirement only.
+                            else if(bookmarkRequirement == true && currentRequirement == false) {
+                                if(bookmarkCondition) {
+                                    pageTable[x].style.display = "table-row"
+                                    pageTable[x].setAttribute("genreFiltered", "1");
+                                }
+                                else {
+                                    pageTable[x].style.display = "none";
+                                    pageTable[x].setAttribute("genreFiltered", "0");
+                                }
+                            }
+                            // Filter based on the current requirement only.
+                            else if(bookmarkRequirement == false && currentRequirement == true) {
+                                if(currentCondition) {
                                     pageTable[x].style.display = "table-row"
                                     pageTable[x].setAttribute("genreFiltered", "1");
                                 }
