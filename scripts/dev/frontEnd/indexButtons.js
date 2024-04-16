@@ -171,15 +171,25 @@ window.addEventListener("load", () => {
         updateChangelogDiv = document.getElementById("updateChangelogDiv");
     let submissionList = [],
         tabsLoader = false;
-    // Listen for a click event on the add bookmarks button in order to send a request to bookmark all checked records.
+    // Listen for a click event on the add bookmark button in order to send a request to bookmark all checked records.
     addBookmark.addEventListener("click", e => {
         const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
-        ipcRenderer.send("addBookmark", checkAll.checked ? list.slice(1) : list);
+        if(list.length > 0) {
+            ipcRenderer.send("addBookmark", checkAll.checked ? list.slice(1) : list);
+        }
+        else {
+            M.toast({"html": "In order to bookmark library records at least one record has to be checked.", "classes": "rounded"});
+        }
     });
-    // Listen for a click event on the remove bookmarks button in order to send a request to unbookmark all checked records.
+    // Listen for a click event on the remove bookmark button in order to send a request to unbookmark all checked records.
     removeBookmark.addEventListener("click", e => {
         const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
-        ipcRenderer.send("removeBookmark", checkAll.checked ? list.slice(1) : list);
+        if(list.length > 0) {
+            ipcRenderer.send("removeBookmark", checkAll.checked ? list.slice(1) : list);
+        }
+        else {
+            M.toast({"html": "In order to bookmark library records at least one record has to be checked.", "classes": "rounded"});
+        }
     });
     // Listen for a click on any search tab in order to hide the default search div.
     tabSearchLinks.forEach(tab => tab.addEventListener("click", e => defaultSearchDiv.style.display = "none"));

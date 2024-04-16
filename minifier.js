@@ -28,6 +28,7 @@ const htmlSettingsList = ["index.html", "addRecord.html"],
 	htmlSettings = fs.readFileSync(path.join(__dirname, "pages", "dev", "settings.html")),
 	htmlUpdate = fs.readFileSync(path.join(__dirname, "pages", "dev", "update.html")),
 	htmlIcon = fs.readFileSync(path.join(__dirname, "pages", "dev", "icon.html")),
+	htmlBookmark = fs.readFileSync(path.join(__dirname, "pages", "dev", "bookmark.html")),
 	htmlSynopsis = fs.readFileSync(path.join(__dirname, "pages", "dev", "synopsis.html")),
 	htmlImport = fs.readFileSync(path.join(__dirname, "pages", "dev", "import.html")),
 	htmlIntroduction = fs.readFileSync(path.join(__dirname, "pages", "dev", "introduction.html")),
@@ -45,6 +46,7 @@ if(!fs.existsSync(path.join(__dirname, "pages", "dev", "sectionsAttached"))) {
 $("#settingsModal").html(htmlSettings);
 $("#updateModal").html(htmlUpdate);
 $("#iconModal").html(htmlIcon);
+$("#bookmarkModal").html(htmlBookmark);
 $("#synopsisModal").html(htmlSynopsis);
 $("#importModal").html(htmlImport);
 $("#introductionModal").html(htmlIntroduction);

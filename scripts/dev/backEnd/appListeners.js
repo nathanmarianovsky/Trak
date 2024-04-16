@@ -187,6 +187,26 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
 		event.sender.send("libraryFolderSuccess");
   	});
 
+  	const bookmarkOperations = ["Add", "Remove"];
+  	for(let y = 0; y < bookmarkOperations.length; y++) {
+  		// Handles the bookmarking/unbookmarking of multiple records simultaneously.
+	  	ipc.on(bookmarkOperations[y].toLowerCase() + "Bookmark", (event, list) => {
+	  		for(let m = 0; m < list.length; m++) {
+	  			let curFile = JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "data", list[m], "data.json"), "UTF8"));
+	  			if(bookmarkOperations[y] == "Add") {
+	  				curFile.bookmark = true;
+	  			}
+	  			else if(bookmarkOperations[y] == "Remove") {
+	  				curFile.bookmark = false;
+	  			}
+	  			log.info("Bookmarking the " + curFile.category + " " + curFile.name);
+	  			fs.writeFileSync(path.join(originalPath, "Trak", "data", list[m], "data.json"), JSON.stringify(curFile), "UTF8");
+	  		}
+	  		mainWindow.reload();
+			setTimeout(() => { mainWindow.webContents.send("bookmark" + bookmarkOperations[y] + "Success"); }, 500);
+	  	});
+  	}
+
   	// Handle the update of the notifications configuration file.
     ipc.on("notificationsSave", (event, submissionContent) => {
     	// Define the path to the notifications configuration file.

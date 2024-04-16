@@ -153,6 +153,20 @@ ipcRenderer.on("importZipFileFailure", (event, response) => {
 
 
 
+// Display a notification for the successful bookmarking of library records.
+ipcRenderer.on("bookmarkAddSuccess", (event, response) => {
+    M.toast({"html": "All checked library records have been successfully bookmarked.", "classes": "rounded"});
+});
+
+
+
+// Display a notification for the successful unbookmarking of library records.
+ipcRenderer.on("bookmarkRemoveSuccess", (event, response) => {
+    M.toast({"html": "All checked library records have been successfully unbookmarked.", "classes": "rounded"});
+});
+
+
+
 // Display a notification for the successful export of the library records.
 ipcRenderer.on("exportSuccess", (event, response) => {
     Array.from(document.querySelectorAll(".recordsChecks")).forEach(elem => elem.checked = false);

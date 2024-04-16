@@ -33,6 +33,12 @@
 	height: 250px;
 }
 
+#bookmarkModal {
+	top: 30%;
+	height: 30%;
+	width: 60%;
+}
+
 #chunkCheck {
 	text-align: center;
 	display: none;
