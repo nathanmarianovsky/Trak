@@ -192,7 +192,7 @@ const recordChoicesButtons = () => {
             }, 500);
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
-        introAnimeHolder = introInit(introAnimeHolder, document.getElementById("introductionTargetAnimeSave"), document.getElementById("introductionTargetAnimeOptions"));
+        introAnimeHolder = introInit("anime", introAnimeHolder, document.getElementById("introductionTargetAnimeSave"), document.getElementById("introductionTargetAnimeBookmark"), document.getElementById("introductionTargetAnimeOptions"));
     });
     // Listen for a click event on the categoryBook button on the top bar to display the form corresponding to a book record.
     categoryBook.addEventListener("click", e => {
@@ -282,7 +282,7 @@ const recordChoicesButtons = () => {
             initSelect();
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
-        introBookHolder = introInit(introBookHolder, document.getElementById("introductionTargetBookSave"), document.getElementById("introductionTargetBookAssociations"));
+        introBookHolder = introInit("book", introBookHolder, document.getElementById("introductionTargetBookSave"), document.getElementById("introductionTargetBookBookmark"), document.getElementById("introductionTargetBookAssociations"));
     });
     // Listen for a click event on the categoryFilm button on the top bar to display the form corresponding to a film record.
     categoryFilm.addEventListener("click", e => {
@@ -362,7 +362,7 @@ const recordChoicesButtons = () => {
             initSelect();
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
-        introFilmHolder = introInit(introFilmHolder, document.getElementById("introductionTargetFilmSave"), document.getElementById("introductionTargetFilmAssociations"));
+        introFilmHolder = introInit("film", introFilmHolder, document.getElementById("introductionTargetFilmSave"), document.getElementById("introductionTargetFilmBookmark"), document.getElementById("introductionTargetFilmAssociations"));
     });
     // Listen for a click event on the categoryManga button on the top bar to display the form corresponding to a manga record.
     categoryManga.addEventListener("click", e => {
@@ -515,7 +515,7 @@ const recordChoicesButtons = () => {
             volumeFetchPreloader.style.visibility = "hidden";
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
-        introShowHolder = introInit(introMangaHolder, document.getElementById("introductionTargetMangaSave"), document.getElementById("introductionTargetMangaOptions"));
+        introMangaHolder = introInit("manga", introMangaHolder, document.getElementById("introductionTargetMangaSave"), document.getElementById("introductionTargetMangaBookmark"), document.getElementById("introductionTargetMangaOptions"));
     });
     // Listen for a click event on the categoryShow button on the top bar to display the form corresponding to a show record.
     categoryShow.addEventListener("click", e => {
@@ -597,7 +597,7 @@ const recordChoicesButtons = () => {
             initSelect();
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
-        introShowHolder = introInit(introShowHolder, document.getElementById("introductionTargetShowSave"), document.getElementById("introductionTargetShowOptions"));
+        introShowHolder = introInit("show", introShowHolder, document.getElementById("introductionTargetShowSave"), document.getElementById("introductionTargetShowBookmark"), document.getElementById("introductionTargetShowOptions"));
     });
     // Listen for a click event on the amazon search buttons in order to open an external link in the default browser.
     Array.from(document.getElementsByClassName("amazonBtn")).forEach(searchBtn => {

@@ -892,20 +892,28 @@ const saveAssociations = (curCategory, curName, ipcElec) => {
 
 Initializes the tutorial on the addRecord.html page.
 
+   - cat is a string representing the current page category.
    - hldr is the boolean corresponding to whether the tutorial should be shown.
    - tgt1 is the first item to focus on in the tutorial.
    - tgt2 is the second item to focus on in the tutorial.
+   - tgt3 is the third item to focus in the tutorial.
 
 */
-const introInit = (hldr, tgt1, tgt2) => {
+const introInit = (cat, hldr, tgt1, tgt2, tgt3) => {
     if(hldr == true) {
         const instancesTap1 = M.TapTarget.init(tgt1, { "onClose": () => {
             setTimeout(() => {
-                const instancesTap2 = M.TapTarget.init(tgt2);
-                setTimeout(() => {
-                    instancesTap2.open();
-                    return false;
-                }, 500);
+                const instancesTap2 = M.TapTarget.init(tgt2, { "onClose": () => {
+                    setTimeout(() => {
+                        const instancesTap3 = M.TapTarget.init(tgt3);
+                        document.getElementById(cat + "BookmarkOuterDiv").classList.remove("fixed-action-btn");
+                        setTimeout(() => {
+                            instancesTap3.open();
+                            return false;
+                        }, 500);
+                    }, 500);
+                }});
+                setTimeout(() => { instancesTap2.open(); }, 500);
             }, 500);
         }});
         setTimeout(() => { instancesTap1.open(); }, 500);

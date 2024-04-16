@@ -139,11 +139,6 @@
 	position: fixed !important;
 	right: 23px;
 	bottom: 161px;
-/*	bottom: 92px;*/
-}
-
-.storeBtn {
-	visibility: hidden;
 }
 
 .autocomplete-content {
@@ -184,6 +179,10 @@
 	max-height: 75% !important;
 	height: 75% !important;
 	width: 75% !important;
+}
+
+.fixedModifier {
+	z-index: 900 !important;
 }
 
 .formInfo {
@@ -273,6 +272,10 @@
     top: 23px;
     right: 23px;
     display: inline !important;
+}
+
+.storeBtn {
+	visibility: hidden;
 }
 
 .text {
