@@ -517,28 +517,30 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                                     newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                                 }
-                                if(recordData.content[t].status == "Watching" || recordData.content[t].status == "Plan To Watch") {
+                                if(visibilityCheck != "Watching" && (recordData.content[t].status == "Watching" || recordData.content[t].status == "Plan To Watch")) {
                                     visibilityCheck = recordData.content[t].status;
                                 }
-                                else if(recordData.content[t].start != "" && recordData.content[t].end != "") {
-                                    if(((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
-                                        ongoingCheck = "Filled";
+                                if(ongoingCheck != "Filled") {
+                                    if(recordData.content[t].start != "" && recordData.content[t].end != "") {
+                                        if(((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
+                                            ongoingCheck = "Filled";
+                                        }
+                                        else if((new Date(recordData.content[t].start)).getTime() > (new Date()).getTime()) {
+                                            ongoingCheck = "Empty";
+                                        }
                                     }
-                                    else if((new Date(recordData.content[t].start)).getTime() > (new Date()).getTime()) {
-                                        ongoingCheck = "Empty";
+                                    else if(recordData.content[t].end != "") {
+                                        if((new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
+                                            ongoingCheck = "Filled";
+                                        }
                                     }
-                                }
-                                else if(recordData.content[t].end != "") {
-                                    if((new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
-                                        ongoingCheck = "Filled";
-                                    }
-                                }
-                                else if(recordData.content[t].start != "") {
-                                    if((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) {
-                                        ongoingCheck = "Filled";
-                                    }
-                                    else {
-                                        ongoingCheck = "Empty";
+                                    else if(recordData.content[t].start != "") {
+                                        if((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) {
+                                            ongoingCheck = "Filled";
+                                        }
+                                        else {
+                                            ongoingCheck = "Empty";
+                                        }
                                     }
                                 }
                             }
@@ -611,36 +613,61 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         }
                     }
                     // Proceed only if the record is a manga with related content.
-                    else if(recordData.category == "Manga" && recordData.content.length > 0) {
-                        // Define the manga related content counters.
-                        let chapterCount = 0, volumeCount = 0;
-                        // Iterate through the manga related content.
-                        for(let t = 0; t < recordData.content.length; t++) {
-                            // Update the counters.
-                            if(recordData.content[t].scenario == "Chapter") { chapterCount++; }
-                            else if(recordData.content[t].scenario == "Volume") { volumeCount++; }
-                            let curCheck = (new Date(recordData.content[t].release)).getTime();
-                            // Creates notifications for future releases if available.
-                            if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
-                                newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, recordData.content[t].scenario, recordData.content[t].release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
+                    else if(recordData.category == "Manga") {
+                        if(ongoingCheck != "Filled") {
+                            if(recordData.start != "" && recordData.end != "") {
+                                if(((new Date(recordData.start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.end)).getTime()) {
+                                    ongoingCheck = "Filled";
+                                }
+                                else if((new Date(recordData.start)).getTime() > (new Date()).getTime()) {
+                                    ongoingCheck = "Empty";
+                                }
+                            }
+                            else if(recordData.end != "") {
+                                if((new Date()).getTime() <= (new Date(recordData.end)).getTime()) {
+                                    ongoingCheck = "Filled";
+                                }
+                            }
+                            else if(recordData.start != "") {
+                                if((new Date(recordData.start)).getTime() <= (new Date()).getTime()) {
+                                    ongoingCheck = "Filled";
+                                }
+                                else {
+                                    ongoingCheck = "Empty"
+                                }
                             }
                         }
-                        // Update the global counters used in the settings analytics.
-                        globalMangaTypes[0] += volumeCount;
-                        globalMangaTypes[1] += chapterCount;
-                        // Update the record tooltip string as necessary.
-                        let chapterStr = (chapterCount == 1 ? "1 Chapter" : chapterCount + " Chapters"),
-                            volumeStr = (volumeCount == 1 ? "1 Volume" : volumeCount + " Volumes"),
-                            tooltipStr = "";
-                        if(chapterCount > 0) {
-                            tooltipStr = chapterStr;
-                        }
-                        if(volumeCount > 0) {
-                            tooltipStr += tooltipStr.length > 0 ? " and " + volumeStr : volumeStr;
-                        }
-                        if(tooltipStr != "") {
-                            if(imgStr != "") { imgStr += "<br>"; }
-                            imgStr += tooltipStr;
+                        if(recordData.content.length > 0) {
+                            // Define the manga related content counters.
+                            let chapterCount = 0, volumeCount = 0;
+                            // Iterate through the manga related content.
+                            for(let t = 0; t < recordData.content.length; t++) {
+                                // Update the counters.
+                                if(recordData.content[t].scenario == "Chapter") { chapterCount++; }
+                                else if(recordData.content[t].scenario == "Volume") { volumeCount++; }
+                                let curCheck = (new Date(recordData.content[t].release)).getTime();
+                                // Creates notifications for future releases if available.
+                                if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
+                                    newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, recordData.content[t].scenario, recordData.content[t].release, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
+                                }
+                            }
+                            // Update the global counters used in the settings analytics.
+                            globalMangaTypes[0] += volumeCount;
+                            globalMangaTypes[1] += chapterCount;
+                            // Update the record tooltip string as necessary.
+                            let chapterStr = (chapterCount == 1 ? "1 Chapter" : chapterCount + " Chapters"),
+                                volumeStr = (volumeCount == 1 ? "1 Volume" : volumeCount + " Volumes"),
+                                tooltipStr = "";
+                            if(chapterCount > 0) {
+                                tooltipStr = chapterStr;
+                            }
+                            if(volumeCount > 0) {
+                                tooltipStr += tooltipStr.length > 0 ? " and " + volumeStr : volumeStr;
+                            }
+                            if(tooltipStr != "") {
+                                if(imgStr != "") { imgStr += "<br>"; }
+                                imgStr += tooltipStr;
+                            }
                         }
                     }
                     // Proceed only if the record is a show.
@@ -657,28 +684,30 @@ ipcRenderer.on("loadRows", (event, diff) => {
                             if(curCheck - curTime > 0 && convertToDays(curCheck - curTime) <= userInterval) {
                                 newNotificationsArr.push([recordsArr[n][0], recordData.category, recordData.name, "Season", recordData.content[t].start, recordData.img.length > 0 ? recordData.img[0] : "", false, "", true]);
                             }
-                            if(recordData.content[t].status == "Watching" || recordData.content[t].status == "Plan To Watch") {
+                            if(visibilityCheck != "Watching" && (recordData.content[t].status == "Watching" || recordData.content[t].status == "Plan To Watch")) {
                                 visibilityCheck = recordData.content[t].status;
                             }
-                            else if(recordData.content[t].start != "" && recordData.content[t].end != "") {
-                                if(((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
-                                    ongoingCheck = "Filled";
+                            if(ongoingCheck != "Filled") {
+                                if(recordData.content[t].start != "" && recordData.content[t].end != "") {
+                                    if(((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
+                                        ongoingCheck = "Filled";
+                                    }
+                                    else if((new Date(recordData.content[t].start)).getTime() > (new Date()).getTime()) {
+                                        ongoingCheck = "Empty";
+                                    }
                                 }
-                                else if((new Date(recordData.content[t].start)).getTime() > (new Date()).getTime()) {
-                                    ongoingCheck = "Empty";
+                                else if(recordData.content[t].end != "") {
+                                    if((new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
+                                        ongoingCheck = "Filled";
+                                    }
                                 }
-                            }
-                            else if(recordData.content[t].end != "") {
-                                if((new Date()).getTime() <= (new Date(recordData.content[t].end)).getTime()) {
-                                    ongoingCheck = "Filled";
-                                }
-                            }
-                            else if(recordData.content[t].start != "") {
-                                if((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) {
-                                    ongoingCheck = "Filled";
-                                }
-                                else {
-                                    ongoingCheck = "Empty";
+                                else if(recordData.content[t].start != "") {
+                                    if((new Date(recordData.content[t].start)).getTime() <= (new Date()).getTime()) {
+                                        ongoingCheck = "Filled";
+                                    }
+                                    else {
+                                        ongoingCheck = "Empty";
+                                    }
                                 }
                             }
                         }
@@ -696,29 +725,6 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         if(tooltipStr != "") {
                             if(imgStr != "") { imgStr += "<br>"; }
                             imgStr += tooltipStr;
-                        }
-                    }
-                    if(recordData.category == "Manga") {
-                        if(recordData.start != "" && recordData.end != "") {
-                            if(((new Date(recordData.start)).getTime() <= (new Date()).getTime()) && (new Date()).getTime() <= (new Date(recordData.end)).getTime()) {
-                                ongoingCheck = "Filled";
-                            }
-                            else if((new Date(recordData.start)).getTime() > (new Date()).getTime()) {
-                                ongoingCheck = "Empty";
-                            }
-                        }
-                        else if(recordData.end != "") {
-                            if((new Date()).getTime() <= (new Date(recordData.end)).getTime()) {
-                                ongoingCheck = "Filled";
-                            }
-                        }
-                        else if(recordData.start != "") {
-                            if((new Date(recordData.start)).getTime() <= (new Date()).getTime()) {
-                                ongoingCheck = "Filled";
-                            }
-                            else {
-                                ongoingCheck = "Empty"
-                            }
                         }
                     }
                     // Attach the record tooltip only if there is something to display, either an image and/or text.
