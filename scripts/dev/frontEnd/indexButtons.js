@@ -206,10 +206,11 @@ window.addEventListener("load", () => {
         clearFilter.click();
         // Show the body scroll if necessary.
         document.body.style.overflowY = "auto";
-        // Hide the categories portion of the filter.
-        filterModalGenreHeadingSiblings[0].style.display = "none";
-        filterModalGenreHeadingSiblings[1].style.display = "none";
-        filterModalGenreHeading.style.marginTop = "0px";
+        // Hide the categories and status portions of the filter.
+        for(let r = 0; r < 4; r++) {
+            filterModalGenreHeadingSiblings[r].style.display = "none";
+        }
+        filterModalGenreHeading.style.setProperty("margin-top", "0px", "important");
     });
     // Listen for a click event on the current update tab.
     updateCurrent.addEventListener("click", e => {
@@ -244,10 +245,11 @@ window.addEventListener("load", () => {
         genreListLoad("All", 5, true);
         // Hide the body scroll.
         document.body.style.overflowY = "hidden";
-        // Display the categories portion of the filter.
-        filterModalGenreHeadingSiblings[0].style.display = "block";
-        filterModalGenreHeadingSiblings[1].style.display = "block";
-        filterModalGenreHeading.style.marginTop = "25px";
+        // Display the categories and status portions of the filter.
+        for(let r = 0; r < 4; r++) {
+            filterModalGenreHeadingSiblings[r].style.display = "block";
+        }
+        filterModalGenreHeading.style.setProperty("margin-top", "25px", "important");
     })
     // Listen for a click event on the anime search submission button.
     animeSearchSubmission.addEventListener("click", e => {
