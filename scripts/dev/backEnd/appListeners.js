@@ -402,7 +402,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hid
 	  			// Send a request to the front-end if the tutorial is chosen to be shown.
 	  			if(info[0] == true) {
 	  				log.info("Loading the application tutorial for the addRecord.html page.");
-	  				addWindow.webContents.send("addIntroduction");
+	  				secondaryWin.webContents.send("addIntroduction");
 	  			}
 	  			// Send a request to the update which record categories are displayed according to the application settings.
 	  			secondaryWin.webContents.send("activeCategories", hiddenArr);

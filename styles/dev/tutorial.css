@@ -20,5 +20,17 @@
 
 .tap-target {
 	background-color: #2A2A8E !important;
-	color: white;
+}
+
+.tap-target, .tap-target-wave .material-icons {
+	color: white !important;
+}
+
+nav .tap-target-wave .material-icons {
+	color: black !important;
+}
+
+.tap-target-wrapper.open .tap-target-wave::before,
+.tap-target-wrapper.open .tap-target-wave::after {
+	background-color: #D9D9DB;
 }
