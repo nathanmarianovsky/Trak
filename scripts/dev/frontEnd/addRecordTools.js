@@ -30,7 +30,6 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
     - associationsListeners: Adds the listeners associated to an association listing.
     - saveAssociations: Handles the save request of a record's associations.
     - introInit: Initializes the tutorial on the addRecord.html page.
-    - storeListingCreation: Creates a store listing in the store modal.
 
 */
 
@@ -911,42 +910,4 @@ const introInit = (hldr, tgt1, tgt2) => {
         }});
         setTimeout(() => { instancesTap1.open(); }, 500);
     }
-};
-
-
-
-/*
-
-Creates a store listing in the store modal.
-
-   - itemLink is a string corresponding to the link of a store listing.
-   - itemStore is a string corresponding to the store name of a store listing.
-   - itemPrice is a string corresponding to the price of a store listing.
-   - itemTitle is a string corresponding to the name of a store listing.
-   - itemImg is a string corresponding to the image of a store listing.
-
-*/
-const storeListingCreation = (itemLink, itemStore, itemPrice, itemTitle, itemImg) => {
-    // Define the portions of the store listed item.
-    const storeCollection = document.getElementById("storeCollection");
-    let hldr = [];
-    const outerLI = document.createElement("li"),
-        img = document.createElement("img"),
-        imgIcon = document.createElement("i"),
-        span = document.createElement("span"),
-        par = document.createElement("p");
-    // Modify the listing components appropriately.
-    outerLI.classList.add("collection-item", "avatar");
-    outerLI.setAttribute("storeLink", itemLink);
-    outerLI.setAttribute("storeTitle", itemTitle);
-    img.setAttribute("src", itemImg);
-    img.classList.add("circle");
-    imgIcon.classList.add("material-icons", "circle");
-    imgIcon.textContent = "sell";
-    span.classList.add("title", "recordsNameRowDiv", "storeTitle");
-    span.textContent = itemTitle;
-    par.innerHTML = itemStore + "<br>" + itemPrice;
-    // Attach the listing to the store modal.
-    outerLI.append(itemImg != "" ? img : imgIcon, span, par);
-    storeCollection.append(outerLI);
 };

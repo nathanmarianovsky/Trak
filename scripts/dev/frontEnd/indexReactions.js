@@ -775,6 +775,8 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         let tdNameOngoingLinkDiv = document.createElement("li"),
                             tdNameOngoingLink = document.createElement("a"),
                             tdNameOngoingIcon = document.createElement("i");
+                        tdNameOngoingLink.setAttribute("href", "#iconModal");
+                        tdNameOngoingLink.classList.add("modal-trigger");
                         tdNameOngoingIcon.textContent = ongoingCheck == "Filled" ? "circle" : "panorama_fish_eye";
                         tdNameOngoingIcon.classList.add("material-icons", "extraInfoIcon");
                         tdNameOngoingLinkDiv.classList.add("extraIconDiv");
@@ -790,6 +792,8 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         let tdNameVisibilityLinkDiv = document.createElement("li"),
                             tdNameVisibilityLink = document.createElement("a"),
                             tdNameVisibilityIcon = document.createElement("i");
+                        tdNameVisibilityLink.setAttribute("href", "#iconModal");
+                        tdNameVisibilityLink.classList.add("modal-trigger");
                         tdNameVisibilityIcon.textContent = (visibilityCheck == "Watching" ? "visibility" : "visibility_off");
                         tdNameVisibilityIcon.classList.add("material-icons", "extraInfoIcon");
                         tdNameVisibilityLinkDiv.classList.add("extraIconDiv");
@@ -805,6 +809,8 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         let tdNameBookmarkLinkDiv = document.createElement("li"),
                             tdNameBookmarkLink = document.createElement("a"),
                             tdNameBookmarkIcon = document.createElement("i");
+                        tdNameBookmarkLink.setAttribute("href", "#iconModal");
+                        tdNameBookmarkLink.classList.add("modal-trigger");
                         tdNameBookmarkIcon.textContent = "bookmark";
                         tdNameBookmarkIcon.classList.add("material-icons", "extraInfoIcon");
                         tdNameBookmarkLinkDiv.classList.add("extraIconDiv");

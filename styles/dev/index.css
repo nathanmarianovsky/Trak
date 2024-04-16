@@ -75,6 +75,14 @@
     bottom: -5%;
 }
 
+#iconModal {
+	width: 80%;
+}
+
+#iconModalList {
+	line-height: 30px;
+}
+
 #indexHome {
 	display: none;
 }
@@ -200,7 +208,7 @@
     position: relative;
     top: 4px;
     left: 4px;
-    cursor: initial;
+    cursor: pointer;
 }
 
 .func {
@@ -211,6 +219,13 @@
 	background-color: #2A2A8E !important;
   	color: white !important;
   	border-radius: 12px !important;
+}
+
+.iconModalSymbol {
+	color: #2A2A8E !important;
+	font-size: 18px !important;
+    position: relative;
+    top: 4px;
 }
 
 .iconSorter {
