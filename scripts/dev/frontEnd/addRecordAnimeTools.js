@@ -374,14 +374,17 @@ Listen for click events on the related content anime film/ONA/OVA table items.
     - formSingleLastWatchedDate is the input corresponding to the film/ONA/OVA last watched date.
     - formSingleRating is the input corresponding to the film/ONA/OVA rating.
     - delSingleBtn is the button that deletes a film/ONA/OVA.
+    - formSingleType is the input corresponding to the film/ONA/OVA type.
 
 */
-const animeContentSingleButtons = (formSingleName, formSingleReleaseDate, formSingleLastWatchedDate, formSingleRating, delSingleBtn) => {
+const animeContentSingleButtons = (formSingleName, formSingleReleaseDate, formSingleLastWatchedDate, formSingleRating, delSingleBtn, formSingleType) => {
     // Listen for a click on the season name, season start date, season end date, or season average rating in order to prevent the listed item body from displaying.
     formSingleName.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formSingleReleaseDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
     formSingleLastWatchedDate.addEventListener("click", e => setTimeout(() => e.target.parentNode.parentNode.parentNode.children[1].style.display = "none", 1));
-    // Listen for a click event on the delete button for a film/ONA/OVA on the anime associated modal to delete the season.
+    // Listen for a change event on the single type for a film/ONA/OVA on the anime related modal to reset the page counters.
+    formSingleType.addEventListener("change", e =>  setTimeout(() => resetAnimeContentCounters(), 10));
+    // Listen for a click event on the delete button for a film/ONA/OVA on the anime related modal to delete the season.
     delSingleBtn.addEventListener("click", e => { 
         let delTarget = e.target.parentNode.parentNode.parentNode.parentNode;
         setTimeout(() => delTarget.children[1].style.display = "none", 1);
@@ -687,7 +690,7 @@ const animeSingleAddition = () => {
     itemSingleLI.append(itemSingleDivHeader, itemSingleDivBody);
     animeList.append(itemSingleLI);
     // Add the button listeners associated to a film/ONA/OVA.
-    animeContentSingleButtons(inputSingleName, inputSingleReleaseDate, inputSingleLastWatchedDate, selectSingleRating, iconSingleDelete);
+    animeContentSingleButtons(inputSingleName, inputSingleReleaseDate, inputSingleLastWatchedDate, selectSingleRating, iconSingleDelete, selectSingleType);
 };
 
 

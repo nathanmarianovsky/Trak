@@ -34,7 +34,7 @@
 }
 
 #bookmarkModal {
-	top: 30%;
+	top: 30% !important;
 	height: 30%;
 	width: 60%;
 }
@@ -158,6 +158,10 @@
 
 #titlebarLogo {
 	height: 20px;
+}
+
+#updateBookmark {
+	display: none;
 }
 
 #updateModal {

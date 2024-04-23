@@ -168,7 +168,8 @@ window.addEventListener("load", () => {
         notifications = document.getElementById("notifications"),
         notificationsCollection = document.getElementById("notificationsCollection"),
         updateCurrentDiv = document.getElementById("updateCurrentDiv"),
-        updateChangelogDiv = document.getElementById("updateChangelogDiv");
+        updateChangelogDiv = document.getElementById("updateChangelogDiv"),
+        updateBookmark = document.getElementById("updateBookmark");
     let submissionList = [],
         tabsLoader = false;
     // Listen for a click event on the add bookmark button in order to send a request to bookmark all checked records.
@@ -199,6 +200,8 @@ window.addEventListener("load", () => {
         outerLayer.style.display = "none";
         // Hide the content search button.
         contentSearch.style.display = "none";
+        // Hide the bookmarks button.
+        updateBookmark.style.display = "none";
         // Display the home button.
         indexHome.style.display = "inline-block";
         // Display the content search inputs.
@@ -247,6 +250,8 @@ window.addEventListener("load", () => {
         outerLayer.style.display = "block";
         // Display the content search button.
         contentSearch.style.display = "inline-block";
+        // Display the bookmarks button.
+        updateBookmark.style.display = "inline-block";
         // Hide the home button.
         indexHome.style.display = "none";
         // Hide the content search inputs.

@@ -377,7 +377,7 @@ ipcRenderer.on("introduction", (event, response) => {
                                 // Ensure that the tutorial step associated to the anime search button opens only once no matter whether the filter modal is opened or not.
                                 let count = 0;
                                 if(!document.getElementById("filterModal").classList.contains("open")) {
-                                    // After a small delay open the tutorial step for the index page anime search.
+                                    // After a small delay open the tutorial step for the index page content search.
                                     setTimeout(() => { instancesTapContentSearch.open(); }, 500);
                                     count++;
                                 }
@@ -440,6 +440,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
             synopsisModalContent = document.getElementById("synopsisModalContent");
         tableDiv.style.height = (diff + 506) + "px";
         tableBody.innerHTML = "";
+        if(recordsArr.length > 0) { document.getElementById("updateBookmark").style.display = "inline-block"; }
         // Listen for a window resize event in order to change the table height.
         window.addEventListener("resize", () => ipcRenderer.send("getAppHeight"));
         ipcRenderer.on("appHeight", (ev, newTableDiff) => tableDiv.style.height = (newTableDiff + 467) + "px");

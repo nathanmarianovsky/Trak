@@ -27,7 +27,7 @@
         "zip-local": "^0.3.5"
     },
     "devDependencies": {
-        "electron": "^29.2.0",
+        "electron": "^30.0.1",
         "electron-installer-debian": "^3.2.0",
         "electron-packager": "^17.1.2",
         "electron-wix-msi": "^5.1.3"
