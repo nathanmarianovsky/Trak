@@ -234,7 +234,9 @@ var mangaListReorganize = () => {
                 singleReleaseLabel = childHeader.children[2].children[1],
                 singleLastReadInput = childHeader.children[3].children[0],
                 singleLastReadLabel = childHeader.children[3].children[1],
-                singleRatingSelect = childHeader.children[4].children[0].children[3];
+                singleRatingSelect = childHeader.children[4].children[0].children[3],
+                singleFetchBtn = childHeader.children[5].children[0].children[0];
+            singleFetchBtn.setAttribute("id", "li_" + i + "_Volume_Fetch");
         }
         // Change the item id and for attributes accordingly.
         child.setAttribute("id", "li_" + i + "_" + childType);
