@@ -39,6 +39,7 @@ Driver function for adding all configuration listeners.
 
 */
 exports.addConfigurationListeners = (path, fs, log, ipc, originalPath) => {
+	// Provides the application configuration data to the front-end.
 	ipc.on("getConfigurations", event => {
 		fs.readFile(path.join(originalPath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
 			event.sender.send("sentConfigurations", err ? "" : file);
@@ -46,6 +47,7 @@ exports.addConfigurationListeners = (path, fs, log, ipc, originalPath) => {
 		});
 	});
 
+	// Provides the application notifications data to the front-end.
 	ipc.on("getNotifications", event => {
 		fs.readFile(path.join(originalPath, "Trak", "config", "notifications.json"), "UTF8", (err, file) => {
 			event.sender.send("sentNotifications", err ? "" : file);
@@ -53,6 +55,7 @@ exports.addConfigurationListeners = (path, fs, log, ipc, originalPath) => {
 		});
 	});
 
+	// Provides the application tutorial configuration to the front-end.
 	ipc.on("getTutorial", event => {
 		if(fs.existsSync(path.join(originalPath, "Trak", "config", "tutorial.json"))) {
 			fs.readFile(path.join(originalPath, "Trak", "config", "tutorial.json"), "UTF8", (err, file) => {
@@ -67,6 +70,7 @@ exports.addConfigurationListeners = (path, fs, log, ipc, originalPath) => {
 		}
 	});
 
+	// Provides the application version number to the front-end.
 	ipc.on("getVersion", event => {
 		fs.readFile(path.join(__dirname, "../../../package.json"), "UTF8", (err, file) => {
 			event.sender.send("sentVersion", err ? "" : file);
@@ -86,24 +90,16 @@ Driver function for adding all titlebar listeners.
 */
 exports.addTitlebarListeners = (BrowserWindow, ipc) => {
 	// Handles the minimizing of a window.
-	ipc.on("minimizeWindow", event => {
-		BrowserWindow.getFocusedWindow().minimize();
-	});
+	ipc.on("minimizeWindow", event => BrowserWindow.getFocusedWindow().minimize());
 
 	// Handles the maximizing of a window.
-	ipc.on("maximizeWindow", event => {
-		BrowserWindow.getFocusedWindow().maximize();
-	});
+	ipc.on("maximizeWindow", event => BrowserWindow.getFocusedWindow().maximize());
 
 	// Handles the restoring of a window.
-	ipc.on("restoreWindow", event => {
-		BrowserWindow.getFocusedWindow().unmaximize();
-	});
+	ipc.on("restoreWindow", event => BrowserWindow.getFocusedWindow().unmaximize());
 
 	// Handles the closing of a window.
-	ipc.on("closeWindow", event => {
-		BrowserWindow.getFocusedWindow().close();
-	});
+	ipc.on("closeWindow", event => BrowserWindow.getFocusedWindow().close());
 };
 
 
