@@ -93,6 +93,10 @@
 	display: none;
 }
 
+#indexOverflow {
+	overflow: hidden !important;
+}
+
 #notifications, #updateAvailable {
 	display: none;
 }

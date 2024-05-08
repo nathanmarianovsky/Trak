@@ -70,113 +70,115 @@
                 </nav>
             </div>
             <div id="outerLayer">
-                <div id="searchBarDiv1" class="row">
-                    <form class="col s12">
-                        <div id="searchBarDiv2" class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">search</i>
-                                <input id="searchBar" type="text" class="validate">
-                                <label for="searchBar">Search: <a class="modal-trigger" href="#searchBarModal"><i class="material-icons infoIcon">info</i></a></label>
+                <div id="indexOverflow">
+                    <div id="searchBarDiv1" class="row">
+                        <form class="col s12">
+                            <div id="searchBarDiv2" class="row">
+                                <div class="input-field col s12">
+                                    <i class="material-icons prefix">search</i>
+                                    <input id="searchBar" type="text" class="validate">
+                                    <label for="searchBar">Search: <a class="modal-trigger" href="#searchBarModal"><i class="material-icons infoIcon">info</i></a></label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="searchBarModal" class="modal">
+                        <div class="modal-content">
+                            <h4 class="center">Search Bar Features</h4>
+                            <div>
+                                The search bar on the home page of the application has been designed to provide mechanisms for performing searches based upon any record parameter desired. More specifically, the search bar may be utilized in the following two manners:
+                                <ul>
+                                    <li>By typing any string without the @ symbol will initiate a simple search based on finding records whose name includes the desired string.</li>
+                                    <li>
+                                        Provided the search @option:param the application will filter all records whose attribute "option" matches "param." More specifically:
+                                        <ul>
+                                            <li>The "option" of a search can correspond to any of the following: category, name, genres, jname, ogname, demographic, writers, authors, illustrators, directors, producers, musicians, studio, publisher, jpublisher, license, isbn, or media.</li>
+                                            <li>For the above options jname, ogname, musicians, jpublisher, and media reference the Japanese name, original title, musical producers, Japanese publisher, and media type of a record, respectively.</li>
+                                            <li>Multiple searches can be accomplished at the same time by formatting the search in the format @option1:param1,@option2:param2,...,@optionK:paramK for K many searches.</li>
+                                            <li>
+                                                For any single search multiple parameters can be provided by stating whether they should be searched in conjunction or disjunction with each other. More specifically:
+                                                <ul>
+                                                    <li>The &amp symbol is used to denote the operation of conjunction, i.e. @option:param1&ampparam2 will filter the records whose attribute "option" includes both "param1" AND "param2."</li>
+                                                    <li>The | symbol is used to denote the operation of disjunction, i.e. @option:param1|param2 will filter the records whose attribute "option" includes either "param1" OR "param2."</li>
+                                                    <li>The &amp operator takes precedence over the | operator, i.e. @option:param1&ampparam2|param3 will filter the records whose attribute "option" includes param1 AND (param2 OR param3).</li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
-                    </form>
-                </div>
-                <div id="searchBarModal" class="modal">
-                    <div class="modal-content">
-                        <h4 class="center">Search Bar Features</h4>
-                        <div>
-                            The search bar on the home page of the application has been designed to provide mechanisms for performing searches based upon any record parameter desired. More specifically, the search bar may be utilized in the following two manners:
-                            <ul>
-                                <li>By typing any string without the @ symbol will initiate a simple search based on finding records whose name includes the desired string.</li>
-                                <li>
-                                    Provided the search @option:param the application will filter all records whose attribute "option" matches "param." More specifically:
-                                    <ul>
-                                        <li>The "option" of a search can correspond to any of the following: category, name, genres, jname, ogname, demographic, writers, authors, illustrators, directors, producers, musicians, studio, publisher, jpublisher, license, isbn, or media.</li>
-                                        <li>For the above options jname, ogname, musicians, jpublisher, and media reference the Japanese name, original title, musical producers, Japanese publisher, and media type of a record, respectively.</li>
-                                        <li>Multiple searches can be accomplished at the same time by formatting the search in the format @option1:param1,@option2:param2,...,@optionK:paramK for K many searches.</li>
-                                        <li>
-                                            For any single search multiple parameters can be provided by stating whether they should be searched in conjunction or disjunction with each other. More specifically:
-                                            <ul>
-                                                <li>The &amp symbol is used to denote the operation of conjunction, i.e. @option:param1&ampparam2 will filter the records whose attribute "option" includes both "param1" AND "param2."</li>
-                                                <li>The | symbol is used to denote the operation of disjunction, i.e. @option:param1|param2 will filter the records whose attribute "option" includes either "param1" OR "param2."</li>
-                                                <li>The &amp operator takes precedence over the | operator, i.e. @option:param1&ampparam2|param3 will filter the records whose attribute "option" includes param1 AND (param2 OR param3).</li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
+                        <div class="modal-footer">
+                            <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                    <div id="headersTableDiv">
+                        <table id="headersTable" class="centered">
+                            <colgroup>
+                                <col span="1" style="width: 5%;">
+                                <col span="1" style="width: 30%;">
+                                <col span="1" style="width: 12.5%;">
+                                <col span="1" style="width: 12.5%;">
+                                <col span="1" style="width: 32.5%;">
+                                <col span="1" style="width: 7.5%;">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <label>
+                                            <input type="checkbox" class="filled-in recordsChecks" id="checkAll" />
+                                        </label>
+                                    </th>
+                                    <th>Name<i id="nameSort" class="material-icons center iconSorter">expand_less</i></th>
+                                    <th>Category<i id="categorySort" class="material-icons center iconSorter">expand_more</i></th>
+                                    <th>Rating<i id="ratingSort" class="material-icons center iconSorter">expand_more</i></th>
+                                    <th>Genres</th>
+                                    <th>Files</th>
+                                </tr>
+                            </thead>
+                        </table>
                     </div>
-                </div>
-                <div id="headersTableDiv">
-                    <table id="headersTable" class="centered">
-                        <colgroup>
-                            <col span="1" style="width: 5%;">
-                            <col span="1" style="width: 30%;">
-                            <col span="1" style="width: 12.5%;">
-                            <col span="1" style="width: 12.5%;">
-                            <col span="1" style="width: 32.5%;">
-                            <col span="1" style="width: 7.5%;">
-                        </colgroup>
-                        <thead>
-                            <tr>
-                                <th>
-                                    <label>
-                                        <input type="checkbox" class="filled-in recordsChecks" id="checkAll" />
-                                    </label>
-                                </th>
-                                <th>Name<i id="nameSort" class="material-icons center iconSorter">expand_less</i></th>
-                                <th>Category<i id="categorySort" class="material-icons center iconSorter">expand_more</i></th>
-                                <th>Rating<i id="ratingSort" class="material-icons center iconSorter">expand_more</i></th>
-                                <th>Genres</th>
-                                <th>Files</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-                <div id="tableDiv">
-                    <table id="table" class="highlight centered">
-                        <colgroup>
-                            <col span="1" style="width: 5%;">
-                            <col span="1" style="width: 30%;">
-                            <col span="1" style="width: 12.5%;">
-                            <col span="1" style="width: 12.5%;">
-                            <col span="1" style="width: 32.5%;">
-                            <col span="1" style="width: 7.5%;">
-                        </colgroup>
-                        <tbody id="tableBody"></tbody>
-                    </table>
-                </div>
-                <div id="removeModal" class="modal infoModal">
-                    <div class="modal-content">
-                        <h4 class="center">Remove Records</h4>
-                        <p>Please verify that you indeed wish to remove all data associated to the checked records. This cannot be undone.</p>
+                    <div id="tableDiv">
+                        <table id="table" class="highlight centered">
+                            <colgroup>
+                                <col span="1" style="width: 5%;">
+                                <col span="1" style="width: 30%;">
+                                <col span="1" style="width: 12.5%;">
+                                <col span="1" style="width: 12.5%;">
+                                <col span="1" style="width: 32.5%;">
+                                <col span="1" style="width: 7.5%;">
+                            </colgroup>
+                            <tbody id="tableBody"></tbody>
+                        </table>
                     </div>
-                    <div class="modal-footer">
-                        <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
-                        <a id="removeConfirm" class="modal-close waves-effect waves-light btn-flat modalButtons">Confirm</a>
+                    <div id="removeModal" class="modal infoModal">
+                        <div class="modal-content">
+                            <h4 class="center">Remove Records</h4>
+                            <p>Please verify that you indeed wish to remove all data associated to the checked records. This cannot be undone.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+                            <a id="removeConfirm" class="modal-close waves-effect waves-light btn-flat modalButtons">Confirm</a>
+                        </div>
                     </div>
+                    <div id="dataDeleteModal" class="modal infoModal">
+                        <div class="modal-content">
+                            <h4 class="center">Remove Original</h4>
+                            <p>Would you like to delete the original data folder now that its contents have been copied to the new directory?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a id="dataDeleteDeny" class="modal-close waves-effect waves-light btn-flat modalButtons">No</a>
+                            <a id="dataDeleteAccept" class="modal-close waves-effect waves-light btn-flat modalButtons">Yes</a>
+                        </div>
+                    </div>
+                    <a id="add" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Add Record"><i class="material-icons">add</i></a>
+                    <div id="introductionTargetAdd" class="tap-target" data-target="add">
+                        <div class="tap-target-content">
+                            <p>Begin by clicking on the add button in order to open a separate window which handles record creation and update.</p>
+                        </div>
+                    </div>
+                    <a id="remove" class="btn-floating btn-large waves-effect waves-light modal-trigger tooltipped" data-position="right" data-tooltip="Remove Records" href="#removeModal"><i class="material-icons">remove</i></a>
                 </div>
-                <div id="dataDeleteModal" class="modal infoModal">
-                    <div class="modal-content">
-                        <h4 class="center">Remove Original</h4>
-                        <p>Would you like to delete the original data folder now that its contents have been copied to the new directory?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <a id="dataDeleteDeny" class="modal-close waves-effect waves-light btn-flat modalButtons">No</a>
-                        <a id="dataDeleteAccept" class="modal-close waves-effect waves-light btn-flat modalButtons">Yes</a>
-                    </div>
-                </div>
-                <a id="add" class="btn-floating btn-large waves-effect waves-light tooltipped" data-position="left" data-tooltip="Add Record"><i class="material-icons">add</i></a>
-                <div id="introductionTargetAdd" class="tap-target" data-target="add">
-                    <div class="tap-target-content">
-                        <p>Begin by clicking on the add button in order to open a separate window which handles record creation and update.</p>
-                    </div>
-                </div>
-                <a id="remove" class="btn-floating btn-large waves-effect waves-light modal-trigger tooltipped" data-position="right" data-tooltip="Remove Records" href="#removeModal"><i class="material-icons">remove</i></a>
                 <div id="homeSelected"></div>
                 <div id="homeCounter"></div>
             </div>

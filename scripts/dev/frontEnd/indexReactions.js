@@ -865,7 +865,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                     }
                                 }
                                 if(ratingHolderArr.length > 0) {
-                                    ratingHolder = (ratingHolderArr.reduce(sumFunc, 0) / ratingHolderArr.length).toFixed(2);
+                                    ratingHolder = ratingHolderArr.reduce(sumFunc, 0) / ratingHolderArr.length;
                                     displayRatingArr.push(ratingHolder);
                                 }
                             }
@@ -910,7 +910,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 }
                             }
                             if(ratingHolderArr.length > 0) {
-                                ratingHolder = (ratingHolderArr.reduce(sumFunc, 0) / ratingHolderArr.length).toFixed(2);
+                                ratingHolder = ratingHolderArr.reduce(sumFunc, 0) / ratingHolderArr.length;
                                 displayRatingArr.push(ratingHolder);
                             }
                         }
