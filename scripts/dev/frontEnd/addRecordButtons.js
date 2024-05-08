@@ -83,6 +83,7 @@ const recordChoicesButtons = () => {
             animeMoreBtn = document.getElementById("animeMoreDetailsBtn"),
             animeFetchBtn = document.getElementById("animeFetchDetailsBtn"),
             animeSave = document.getElementById("animeSave"),
+            animeBookmark = document.getElementById("animeBookmark"),
             animeOptions = document.getElementById("animeOptions"),
             animeSynopsis = document.getElementById("animeSynopsis"),
             animeReview = document.getElementById("animeReview");
@@ -184,11 +185,12 @@ const recordChoicesButtons = () => {
                 relatedContentFinisher();
                 resetAnimeContentCounters();
                 // Hide the preloader now that everything has been loaded and show the buttons if necessary.
-                animePreloader.style.visibility = "hidden";
                 animeMoreBtn.style.visibility = "visible";
                 animeFetchBtn.style.visibility = "visible";
                 animeSave.style.visibility = "visible";
+                animeBookmark.style.visibility = "visible";
                 animeOptions.style.visibility = "visible";
+                setTimeout(() => animePreloader.style.visibility = "hidden", 500);
             }, 500);
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
@@ -221,7 +223,9 @@ const recordChoicesButtons = () => {
             bookTitleAutocomplete = autoCompleteInit("Book", bookTitle, bookPreloader),
             bookTitleUL = bookTitle.nextElementSibling,
             bookFetchBtn = document.getElementById("bookFetchDetailsBtn"),
-            bookSave = document.getElementById("bookSave");
+            bookSave = document.getElementById("bookSave"),
+            bookBookmark = document.getElementById("bookBookmark"),
+            bookAssociationsBtn = document.getElementById("bookAssociations");
         // Listen for changes in the book ISBN in order to format it properly.
         bookISBN.addEventListener("input", e => formatISBN(bookISBN));
         // Listen for changes in the book description in order to hide/show a vertical scroll.
@@ -276,9 +280,11 @@ const recordChoicesButtons = () => {
             // Update the book genres if available.
             genreFill("Book", newResponse[10]);
             // Hide the preloader now that everything has been loaded and show the buttons if necessary.
-            bookPreloader.style.visibility = "hidden";
             bookFetchBtn.style.visibility = "visible";
             bookSave.style.visibility = "visible";
+            bookBookmark.style.visibility = "visible";
+            bookAssociationsBtn.style.visibility = "visible";
+            setTimeout(() => bookPreloader.style.visibility = "hidden", 500);
             initSelect();
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
@@ -310,6 +316,8 @@ const recordChoicesButtons = () => {
             filmMoreBtn = document.getElementById("filmMoreDetailsBtn"),
             filmFetchBtn = document.getElementById("filmFetchDetailsBtn"),
             filmSave = document.getElementById("filmSave"),
+            filmBookmark = document.getElementById("filmBookmark"),
+            filmAssociationsBtn = document.getElementById("filmAssociations"),
             filmSynopsis = document.getElementById("filmSynopsis"),
             filmReview = document.getElementById("filmReview"),
             filmRunTimeInput = document.getElementById("filmRunningTime");
@@ -355,10 +363,12 @@ const recordChoicesButtons = () => {
             // Update the film genres if available.
             genreFill("Film", newResponse[5]);
             // Hide the preloader now that everything has been loaded and show the buttons if necessary.
-            filmPreloader.style.visibility = "hidden";
             filmMoreBtn.style.visibility = "visible";
             filmFetchBtn.style.visibility = "visible";
             filmSave.style.visibility = "visible";
+            filmBookmark.style.visibility = "visible";
+            filmAssociationsBtn.style.visibility = "visible";
+            setTimeout(() => filmPreloader.style.visibility = "hidden", 500);
             initSelect();
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
@@ -393,6 +403,7 @@ const recordChoicesButtons = () => {
             mangaMoreBtn = document.getElementById("mangaMoreDetailsBtn"),
             mangaFetchBtn = document.getElementById("mangaFetchDetailsBtn"),
             mangaSave = document.getElementById("mangaSave"),
+            mangaBookmark = document.getElementById("mangaBookmark"),
             mangaOptions = document.getElementById("mangaOptions"),
             mangaSynopsis = document.getElementById("mangaSynopsis"),
             mangaReview = document.getElementById("mangaReview");
@@ -454,15 +465,17 @@ const recordChoicesButtons = () => {
                 });
                 initSelect();
                 // Hide the preloader now that everything has been loaded and show the buttons if necessary.
-                mangaPreloader.style.visibility = "hidden";
                 mangaMoreBtn.style.visibility = "visible";
                 mangaFetchBtn.style.visibility = "visible";
                 mangaSave.style.visibility = "visible";
+                mangaBookmark.style.visibility = "visible";
                 mangaOptions.style.visibility = "visible";
+                setTimeout(() => mangaPreloader.style.visibility = "hidden", 500);
             }, 500);
         });
         // Update the page accordingly based on the fetched anime details.
         ipcRenderer.on("mangaVolumeFetchDetailsResult", (volEve, volResponse) => {
+            mangaPreloader.style.visibility = "visible";
             const mangaVolumesList = Array.from(document.getElementById("mangaList").children).filter(li => li.getAttribute("id").split("_")[2] == "Volume"),
                 recordImg = document.getElementById("addRecordMangaImg");
             for(let t = 0; t < volResponse.length; t++) {
@@ -513,6 +526,7 @@ const recordChoicesButtons = () => {
                 }
             }
             volumeFetchPreloader.style.visibility = "hidden";
+            mangaPreloader.style.visibility = "hidden";
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.
         introMangaHolder = introInit("manga", introMangaHolder, document.getElementById("introductionTargetMangaSave"), document.getElementById("introductionTargetMangaBookmark"), document.getElementById("introductionTargetMangaOptions"));
@@ -545,6 +559,7 @@ const recordChoicesButtons = () => {
             showMoreBtn = document.getElementById("showMoreDetailsBtn"),
             showFetchBtn = document.getElementById("showFetchDetailsBtn"),
             showSave = document.getElementById("showSave"),
+            showBookmark = document.getElementById("showBookmark"),
             showSynopsis = document.getElementById("showSynopsis"),
             showReview = document.getElementById("showReview"),
             showRunTimeInput = document.getElementById("showRunningTime");
@@ -590,10 +605,11 @@ const recordChoicesButtons = () => {
             // Update the show genres if available.
             genreFill("Show", newResponse[5]);
             // Hide the preloader now that everything has been loaded and show the buttons if necessary.
-            showPreloader.style.visibility = "hidden";
             showMoreBtn.style.visibility = "visible";
             showFetchBtn.style.visibility = "visible";
             showSave.style.visibility = "visible";
+            showBookmark.style.visibility = "visible";
+            setTimeout(() => showPreloader.style.visibility = "hidden", 500);
             initSelect();
         });
         // If the page load corresponded to the continuation of the application tutorial then provide the tutorial steps on the addRecord page.

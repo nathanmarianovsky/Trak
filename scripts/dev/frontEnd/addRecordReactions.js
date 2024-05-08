@@ -135,6 +135,11 @@ ipcRenderer.on("searchRecordStart", (event, type) => {
         filmRecordSave = document.getElementById("filmSave"),
         mangaRecordSave = document.getElementById("mangaSave"),
         showRecordSave = document.getElementById("showSave"),
+        animeRecordBookmark = document.getElementById("animeBookmark"),
+        bookRecordBookmark = document.getElementById("bookBookmark"),
+        filmRecordBookmark = document.getElementById("filmBookmark"),
+        mangaRecordBookmark = document.getElementById("mangaBookmark"),
+        showRecordBookmark = document.getElementById("showBookmark"),
         animeRecordOptions = document.getElementById("animeOptions"),
         mangaRecordOptions = document.getElementById("mangaOptions"),
         showRecordOptions = document.getElementById("showOptions"),
@@ -146,12 +151,15 @@ ipcRenderer.on("searchRecordStart", (event, type) => {
         bookRecordFetchDetailsBtn = document.getElementById("bookFetchDetailsBtn"),
         filmRecordFetchDetailsBtn = document.getElementById("filmFetchDetailsBtn"),
         mangaRecordFetchDetailsBtn = document.getElementById("mangaFetchDetailsBtn"),
-        showRecordFetchDetailsBtn = document.getElementById("showFetchDetailsBtn");
+        showRecordFetchDetailsBtn = document.getElementById("showFetchDetailsBtn"),
+        bookRecordAssociationsBtn = document.getElementById("bookAssociations"),
+        filmRecordAssociationsBtn = document.getElementById("filmAssociations");
     if(type == "Anime") {
         // Hide the page buttons until all data has loaded in.
         animeRecordPreloader.style.top = "-32px";
         animeRecordPreloader.style.visibility = "visible";
         animeRecordSave.style.visibility = "hidden";
+        animeRecordBookmark.style.visibility = "hidden";
         animeRecordOptions.style.visibility = "hidden";
         animeRecordMoreDetailsBtn.style.visibility = "hidden";
         animeRecordFetchDetailsBtn.style.visibility = "hidden";
@@ -164,6 +172,8 @@ ipcRenderer.on("searchRecordStart", (event, type) => {
         bookRecordPreloader.style.top = "-32px";
         bookRecordPreloader.style.visibility = "visible";
         bookRecordSave.style.visibility = "hidden";
+        bookRecordBookmark.style.visibility = "hidden";
+        bookRecordAssociationsBtn.style.visibility = "hidden";
         bookRecordFetchDetailsBtn.style.visibility = "hidden";
         // Load the book record portion of the addRecord page.
         document.getElementById("categoryBook").click();
@@ -174,6 +184,8 @@ ipcRenderer.on("searchRecordStart", (event, type) => {
         filmRecordPreloader.style.top = "-32px";
         filmRecordPreloader.style.visibility = "visible";
         filmRecordSave.style.visibility = "hidden";
+        filmRecordBookmark.style.visibility = "hidden";
+        filmRecordAssociationsBtn.style.visibility = "hidden";
         filmRecordMoreDetailsBtn.style.visibility = "hidden";
         filmRecordFetchDetailsBtn.style.visibility = "hidden";
         // Load the film record portion of the addRecord page.
@@ -185,6 +197,7 @@ ipcRenderer.on("searchRecordStart", (event, type) => {
         mangaRecordPreloader.style.top = "-32px";
         mangaRecordPreloader.style.visibility = "visible";
         mangaRecordSave.style.visibility = "hidden";
+        mangaRecordBookmark.style.visibility = "hidden";
         mangaRecordOptions.style.visibility = "hidden";
         mangaRecordMoreDetailsBtn.style.visibility = "hidden";
         mangaRecordFetchDetailsBtn.style.visibility = "hidden";
@@ -197,6 +210,7 @@ ipcRenderer.on("searchRecordStart", (event, type) => {
         showRecordPreloader.style.top = "-32px";
         showRecordPreloader.style.visibility = "visible";
         showRecordSave.style.visibility = "hidden";
+        showRecordBookmark.style.visibility = "hidden";
         showRecordMoreDetailsBtn.style.visibility = "hidden";
         showRecordFetchDetailsBtn.style.visibility = "hidden";
         // Load the film record portion of the addRecord page.
@@ -369,7 +383,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     animeFetchDetailsBtn.style.visibility = "visible";
                     animeAmazonSearchBtn.style.visibility = "visible";
                     // Hide the anime preloader to indicate that the related content has finished loading.
-                    updateAnimePreloader.style.visibility = "hidden";
+                    setTimeout(() => updateAnimePreloader.style.visibility = "hidden", 500);
                 }, 500);
                 animeName.setAttribute("oldName", recordData.name != "" ? recordData.name : recordData.jname);
             }
@@ -624,7 +638,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     mangaAmazonSearchBtn.style.visibility = "visible";
                     mangaGoodreadsSearchBtn.style.visibility = "visible";
                     // Hide the manga preloader to indicate that the related content has finished loading.
-                    updateMangaPreloader.style.visibility = "hidden";
+                    setTimeout(() => updateMangaPreloader.style.visibility = "hidden", 500);
                 }, 500);
                 mangaName.setAttribute("oldName", recordData.name != "" ? recordData.name : recordData.jname);
             }
@@ -636,6 +650,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     showFetchDetailsBtn = document.getElementById("showFetchDetailsBtn"),
                     showAmazonSearchBtn = document.getElementById("showAmazonSearchBtn");
                 // Hide the page buttons until all data has loaded in.
+                showSave.style.visibility = "hidden";
                 showBookmark.style.visibility = "hidden";
                 showOptions.style.visibility = "hidden";
                 showMoreDetailsBtn.style.visibility = "hidden";
@@ -754,13 +769,14 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     // Display all page buttons now that all data has loaded.
                     showSave.style.visibility = "visible";
                     if(recordData.bookmark == true) { showBookmark.children[0].textContent = "check_box"; }
+                    showSave.style.visibility = "visible";
                     showBookmark.style.visibility = "visible";
                     showOptions.style.visibility = "visible";
                     showMoreDetailsBtn.style.visibility = "visible";
                     showFetchDetailsBtn.style.visibility = "visible";
                     showAmazonSearchBtn.style.visibility = "visible";
                     // Hide the show preloader to indicate that the related content has finished loading.
-                    updateShowPreloader.style.visibility = "hidden";
+                    setTimeout(() => updateShowPreloader.style.visibility = "hidden", 500);
                 }, 500);
             }
             // Send a request to find record associations.
