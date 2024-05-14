@@ -121,13 +121,15 @@ var animeSave = min => {
         e.preventDefault();
         animeSaveFunc();
     });
-    // Set the page to save the record automatically depending on the user chosen interval.
-    min = parseInt(min);
-    if(min != 0 && document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("categoryAnime").parentNode.classList.contains("active")) {
-        setInterval(() => {
-            animeSaveFunc(true);
-        }, 1000 * 60 * min);
-    }
+    setTimeout(() => {
+        // Set the page to save the record automatically depending on the user chosen interval.
+        min = parseInt(min);
+        if(min != 0 && document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("categoryAnime").parentNode.classList.contains("active")) {
+            setInterval(() => {
+                animeSaveFunc(true);
+            }, 1000 * 60 * min);
+        }
+    }, 500);
 };
 
 
