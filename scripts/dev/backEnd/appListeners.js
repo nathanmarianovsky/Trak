@@ -411,7 +411,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hid
   	// Save the record upon a request from the front-end.
 	ipc.on("performSave", (event, submission) => {
 		require("./" + submission[1][0].toLowerCase() + "Tools")[submission[1][0].toLowerCase() + (submission[0] == true ? "Update" : "Add")]
-			(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission[1]);
+			(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission[1], submission[2]);
 	});
 
   	// Handles the deletion of multiple records and updates the associations configuration file accodingly.

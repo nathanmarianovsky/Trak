@@ -57,15 +57,15 @@ ipcRenderer.on("copyFailure", (event, response) => {
 
 
 // Display a notification for the successful addition of a record.
-ipcRenderer.once("addRecordSuccess", (event, response) => {
-    M.toast({"html": "The record associated to the " + toastParse(response) + " has been created and saved. This window will now close!", "classes": "rounded"});
+ipcRenderer.on("addRecordSuccess", (event, response) => {
+    M.toast({"html": "The record associated to the " + toastParse(response[0]) + " has been created and saved." + (response[1] == false ? " This window will now close!" : ""), "classes": "rounded"});
 });
 
 
 
 // Display a notification for the successful update of a record.
-ipcRenderer.once("updateRecordSuccess", (event, response) => {
-    M.toast({"html": "The record associated to the " + toastParse(response) + " has been updated. This window will now close!", "classes": "rounded"});
+ipcRenderer.on("updateRecordSuccess", (event, response) => {
+    M.toast({"html": "The record associated to the " + toastParse(response[0]) + " has been updated." + (response[1] == false ? " This window will now close!" : ""), "classes": "rounded"});
 });
 
 
@@ -817,20 +817,24 @@ window.addEventListener("load", () => {
     initCollapsible();
     // Add the listeners corresponding to the record choices.
     recordChoicesButtons();
-    const categories = ["Anime", "Book", "Film", "Manga", "Show"];
-    categories.forEach(category => {
-        // Fill the record page with the associated genre options.
-        genreListLoad(category, 6);
-        // Add the listeners corresponding to the record save.
-        window[category.toLowerCase() + "Save"]();
-        // Add the listeners corresponding to the related content options.
-        if(category == "Anime" || category == "Manga" || category == "Show") {
-            window[category.toLowerCase() + "ModalButtons"]();
-        }
-        // Initialize the observer for the review.
-        initReviewObserver(document.getElementById(category.toLowerCase() + "Review"));
-        // Initialize the observer for the synopsis.
-        initSynopsisObserver(document.getElementById(category.toLowerCase() + "Synopsis"));
+    ipcRenderer.send("getConfigurations");
+    ipcRenderer.on("sentConfigurations", (configEvent, config) => {
+        const configData = JSON.parse(config),
+            categories = ["Anime", "Book", "Film", "Manga", "Show"];
+        categories.forEach(category => {
+            // Fill the record page with the associated genre options.
+            genreListLoad(category, 6);
+            // Add the listeners corresponding to the record save.
+            window[category.toLowerCase() + "Save"](configData != "" ? (configData.current != undefined ? configData.current.autosave : configData.original.autosave) : "3");
+            // Add the listeners corresponding to the related content options.
+            if(category == "Anime" || category == "Manga" || category == "Show") {
+                window[category.toLowerCase() + "ModalButtons"]();
+            }
+            // Initialize the observer for the review.
+            initReviewObserver(document.getElementById(category.toLowerCase() + "Review"));
+            // Initialize the observer for the synopsis.
+            initSynopsisObserver(document.getElementById(category.toLowerCase() + "Synopsis"));
+        });
     });
     // Initialize the autocomplete functionality for the associations modal.
     associationsInit(ipcRenderer);

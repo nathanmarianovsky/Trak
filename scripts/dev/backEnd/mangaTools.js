@@ -97,16 +97,17 @@ Handles the saving of a manga record by creating the associated folders and data
    - dataPath is the path to the local user data.
    - evnt provides the means to interact with the front-end of the Electron app.
    - data is the information associated to the record.
+   - auto is a boolean representing whether the data file is being written corresponding to an application autosave.
 
 */
-exports.mangaAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
+exports.mangaAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto) => {
     // Check to see that the folder associated to the new record does not exist.
     if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]))) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[2])))) {
         // Create a new directory for the assets associated to the new record.
         const assetsPath = path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]), "assets");
         log.info("Creating the assets directory for the new manga record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data, false);
     }
     else {
         log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[2]) + " already exists!");
@@ -129,9 +130,10 @@ Handles the update of a manga record.
    - dataPath is the path to the local user data.
    - evnt provides the means to interact with the front-end of the Electron app.
    - data is the information associated to the record.
+   - auto is a boolean representing whether the data file is being written corresponding to an application autosave.
 
 */
-exports.mangaUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data) => {
+exports.mangaUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto) => {
     // If the name has been updated then change the associated record folder name.
     if((data[1] != "" && data[1] != data[data.length - 1]) || (data[1] == "" && data[2] != "" && data[2] != data[data.length - 1])) {
         fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[data.length - 1])), path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2])), err => {
@@ -142,13 +144,13 @@ exports.mangaUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, d
             }
             // If no error occured in renaming the record folder write the data file, and copy over the file assets.
             else {
-                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
+                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto);
             }
         });
     }
     else {
         // Write the data file, and copy over the file assets.
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto);
     }
 };
 

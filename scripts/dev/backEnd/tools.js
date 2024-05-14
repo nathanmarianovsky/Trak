@@ -255,9 +255,10 @@ Handles the writing of files associated to a record.
 	- fs and path provide the means to work with local files.
 	- evt provides the means to interact with the front-end of the Electron app.
 	- info is the data associated to the record.
+	- autoCheck is a boolean representing whether the data file is being written corresponding to an application autosave.
 
 */
-exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, path, evt, info) => {
+exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, path, evt, info, autoCheck) => {
 	let fldr = "";
 	const modeStr = (mode == "A" ? "add" : "update");
 	if(info[0] == "Anime" || info[0] == "Manga") {
@@ -307,7 +308,7 @@ exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, 
 					}
 				});
 			}
-			// Once all of the files have been updated, notify the user everything has been taken care of and close the window.
+			// Once all of the files have been updated, notify the user everything has been taken care of and close the window if necessary.
 			if(i == info[10].length) {
 				if(info[0] == "Anime" || info[0] == "Manga") {
 					log.info("All assets associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]) + " have been copied over.");
@@ -320,15 +321,17 @@ exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, 
 				}
 				globalWin.reload();
 				if(info[0] == "Anime" || info[0] == "Manga") {
-					curWin.webContents.send(modeStr + "RecordSuccess", info[0] + "-" + (info[1] != "" ? info[1] : info[2]));
+					evt.senderFrame.send(modeStr + "RecordSuccess", [info[0] + "-" + (info[1] != "" ? info[1] : info[2]), autoCheck]);
 				}
 				else if(info[0] == "Book") {
-					curWin.webContents.send(modeStr + "RecordSuccess", info[0] + "-" + (info[1] != "" ? info[1] : info[3]));
+					evt.senderFrame.send(modeStr + "RecordSuccess", [info[0] + "-" + (info[1] != "" ? info[1] : info[3]), autoCheck]);
 				}
 				else if(info[0] == "Film" || info[0] == "Show") {
-					curWin.webContents.send(modeStr + "RecordSuccess", info[0] + "-" + info[1]);
+					evt.senderFrame.send(modeStr + "RecordSuccess", [info[0] + "-" + info[1], autoCheck]);
 				}
-				setTimeout(() => { curWin.destroy(); }, 2000);
+				if(autoCheck == false) {
+					setTimeout(() => { curWin.destroy(); }, 2000);
+				}
 			}
 		}
 	});

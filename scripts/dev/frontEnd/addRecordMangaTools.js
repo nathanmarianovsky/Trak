@@ -2,6 +2,7 @@
 
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page with a focus on manga records.
 
+    - mangaSaveFunc: Driver function for saving a manga record.
     - mangaSave: Processes the information required to save a manga record.
     - mangaModalButtons: Listen for click events on the related content manga modal buttons.
     - resetMangaContentCounters: Resets the page counters for a manga record's related content.
@@ -20,77 +21,99 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
 
 /*
 
-Processes the information required to save a manga record.
+Driver function for saving a manga record.
+
+   - auto is a boolean corresponding to whether the save action is a user submission or the application auto saving.
 
 */
-var mangaSave = () => {
+const mangaSaveFunc = (auto = false) => {
+    // Define the page components which will contain all associated details.
+    const mangaList = document.getElementById("mangaList"),
+        mangaBookmarkValue = document.getElementById("mangaBookmark").children[0].textContent == "check_box",
+        mangaName = document.getElementById("mangaName").value,
+        mangaJapaneseName = document.getElementById("mangaJapaneseName").value,
+        mangaReview = document.getElementById("mangaReview").value,
+        mangaPublisher = document.getElementById("mangaPublisher").value,
+        mangaJapanesePublisher = document.getElementById("mangaJapanesePublisher").value,
+        mangaWriters = document.getElementById("mangaWriters").value,
+        mangaIllustrator = document.getElementById("mangaIllustrator").value,
+        mangaDemographic = document.getElementById("mangaDemographic").value,
+        mangaStart = document.getElementById("mangaStartDate").value,
+        mangaEnd = document.getElementById("mangaEndDate").value,
+        mangaSynopsis = document.getElementById("mangaSynopsis").value,
+        mangaImg = document.getElementById("addRecordMangaImg").getAttribute("list").split(","),
+        mangaFiles = Array.from(document.getElementById("mangaAddRecordFiles").files).map(elem => elem.path),
+        otherGenres = document.getElementById("mangaOtherGenres").value.split(",").map(elem => elem.trim()),
+        genresLst = genreList("Manga"),
+        genres = [],
+        content = [];
+    // Check to see that at least one name was provided.
+    if(mangaName != "" || mangaJapaneseName != "") {
+        // Save all information about the genres.
+        for(let p = 0; p < genresLst.length; p++) {
+            genres.push(document.getElementById("mangaGenre" + genresLst[p]).checked);
+        }
+        // For each table item in the related content table process the associated information.
+        for(let q = 1; q < mangaList.children.length + 1; q++) {
+            let mangaListChild = mangaList.children[q - 1],
+                mangaListChildCondition = mangaListChild.id.split("_")[2],
+                curContent = [];
+            // Define the related content details.
+            let singleName = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_Name").value,
+                singleRelease = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_Release").value,
+                singleLastRead = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_LastRead").value,
+                singleRating = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_Rating").value,
+                singleReview = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_Review").value;
+            // Push the related content item details into a collection.
+            if(mangaListChildCondition == "Chapter") {
+                curContent.push("Chapter", singleName, singleRelease, singleLastRead, singleRating, singleReview);
+            }
+            else if(mangaListChildCondition == "Volume") {
+                let singleISBN = document.getElementById("li_" + q + "_Volume_ISBN").value.replace(/-/g, ""),
+                    singleSynopsis = document.getElementById("li_" + q + "_Volume_Synopsis").value;
+                curContent.push("Volume", singleName, singleRelease, singleLastRead, singleRating, singleReview, singleISBN, singleSynopsis);
+            }
+            // Push the table item information into the array holding all related content details.
+            content.push(curContent);
+        }
+        const ogName = document.getElementById("mangaName").getAttribute("oldName"),
+            oldTitle = ogName !== null ? ogName : mangaName;
+        // Send the request to the back-end portion of the app.
+        const submissionMaterial = ["Manga", mangaName, mangaJapaneseName, mangaReview, mangaWriters, mangaIllustrator, mangaPublisher, mangaJapanesePublisher,
+            mangaDemographic, mangaStart, mangaFiles, mangaEnd, content, [genresLst, genres, otherGenres], mangaSynopsis,
+            [document.getElementById("addRecordMangaImg").getAttribute("list") == document.getElementById("addRecordMangaImg").getAttribute("previous"), mangaImg],
+            mangaBookmarkValue, oldTitle];
+        ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto]);
+        saveAssociations("Manga", mangaName, ipcRenderer);
+    }
+    // If no name has been provided then notify the user.
+    else { M.toast({"html": "A manga record requires that a name be provided.", "classes": "rounded"}); }
+};
+
+
+
+/*
+
+Processes the information required to save a manga record.
+
+   - min is a string representing the number of minutes for the autosave interval.
+
+*/
+var mangaSave = min => {
     // Define the page save button.
     const mangaSaveBtn = document.getElementById("mangaSave");
     // Listen for a click on the save button.
     mangaSaveBtn.addEventListener("click", e => {
         e.preventDefault();
-        // Define the page components which will contain all associated details.
-        const mangaList = document.getElementById("mangaList"),
-            mangaBookmarkValue = document.getElementById("mangaBookmark").children[0].textContent == "check_box",
-            mangaName = document.getElementById("mangaName").value,
-            mangaJapaneseName = document.getElementById("mangaJapaneseName").value,
-            mangaReview = document.getElementById("mangaReview").value,
-            mangaPublisher = document.getElementById("mangaPublisher").value,
-            mangaJapanesePublisher = document.getElementById("mangaJapanesePublisher").value,
-            mangaWriters = document.getElementById("mangaWriters").value,
-            mangaIllustrator = document.getElementById("mangaIllustrator").value,
-            mangaDemographic = document.getElementById("mangaDemographic").value,
-            mangaStart = document.getElementById("mangaStartDate").value,
-            mangaEnd = document.getElementById("mangaEndDate").value,
-            mangaSynopsis = document.getElementById("mangaSynopsis").value,
-            mangaImg = document.getElementById("addRecordMangaImg").getAttribute("list").split(","),
-            mangaFiles = Array.from(document.getElementById("mangaAddRecordFiles").files).map(elem => elem.path),
-            otherGenres = document.getElementById("mangaOtherGenres").value.split(",").map(elem => elem.trim()),
-            genresLst = genreList("Manga"),
-            genres = [],
-            content = [];
-        // Check to see that at least one name was provided.
-        if(mangaName != "" || mangaJapaneseName != "") {
-            // Save all information about the genres.
-            for(let p = 0; p < genresLst.length; p++) {
-                genres.push(document.getElementById("mangaGenre" + genresLst[p]).checked);
-            }
-            // For each table item in the related content table process the associated information.
-            for(let q = 1; q < mangaList.children.length + 1; q++) {
-                let mangaListChild = mangaList.children[q - 1],
-                    mangaListChildCondition = mangaListChild.id.split("_")[2],
-                    curContent = [];
-                // Define the related content details.
-                let singleName = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_Name").value,
-                    singleRelease = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_Release").value,
-                    singleLastRead = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_LastRead").value,
-                    singleRating = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_Rating").value,
-                    singleReview = document.getElementById("li_" + q + "_" + mangaListChildCondition + "_Review").value;
-                // Push the related content item details into a collection.
-                if(mangaListChildCondition == "Chapter") {
-                    curContent.push("Chapter", singleName, singleRelease, singleLastRead, singleRating, singleReview);
-                }
-                else if(mangaListChildCondition == "Volume") {
-                    let singleISBN = document.getElementById("li_" + q + "_Volume_ISBN").value.replace(/-/g, ""),
-                        singleSynopsis = document.getElementById("li_" + q + "_Volume_Synopsis").value;
-                    curContent.push("Volume", singleName, singleRelease, singleLastRead, singleRating, singleReview, singleISBN, singleSynopsis);
-                }
-                // Push the table item information into the array holding all related content details.
-                content.push(curContent);
-            }
-            const ogName = document.getElementById("mangaName").getAttribute("oldName"),
-                oldTitle = ogName !== null ? ogName : mangaName;
-            // Send the request to the back-end portion of the app.
-            const submissionMaterial = ["Manga", mangaName, mangaJapaneseName, mangaReview, mangaWriters, mangaIllustrator, mangaPublisher, mangaJapanesePublisher,
-                mangaDemographic, mangaStart, mangaFiles, mangaEnd, content, [genresLst, genres, otherGenres], mangaSynopsis,
-                [document.getElementById("addRecordMangaImg").getAttribute("list") == document.getElementById("addRecordMangaImg").getAttribute("previous"), mangaImg],
-                mangaBookmarkValue, oldTitle];
-            ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial]);
-            saveAssociations("Manga", mangaName, ipcRenderer);
-        }
-        // If no name has been provided then notify the user.
-        else { M.toast({"html": "A manga record requires that a name be provided.", "classes": "rounded"}); }
+        mangaSaveFunc();
     });
+    // Set the page to save the record automatically depending on the user chosen interval.
+    min = parseInt(min);
+    if(min != 0 && document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("categoryManga").parentNode.classList.contains("active")) {
+        setInterval(() => {
+            mangaSaveFunc(true);
+        }, 1000 * 60 * min);
+    }
 };
 
 

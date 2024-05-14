@@ -2,6 +2,7 @@
 
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page with a focus on show records.
 
+    - showSaveFunc: Driver function for saving a show record.
     - showSave: Processes the information required to save a show record.
     - showModalButtons: Listen for click events on the related content show modal buttons.
     - resetShowContentCounters: Resets the page counters for a show record's related content.
@@ -22,81 +23,103 @@ BASIC DETAILS: This file provides front-end functions designed to be used by the
 
 /*
 
-Processes the information required to save a show record.
+Driver function for saving a show record.
+
+   - auto is a boolean corresponding to whether the save action is a user submission or the application auto saving.
 
 */
-var showSave = () => {
+const showSaveFunc = (auto = false) => {
+    // Define the page components which will contain all associated details.
+    const showList = document.getElementById("showList"),
+        showBookmarkValue = document.getElementById("showBookmark").children[0].textContent == "check_box",
+        showName = document.getElementById("showName").value,
+        showAlternateName = document.getElementById("showAlternateName").value,
+        showReview = document.getElementById("showReview").value,
+        showDirectors = document.getElementById("showDirectors").value,
+        showProducers = document.getElementById("showProducers").value,
+        showWriters = document.getElementById("showWriters").value,
+        showMusicians = document.getElementById("showMusicians").value,
+        showEditors = document.getElementById("showEditors").value,
+        showCinematographers = document.getElementById("showCinematographers").value,
+        showDistributors = document.getElementById("showDistributors").value,
+        showProductionCompanies = document.getElementById("showProductionCompanies").value,
+        showStarring = document.getElementById("showStarring").value,
+        showSynopsis = document.getElementById("showSynopsis").value,
+        showRating = document.getElementById("showRating").value,
+        showReleaseDate = document.getElementById("showReleaseDate").value,
+        showRunningTime = document.getElementById("showRunningTime").value,
+        showImg = document.getElementById("addRecordShowImg").getAttribute("list").split(","),
+        showFiles = Array.from(document.getElementById("showAddRecordFiles").files).map(elem => elem.path),
+        otherGenres = document.getElementById("showOtherGenres").value.split(",").map(elem => elem.trim()),
+        genresLst = genreList("Show"),
+        genres = [],
+        content = [];
+    // Check to see that a name was provided.
+    if(showName != "") {
+        // Save all information about the genres.
+        for(let p = 0; p < genresLst.length; p++) {
+            genres.push(document.getElementById("showGenre" + genresLst[p]).checked);
+        }
+        // For each table item in the related content table process the associated information.
+        for(let q = 1; q < showList.children.length + 1; q++) {
+            let showListChild = showList.children[q - 1],
+                showListChildCondition = showListChild.id.split("_")[2],
+                curContent = [];
+            // Attain the details on a season and its episodes.
+            let seasonName = document.getElementById("li_" + q + "_ShowSeason_Name").value,
+                seasonStart = document.getElementById("li_" + q + "_ShowSeason_Start").value,
+                seasonEnd = document.getElementById("li_" + q + "_ShowSeason_End").value,
+                seasonStatus = document.getElementById("li_" + q + "_ShowSeason_Status").value,
+                seasonEpisodes = [];
+            for(let r = 1; r < showListChild.children[1].children[0].children.length + 1; r++) {
+                let seasonEpisodeName = document.getElementById("li_" + q + "_ShowEpisode_Name_" + r).value,
+                    seasonEpisodeLastWatched = document.getElementById("li_" + q + "_ShowEpisode_LastWatched_" + r).value,
+                    seasonEpisodeRating = document.getElementById("li_" + q + "_ShowEpisode_Rating_" + r).value,
+                    seasonEpisodeReview = document.getElementById("li_" + q + "_ShowEpisode_Review_" + r).value;
+                seasonEpisodes.push([seasonEpisodeName, seasonEpisodeLastWatched, seasonEpisodeRating, seasonEpisodeReview]);
+            }
+            curContent.push("Season", seasonName, seasonStart, seasonEnd, seasonStatus, seasonEpisodes);
+            // Push the table item information into the array holding all related content details.
+            content.push(curContent);
+        }
+        const ogName = document.getElementById("showName").getAttribute("oldName"),
+            oldTitle = ogName !== null ? ogName : showName;
+        // Send the request to the back-end portion of the app.
+        const submissionMaterial = ["Show", showName, showAlternateName, showReview, showDirectors, showProducers, showWriters, showMusicians, showEditors,
+            showCinematographers, showFiles, showDistributors, showProductionCompanies, showStarring, [genresLst, genres, otherGenres], showSynopsis, showRating, showReleaseDate, showRunningTime,
+            [document.getElementById("addRecordShowImg").getAttribute("list") == document.getElementById("addRecordShowImg").getAttribute("previous"), showImg], content,
+            showBookmarkValue, oldTitle];
+        ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto]);
+        saveAssociations("Show", showName, ipcRenderer);
+    }
+    // If no name has been provided then notify the user.
+    else { M.toast({"html": "A show record requires a name be provided.", "classes": "rounded"}); }
+};
+
+
+
+/*
+
+Processes the information required to save a show record.
+
+   - min is a string representing the number of minutes for the autosave interval.
+
+*/
+var showSave = min => {
     // Define the page save button.
     const showSaveBtn = document.getElementById("showSave");
     // Listen for a click on the save button.
     showSaveBtn.addEventListener("click", e => {
         e.preventDefault();
-        // Define the page components which will contain all associated details.
-        const showList = document.getElementById("showList"),
-            showBookmarkValue = document.getElementById("showBookmark").children[0].textContent == "check_box",
-            showName = document.getElementById("showName").value,
-            showAlternateName = document.getElementById("showAlternateName").value,
-            showReview = document.getElementById("showReview").value,
-            showDirectors = document.getElementById("showDirectors").value,
-            showProducers = document.getElementById("showProducers").value,
-            showWriters = document.getElementById("showWriters").value,
-            showMusicians = document.getElementById("showMusicians").value,
-            showEditors = document.getElementById("showEditors").value,
-            showCinematographers = document.getElementById("showCinematographers").value,
-            showDistributors = document.getElementById("showDistributors").value,
-            showProductionCompanies = document.getElementById("showProductionCompanies").value,
-            showStarring = document.getElementById("showStarring").value,
-            showSynopsis = document.getElementById("showSynopsis").value,
-            showRating = document.getElementById("showRating").value,
-            showReleaseDate = document.getElementById("showReleaseDate").value,
-            showRunningTime = document.getElementById("showRunningTime").value,
-            showImg = document.getElementById("addRecordShowImg").getAttribute("list").split(","),
-            showFiles = Array.from(document.getElementById("showAddRecordFiles").files).map(elem => elem.path),
-            otherGenres = document.getElementById("showOtherGenres").value.split(",").map(elem => elem.trim()),
-            genresLst = genreList("Show"),
-            genres = [],
-            content = [];
-        // Check to see that a name was provided.
-        if(showName != "") {
-            // Save all information about the genres.
-            for(let p = 0; p < genresLst.length; p++) {
-                genres.push(document.getElementById("showGenre" + genresLst[p]).checked);
-            }
-            // For each table item in the related content table process the associated information.
-            for(let q = 1; q < showList.children.length + 1; q++) {
-                let showListChild = showList.children[q - 1],
-                    showListChildCondition = showListChild.id.split("_")[2],
-                    curContent = [];
-                // Attain the details on a season and its episodes.
-                let seasonName = document.getElementById("li_" + q + "_ShowSeason_Name").value,
-                    seasonStart = document.getElementById("li_" + q + "_ShowSeason_Start").value,
-                    seasonEnd = document.getElementById("li_" + q + "_ShowSeason_End").value,
-                    seasonStatus = document.getElementById("li_" + q + "_ShowSeason_Status").value,
-                    seasonEpisodes = [];
-                for(let r = 1; r < showListChild.children[1].children[0].children.length + 1; r++) {
-                    let seasonEpisodeName = document.getElementById("li_" + q + "_ShowEpisode_Name_" + r).value,
-                        seasonEpisodeLastWatched = document.getElementById("li_" + q + "_ShowEpisode_LastWatched_" + r).value,
-                        seasonEpisodeRating = document.getElementById("li_" + q + "_ShowEpisode_Rating_" + r).value,
-                        seasonEpisodeReview = document.getElementById("li_" + q + "_ShowEpisode_Review_" + r).value;
-                    seasonEpisodes.push([seasonEpisodeName, seasonEpisodeLastWatched, seasonEpisodeRating, seasonEpisodeReview]);
-                }
-                curContent.push("Season", seasonName, seasonStart, seasonEnd, seasonStatus, seasonEpisodes);
-                // Push the table item information into the array holding all related content details.
-                content.push(curContent);
-            }
-            const ogName = document.getElementById("showName").getAttribute("oldName"),
-                oldTitle = ogName !== null ? ogName : showName;
-            // Send the request to the back-end portion of the app.
-            const submissionMaterial = ["Show", showName, showAlternateName, showReview, showDirectors, showProducers, showWriters, showMusicians, showEditors,
-                showCinematographers, showFiles, showDistributors, showProductionCompanies, showStarring, [genresLst, genres, otherGenres], showSynopsis, showRating, showReleaseDate, showRunningTime,
-                [document.getElementById("addRecordShowImg").getAttribute("list") == document.getElementById("addRecordShowImg").getAttribute("previous"), showImg], content,
-                showBookmarkValue, oldTitle];
-            ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial]);
-            saveAssociations("Show", showName, ipcRenderer);
-        }
-        // If no name has been provided then notify the user.
-        else { M.toast({"html": "A show record requires a name be provided.", "classes": "rounded"}); }
+        showSaveFunc();
     });
+    // Set the page to save the record automatically depending on the user chosen interval.
+    min = parseInt(min);
+    if(min != 0 && document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("categoryShow").parentNode.classList.contains("active")) {
+        setInterval(() => {
+            showSaveFunc(true);
+        }, 1000 * 60 * min);
+    }
 };
 
 
