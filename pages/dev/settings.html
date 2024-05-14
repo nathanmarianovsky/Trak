@@ -14,18 +14,6 @@
         </nav>
     </div>
     <div id="settingsDisplayContainer" class="settingsContainer">
-        <h5 class="center settingsHeaders">Logo</h5>
-        <p>Change the color for the application logo which appears in the tray.</p>
-        <div class="row settingsWindowDiv">
-            <div class="input-field col s3">
-                <select id="logoColor">
-                    <option value="white" selected>White</option>
-                    <option value="black">Black</option>
-                    <option value="grey">Grey</option>
-                </select>
-                <label>Color:</label>
-            </div>
-        </div>
         <h5 class="center settingsHeaders">Colors</h5>
         <p>Adjust the application primary and secondary colors.</p>
         <div id="settingsColorDiv">
@@ -38,7 +26,19 @@
                 <input id="secondaryColor" type="color" class="settingsColorInput">
             </div>
         </div>
-        <h5 class="center settingsHeaders">Sizes</h5>
+        <h5 class="center settingsHeaders">Logo</h5>
+        <p>Change the color for the application logo which appears in the tray.</p>
+        <div class="row settingsWindowDiv">
+            <div class="input-field col s3">
+                <select id="logoColor">
+                    <option value="white" selected>White</option>
+                    <option value="black">Black</option>
+                    <option value="grey">Grey</option>
+                </select>
+                <label>Color:</label>
+            </div>
+        </div>
+        <h5 class="center settingsHeaders settingsHeadersFix">Sizes</h5>
         <p>Adjust the application default window sizes or make them fullscreen.</p>
         <div class="row settingsWindowDiv">
             <form class="col s12">
@@ -72,7 +72,7 @@
         </div>
     </div>
     <div id="settingsInterfaceContainer" class="settingsContainer">
-        <h5 class="center settingsHeaders">Tutorial/Update</h5>
+        <h5 class="center settingsHeaders">Launch Options</h5>
         <p>Select options for an application launch.</p>
         <div class="row settingsWindowDiv">
             <form class="col s12">
@@ -105,7 +105,23 @@
         </div>
     </div>
     <div id="settingsDataContainer" class="settingsContainer">
-        <h5 class="center settingsHeaders">Record Categories</h5>
+        <h5 class="center settingsHeaders">Autosave</h5>
+        <p>Select how often the application should autosave an existing record's page.</p>
+        <div class="row settingsWindowDiv">
+            <div class="input-field col s3">
+                <select id="autosaveInterval">
+                    <option value="1">1 Minute</option>
+                    <option value="3" selected>3 Minutes</option>
+                    <option value="5">5 Minutes</option>
+                    <option value="10">10 Minutes</option>
+                    <option value="30">30 Minutes</option>
+                    <option value="60">60 Minutes</option>
+                    <option value="0">No Autosave</option>
+                </select>
+                <label>Interval:</label>
+            </div>
+        </div>
+        <h5 class="center settingsHeaders settingsHeadersFix">Categories</h5>
         <p>Select the record categories which the application will show. By default all are selected.</p>
         <div class="row settingsWindowDiv">
             <form class="col s12">
@@ -133,7 +149,7 @@
                 </div>
             </form>
         </div>
-        <h5 class="center settingsHeaders">Data</h5>
+        <h5 class="center settingsHeaders">Location</h5>
         <p>Select the system location to which library records will be saved.</p>
         <div class="row settingsWindowDiv">
             <form class="col s12">

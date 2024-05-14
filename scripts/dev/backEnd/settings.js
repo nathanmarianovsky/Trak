@@ -60,6 +60,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
         "secondaryWindowHeight": dataArr[7],
         "secondaryWindowFullscreen": dataArr[8],
         "icon": dataArr[9],
+        "autosave": dataArr[16],
         "update": dataArr[10],
         "active": {
             "anime": dataArr[11],
@@ -182,7 +183,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                     && configurationData.original.secondaryColor == writeData.secondaryColor && configurationData.original.primaryWindowWidth == writeData.primaryWindowWidth
                                     && configurationData.original.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.original.secondaryWindowWidth == writeData.secondaryWindowWidth
                                     && configurationData.original.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.original.primaryWindowFullscreen == writeData.primaryWindowFullscreen
-                                    && configurationData.original.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && configurationData.original.icon == writeData.icon
+                                    && configurationData.original.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && configurationData.original.icon == writeData.icon && configurationData.original.autosave == writeData.autosave
                                     && exports.configRecordTypeCompare(configurationData.original, writeData) && configurationData.original.update == writeData.update && origIntro == dataArr[dataArr.length - 1]) {
                                     writeData.previousPrimaryColor = configurationData.original.primaryColor;
                                     writeData.previousSecondaryColor = configurationData.original.secondaryColor;
@@ -250,7 +251,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                     && configurationData.current.secondaryColor == writeData.secondaryColor && configurationData.current.primaryWindowWidth == writeData.primaryWindowWidth
                                     && configurationData.current.primaryWindowHeight == writeData.primaryWindowHeight && configurationData.current.secondaryWindowWidth == writeData.secondaryWindowWidth
                                     && configurationData.current.secondaryWindowHeight == writeData.secondaryWindowHeight && configurationData.current.primaryWindowFullscreen == writeData.primaryWindowFullscreen
-                                    && configurationData.current.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && configurationData.current.icon == writeData.icon
+                                    && configurationData.current.secondaryWindowFullscreen == writeData.secondaryWindowFullscreen && configurationData.current.icon == writeData.icon && configurationData.current.autosave == writeData.autosave
                                     && exports.configRecordTypeCompare(configurationData.current, writeData) && configurationData.current.update == writeData.update && origIntro == dataArr[dataArr.length - 1]) {
                                     writeData.previousPrimaryColor = configurationData.current.primaryColor;
                                     writeData.previousSecondaryColor = configurationData.current.secondaryColor;

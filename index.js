@@ -75,6 +75,7 @@ app.whenReady().then(() => {
 					"secondaryWindowHeight": 1000,
 					"secondaryWindowFullscreen": false,
 					"icon": "grey",
+					"autosave": "3",
 					"update": true,
 					"active": {
 						"anime": true,

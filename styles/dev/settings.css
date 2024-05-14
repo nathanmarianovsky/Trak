@@ -157,6 +157,10 @@ footer {
 	width: 80% !important;
 }
 
+.settingsHeadersFix {
+	margin-top: 0px;
+}
+
 .settingsSecondCheckbox {
 	margin-left: -9px !important;
 }

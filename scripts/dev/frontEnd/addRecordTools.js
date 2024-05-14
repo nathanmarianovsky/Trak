@@ -343,7 +343,7 @@ const navReset = (def, divs, links, choiceDiv, choiceLink) => {
     if(def.style.display != "none") {
         def.style.display = "none";
     }
-    // Hide all page content by default if the anime content is not shown.
+    // Hide all page content by default if the content is not shown.
     else if(!choiceLink.parentNode.classList.contains("active")) {
         Array.from(divs).forEach(div => div.style.display = "none");
         Array.from(links).forEach(link => link.parentNode.classList.remove("active"));
@@ -597,7 +597,7 @@ Checks the appropriate genres on the addRecord page for fetched data.
 */
 const genreFill = (category, list) => {
     if(list.constructor === Array && list.length > 0) {
-        // Reset all anime genres to not be checked.
+        // Reset all genres to not be checked.
         const extraGenres = document.getElementById(category.toLowerCase() + "OtherGenres");
         extraGenres.value = "";
         Array.from(document.querySelectorAll("#category" + category + "Div .genreRow .filled-in")).forEach(inp => inp.checked = false);

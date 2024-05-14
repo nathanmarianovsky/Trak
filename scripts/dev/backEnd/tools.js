@@ -128,6 +128,9 @@ exports.compatibilityCheck = (fs, path, log, dir) => {
 				else if(!("icon" in curConfigObj[typeArr[t]])) {
 					curConfigObj[typeArr[t]]["icon"] = "white";
 				}
+				else if(!("autosave" in curConfigObj[typeArr[t]])) {
+					curConfigObj[typeArr[t]]["autosave"] = "3";
+				}
 				else if(!("update" in curConfigObj[typeArr[t]])) {
 					curConfigObj[typeArr[t]]["update"] = true;
 				}

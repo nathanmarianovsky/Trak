@@ -146,7 +146,7 @@ Handles the search of imdb film records based on a query.
 exports.filmSearch = (log, movier, ev, search) => {
     // Use the imdb scraper to fetch film listings possibly matching what the user is looking for.
     movier.searchTitleByName(search[1]).then(data => {
-        log.info("movier has finished getting the search results for the query " + search[1] + ".");
+        log.info("Movier has finished getting the search results for the query " + search[1] + ".");
         // Send the attained data to the front-end.
         ev.sender.send("filmSearchResults", [search[0], search[1], data.filter(elem => elem.titleType == "movie").map(elem => [elem.name, elem.thumbnailImageUrl])]);
     }).catch(err => log.error("There was an issue in obtaining the film search results for autocomplete options associated to the query " + search[1] + "."));

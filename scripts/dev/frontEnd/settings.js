@@ -176,6 +176,7 @@ window.addEventListener("load", () => {
     		secondaryWindowHeight = document.getElementById("secondaryWindowHeight"),
             secondaryWindowFullscreen = document.getElementById("secondaryWindowFullscreen"),
             notificationsInterval = document.getElementById("notificationsInterval"),
+            autosaveInterval = document.getElementById("autosaveInterval"),
             logoColor = document.getElementById("logoColor"),
             updateLoad = document.getElementById("updateLoad"),
             animeActive = document.getElementById("animeActive"),
@@ -207,6 +208,8 @@ window.addEventListener("load", () => {
             secondaryWindowFullscreen.setAttribute("lastValue", "false");
             notificationsInterval.value = "14";
             notificationsInterval.setAttribute("lastValue", "14");
+            notificationsInterval.value = "3";
+            notificationsInterval.setAttribute("lastValue", "3");
             logoColor.value = "white";
             logoColor.setAttribute("lastValue", "white");
             updateLoad.checked = true;
@@ -246,6 +249,8 @@ window.addEventListener("load", () => {
                 secondaryWindowHeight.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowHeight);
                 secondaryWindowFullscreen.checked = configData[configData.current != undefined ? "current" : "original"].secondaryWindowFullscreen;
                 secondaryWindowFullscreen.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryWindowFullscreen);
+                autosaveInterval.value = configData[configData.current != undefined ? "current" : "original"].autosave;
+                autosaveInterval.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].autosave);
                 animeActive.checked = configData[configData.current != undefined ? "current" : "original"].active.anime;
                 animeActive.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].active.anime);
                 bookActive.checked = configData[configData.current != undefined ? "current" : "original"].active.book;
@@ -333,6 +338,7 @@ window.addEventListener("load", () => {
                     secondaryWindowFullscreen.checked = secondaryWindowFullscreen.getAttribute("lastValue") == "true";
                     tutorialLoad.checked = tutorialLoad.getAttribute("lastValue") == "true";
                     notificationsInterval.value = notificationsInterval.getAttribute("lastValue");
+                    autosaveInterval.value = autosaveInterval.getAttribute("lastValue");
                     updateLoad.checked = updateLoad.getAttribute("lastValue") == "true";
                     animeActive.checked = animeActive.getAttribute("lastValue") == "true";
                     bookActive.checked = bookActive.getAttribute("lastValue") == "true";
@@ -366,6 +372,7 @@ window.addEventListener("load", () => {
                         filmActive.checked,
                         mangaActive.checked,
                         showActive.checked,
+                        autosaveInterval.value,
                         tutorialLoad.checked
             		]);
                     ipcRenderer.send("notificationsIntervalSave", notificationsInterval.value);
