@@ -3,7 +3,6 @@
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page with a focus on film records.
 
     - filmSaveFunc: Driver function for saving a film record.
-    - filmSave: Processes the information required to save a film record.
 
 */
 
@@ -20,7 +19,7 @@ Driver function for saving a film record.
    - auto is a boolean corresponding to whether the save action is a user submission or the application auto saving.
 
 */
-const filmSaveFunc = (auto = false) => {
+var filmSaveFunc = (auto = false) => {
     // Define the page components which will contain all associated details.
     const filmBookmarkValue = document.getElementById("filmBookmark").children[0].textContent == "check_box",
         filmName = document.getElementById("filmName").value,
@@ -63,32 +62,4 @@ const filmSaveFunc = (auto = false) => {
     }
     // If no name has been provided then notify the user.
     else { M.toast({"html": "A film record requires a name be provided.", "classes": "rounded"}); }
-};
-
-
-
-/*
-
-Processes the information required to save a film record.
-
-   - min is a string representing the number of minutes for the autosave interval.
-
-*/
-var filmSave = min => {
-    // Define the page save button.
-    const filmSaveBtn = document.getElementById("filmSave");
-    // Listen for a click on the save button.
-    filmSaveBtn.addEventListener("click", e => {
-        e.preventDefault();
-        filmSaveFunc();
-    });
-    setTimeout(() => {
-        // Set the page to save the record automatically depending on the user chosen interval.
-        min = parseInt(min);
-        if(min != 0 && document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("categoryFilm").parentNode.classList.contains("active")) {
-            setInterval(() => {
-                filmSaveFunc(true);
-            }, 1000 * 60 * min);
-        }
-    }, 500);
 };

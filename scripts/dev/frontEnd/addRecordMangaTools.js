@@ -3,7 +3,6 @@
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page with a focus on manga records.
 
     - mangaSaveFunc: Driver function for saving a manga record.
-    - mangaSave: Processes the information required to save a manga record.
     - mangaModalButtons: Listen for click events on the related content manga modal buttons.
     - resetMangaContentCounters: Resets the page counters for a manga record's related content.
     - calculateMangaRating: Calculates the average rating for a manga based on the available ratings for all chapters and volumes.
@@ -26,7 +25,7 @@ Driver function for saving a manga record.
    - auto is a boolean corresponding to whether the save action is a user submission or the application auto saving.
 
 */
-const mangaSaveFunc = (auto = false) => {
+var mangaSaveFunc = (auto = false) => {
     // Define the page components which will contain all associated details.
     const mangaList = document.getElementById("mangaList"),
         mangaBookmarkValue = document.getElementById("mangaBookmark").children[0].textContent == "check_box",
@@ -88,34 +87,6 @@ const mangaSaveFunc = (auto = false) => {
     }
     // If no name has been provided then notify the user.
     else { M.toast({"html": "A manga record requires that a name be provided.", "classes": "rounded"}); }
-};
-
-
-
-/*
-
-Processes the information required to save a manga record.
-
-   - min is a string representing the number of minutes for the autosave interval.
-
-*/
-var mangaSave = min => {
-    // Define the page save button.
-    const mangaSaveBtn = document.getElementById("mangaSave");
-    // Listen for a click on the save button.
-    mangaSaveBtn.addEventListener("click", e => {
-        e.preventDefault();
-        mangaSaveFunc();
-    });
-    setTimeout(() => {
-        // Set the page to save the record automatically depending on the user chosen interval.
-        min = parseInt(min);
-        if(min != 0 && document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("categoryManga").parentNode.classList.contains("active")) {
-            setInterval(() => {
-                mangaSaveFunc(true);
-            }, 1000 * 60 * min);
-        }
-    }, 500);
 };
 
 

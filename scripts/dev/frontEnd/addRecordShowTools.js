@@ -3,7 +3,6 @@
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page with a focus on show records.
 
     - showSaveFunc: Driver function for saving a show record.
-    - showSave: Processes the information required to save a show record.
     - showModalButtons: Listen for click events on the related content show modal buttons.
     - resetShowContentCounters: Resets the page counters for a show record's related content.
     - calculateShowRating: Calculates the average rating for a show based on the available ratings for all seasons.
@@ -28,7 +27,7 @@ Driver function for saving a show record.
    - auto is a boolean corresponding to whether the save action is a user submission or the application auto saving.
 
 */
-const showSaveFunc = (auto = false) => {
+var showSaveFunc = (auto = false) => {
     // Define the page components which will contain all associated details.
     const showList = document.getElementById("showList"),
         showBookmarkValue = document.getElementById("showBookmark").children[0].textContent == "check_box",
@@ -94,34 +93,6 @@ const showSaveFunc = (auto = false) => {
     }
     // If no name has been provided then notify the user.
     else { M.toast({"html": "A show record requires a name be provided.", "classes": "rounded"}); }
-};
-
-
-
-/*
-
-Processes the information required to save a show record.
-
-   - min is a string representing the number of minutes for the autosave interval.
-
-*/
-var showSave = min => {
-    // Define the page save button.
-    const showSaveBtn = document.getElementById("showSave");
-    // Listen for a click on the save button.
-    showSaveBtn.addEventListener("click", e => {
-        e.preventDefault();
-        showSaveFunc();
-    });
-    setTimeout(() => {
-        // Set the page to save the record automatically depending on the user chosen interval.
-        min = parseInt(min);
-        if(min != 0 && document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("categoryShow").parentNode.classList.contains("active")) {
-            setInterval(() => {
-                showSaveFunc(true);
-            }, 1000 * 60 * min);
-        }
-    }, 500);
 };
 
 

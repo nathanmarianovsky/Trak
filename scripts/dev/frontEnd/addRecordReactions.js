@@ -58,6 +58,7 @@ ipcRenderer.on("copyFailure", (event, response) => {
 
 // Display a notification for the successful addition of a record.
 ipcRenderer.on("addRecordSuccess", (event, response) => {
+    M.Toast.dismissAll();
     M.toast({"html": "The record associated to the " + toastParse(response[0]) + " has been created and saved." + (response[1] == false ? " This window will now close!" : ""), "classes": "rounded"});
 });
 
@@ -65,6 +66,7 @@ ipcRenderer.on("addRecordSuccess", (event, response) => {
 
 // Display a notification for the successful update of a record.
 ipcRenderer.on("updateRecordSuccess", (event, response) => {
+    M.Toast.dismissAll();
     M.toast({"html": "The record associated to the " + toastParse(response[0]) + " has been updated." + (response[1] == false ? " This window will now close!" : ""), "classes": "rounded"});
 });
 
@@ -824,8 +826,20 @@ window.addEventListener("load", () => {
         categories.forEach(category => {
             // Fill the record page with the associated genre options.
             genreListLoad(category, 6);
-            // Add the listeners corresponding to the record save.
-            window[category.toLowerCase() + "Save"](configData != "" ? (configData.current != undefined ? configData.current.autosave : configData.original.autosave) : "3");
+            // Listen for a click on the save button.
+            document.getElementById(category.toLowerCase() + "Save").addEventListener("click", e => {
+                e.preventDefault();
+                window[category.toLowerCase() + "SaveFunc"]();
+            });
+            setTimeout(() => {
+                // Set the page to save the record automatically depending on the user chosen interval.
+                let min = parseInt(configData != "" ? (configData.current != undefined ? configData.current.autosave : configData.original.autosave) : "3");
+                if(min != 0 && document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("category" + category).parentNode.classList.contains("active")) {
+                    setInterval(() => {
+                        window[category.toLowerCase() + "SaveFunc"](true);
+                    }, 1000 * 60 * min);
+                }
+            }, 500);
             // Add the listeners corresponding to the related content options.
             if(category == "Anime" || category == "Manga" || category == "Show") {
                 window[category.toLowerCase() + "ModalButtons"]();

@@ -3,7 +3,6 @@
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page with a focus on anime records.
 
     - animeSaveFunc: Driver function for saving an anime record.
-    - animeSave: Processes the information required to save an anime record.
     - animeModalButtons: Listen for click events on the related content anime modal buttons.
     - resetAnimeContentCounters: Resets the page counters for an anime record's related content.
     - calculateAnimeRating: Calculates the average rating for an anime based on the available ratings for all films, ONAs, OVAs, and seasons.
@@ -30,7 +29,7 @@ Driver function for saving an anime record.
    - auto is a boolean corresponding to whether the save action is a user submission or the application auto saving.
 
 */
-const animeSaveFunc = (auto = false) => {
+var animeSaveFunc = (auto = false) => {
     // Define the page components which will contain all associated details.
     const animeList = document.getElementById("animeList"),
         animeBookmarkValue = document.getElementById("animeBookmark").children[0].textContent == "check_box",
@@ -102,34 +101,6 @@ const animeSaveFunc = (auto = false) => {
     }
     // If no name has been provided then notify the user.
     else { M.toast({"html": "An anime record requires that either an English or Japanese name is provided.", "classes": "rounded"}); }
-};
-
-
-
-/*
-
-Processes the information required to save an anime record.
-
-   - min is a string representing the number of minutes for the autosave interval.
-
-*/
-var animeSave = min => {
-    // Define the page save button.
-    const animeSaveBtn = document.getElementById("animeSave");
-    // Listen for a click on the save button.
-    animeSaveBtn.addEventListener("click", e => {
-        e.preventDefault();
-        animeSaveFunc();
-    });
-    setTimeout(() => {
-        // Set the page to save the record automatically depending on the user chosen interval.
-        min = parseInt(min);
-        if(min != 0 && document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("categoryAnime").parentNode.classList.contains("active")) {
-            setInterval(() => {
-                animeSaveFunc(true);
-            }, 1000 * 60 * min);
-        }
-    }, 500);
 };
 
 

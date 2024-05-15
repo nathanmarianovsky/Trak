@@ -3,7 +3,6 @@
 BASIC DETAILS: This file provides front-end functions designed to be used by the addRecord.html page with a focus on book records.
 
     - bookSaveFunc: Driver function for saving a book record.
-    - bookSave: Processes the information required to save a book record.
 
 */
 
@@ -20,7 +19,7 @@ Driver function for saving a book record.
    - auto is a boolean corresponding to whether the save action is a user submission or the application auto saving.
 
 */
-const bookSaveFunc = (auto = false) => {
+var bookSaveFunc = (auto = false) => {
     // Define the page components which will contain all associated details.
     const bookBookmarkValue = document.getElementById("bookBookmark").children[0].textContent == "check_box",
         bookTitle = document.getElementById("bookTitle").value,
@@ -60,32 +59,4 @@ const bookSaveFunc = (auto = false) => {
     }
     // If no ISBN has been provided then notify the user.
     else { M.toast({"html": "A book record requires that an ASIN/ISBN be provided.", "classes": "rounded"}); }
-};
-
-
-
-/*
-
-Processes the information required to save a book record.
-
-   - min is a string representing the number of minutes for the autosave interval.
-
-*/
-var bookSave = min => {
-    // Define the page save button.
-    const bookSaveBtn = document.getElementById("bookSave");
-    // Listen for a click on the save button.
-    bookSaveBtn.addEventListener("click", e => {
-        e.preventDefault();
-        bookSaveFunc();
-    });
-    setTimeout(() => {
-        // Set the page to save the record automatically depending on the user chosen interval.
-        min = parseInt(min);
-        if(min != 0 && document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("categoryBook").parentNode.classList.contains("active")) {
-            setInterval(() => {
-                bookSaveFunc(true);
-            }, 1000 * 60 * min);
-        }
-    }, 500);
 };
