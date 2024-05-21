@@ -90,13 +90,14 @@ var animeSaveFunc = (auto = false) => {
             content.push(curContent);
         }
         const ogName = document.getElementById("animeName").getAttribute("oldName"),
-            oldTitle = ogName !== null ? ogName : animeName;
+            oldTitle = ogName !== null ? ogName : animeName,
+            fidValue = document.getElementById("animeName").getAttribute("fid");
         // Send the request to the back-end portion of the app.
         const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers, animeWriters,
             animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres, otherGenres], content, animeSynopsis,
             [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), animeImg],
             animeBookmarkValue, oldTitle];
-        ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto]);
+        ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
         saveAssociations("Anime", animeName, ipcRenderer);
     }
     // If no name has been provided then notify the user.

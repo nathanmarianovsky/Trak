@@ -19,7 +19,7 @@ const { app, BrowserWindow, Menu, Tray } = require("electron"),
 	fs = require("fs-extra"),
 	log = require("electron-log"),
 	tools = require("./scripts/dist/backEnd/tools"),
-	basePath = localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
+	basePath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
 if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
 	var localPath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share");
 }

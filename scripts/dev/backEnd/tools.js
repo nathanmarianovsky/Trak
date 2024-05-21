@@ -32,6 +32,7 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
    - isURL: Tests whether a given string represents a url.
    - parseURLFilename: Extracts the filename from a given string representing a url.
    - checkForUpdate: Checks against the most recent release on github to determine if an update is available.
+   - parseFolder: Formats a folder name into a readable form for logging purposes.
 
 */
 
@@ -256,19 +257,28 @@ Handles the writing of files associated to a record.
 	- evt provides the means to interact with the front-end of the Electron app.
 	- info is the data associated to the record.
 	- autoCheck is a boolean representing whether the data file is being written corresponding to an application autosave.
+	- curFldr is a string corresponding to the folder name of the current record.
 
 */
-exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, path, evt, info, autoCheck) => {
+exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, path, evt, info, autoCheck, curFldr) => {
 	let fldr = "";
 	const modeStr = (mode == "A" ? "add" : "update");
 	if(info[0] == "Anime" || info[0] == "Manga") {
-		fldr = info[0] + "-" + exports.formatFolderName(info[1] != "" ? info[1] : info[2]);
+		if(curFldr != "") { fldr = curFldr; }
+		else {
+			fldr = info[0] + "-" + exports.formatFolderName(info[1] != "" ? info[1] : info[2]);
+			fldr += "-" + (fs.readdirSync(path.join(savePath, "Trak", "data")).filter(file => fs.statSync(path.join(savePath, "Trak", "data", file)).isDirectory() && file.includes(fldr)).length - 1);
+		}
 	}
 	else if(info[0] == "Book") {
 		fldr = info[0] + "-" + exports.formatFolderName(info[1]) + "-" + info[3];
 	}
 	else if(info[0] == "Film" || info[0] == "Show") {
-		fldr = info[0] + "-" + exports.formatFolderName(info[1]);
+		if(curFldr != "") { fldr = curFldr; }
+		else {
+			fldr = info[0] + "-" + exports.formatFolderName(info[1]);
+			fldr += "-" + (fs.readdirSync(path.join(savePath, "Trak", "data")).filter(file => fs.statSync(path.join(savePath, "Trak", "data", file)).isDirectory() && file.includes(fldr)).length - 1);
+		}
 	}
 	if(mode == "U" && writeData.img[0] != "") { writeData.img = writeData.img.map(file => path.join(savePath, "Trak", "data", fldr, "assets", path.basename(file))); }
 	fs.writeFile(path.join(savePath, "Trak", "data", fldr, "data.json"), JSON.stringify(writeData), "UTF8", err => {
@@ -2302,6 +2312,20 @@ exports.checkForUpdate = (os, https, fs, path, log, dir, win) => {
 	}).catch(err => {
 		log.warn("The app failed to check for an update because it could not connect to the internet. More specifically, connecting to https://google.com failed at the address " + err.address + ":" + err.port + " with exit code " + err.code + ".");
 	});
+};
+
+
+
+/*
+
+Formats a folder name into a readable form for logging purposes.
+
+	- fldr is a string corresponding to a folder name in the library records.
+
+*/
+exports.parseFolder = fldr => {
+	let hldr = fldr.split("-")[0];
+    return nameStr = hldr.toLowerCase() + " " + fldr.substring(hldr.length + 1, fldr.lastIndexOf("-"));
 };
 
 

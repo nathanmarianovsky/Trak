@@ -82,13 +82,14 @@ var showSaveFunc = (auto = false) => {
             content.push(curContent);
         }
         const ogName = document.getElementById("showName").getAttribute("oldName"),
-            oldTitle = ogName !== null ? ogName : showName;
+            oldTitle = ogName !== null ? ogName : showName,
+            fidValue = document.getElementById("animeName").getAttribute("fid");
         // Send the request to the back-end portion of the app.
         const submissionMaterial = ["Show", showName, showAlternateName, showReview, showDirectors, showProducers, showWriters, showMusicians, showEditors,
             showCinematographers, showFiles, showDistributors, showProductionCompanies, showStarring, [genresLst, genres, otherGenres], showSynopsis, showRating, showReleaseDate, showRunningTime,
             [document.getElementById("addRecordShowImg").getAttribute("list") == document.getElementById("addRecordShowImg").getAttribute("previous"), showImg], content,
             showBookmarkValue, oldTitle];
-        ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto]);
+        ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
         saveAssociations("Show", showName, ipcRenderer);
     }
     // If no name has been provided then notify the user.

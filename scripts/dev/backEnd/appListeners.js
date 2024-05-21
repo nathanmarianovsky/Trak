@@ -411,7 +411,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hid
   	// Save the record upon a request from the front-end.
 	ipc.on("performSave", (event, submission) => {
 		require("./" + submission[1][0].toLowerCase() + "Tools")[submission[1][0].toLowerCase() + (submission[0] == true ? "Update" : "Add")]
-			(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission[1], submission[2]);
+			(BrowserWindow, path, fs, log, require("https"), tools, mainWindow, dataPath, event, submission[1], submission[2], submission[3]);
 	});
 
   	// Handles the deletion of multiple records and updates the associations configuration file accodingly.
@@ -556,7 +556,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hid
 		                        	fs.readFile(path.join(originalPath, "Trak", "data", associationsFileList[t][y], "data.json"), "UTF8", (err, fle) => {
 		                        		// Log if there was an issue in reading the record data file.
 		                        		if(err) {
-		                        			log.error("There was an issue reading the data file associated to the " + parseFolder(associationsFileList[t][y]) + ".");
+		                        			log.error("There was an issue reading the data file associated to the " + tools.parseFolder(associationsFileList[t][y]) + ".");
 		                        			resolve([associationsFileList[t][y], ""]);
 		                        		}
 		                        		// Otherwise push the data as expected into the overall collection.
@@ -594,7 +594,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hid
 				fs.readFile(path.join(originalPath, "Trak", "data", list[r], "data.json"), "UTF8", (err, file) => {
 					// Log if there was an issue in reading the library record data file.
 					if(err) {
-						log.error("There was an issue reading the data file associated to the " + parseFolder(list[r]) + ".");
+						log.error("There was an issue reading the data file associated to the " + tools.parseFolder(list[r]) + ".");
 						resolve([list[r], ""]);
 					}
 					// Otherwise push the data as expected into the overall collection.

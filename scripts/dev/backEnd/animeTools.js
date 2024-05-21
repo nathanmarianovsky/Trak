@@ -104,20 +104,57 @@ Handles the saving of an anime record by creating the associated folders and dat
    - evnt provides the means to interact with the front-end of the Electron app.
    - data is the information associated to the record.
    - auto is a boolean representing whether the data file is being written corresponding to an application autosave.
+   - fldrValue is a string corresponding to an existing record's folder name.
 
 */
-exports.animeAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto) => {
+exports.animeAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto, fldrValue) => {
     // Check to see that the folder associated to the new record does not exist.
-    if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]))) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[2])))) {
+    const primaryName = data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]);
+    let assetsPath = "";
+    if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]) + "-0")) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[2]) + "-0"))) {
         // Create a new directory for the assets associated to the new record.
-        const assetsPath = path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]), "assets");
+        assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-0", "assets");
         log.info("Creating the assets directory for the new anime record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data, false);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data, false, "");
     }
     else {
-        log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[2]) + " already exists!");
-        evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
+        const compareList = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(primaryName)),
+            currentData = exports.animeObjCreation(path, fs, https, tools, dataPath, data),
+            currentDate = tools.calculateReleaseDate(currentData.content);
+        let q = 0;
+        for(; q < compareList.length; q++) {
+            let compareData = JSON.parse(fs.readFileSync(path.join(dataPath, "Trak", "data", compareList[q], "data.json"), "UTF8")),
+                compareDate = tools.calculateReleaseDate(compareData.content);
+            if(compareDate == currentDate) {
+                break;
+            }
+        }
+        if(q == compareList.length) {
+            // Create a new directory for the assets associated to the new record.
+            assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-" + compareList.length, "assets");
+            log.info("Creating the assets directory for the new anime record. To be located at " + assetsPath);
+            fs.mkdirSync(assetsPath, { "recursive": true });
+            tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), currentData, "A", dataPath, fs, path, evnt, data, false, "");
+        }
+        else {
+            log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[2]) + " already exists!");
+            evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
+        }
+
+
+
+        // const compareData = JSON.parse(fs.readFileSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]))) ? data[1] : data[2]), "data.json"))),
+        //     compareDate = tools.calculateReleaseDate(compareData.content),
+        //     currentData = exports.animeObjCreation(path, fs, https, tools, dataPath, data),
+        //     currentDate = tools.calculateReleaseDate(currentData.content);
+        // if(compareDate != currentDate) {
+        //     tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), currentData, "A", dataPath, fs, path, evnt, data, false, "");
+        // }
+        // else {
+        //     log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[2]) + " already exists!");
+        //     evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
+        // }
     }
 };
 
@@ -137,12 +174,15 @@ Handles the update of an anime record.
    - evnt provides the means to interact with the front-end of the Electron app.
    - data is the information associated to the record.
    - auto is a boolean representing whether the data file is being written corresponding to an application autosave.
+   - fldrValue is a string corresponding to an existing record's folder name.
 
 */
-exports.animeUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto) => {
+exports.animeUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto, fldrValue) => {
     // If the name has been updated then change the associated record folder name.
     if((data[1] != "" && data[1] != data[data.length - 1]) || (data[1] == "" && data[2] != "" && data[2] != data[data.length - 1])) {
-        fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[data.length - 1])), path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2])), err => {
+        const newFldr = data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]) + "-"
+            + fs.readdirSync(path.join(savePath, "Trak", "data")).filter(file => fs.statSync(path.join(savePath, "Trak", "data", file)).isDirectory() && file.includes(data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]))).length;
+        fs.rename(path.join(dataPath, "Trak", "data", fldrValue), path.join(dataPath, "Trak", "data", newFldr), err => {
             // If there was an error in renaming the record folder notify the user.
             if(err) {
                 log.error("There was an error in renaming the anime record folder " + data[data.length - 1] + " to " + (data[1] != "" ? data[1] : data[2]) + ".");
@@ -150,13 +190,13 @@ exports.animeUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, d
             }
             // If no error occured in renaming the record folder write the data file, and copy over the file assets.
             else {
-                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto);
+                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto, newFldr);
             }
         });
     }
     else {
         // Write the data file, and copy over the file assets.
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto, fldrValue);
     }
 };
 

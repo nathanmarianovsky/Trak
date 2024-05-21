@@ -276,6 +276,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 document.getElementById("categoryAnime").click();
                 document.getElementById("categoryAnimeDiv").children[0].style.marginTop = "3%";
                 // Populate the anime record page with the saved data.
+                animeName.setAttribute("fid", name);
                 updateFetchedDataString(animeName, recordData.name, true, true);
                 relatedContentListeners(animeName);
                 updateFetchedDataString(animeJapaneseName, recordData.jname, true);
@@ -477,6 +478,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 document.getElementById("categoryFilm").click();
                 document.getElementById("categoryFilmDiv").children[0].style.marginTop = "3%";
                 // Populate the film record page with the saved data.
+                filmName.setAttribute("fid", name);
                 updateFetchedDataString(filmName, recordData.name, true, true);
                 relatedContentListeners(filmName);
                 updateFetchedDataString(filmAlternateName, recordData.alternateName, true);
@@ -555,6 +557,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 document.getElementById("categoryManga").click();
                 document.getElementById("categoryMangaDiv").children[0].style.marginTop = "3%";
                 // Populate the manga record page with the saved data.
+                mangaName.setAttribute("fid", name);
                 updateFetchedDataString(mangaName, recordData.name, true, true);
                 relatedContentListeners(mangaName);
                 updateFetchedDataString(mangaJapaneseName, recordData.jname, true);
@@ -681,6 +684,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 document.getElementById("categoryShow").click();
                 document.getElementById("categoryShowDiv").children[0].style.marginTop = "3%";
                 // Populate the show record page with the saved data.
+                showName.setAttribute("fid", name);
                 updateFetchedDataString(showName, recordData.name, true, true);
                 relatedContentListeners(showName);
                 updateFetchedDataString(showAlternateName, recordData.alternateName, true);
@@ -834,7 +838,8 @@ window.addEventListener("load", () => {
             setTimeout(() => {
                 // Set the page to save the record automatically depending on the user chosen interval.
                 let min = parseInt(configData != "" ? (configData.current != undefined ? configData.current.autosave : configData.original.autosave) : "3");
-                if(min != 0 && document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("category" + category).parentNode.classList.contains("active")) {
+                if(min != 0 && document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("category" + category).parentNode.classList.contains("active")
+                    && document.getElementById(category.toLowerCase() + "DirectionsDiv").style.display == "none") {
                     setInterval(() => {
                         window[category.toLowerCase() + "SaveFunc"](true);
                     }, 1000 * 60 * min);

@@ -51,13 +51,14 @@ var filmSaveFunc = (auto = false) => {
             genres.push(document.getElementById("filmGenre" + genresLst[p]).checked);
         }
         const ogName = document.getElementById("filmName").getAttribute("oldName"),
-            oldTitle = ogName !== null ? ogName : filmName;
+            oldTitle = ogName !== null ? ogName : filmName,
+            fidValue = document.getElementById("animeName").getAttribute("fid");
         // Send the request to the back-end portion of the app.
         const submissionMaterial = ["Film", filmName, filmAlternateName, filmReview, filmDirectors, filmProducers, filmWriters, filmMusicians, filmEditors,
             filmCinematographers, filmFiles, filmDistributors, filmProductionCompanies, filmStarring, [genresLst, genres, otherGenres], filmSynopsis, filmRating, filmReleaseDate, filmRunningTime,
             filmLastWatched, [document.getElementById("addRecordFilmImg").getAttribute("list") == document.getElementById("addRecordFilmImg").getAttribute("previous"), filmImg],
             filmBookmarkValue, oldTitle];
-        ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto]);
+        ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
         saveAssociations("Film", filmName, ipcRenderer);
     }
     // If no name has been provided then notify the user.

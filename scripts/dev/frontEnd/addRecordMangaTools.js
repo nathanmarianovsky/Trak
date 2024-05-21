@@ -76,13 +76,14 @@ var mangaSaveFunc = (auto = false) => {
             content.push(curContent);
         }
         const ogName = document.getElementById("mangaName").getAttribute("oldName"),
-            oldTitle = ogName !== null ? ogName : mangaName;
+            oldTitle = ogName !== null ? ogName : mangaName,
+            fidValue = document.getElementById("animeName").getAttribute("fid");
         // Send the request to the back-end portion of the app.
         const submissionMaterial = ["Manga", mangaName, mangaJapaneseName, mangaReview, mangaWriters, mangaIllustrator, mangaPublisher, mangaJapanesePublisher,
             mangaDemographic, mangaStart, mangaFiles, mangaEnd, content, [genresLst, genres, otherGenres], mangaSynopsis,
             [document.getElementById("addRecordMangaImg").getAttribute("list") == document.getElementById("addRecordMangaImg").getAttribute("previous"), mangaImg],
             mangaBookmarkValue, oldTitle];
-        ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto]);
+        ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
         saveAssociations("Manga", mangaName, ipcRenderer);
     }
     // If no name has been provided then notify the user.
