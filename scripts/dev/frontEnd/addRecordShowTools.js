@@ -83,7 +83,7 @@ var showSaveFunc = (auto = false) => {
         }
         const ogName = document.getElementById("showName").getAttribute("oldName"),
             oldTitle = ogName !== null ? ogName : showName,
-            fidValue = document.getElementById("animeName").getAttribute("fid");
+            fidValue = document.getElementById("showName").getAttribute("fid");
         // Send the request to the back-end portion of the app.
         const submissionMaterial = ["Show", showName, showAlternateName, showReview, showDirectors, showProducers, showWriters, showMusicians, showEditors,
             showCinematographers, showFiles, showDistributors, showProductionCompanies, showStarring, [genresLst, genres, otherGenres], showSynopsis, showRating, showReleaseDate, showRunningTime,

@@ -260,7 +260,7 @@ Handles the writing of files associated to a record.
 	- curFldr is a string corresponding to the folder name of the current record.
 
 */
-exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, path, evt, info, autoCheck, curFldr) => {
+exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, path, evt, info, autoCheck, curFldr = "") => {
 	let fldr = "";
 	const modeStr = (mode == "A" ? "add" : "update");
 	if(info[0] == "Anime" || info[0] == "Manga") {

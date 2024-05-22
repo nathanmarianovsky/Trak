@@ -77,7 +77,7 @@ var mangaSaveFunc = (auto = false) => {
         }
         const ogName = document.getElementById("mangaName").getAttribute("oldName"),
             oldTitle = ogName !== null ? ogName : mangaName,
-            fidValue = document.getElementById("animeName").getAttribute("fid");
+            fidValue = document.getElementById("mangaName").getAttribute("fid");
         // Send the request to the back-end portion of the app.
         const submissionMaterial = ["Manga", mangaName, mangaJapaneseName, mangaReview, mangaWriters, mangaIllustrator, mangaPublisher, mangaJapanesePublisher,
             mangaDemographic, mangaStart, mangaFiles, mangaEnd, content, [genresLst, genres, otherGenres], mangaSynopsis,

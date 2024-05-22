@@ -33,9 +33,10 @@ Creates an object associated to a film record in order to save/update.
    - tools provides a collection of local functions.
    - dir is the path to the local user data.
    - providedData is the data provided by the front-end user submission for anime record save/update.
+   - extension is a string to be added onto a record's folder name.
 
 */
-exports.filmObjCreation = (path, fs, https, tools, dir, providedData) => {
+exports.filmObjCreation = (path, fs, https, tools, dir, providedData, extension) => {
     return {
         "category": providedData[0],
         "name": providedData[1],
@@ -56,7 +57,7 @@ exports.filmObjCreation = (path, fs, https, tools, dir, providedData) => {
         "release": providedData[17],
         "runTime": providedData[18],
         "watched": providedData[19],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]), providedData[20]),
+        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]) + "-" + extension, providedData[20]),
         "bookmark": providedData[21]
     };
 };
@@ -77,20 +78,49 @@ Handles the saving of a film record by creating the associated folders and data 
    - evnt provides the means to interact with the front-end of the Electron app.
    - data is the information associated to the record.
    - auto is a boolean representing whether the data file is being written corresponding to an application autosave.
+   - fldrValue is a string corresponding to an existing record's folder name.
 
 */
-exports.filmAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto) => {
+exports.filmAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto, fldrValue) => {
+    // Define the primary section of the folder name.
+    const primaryName = data[0] + "-" + tools.formatFolderName(data[1]);
+    let assetsPath = "";
     // Check to see that the folder associated to the new record does not exist.
-    if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1])))) {
+    if(!fs.existsSync(path.join(dataPath, "Trak", "data", primaryName + "-0"))) {
         // Create a new directory for the assets associated to the new record.
-        const assetsPath = path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]), "assets");
+        assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-0", "assets");
         log.info("Creating the assets directory for the new film record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.filmObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data, false);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.filmObjCreation(path, fs, https, tools, dataPath, data, "0"), "A", dataPath, fs, path, evnt, data, false);
     }
     else {
-        log.warn("A record for the " + data[0].toLowerCase() + " " + data[1] + " already exists!");
-        evnt.sender.send("recordExists", data[0] + "-" + data[1]);
+        // Define the list of library records sharing the same name along with the current record's release date.
+        const compareList = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(primaryName)),
+            currentDate = data[17];
+        // Iterate through the list of comparable library records and determine if there is one that already matches the current record by comparing release dates.
+        let q = 0;
+        for(; q < compareList.length; q++) {
+            // Define the release date from the library record being compared to.
+            let compareData = JSON.parse(fs.readFileSync(path.join(dataPath, "Trak", "data", compareList[q], "data.json"), "UTF8")),
+                compareDate = compareData.release;
+            // Break out of the loop if the release dates match.
+            if(compareDate == currentDate) {
+                break;
+            }
+        }
+        // If none of the library records being compared to matched up to the current one, then create a library record for the new one.
+        if(q == compareList.length) {
+            // Create a new directory for the assets associated to the new record.
+            assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-" + compareList.length, "assets");
+            log.info("Creating the assets directory for the new film record. To be located at " + assetsPath);
+            fs.mkdirSync(assetsPath, { "recursive": true });
+            tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.filmObjCreation(path, fs, https, tools, dataPath, data, compareList.length), "A", dataPath, fs, path, evnt, data, false);
+        }
+        else {
+            // Warn the user that a library record already exists for the one being currently added.
+            log.warn("A record for the " + data[0].toLowerCase() + " " + data[1] + " already exists!");
+            evnt.sender.send("recordExists", data[0] + "-" + data[1]);
+        }
     }
 };
 
@@ -110,12 +140,16 @@ Handles the update of a film record.
    - evnt provides the means to interact with the front-end of the Electron app.
    - data is the information associated to the record.
    - auto is a boolean representing whether the data file is being written corresponding to an application autosave.
+   - fldrValue is a string corresponding to an existing record's folder name.
 
 */
-exports.filmUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto) => {
+exports.filmUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto, fldrValue) => {
     // If the name has been updated then change the associated record folder name.
     if(data[1] != "" && data[1] != data[data.length - 1]) {
-        fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[data.length - 1])), path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1])), err => {
+        let newFldr = data[0] + "-" + tools.formatFolderName(data[1]) + "-",
+            extension = (fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(data[0] + "-" + tools.formatFolderName(data[1]))).length - 1);
+        newFldr += extension;
+        fs.rename(path.join(dataPath, "Trak", "data", fldrValue), path.join(dataPath, "Trak", "data", newFldr), err => {
             // If there was an error in renaming the record folder notify the user.
             if(err) {
                 log.error("There was an error in renaming the film record folder " + data[data.length - 1] + " to " + data[1] + ".");
@@ -123,13 +157,13 @@ exports.filmUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, da
             }
             // If no error occured in renaming the record folder write the data file, and copy over the file assets.
             else {
-                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.filmObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto);
+                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.filmObjCreation(path, fs, https, tools, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
             }
         });
     }
     else {
         // Write the data file, and copy over the file assets.
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.filmObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.filmObjCreation(path, fs, https, tools, dataPath, data, fldrValue.substring(fldrValue.lastIndexOf("-") + 1)), "U", dataPath, fs, path, evnt, data, auto, fldrValue);
     }
 };
 

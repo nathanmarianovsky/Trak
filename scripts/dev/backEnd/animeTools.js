@@ -33,9 +33,10 @@ Creates an object associated to an anime record in order to save/update.
    - tools provides a collection of local functions.
    - dir is the path to the local user data.
    - providedData is the data provided by the front-end user submission for anime record save/update.
+   - extension is a string to be added onto a record's folder name.
 
 */
-exports.animeObjCreation = (path, fs, https, tools, dir, providedData) => {
+exports.animeObjCreation = (path, fs, https, tools, dir, providedData, extension) => {
     const animeObj = {
         "category": providedData[0],
         "name": providedData[1],
@@ -49,7 +50,7 @@ exports.animeObjCreation = (path, fs, https, tools, dir, providedData) => {
         "license": providedData[9],
         "genres": providedData[11],
         "synopsis": providedData[13],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1] != "" ? providedData[1] : providedData[2]), providedData[14]),
+        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1] != "" ? providedData[1] : providedData[2]) + "-" + extension, providedData[14]),
         "bookmark": providedData[15],
         "content": []
     };
@@ -108,53 +109,78 @@ Handles the saving of an anime record by creating the associated folders and dat
 
 */
 exports.animeAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto, fldrValue) => {
-    // Check to see that the folder associated to the new record does not exist.
+    // Define the primary section of the folder name.
     const primaryName = data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]);
     let assetsPath = "";
+    // Check to see that the folder associated to the new record does not exist.
     if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]) + "-0")) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[2]) + "-0"))) {
         // Create a new directory for the assets associated to the new record.
         assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-0", "assets");
         log.info("Creating the assets directory for the new anime record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data, false, "");
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data, "0"), "A", dataPath, fs, path, evnt, data, false);
     }
     else {
+        // Define the list of library records sharing the same name along with the current record's release date.
         const compareList = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(primaryName)),
-            currentData = exports.animeObjCreation(path, fs, https, tools, dataPath, data),
-            currentDate = tools.calculateReleaseDate(currentData.content);
+            currentContent = {};
+        for(let m = 0; m < data[12].length; m++) {
+            if(data[12][m][0] == "Single") {
+                currentContent.push({
+                    "scenario": data[12][m][0],
+                    "name": data[12][m][1],
+                    "type": data[12][m][2],
+                    "release": data[12][m][3],
+                    "watched": data[12][m][4],
+                    "rating": data[12][m][5],
+                    "review": data[12][m][6]
+                });
+            }
+            else if(data[12][m][0] == "Season") {
+                let animeSeasonObj = {
+                    "scenario": data[12][m][0],
+                    "name": data[12][m][1],
+                    "start": data[12][m][2],
+                    "end": data[12][m][3],
+                    "status": data[12][m][4],
+                    "episodes": []
+                };
+                for(let n = 0; n < data[12][m][5].length; n++) {
+                    animeSeasonObj.episodes.push({
+                        "name": data[12][m][5][n][0],
+                        "watched": data[12][m][5][n][1],
+                        "rating": data[12][m][5][n][2],
+                        "review": data[12][m][5][n][3]
+                    });
+                }
+                currentContent.push(animeSeasonObj);
+            }
+        }
+        const currentDate = tools.calculateReleaseDate(currentContent);
+        // Iterate through the list of comparable library records and determine if there is one that already matches the current record by comparing release dates.
         let q = 0;
         for(; q < compareList.length; q++) {
+            // Define the release date from the library record being compared to.
             let compareData = JSON.parse(fs.readFileSync(path.join(dataPath, "Trak", "data", compareList[q], "data.json"), "UTF8")),
                 compareDate = tools.calculateReleaseDate(compareData.content);
+            // Break out of the loop if the release dates match.
             if(compareDate == currentDate) {
                 break;
             }
         }
+        // If none of the library records being compared to matched up to the current one, then create a library record for the new one.
         if(q == compareList.length) {
             // Create a new directory for the assets associated to the new record.
             assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-" + compareList.length, "assets");
             log.info("Creating the assets directory for the new anime record. To be located at " + assetsPath);
             fs.mkdirSync(assetsPath, { "recursive": true });
-            tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), currentData, "A", dataPath, fs, path, evnt, data, false, "");
+            tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data, compareList.length), "A", dataPath, fs, path, evnt, data, false);
         }
         else {
+            // Warn the user that a library record already exists for the one being currently added.
             log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[2]) + " already exists!");
             evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
         }
-
-
-
-        // const compareData = JSON.parse(fs.readFileSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]))) ? data[1] : data[2]), "data.json"))),
-        //     compareDate = tools.calculateReleaseDate(compareData.content),
-        //     currentData = exports.animeObjCreation(path, fs, https, tools, dataPath, data),
-        //     currentDate = tools.calculateReleaseDate(currentData.content);
-        // if(compareDate != currentDate) {
-        //     tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), currentData, "A", dataPath, fs, path, evnt, data, false, "");
-        // }
-        // else {
-        //     log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[2]) + " already exists!");
-        //     evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
-        // }
     }
 };
 
@@ -180,8 +206,9 @@ Handles the update of an anime record.
 exports.animeUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto, fldrValue) => {
     // If the name has been updated then change the associated record folder name.
     if((data[1] != "" && data[1] != data[data.length - 1]) || (data[1] == "" && data[2] != "" && data[2] != data[data.length - 1])) {
-        const newFldr = data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]) + "-"
-            + fs.readdirSync(path.join(savePath, "Trak", "data")).filter(file => fs.statSync(path.join(savePath, "Trak", "data", file)).isDirectory() && file.includes(data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]))).length;
+        let newFldr = data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]) + "-",
+            extension = (fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]))).length - 1);
+        newFldr += extension;
         fs.rename(path.join(dataPath, "Trak", "data", fldrValue), path.join(dataPath, "Trak", "data", newFldr), err => {
             // If there was an error in renaming the record folder notify the user.
             if(err) {
@@ -190,13 +217,13 @@ exports.animeUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, d
             }
             // If no error occured in renaming the record folder write the data file, and copy over the file assets.
             else {
-                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto, newFldr);
+                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
             }
         });
     }
     else {
         // Write the data file, and copy over the file assets.
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto, fldrValue);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data, fldrValue.substring(fldrValue.lastIndexOf("-") + 1)), "U", dataPath, fs, path, evnt, data, auto, fldrValue);
     }
 };
 

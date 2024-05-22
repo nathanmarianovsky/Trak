@@ -75,10 +75,13 @@ Handles the saving of a book record by creating the associated folders and data 
 
 */
 exports.bookAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto) => {
+    // Define the primary section of the folder name.
+    const primaryName = data[0] + "-" + tools.formatFolderName(data[1]) + "-" + data[3];
+    let assetsPath = "";
     // Check to see that the folder associated to the new record does not exist.
-    if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]) + "-" + data[3]))) {
+    if(!fs.existsSync(path.join(dataPath, "Trak", "data", primaryName))) {
         // Create a new directory for the assets associated to the new record.
-        const assetsPath = path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]) + "-" + data[3], "assets");
+        const assetsPath = path.join(dataPath, "Trak", "data", primaryName, "assets");
         log.info("Creating the assets directory for the new book record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
         tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.bookObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data, false);

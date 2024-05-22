@@ -52,7 +52,7 @@ var filmSaveFunc = (auto = false) => {
         }
         const ogName = document.getElementById("filmName").getAttribute("oldName"),
             oldTitle = ogName !== null ? ogName : filmName,
-            fidValue = document.getElementById("animeName").getAttribute("fid");
+            fidValue = document.getElementById("filmName").getAttribute("fid");
         // Send the request to the back-end portion of the app.
         const submissionMaterial = ["Film", filmName, filmAlternateName, filmReview, filmDirectors, filmProducers, filmWriters, filmMusicians, filmEditors,
             filmCinematographers, filmFiles, filmDistributors, filmProductionCompanies, filmStarring, [genresLst, genres, otherGenres], filmSynopsis, filmRating, filmReleaseDate, filmRunningTime,
