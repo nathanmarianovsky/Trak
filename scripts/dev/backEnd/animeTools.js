@@ -123,7 +123,7 @@ exports.animeAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, data
     else {
         // Define the list of library records sharing the same name along with the current record's release date.
         const compareList = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(primaryName)),
-            currentContent = {};
+            currentContent = [];
         for(let m = 0; m < data[12].length; m++) {
             if(data[12][m][0] == "Single") {
                 currentContent.push({
@@ -206,20 +206,75 @@ Handles the update of an anime record.
 exports.animeUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto, fldrValue) => {
     // If the name has been updated then change the associated record folder name.
     if((data[1] != "" && data[1] != data[data.length - 1]) || (data[1] == "" && data[2] != "" && data[2] != data[data.length - 1])) {
-        let newFldr = data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]) + "-",
-            extension = (fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]))).length - 1);
-        newFldr += extension;
-        fs.rename(path.join(dataPath, "Trak", "data", fldrValue), path.join(dataPath, "Trak", "data", newFldr), err => {
-            // If there was an error in renaming the record folder notify the user.
-            if(err) {
-                log.error("There was an error in renaming the anime record folder " + data[data.length - 1] + " to " + (data[1] != "" ? data[1] : data[2]) + ".");
-                evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1] != "" ? data[1] : data[2]]);
+        let newFldr = data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]),
+            extension = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]))).length;
+        // Define the list of library records sharing the same name along with the current record's release date.
+        const compareList = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(newFldr)),
+            currentContent = [];
+        for(let m = 0; m < data[12].length; m++) {
+            if(data[12][m][0] == "Single") {
+                currentContent.push({
+                    "scenario": data[12][m][0],
+                    "name": data[12][m][1],
+                    "type": data[12][m][2],
+                    "release": data[12][m][3],
+                    "watched": data[12][m][4],
+                    "rating": data[12][m][5],
+                    "review": data[12][m][6]
+                });
             }
-            // If no error occured in renaming the record folder write the data file, and copy over the file assets.
-            else {
-                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
+            else if(data[12][m][0] == "Season") {
+                let animeSeasonObj = {
+                    "scenario": data[12][m][0],
+                    "name": data[12][m][1],
+                    "start": data[12][m][2],
+                    "end": data[12][m][3],
+                    "status": data[12][m][4],
+                    "episodes": []
+                };
+                for(let n = 0; n < data[12][m][5].length; n++) {
+                    animeSeasonObj.episodes.push({
+                        "name": data[12][m][5][n][0],
+                        "watched": data[12][m][5][n][1],
+                        "rating": data[12][m][5][n][2],
+                        "review": data[12][m][5][n][3]
+                    });
+                }
+                currentContent.push(animeSeasonObj);
             }
-        });
+        }
+        const currentDate = tools.calculateReleaseDate(currentContent);
+        // Iterate through the list of comparable library records and determine if there is one that already matches the current record by comparing release dates.
+        let q = 0;
+        for(; q < compareList.length; q++) {
+            // Define the release date from the library record being compared to.
+            let compareData = JSON.parse(fs.readFileSync(path.join(dataPath, "Trak", "data", compareList[q], "data.json"), "UTF8")),
+                compareDate = tools.calculateReleaseDate(compareData.content);
+            // Break out of the loop if the release dates match.
+            if(compareDate == currentDate) {
+                break;
+            }
+        }
+        // If none of the library records being compared to matched up to the current one, then create a library record for the renamed one.
+        if(q == compareList.length) {
+            newFldr += "-" + extension;
+            fs.rename(path.join(dataPath, "Trak", "data", fldrValue), path.join(dataPath, "Trak", "data", newFldr), err => {
+                // If there was an error in renaming the record folder notify the user.
+                if(err) {
+                    log.error("There was an error in renaming the anime record folder " + data[data.length - 1] + " to " + (data[1] != "" ? data[1] : data[2]) + ".");
+                    evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1] != "" ? data[1] : data[2]]);
+                }
+                // If no error occured in renaming the record folder write the data file, and copy over the file assets.
+                else {
+                    tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
+                }
+            });
+        }
+        else {
+            // Warn the user that a library record already exists for the one being currently renamed.
+            log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[2]) + " already exists!");
+            evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
+        }
     }
     else {
         // Write the data file, and copy over the file assets.

@@ -32,7 +32,7 @@ Creates an object associated to a film record in order to save/update.
    - https provides the means to download files.
    - tools provides a collection of local functions.
    - dir is the path to the local user data.
-   - providedData is the data provided by the front-end user submission for anime record save/update.
+   - providedData is the data provided by the front-end user submission for film record save/update.
    - extension is a string to be added onto a record's folder name.
 
 */
@@ -146,20 +146,42 @@ Handles the update of a film record.
 exports.filmUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto, fldrValue) => {
     // If the name has been updated then change the associated record folder name.
     if(data[1] != "" && data[1] != data[data.length - 1]) {
-        let newFldr = data[0] + "-" + tools.formatFolderName(data[1]) + "-",
-            extension = (fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(data[0] + "-" + tools.formatFolderName(data[1]))).length - 1);
-        newFldr += extension;
-        fs.rename(path.join(dataPath, "Trak", "data", fldrValue), path.join(dataPath, "Trak", "data", newFldr), err => {
-            // If there was an error in renaming the record folder notify the user.
-            if(err) {
-                log.error("There was an error in renaming the film record folder " + data[data.length - 1] + " to " + data[1] + ".");
-                evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1]]);
+        let newFldr = data[0] + "-" + tools.formatFolderName(data[1]),
+            extension = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(data[0] + "-" + tools.formatFolderName(data[1]))).length;
+        // Define the list of library records sharing the same name along with the current record's release date.
+        const compareList = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(newFldr)),
+            currentDate = data[17];
+        // Iterate through the list of comparable library records and determine if there is one that already matches the current record by comparing release dates.
+        let q = 0;
+        for(; q < compareList.length; q++) {
+            // Define the release date from the library record being compared to.
+            let compareData = JSON.parse(fs.readFileSync(path.join(dataPath, "Trak", "data", compareList[q], "data.json"), "UTF8")),
+                compareDate = compareData.release;
+            // Break out of the loop if the release dates match.
+            if(compareDate == currentDate) {
+                break;
             }
-            // If no error occured in renaming the record folder write the data file, and copy over the file assets.
-            else {
-                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.filmObjCreation(path, fs, https, tools, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
-            }
-        });
+        }
+        // If none of the library records being compared to matched up to the current one, then create a library record for the renamed one.
+        if(q == compareList.length) {
+            newFldr += "-" + extension;
+            fs.rename(path.join(dataPath, "Trak", "data", fldrValue), path.join(dataPath, "Trak", "data", newFldr), err => {
+                // If there was an error in renaming the record folder notify the user.
+                if(err) {
+                    log.error("There was an error in renaming the film record folder " + data[data.length - 1] + " to " + data[1] + ".");
+                    evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1]]);
+                }
+                // If no error occured in renaming the record folder write the data file, and copy over the file assets.
+                else {
+                    tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.filmObjCreation(path, fs, https, tools, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
+                }
+            });
+        }
+        else {
+            // Warn the user that a library record already exists for the one being currently renamed.
+            log.warn("A record for the " + data[0].toLowerCase() + " " + data[1] + " already exists!");
+            evnt.sender.send("recordExists", data[0] + "-" + data[1]);
+        }
     }
     else {
         // Write the data file, and copy over the file assets.

@@ -33,10 +33,11 @@ Creates an object associated to a manga record in order to save/update.
    - https provides the means to download files.
    - tools provides a collection of local functions.
    - dir is the path to the local user data.
-   - providedData is the data provided by the front-end user submission for anime record save/update.
+   - providedData is the data provided by the front-end user submission for manga record save/update.
+   - extension is a string to be added onto a record's folder name.
 
 */
-exports.mangaObjCreation = (path, fs, https, tools, dir, providedData) => {
+exports.mangaObjCreation = (path, fs, https, tools, dir, providedData, extension) => {
     const mangaObj = {
         "category": providedData[0],
         "name": providedData[1],
@@ -51,7 +52,7 @@ exports.mangaObjCreation = (path, fs, https, tools, dir, providedData) => {
         "end": providedData[11],
         "genres": providedData[13],
         "synopsis": providedData[14],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1] != "" ? providedData[1] : providedData[2]), providedData[15]),
+        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1] != "" ? providedData[1] : providedData[2]) + "-" + extension, providedData[15]),
         "bookmark": providedData[16],
         "content": []
     };
@@ -98,20 +99,49 @@ Handles the saving of a manga record by creating the associated folders and data
    - evnt provides the means to interact with the front-end of the Electron app.
    - data is the information associated to the record.
    - auto is a boolean representing whether the data file is being written corresponding to an application autosave.
+   - fldrValue is a string corresponding to an existing record's folder name.
 
 */
-exports.mangaAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto) => {
+exports.mangaAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto, fldrValue) => {
+    // Define the primary section of the folder name.
+    const primaryName = data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]);
+    let assetsPath = "";
     // Check to see that the folder associated to the new record does not exist.
-    if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]))) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[2])))) {
+    if(!fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]) + "-0")) && !fs.existsSync(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[2]) + "-0"))) {
         // Create a new directory for the assets associated to the new record.
-        const assetsPath = path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]), "assets");
+        assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-0", "assets");
         log.info("Creating the assets directory for the new manga record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data, false);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data, "0"), "A", dataPath, fs, path, evnt, data, false);
     }
     else {
-        log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[2]) + " already exists!");
-        evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
+        // Define the list of library records sharing the same name along with the current record's release date.
+        const compareList = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(primaryName)),
+            currentDate = data[9];
+        // Iterate through the list of comparable library records and determine if there is one that already matches the current record by comparing release dates.
+        let q = 0;
+        for(; q < compareList.length; q++) {
+            // Define the release date from the library record being compared to.
+            let compareData = JSON.parse(fs.readFileSync(path.join(dataPath, "Trak", "data", compareList[q], "data.json"), "UTF8")),
+                compareDate = compareData.start;
+            // Break out of the loop if the release dates match.
+            if(compareDate == currentDate) {
+                break;
+            }
+        }
+        // If none of the library records being compared to matched up to the current one, then create a library record for the new one.
+        if(q == compareList.length) {
+            // Create a new directory for the assets associated to the new record.
+            assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-" + compareList.length, "assets");
+            log.info("Creating the assets directory for the new manga record. To be located at " + assetsPath);
+            fs.mkdirSync(assetsPath, { "recursive": true });
+            tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data, compareList.length), "A", dataPath, fs, path, evnt, data, false);
+        }
+        else {
+            // Warn the user that a library record already exists for the one being currently added.
+            log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[2]) + " already exists!");
+            evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
+        }
     }
 };
 
@@ -131,26 +161,52 @@ Handles the update of a manga record.
    - evnt provides the means to interact with the front-end of the Electron app.
    - data is the information associated to the record.
    - auto is a boolean representing whether the data file is being written corresponding to an application autosave.
+   - fldrValue is a string corresponding to an existing record's folder name.
 
 */
-exports.mangaUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto) => {
+exports.mangaUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto, fldrValue) => {
     // If the name has been updated then change the associated record folder name.
     if((data[1] != "" && data[1] != data[data.length - 1]) || (data[1] == "" && data[2] != "" && data[2] != data[data.length - 1])) {
-        fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[data.length - 1])), path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2])), err => {
-            // If there was an error in renaming the record folder notify the user.
-            if(err) {
-                log.error("There was an error in renaming the manga record folder " + data[data.length - 1] + " to " + (data[1] != "" ? data[1] : data[2]) + ".");
-                evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1] != "" ? data[1] : data[2]]);
+        let newFldr = data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]),
+            extension = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]))).length;
+        // Define the list of library records sharing the same name along with the current record's release date.
+        const compareList = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(newFldr)),
+            currentDate = data[9];
+        // Iterate through the list of comparable library records and determine if there is one that already matches the current record by comparing release dates.
+        let q = 0;
+        for(; q < compareList.length; q++) {
+            // Define the release date from the library record being compared to.
+            let compareData = JSON.parse(fs.readFileSync(path.join(dataPath, "Trak", "data", compareList[q], "data.json"), "UTF8")),
+                compareDate = compareData.start;
+            // Break out of the loop if the release dates match.
+            if(compareDate == currentDate) {
+                break;
             }
-            // If no error occured in renaming the record folder write the data file, and copy over the file assets.
-            else {
-                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto);
-            }
-        });
+        }
+        // If none of the library records being compared to matched up to the current one, then create a library record for the renamed one.
+        if(q == compareList.length) {
+            newFldr += "-" + extension;
+            fs.rename(path.join(dataPath, "Trak", "data", fldrValue), path.join(dataPath, "Trak", "data", newFldr), err => {
+                // If there was an error in renaming the record folder notify the user.
+                if(err) {
+                    log.error("There was an error in renaming the manga record folder " + data[data.length - 1] + " to " + (data[1] != "" ? data[1] : data[2]) + ".");
+                    evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1] != "" ? data[1] : data[2]]);
+                }
+                // If no error occured in renaming the record folder write the data file, and copy over the file assets.
+                else {
+                    tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
+                }
+            });
+        }
+        else {
+            // Warn the user that a library record already exists for the one being currently renamed.
+            log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[2]) + " already exists!");
+            evnt.sender.send("recordExists", data[0] + "-" + (data[1] != "" ? data[1] : data[2]));
+        }
     }
     else {
         // Write the data file, and copy over the file assets.
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data, fldrValue.substring(fldrValue.lastIndexOf("-") + 1)), "U", dataPath, fs, path, evnt, data, auto, fldrValue);
     }
 };
 
