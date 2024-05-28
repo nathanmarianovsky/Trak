@@ -90,7 +90,7 @@ var showSaveFunc = (auto = false) => {
             [document.getElementById("addRecordShowImg").getAttribute("list") == document.getElementById("addRecordShowImg").getAttribute("previous"), showImg], content,
             showBookmarkValue, oldTitle];
         ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
-        saveAssociations("Show", showName, ipcRenderer);
+        saveAssociations("Show", showName, fidValue != null ? fidValue : "", ipcRenderer);
     }
     // If no name has been provided then notify the user.
     else { M.toast({"html": "A show record requires a name be provided.", "classes": "rounded"}); }

@@ -55,7 +55,7 @@ var bookSaveFunc = (auto = false) => {
             [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), bookImg],
             bookBookmarkValue, [oldISBN, oldTitle]];
         ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto]);
-        saveAssociations("Book", bookTitle, ipcRenderer);
+        saveAssociations("Book", bookTitle, "", ipcRenderer);
     }
     // If no ISBN has been provided then notify the user.
     else { M.toast({"html": "A book record requires that an ASIN/ISBN be provided.", "classes": "rounded"}); }

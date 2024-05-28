@@ -59,7 +59,7 @@ var filmSaveFunc = (auto = false) => {
             filmLastWatched, [document.getElementById("addRecordFilmImg").getAttribute("list") == document.getElementById("addRecordFilmImg").getAttribute("previous"), filmImg],
             filmBookmarkValue, oldTitle];
         ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
-        saveAssociations("Film", filmName, ipcRenderer);
+        saveAssociations("Film", filmName, fidValue != null ? fidValue : "", ipcRenderer);
     }
     // If no name has been provided then notify the user.
     else { M.toast({"html": "A film record requires a name be provided.", "classes": "rounded"}); }

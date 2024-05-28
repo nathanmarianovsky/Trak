@@ -56,7 +56,7 @@ exports.showObjCreation = (path, fs, https, tools, dir, providedData, extension)
         "rating": providedData[16],
         "release": providedData[17],
         "runTime": providedData[18],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]) + extension, providedData[19]),
+        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]) + "-" + extension, providedData[19]),
         "bookmark": providedData[21],
         "content": []
     };

@@ -879,11 +879,12 @@ Handles the save request of a record's associations.
 
    - curCategory is a string corresponding to the category of the current record.
    - curName is a string corresponding to the name of the current record.
+   - curFolder is a string corresponding to the folder name of the current record.
    - ipcElec provides the means to operate the Electron app.
 
 */
-const saveAssociations = (curCategory, curName, ipcElec) => {
-    ipcElec.send("associationsSave", [curCategory, curName, Array.from(document.getElementById("associationsCollection").children).map(association => association.getAttribute("associationId"))]);
+const saveAssociations = (curCategory, curName, curFolder, ipcElec) => {
+    ipcElec.send("associationsSave", [curCategory, curName, Array.from(document.getElementById("associationsCollection").children).map(association => association.getAttribute("associationId")), curFolder]);
 };
 
 

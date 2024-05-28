@@ -84,7 +84,7 @@ var mangaSaveFunc = (auto = false) => {
             [document.getElementById("addRecordMangaImg").getAttribute("list") == document.getElementById("addRecordMangaImg").getAttribute("previous"), mangaImg],
             mangaBookmarkValue, oldTitle];
         ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
-        saveAssociations("Manga", mangaName, ipcRenderer);
+        saveAssociations("Manga", mangaName, fidValue != null ? fidValue : "", ipcRenderer);
     }
     // If no name has been provided then notify the user.
     else { M.toast({"html": "A manga record requires that a name be provided.", "classes": "rounded"}); }

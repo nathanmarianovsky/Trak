@@ -1,6 +1,6 @@
 {
     "name": "Trak",
-    "version": "0.7.6",
+    "version": "0.8.0",
     "description": "A tracker designed to display and maintain details of content read and/or watched.",
     "main": "index.js",
     "author": "Nathan Marianovsky",
