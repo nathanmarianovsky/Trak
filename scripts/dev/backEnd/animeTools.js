@@ -2,7 +2,6 @@
 
 BASIC DETAILS: Provides all actions associated to working with anime records.
 
-   - animeObjCreation: Creates an object associated to an anime record in order to save/update.
    - animeSave: Handles the saving of an anime record by creating the associated folders and data file.
    - animeUpdate: Handles the update of an anime record.
    - animeSearch: Handles the search of myanimelist anime records based on a query.
@@ -21,73 +20,6 @@ BASIC DETAILS: Provides all actions associated to working with anime records.
 
 
 var exports = {};
-
-
-
-/*
-
-Creates an object associated to an anime record in order to save/update.
-
-   - path and fs provide the means to work with local files.
-   - https provides the means to download files.
-   - tools provides a collection of local functions.
-   - dir is the path to the local user data.
-   - providedData is the data provided by the front-end user submission for anime record save/update.
-   - extension is a string to be added onto a record's folder name.
-
-*/
-exports.animeObjCreation = (path, fs, https, tools, dir, providedData, extension) => {
-    const animeObj = {
-        "category": providedData[0],
-        "name": providedData[1],
-        "jname": providedData[2],
-        "review": providedData[3],
-        "directors": providedData[4],
-        "producers": providedData[5],
-        "writers": providedData[6],
-        "musicians": providedData[7],
-        "studio": providedData[8],
-        "license": providedData[9],
-        "genres": providedData[11],
-        "synopsis": providedData[13],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1] != "" ? providedData[1] : providedData[2]) + "-" + extension, providedData[14]),
-        "bookmark": providedData[15],
-        "content": []
-    };
-    for(let m = 0; m < providedData[12].length; m++) {
-        if(providedData[12][m][0] == "Single") {
-            animeObj.content.push({
-                "scenario": providedData[12][m][0],
-                "name": providedData[12][m][1],
-                "type": providedData[12][m][2],
-                "release": providedData[12][m][3],
-                "watched": providedData[12][m][4],
-                "rating": providedData[12][m][5],
-                "review": providedData[12][m][6]
-            });
-        }
-        else if(providedData[12][m][0] == "Season") {
-            let animeSeasonObj = {
-                "scenario": providedData[12][m][0],
-                "name": providedData[12][m][1],
-                "start": providedData[12][m][2],
-                "end": providedData[12][m][3],
-                "status": providedData[12][m][4],
-                "episodes": []
-            };
-            for(let n = 0; n < providedData[12][m][5].length; n++) {
-                animeSeasonObj.episodes.push({
-                    "name": providedData[12][m][5][n][0],
-                    "watched": providedData[12][m][5][n][1],
-                    "rating": providedData[12][m][5][n][2],
-                    "review": providedData[12][m][5][n][3]
-                });
-            }
-            animeObj.content.push(animeSeasonObj);
-        }
-    }
-    return animeObj;
-};
 
 
 
@@ -118,7 +50,7 @@ exports.animeAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, data
         assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-0", "assets");
         log.info("Creating the assets directory for the new anime record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data, "0"), "A", dataPath, fs, path, evnt, data, false);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, "0"), "A", dataPath, fs, path, evnt, data, false);
     }
     else {
         // Define the list of library records sharing the same name along with the current record's release date.
@@ -174,7 +106,7 @@ exports.animeAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, data
             assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-" + compareList.length, "assets");
             log.info("Creating the assets directory for the new anime record. To be located at " + assetsPath);
             fs.mkdirSync(assetsPath, { "recursive": true });
-            tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data, compareList.length), "A", dataPath, fs, path, evnt, data, false);
+            tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, compareList.length), "A", dataPath, fs, path, evnt, data, false);
         }
         else {
             // Warn the user that a library record already exists for the one being currently added.
@@ -266,7 +198,7 @@ exports.animeUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, d
                 }
                 // If no error occured in renaming the record folder write the data file, and copy over the file assets.
                 else {
-                    tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
+                    tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
                 }
             });
         }
@@ -278,7 +210,7 @@ exports.animeUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, d
     }
     else {
         // Write the data file, and copy over the file assets.
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.animeObjCreation(path, fs, https, tools, dataPath, data, fldrValue.substring(fldrValue.lastIndexOf("-") + 1)), "U", dataPath, fs, path, evnt, data, auto, fldrValue);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, fldrValue.substring(fldrValue.lastIndexOf("-") + 1)), "U", dataPath, fs, path, evnt, data, auto, fldrValue);
     }
 };
 

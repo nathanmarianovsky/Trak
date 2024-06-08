@@ -2,7 +2,6 @@
 
 BASIC DETAILS: Provides all actions associated to working with book records.
 
-   - bookObjCreation: Creates an object associated to a book record in order to save/update.
    - bookSave: Handles the saving of a book record by creating the associated folders and data file.
    - bookUpdate: Handles the update of a book record.
    - bookSearch: Handles the search of goodreads book records based on a query.
@@ -21,40 +20,6 @@ BASIC DETAILS: Provides all actions associated to working with book records.
 
 
 var exports = {};
-
-
-
-/*
-
-Creates an object associated to a book record in order to save/update.
-
-   - path and fs provide the means to work with local files.
-   - https provides the means to download files.
-   - tools provides a collection of local functions.
-   - dir is the path to the local user data.
-   - providedData is the data provided by the front-end user submission for book record save/update.
-
-*/
-exports.bookObjCreation = (path, fs, https, tools, dir, providedData) => {
-    return {
-        "category": providedData[0],
-        "name": providedData[1],
-        "originalName": providedData[2],
-        "isbn": providedData[3],
-        "authors": providedData[4],
-        "publisher": providedData[5],
-        "publicationDate": providedData[6],
-        "pages": providedData[7],
-        "read": providedData[8],
-        "media": providedData[9],
-        "synopsis": providedData[11],
-        "rating": providedData[12],
-        "review": providedData[13],
-        "genres": providedData[14],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]) + "-" + providedData[3], providedData[15]),
-        "bookmark": providedData[16]
-    };
-};
 
 
 
@@ -84,7 +49,7 @@ exports.bookAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataP
         const assetsPath = path.join(dataPath, "Trak", "data", primaryName, "assets");
         log.info("Creating the assets directory for the new book record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.bookObjCreation(path, fs, https, tools, dataPath, data), "A", dataPath, fs, path, evnt, data, false);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data), "A", dataPath, fs, path, evnt, data, false);
     }
     else {
         log.warn("A record for the " + data[0].toLowerCase() + " " + (data[1] != "" ? data[1] : data[3]) + " already exists!");
@@ -121,13 +86,13 @@ exports.bookUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, da
             }
             // If no error occured in renaming the record folder write the data file, and copy over the file assets.
             else {
-                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.bookObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto);
+                tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data), "U", dataPath, fs, path, evnt, data, auto);
             }
         });
     }
     else {
         // Write the data file, and copy over the file assets.
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.bookObjCreation(path, fs, https, tools, dataPath, data), "U", dataPath, fs, path, evnt, data, auto);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data), "U", dataPath, fs, path, evnt, data, auto);
     }
 };
 

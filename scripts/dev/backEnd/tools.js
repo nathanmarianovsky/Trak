@@ -8,6 +8,7 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
    - parseRecord: Handles the parsing of a record folder name to display.
    - formatFolderName: Formats a string into a proper folder name by removing forbidden characters and whitespaces.
    - objCreationImgs: Downloads images associated to a record and returns an array to their location.
+   - recordObjCreation: Creates an object associated to a record in order to save/update.
    - writeDataFile: Handles the writing of files associated to a record.
    - removeRecords: Handles the removal of records by deleting the associated folders and data file.
    - arrayMove: Moves an element in an array.
@@ -207,18 +208,17 @@ Downloads images associated to a record and returns an array to their location.
 
 	- path and fs provide the means to work with local files.
 	- https provides the means to download files.
-	- tools provides a collection of local functions.
 	- dir is the path to the local user data.
 	- recordDir is the folder name associated to the record.
 	- providedImgs is the image data provided by the front-end user submission for record save/update.
 
 */
-exports.objCreationImgs = (path, fs, https, tools, dir, recordDir, providedImgs) => {
+exports.objCreationImgs = (path, fs, https, dir, recordDir, providedImgs) => {
 	let imgArr = [];
 	if(providedImgs[0] == false && providedImgs[1][0] != "") {
 		for(let y = 0; y < providedImgs[1].length; y++) {
-			if(tools.isURL(providedImgs[1][y])) {
-				let downloadFilePath = path.join(dir, "Trak", "data", recordDir, "assets", tools.parseURLFilename(providedImgs[1][y]));
+			if(exports.isURL(providedImgs[1][y])) {
+				let downloadFilePath = path.join(dir, "Trak", "data", recordDir, "assets", exports.parseURLFilename(providedImgs[1][y]));
 		        imgArr.push(downloadFilePath);
 				https.get(providedImgs[1][y], res => {
 				    let filePath = fs.createWriteStream(downloadFilePath);
@@ -239,6 +239,166 @@ exports.objCreationImgs = (path, fs, https, tools, dir, recordDir, providedImgs)
 	}
 	else { imgArr = providedImgs[1]; }
 	return imgArr;
+};
+
+
+
+/*
+
+Creates an object associated to a record in order to save/update.
+
+   - path and fs provide the means to work with local files.
+   - https provides the means to download files.
+   - dir is the path to the local user data.
+   - providedData is the data provided by the front-end user submission for anime record save/update.
+   - extension is a string to be added onto a record's folder name.
+
+*/
+exports.recordObjCreation = (path, fs, https, dir, providedData, extension) => {
+    let cur = providedData[0] + "-";
+    cur += ((providedData[0] == "Anime" || providedData[0] == "Manga")
+    	? exports.formatFolderName(providedData[1] != "" ? providedData[1] : providedData[2])
+    	: exports.formatFolderName(providedData[1]));
+    cur += "-" + (providedData[0] == "Book" ? providedData[3] : extension);
+    let imgIndex = 0,
+    	contentIndex = 0;
+    if(providedData[0] == "Anime") { imgIndex = 14; contentIndex = 12; }
+    else if(providedData[0] == "Book" || providedData == "Manga") { imgIndex = 15; }
+    else if(providedData[0] == "Film") { imgIndex = 20; }
+    else if(providedData[0] == "Show") { imgIndex = 19; contentIndex = 20; }
+    const recordObj = {
+        "category": providedData[0],
+        "name": providedData[1],
+        "img": exports.objCreationImgs(path, fs, https, dir, cur, providedData[imgIndex])
+    };
+    if(providedData[0] == "Anime") {
+	    recordObj.jname = providedData[2];
+	    recordObj.review = providedData[3];
+	    recordObj.directors = providedData[4];
+	    recordObj.producers = providedData[5];
+	    recordObj.writers = providedData[6];
+	    recordObj.musicians = providedData[7];
+	    recordObj.studio = providedData[8];
+	    recordObj.license = providedData[9];
+	    recordObj.genres = providedData[11];
+	    recordObj.synopsis = providedData[13];
+	    recordObj.bookmark = providedData[15];
+	    recordObj.content = [];
+    }
+    else if(providedData[0] == "Film") {
+    	recordObj.alternateName = providedData[2];
+    	recordObj.review = providedData[3];
+    	recordObj.directors = providedData[4];
+    	recordObj.producers = providedData[5];
+    	recordObj.writers = providedData[6];
+    	recordObj.musicians = providedData[7];
+    	recordObj.editors = providedData[8];
+    	recordObj.cinematographers = providedData[9];
+    	recordObj.distributors = providedData[11];
+    	recordObj.productionCompanies = providedData[12];
+    	recordObj.stars = providedData[13];
+    	recordObj.genres = providedData[14];
+    	recordObj.synopsis = providedData[15];
+    	recordObj.rating = providedData[16];
+    	recordObj.release = providedData[17];
+    	recordObj.runTime = providedData[18];
+    	recordObj.watched = providedData[19];
+    	recordObj.bookmark = providedData[21];
+    }
+    else if(providedData[0] == "Manga") {
+    	recordObj.jname = providedData[2];
+        recordObj.review = providedData[3];
+        recordObj.writers = providedData[4];
+        recordObj.illustrators = providedData[5];
+        recordObj.publisher = providedData[6];
+        recordObj.jpublisher = providedData[7];
+        recordObj.demographic = providedData[8];
+        recordObj.start = providedData[9];
+        recordObj.end = providedData[11];
+        recordObj.genres = providedData[13];
+        recordObj.synopsis = providedData[14];
+        recordObj.bookmark = providedData[16];
+        recordObj.content = [];
+	    for(let m = 0; m < providedData[12].length; m++) {
+	        if(providedData[12][m][0] == "Chapter") {
+	            recordObj.content.push({
+	                "scenario": providedData[12][m][0],
+	                "name": providedData[12][m][1],
+	                "release": providedData[12][m][2],
+	                "read": providedData[12][m][3],
+	                "rating": providedData[12][m][4],
+	                "review": providedData[12][m][5]
+	            });
+	        }
+	        else if(providedData[12][m][0] == "Volume") {
+	            recordObj.content.push({
+	                "scenario": providedData[12][m][0],
+	                "name": providedData[12][m][1],
+	                "release": providedData[12][m][2],
+	                "read": providedData[12][m][3],
+	                "rating": providedData[12][m][4],
+	                "review": providedData[12][m][5],
+	                "isbn": providedData[12][m][6],
+	                "synopsis": providedData[12][m][7]
+	            });
+	        }
+	    }
+    }
+    else if(providedData[0] == "Show") {
+    	recordObj.alternateName = providedData[2];
+        recordObj.review = providedData[3];
+        recordObj.directors = providedData[4];
+        recordObj.producers = providedData[5];
+        recordObj.writers = providedData[6];
+        recordObj.musicians = providedData[7];
+        recordObj.editors = providedData[8];
+        recordObj.cinematographers = providedData[9];
+        recordObj.distributors = providedData[11];
+        recordObj.productionCompanies = providedData[12];
+        recordObj.stars = providedData[13];
+        recordObj.genres = providedData[14];
+        recordObj.synopsis = providedData[15];
+        recordObj.rating = providedData[16];
+        recordObj.release = providedData[17];
+        recordObj.runTime = providedData[18];
+        recordObj.bookmark = providedData[21];
+        recordObj.content = [];
+    }
+    if(providedData[0] == "Anime" || providedData[0] == "Show") {
+	    for(let m = 0; m < providedData[contentIndex].length; m++) {
+	        if(providedData[contentIndex][m][0] == "Single") {
+	            recordObj.content.push({
+	                "scenario": providedData[contentIndex][m][0],
+	                "name": providedData[contentIndex][m][1],
+	                "type": providedData[contentIndex][m][2],
+	                "release": providedData[contentIndex][m][3],
+	                "watched": providedData[contentIndex][m][4],
+	                "rating": providedData[contentIndex][m][5],
+	                "review": providedData[contentIndex][m][6]
+	            });
+	        }
+	        else if(providedData[contentIndex][m][0] == "Season") {
+	            let recordSeasonObj = {
+	                "scenario": providedData[contentIndex][m][0],
+	                "name": providedData[contentIndex][m][1],
+	                "start": providedData[contentIndex][m][2],
+	                "end": providedData[contentIndex][m][3],
+	                "status": providedData[contentIndex][m][4],
+	                "episodes": []
+	            };
+	            for(let n = 0; n < providedData[contentIndex][m][5].length; n++) {
+	                recordSeasonObj.episodes.push({
+	                    "name": providedData[contentIndex][m][5][n][0],
+	                    "watched": providedData[contentIndex][m][5][n][1],
+	                    "rating": providedData[contentIndex][m][5][n][2],
+	                    "review": providedData[contentIndex][m][5][n][3]
+	                });
+	            }
+	            recordObj.content.push(recordSeasonObj);
+	        }
+	    }
+    }
+    return recordObj;
 };
 
 

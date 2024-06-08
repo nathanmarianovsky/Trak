@@ -2,7 +2,6 @@
 
 BASIC DETAILS: Provides all actions associated to working with show records.
 
-   - showObjCreation: Creates an object associated to a show record in order to save/update.
    - showSave: Handles the saving of a show record by creating the associated folders and data file.
    - showUpdate: Handles the update of a show record.
    - showSearch: Handles the search of imdb show records based on a query.
@@ -21,66 +20,6 @@ BASIC DETAILS: Provides all actions associated to working with show records.
 
 
 var exports = {};
-
-
-
-/*
-
-Creates an object associated to a show record in order to save/update.
-
-   - path and fs provide the means to work with local files.
-   - https provides the means to download files.
-   - tools provides a collection of local functions.
-   - dir is the path to the local user data.
-   - providedData is the data provided by the front-end user submission for show record save/update.
-   - extension is a string to be added onto a record's folder name.
-
-*/
-exports.showObjCreation = (path, fs, https, tools, dir, providedData, extension) => {
-    const showObj = {
-        "category": providedData[0],
-        "name": providedData[1],
-        "alternateName": providedData[2],
-        "review": providedData[3],
-        "directors": providedData[4],
-        "producers": providedData[5],
-        "writers": providedData[6],
-        "musicians": providedData[7],
-        "editors": providedData[8],
-        "cinematographers": providedData[9],
-        "distributors": providedData[11],
-        "productionCompanies": providedData[12],
-        "stars": providedData[13],
-        "genres": providedData[14],
-        "synopsis": providedData[15],
-        "rating": providedData[16],
-        "release": providedData[17],
-        "runTime": providedData[18],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]) + "-" + extension, providedData[19]),
-        "bookmark": providedData[21],
-        "content": []
-    };
-    for(let m = 0; m < providedData[20].length; m++) {
-        let showSeasonObj = {
-            "scenario": providedData[20][m][0],
-            "name": providedData[20][m][1],
-            "start": providedData[20][m][2],
-            "end": providedData[20][m][3],
-            "status": providedData[20][m][4],
-            "episodes": []
-        };
-        for(let n = 0; n < providedData[20][m][5].length; n++) {
-            showSeasonObj.episodes.push({
-                "name": providedData[20][m][5][n][0],
-                "watched": providedData[20][m][5][n][1],
-                "rating": providedData[20][m][5][n][2],
-                "review": providedData[20][m][5][n][3]
-            });
-        }
-        showObj.content.push(showSeasonObj);
-    }
-    return showObj;
-};
 
 
 
@@ -111,7 +50,7 @@ exports.showAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataP
         assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-0", "assets");
         log.info("Creating the assets directory for the new show record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.showObjCreation(path, fs, https, tools, dataPath, data, "0"), "A", dataPath, fs, path, evnt, data, false);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, "0"), "A", dataPath, fs, path, evnt, data, false);
     }
     else {
         // Define the list of library records sharing the same name along with the current record's release date.
@@ -134,7 +73,7 @@ exports.showAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataP
             assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-" + compareList.length, "assets");
             log.info("Creating the assets directory for the new show record. To be located at " + assetsPath);
             fs.mkdirSync(assetsPath, { "recursive": true });
-            tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.showObjCreation(path, fs, https, tools, dataPath, data, compareList.length), "A", dataPath, fs, path, evnt, data, false);
+            tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, compareList.length), "A", dataPath, fs, path, evnt, data, false);
         }
         else {
             // Warn the user that a library record already exists for the one being currently added.
@@ -193,7 +132,7 @@ exports.showUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, da
                 }
                 // If no error occured in renaming the record folder write the data file, and copy over the file assets.
                 else {
-                    tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.showObjCreation(path, fs, https, tools, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
+                    tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
                 }
             });
         }
@@ -205,7 +144,7 @@ exports.showUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, da
     }
     else {
         // Write the data file, and copy over the file assets.
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.showObjCreation(path, fs, https, tools, dataPath, data, fldrValue.substring(fldrValue.lastIndexOf("-") + 1)), "U", dataPath, fs, path, evnt, data, auto, fldrValue);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, fldrValue.substring(fldrValue.lastIndexOf("-") + 1)), "U", dataPath, fs, path, evnt, data, auto, fldrValue);
     }
 };
 

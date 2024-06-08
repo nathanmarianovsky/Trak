@@ -2,7 +2,6 @@
 
 BASIC DETAILS: Provides all actions associated to working with manga records.
 
-   - mangaObjCreation: Creates an object associated to a manga record in order to save/update.
    - mangaSave: Handles the saving of a manga record by creating the associated folders and data file.
    - mangaUpdate: Handles the update of a manga record.
    - mangaSearch: Handles the search of myanimelist manga records based on a query.
@@ -22,66 +21,6 @@ BASIC DETAILS: Provides all actions associated to working with manga records.
 
 
 var exports = {};
-
-
-
-/*
-
-Creates an object associated to a manga record in order to save/update.
-
-   - path and fs provide the means to work with local files.
-   - https provides the means to download files.
-   - tools provides a collection of local functions.
-   - dir is the path to the local user data.
-   - providedData is the data provided by the front-end user submission for manga record save/update.
-   - extension is a string to be added onto a record's folder name.
-
-*/
-exports.mangaObjCreation = (path, fs, https, tools, dir, providedData, extension) => {
-    const mangaObj = {
-        "category": providedData[0],
-        "name": providedData[1],
-        "jname": providedData[2],
-        "review": providedData[3],
-        "writers": providedData[4],
-        "illustrators": providedData[5],
-        "publisher": providedData[6],
-        "jpublisher": providedData[7],
-        "demographic": providedData[8],
-        "start": providedData[9],
-        "end": providedData[11],
-        "genres": providedData[13],
-        "synopsis": providedData[14],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1] != "" ? providedData[1] : providedData[2]) + "-" + extension, providedData[15]),
-        "bookmark": providedData[16],
-        "content": []
-    };
-    for(let m = 0; m < providedData[12].length; m++) {
-        if(providedData[12][m][0] == "Chapter") {
-            mangaObj.content.push({
-                "scenario": providedData[12][m][0],
-                "name": providedData[12][m][1],
-                "release": providedData[12][m][2],
-                "read": providedData[12][m][3],
-                "rating": providedData[12][m][4],
-                "review": providedData[12][m][5]
-            });
-        }
-        else if(providedData[12][m][0] == "Volume") {
-            mangaObj.content.push({
-                "scenario": providedData[12][m][0],
-                "name": providedData[12][m][1],
-                "release": providedData[12][m][2],
-                "read": providedData[12][m][3],
-                "rating": providedData[12][m][4],
-                "review": providedData[12][m][5],
-                "isbn": providedData[12][m][6],
-                "synopsis": providedData[12][m][7]
-            });
-        }
-    }
-    return mangaObj;
-};
 
 
 
@@ -112,7 +51,7 @@ exports.mangaAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, data
         assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-0", "assets");
         log.info("Creating the assets directory for the new manga record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data, "0"), "A", dataPath, fs, path, evnt, data, false);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, "0"), "A", dataPath, fs, path, evnt, data, false);
     }
     else {
         // Define the list of library records sharing the same name along with the current record's release date.
@@ -135,7 +74,7 @@ exports.mangaAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, data
             assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-" + compareList.length, "assets");
             log.info("Creating the assets directory for the new manga record. To be located at " + assetsPath);
             fs.mkdirSync(assetsPath, { "recursive": true });
-            tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data, compareList.length), "A", dataPath, fs, path, evnt, data, false);
+            tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, compareList.length), "A", dataPath, fs, path, evnt, data, false);
         }
         else {
             // Warn the user that a library record already exists for the one being currently added.
@@ -194,7 +133,7 @@ exports.mangaUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, d
                 }
                 // If no error occured in renaming the record folder write the data file, and copy over the file assets.
                 else {
-                    tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
+                    tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
                 }
             });
         }
@@ -206,7 +145,7 @@ exports.mangaUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, d
     }
     else {
         // Write the data file, and copy over the file assets.
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.mangaObjCreation(path, fs, https, tools, dataPath, data, fldrValue.substring(fldrValue.lastIndexOf("-") + 1)), "U", dataPath, fs, path, evnt, data, auto, fldrValue);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, fldrValue.substring(fldrValue.lastIndexOf("-") + 1)), "U", dataPath, fs, path, evnt, data, auto, fldrValue);
     }
 };
 

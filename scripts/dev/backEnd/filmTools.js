@@ -2,7 +2,6 @@
 
 BASIC DETAILS: Provides all actions associated to working with film records.
 
-   - filmObjCreation: Creates an object associated to a film record in order to save/update.
    - filmSave: Handles the saving of a film record by creating the associated folders and data file.
    - filmUpdate: Handles the update of a film record.
    - filmSearch: Handles the search of imdb film records based on a query.
@@ -21,46 +20,6 @@ BASIC DETAILS: Provides all actions associated to working with film records.
 
 
 var exports = {};
-
-
-
-/*
-
-Creates an object associated to a film record in order to save/update.
-
-   - path and fs provide the means to work with local files.
-   - https provides the means to download files.
-   - tools provides a collection of local functions.
-   - dir is the path to the local user data.
-   - providedData is the data provided by the front-end user submission for film record save/update.
-   - extension is a string to be added onto a record's folder name.
-
-*/
-exports.filmObjCreation = (path, fs, https, tools, dir, providedData, extension) => {
-    return {
-        "category": providedData[0],
-        "name": providedData[1],
-        "alternateName": providedData[2],
-        "review": providedData[3],
-        "directors": providedData[4],
-        "producers": providedData[5],
-        "writers": providedData[6],
-        "musicians": providedData[7],
-        "editors": providedData[8],
-        "cinematographers": providedData[9],
-        "distributors": providedData[11],
-        "productionCompanies": providedData[12],
-        "stars": providedData[13],
-        "genres": providedData[14],
-        "synopsis": providedData[15],
-        "rating": providedData[16],
-        "release": providedData[17],
-        "runTime": providedData[18],
-        "watched": providedData[19],
-        "img": tools.objCreationImgs(path, fs, https, tools, dir, providedData[0] + "-" + tools.formatFolderName(providedData[1]) + "-" + extension, providedData[20]),
-        "bookmark": providedData[21]
-    };
-};
 
 
 
@@ -91,7 +50,7 @@ exports.filmAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataP
         assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-0", "assets");
         log.info("Creating the assets directory for the new film record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.filmObjCreation(path, fs, https, tools, dataPath, data, "0"), "A", dataPath, fs, path, evnt, data, false);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, "0"), "A", dataPath, fs, path, evnt, data, false);
     }
     else {
         // Define the list of library records sharing the same name along with the current record's release date.
@@ -114,7 +73,7 @@ exports.filmAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataP
             assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-" + compareList.length, "assets");
             log.info("Creating the assets directory for the new film record. To be located at " + assetsPath);
             fs.mkdirSync(assetsPath, { "recursive": true });
-            tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.filmObjCreation(path, fs, https, tools, dataPath, data, compareList.length), "A", dataPath, fs, path, evnt, data, false);
+            tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, compareList.length), "A", dataPath, fs, path, evnt, data, false);
         }
         else {
             // Warn the user that a library record already exists for the one being currently added.
@@ -173,7 +132,7 @@ exports.filmUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, da
                 }
                 // If no error occured in renaming the record folder write the data file, and copy over the file assets.
                 else {
-                    tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.filmObjCreation(path, fs, https, tools, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
+                    tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, extension), "U", dataPath, fs, path, evnt, data, auto, newFldr);
                 }
             });
         }
@@ -185,7 +144,7 @@ exports.filmUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, da
     }
     else {
         // Write the data file, and copy over the file assets.
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), exports.filmObjCreation(path, fs, https, tools, dataPath, data, fldrValue.substring(fldrValue.lastIndexOf("-") + 1)), "U", dataPath, fs, path, evnt, data, auto, fldrValue);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, fldrValue.substring(fldrValue.lastIndexOf("-") + 1)), "U", dataPath, fs, path, evnt, data, auto, fldrValue);
     }
 };
 
