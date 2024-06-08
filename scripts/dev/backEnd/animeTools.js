@@ -122,7 +122,7 @@ exports.animeAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, data
     }
     else {
         // Define the list of library records sharing the same name along with the current record's release date.
-        const compareList = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(primaryName)),
+        const compareList = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.split("-").slice(0, -1).join("-") == primaryName),
             currentContent = [];
         for(let m = 0; m < data[12].length; m++) {
             if(data[12][m][0] == "Single") {

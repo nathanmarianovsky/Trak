@@ -320,9 +320,11 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
         	// Otherwise, if no error was thrown proceed as designed.
         	else {
         		// Define the list of current associations and the id of the primary record submitted.
-        		const associationsFileList = JSON.parse(file).associations;
-    			let focusItem = submissionArr[3] == "" ? submissionArr[0] + "-" + tools.formatFolderName(submissionArr[1]) : submissionArr[3],
-        			w = 0;
+        		const associationsFileList = JSON.parse(file).associations,
+        			focusName = submissionArr[0] + "-" + tools.formatFolderName(submissionArr[1]);
+    			let focusItem = submissionArr[3] != "" ? submissionArr[3] : focusName
+    				+ (fs.readdirSync(path.join(originalPath, "Trak", "data")).filter(file => fs.statSync(path.join(originalPath, "Trak", "data", file)).isDirectory() && file.includes(focusName)).length - 1);
+        		let w = 0;
         		// Iterate through the list of current associations.
         		for(; w < associationsFileList.length; w++) {
         			// If the current association contains any of the records in the submitted association then update the current association.

@@ -115,7 +115,7 @@ exports.showAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataP
     }
     else {
         // Define the list of library records sharing the same name along with the current record's release date.
-        const compareList = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.includes(primaryName)),
+        const compareList = fs.readdirSync(path.join(dataPath, "Trak", "data")).filter(file => fs.statSync(path.join(dataPath, "Trak", "data", file)).isDirectory() && file.split("-").slice(0, -1).join("-") == primaryName),
             currentDate = data[17];
         // Iterate through the list of comparable library records and determine if there is one that already matches the current record by comparing release dates.
         let q = 0;

@@ -267,7 +267,7 @@ exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, 
 		if(curFldr != "") { fldr = curFldr; }
 		else {
 			fldr = info[0] + "-" + exports.formatFolderName(info[1] != "" ? info[1] : info[2]);
-			fldr += "-" + (fs.readdirSync(path.join(savePath, "Trak", "data")).filter(file => fs.statSync(path.join(savePath, "Trak", "data", file)).isDirectory() && file.includes(fldr)).length - 1);
+			fldr += "-" + (fs.readdirSync(path.join(savePath, "Trak", "data")).filter(file => fs.statSync(path.join(savePath, "Trak", "data", file)).isDirectory() && file.split("-").slice(0, -1).join("-") == fldr).length - 1);
 		}
 	}
 	else if(info[0] == "Book") {
@@ -277,7 +277,7 @@ exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, 
 		if(curFldr != "") { fldr = curFldr; }
 		else {
 			fldr = info[0] + "-" + exports.formatFolderName(info[1]);
-			fldr += "-" + (fs.readdirSync(path.join(savePath, "Trak", "data")).filter(file => fs.statSync(path.join(savePath, "Trak", "data", file)).isDirectory() && file.includes(fldr)).length - 1);
+			fldr += "-" + (fs.readdirSync(path.join(savePath, "Trak", "data")).filter(file => fs.statSync(path.join(savePath, "Trak", "data", file)).isDirectory() && file.split("-").slice(0, -1).join("-") == fldr).length - 1);
 		}
 	}
 	if(mode == "U" && writeData.img[0] != "") { writeData.img = writeData.img.map(file => path.join(savePath, "Trak", "data", fldr, "assets", path.basename(file))); }

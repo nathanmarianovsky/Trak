@@ -715,7 +715,6 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 relatedContentListeners(showProductionCompanies);
                 updateFetchedDataString(showStarring, recordData.stars, true);
                 relatedContentListeners(showStarring);
-                showRating.value = recordData.rating + " m";
                 updateImgLoad("Show", showImg, recordData.img);
                 updateGenreLoad("Show", showOtherGenres, recordData.genres);
                 relatedContentListeners(showOtherGenres);
