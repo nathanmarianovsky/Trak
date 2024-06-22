@@ -255,22 +255,26 @@ Creates an object associated to a record in order to save/update.
 
 */
 exports.recordObjCreation = (path, fs, https, dir, providedData, extension) => {
+    // Define the folder name of the current record.
     let cur = providedData[0] + "-";
     cur += ((providedData[0] == "Anime" || providedData[0] == "Manga")
     	? exports.formatFolderName(providedData[1] != "" ? providedData[1] : providedData[2])
     	: exports.formatFolderName(providedData[1]));
     cur += "-" + (providedData[0] == "Book" ? providedData[3] : extension);
+    // Define the indices associated to the image and related content material submission.
     let imgIndex = 0,
     	contentIndex = 0;
     if(providedData[0] == "Anime") { imgIndex = 14; contentIndex = 12; }
-    else if(providedData[0] == "Book" || providedData == "Manga") { imgIndex = 15; }
+    else if(providedData[0] == "Book" || providedData[0] == "Manga") { imgIndex = 15; }
     else if(providedData[0] == "Film") { imgIndex = 20; }
     else if(providedData[0] == "Show") { imgIndex = 19; contentIndex = 20; }
+    // Define the record object containing the parameters common to all record types.
     const recordObj = {
         "category": providedData[0],
         "name": providedData[1],
         "img": exports.objCreationImgs(path, fs, https, dir, cur, providedData[imgIndex])
     };
+    // Modify the record object accordingly for an anime record.
     if(providedData[0] == "Anime") {
 	    recordObj.jname = providedData[2];
 	    recordObj.review = providedData[3];
@@ -285,6 +289,23 @@ exports.recordObjCreation = (path, fs, https, dir, providedData, extension) => {
 	    recordObj.bookmark = providedData[15];
 	    recordObj.content = [];
     }
+    // Modify the record object accordingly for a book record.
+    else if(providedData[0] == "Book") {
+    	recordObj.originalName = providedData[2];
+        recordObj.isbn = providedData[3];
+        recordObj.authors = providedData[4];
+        recordObj.publisher = providedData[5];
+        recordObj.publicationDate = providedData[6];
+        recordObj.pages = providedData[7];
+        recordObj.read = providedData[8];
+        recordObj.media = providedData[9];
+        recordObj.synopsis = providedData[11];
+        recordObj.rating = providedData[12];
+        recordObj.review = providedData[13];
+        recordObj.genres = providedData[14];
+        recordObj.bookmark = providedData[16];
+    }
+    // Modify the record object accordingly for a film record.
     else if(providedData[0] == "Film") {
     	recordObj.alternateName = providedData[2];
     	recordObj.review = providedData[3];
@@ -305,6 +326,7 @@ exports.recordObjCreation = (path, fs, https, dir, providedData, extension) => {
     	recordObj.watched = providedData[19];
     	recordObj.bookmark = providedData[21];
     }
+    // Modify the record object accordingly for a manga record.
     else if(providedData[0] == "Manga") {
     	recordObj.jname = providedData[2];
         recordObj.review = providedData[3];
@@ -319,6 +341,7 @@ exports.recordObjCreation = (path, fs, https, dir, providedData, extension) => {
         recordObj.synopsis = providedData[14];
         recordObj.bookmark = providedData[16];
         recordObj.content = [];
+        // Add the related content for the manga record.
 	    for(let m = 0; m < providedData[12].length; m++) {
 	        if(providedData[12][m][0] == "Chapter") {
 	            recordObj.content.push({
@@ -344,6 +367,7 @@ exports.recordObjCreation = (path, fs, https, dir, providedData, extension) => {
 	        }
 	    }
     }
+    // Modify the record object accordingly for a show record.
     else if(providedData[0] == "Show") {
     	recordObj.alternateName = providedData[2];
         recordObj.review = providedData[3];
@@ -364,6 +388,7 @@ exports.recordObjCreation = (path, fs, https, dir, providedData, extension) => {
         recordObj.bookmark = providedData[21];
         recordObj.content = [];
     }
+    // For anime and show record types add the related content.
     if(providedData[0] == "Anime" || providedData[0] == "Show") {
 	    for(let m = 0; m < providedData[contentIndex].length; m++) {
 	        if(providedData[contentIndex][m][0] == "Single") {

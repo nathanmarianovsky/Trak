@@ -284,7 +284,7 @@ exports.animeFetchDetails = (log, malScraper, tools, ev, name) => {
             });
         });
         // Fetch all possible images associated to the anime record.
-        malScraper.getPictures({ "name": animeData.title, "id": animeData.id }).then(malImgArr => {
+        malScraper.getPictures(animeData.title).then(malImgArr => {
             // Send the attained data to the front-end.
             log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + name + ".");
             let allImgArr = malImgArr.map(pic => pic.imageLink);
@@ -295,6 +295,7 @@ exports.animeFetchDetails = (log, malScraper, tools, ev, name) => {
                 animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
             ]);
         }).catch(err => {
+            console.log(err);
             log.error("There was an issue in obtaining the pictures associated to the anime record " + name + ".");
             ev.sender.send("animeFetchDetailsResult", [
                 animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, [animeData.picture]], startDate, endDate,
