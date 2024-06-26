@@ -943,6 +943,12 @@ Driver function for adding all log listeners.
 
 */
 exports.addLogListeners = (path, fs, log, ipc, tools, originalPath) => {
+	if(process.platform == "linux") {
+		originalPath = path.join(process.env.HOME, ".config");
+	}
+	else if(process.platform == "darwin") {
+		originalPath = path.join(process.env.HOME, "Library");
+	}
 	// Handles the request for getting the logs since the last application load.
 	ipc.on("logsRequest", event => {
 		// Read the logs file.
