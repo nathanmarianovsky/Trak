@@ -31,7 +31,7 @@
         "zip-local": "^0.3.5"
     },
     "devDependencies": {
-        "electron": "^30.1.0",
+        "electron": "^31.1.0",
         "electron-builder": "^24.13.3"
     },
     "scripts": {
@@ -43,7 +43,9 @@
     "build": {
         "appId": "Trak",
         "win": {
-            "target": ["nsis"],
+            "target": [
+                "nsis"
+            ],
             "icon": "./assets/app.ico"
         },
         "nsis": {
@@ -58,7 +60,9 @@
             "artifactName": "Trak-Windows-amd64.exe"
         },
         "linux": {
-            "target": ["snap"],
+            "target": [
+                "snap"
+            ],
             "icon": "./assets/greyLogo.png",
             "category": "Utility"
         },
