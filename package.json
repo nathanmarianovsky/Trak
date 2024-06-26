@@ -3,7 +3,10 @@
     "version": "0.8.0",
     "description": "A tracker designed to display and maintain details of content read and/or watched.",
     "main": "index.js",
-    "author": "Nathan Marianovsky",
+    "author": {
+        "name": "Nathan Marianovsky",
+        "email": "nathanmarianovsky@duck.com"
+    },
     "license": "MIT",
     "type": "commonjs",
     "dependencies": {
@@ -29,17 +32,38 @@
     },
     "devDependencies": {
         "electron": "^30.1.0",
-        "electron-installer-debian": "^3.2.0",
-        "electron-packager": "^17.1.2",
-        "electron-wix-msi": "^5.1.3"
+        "electron-builder": "^24.13.3"
     },
     "scripts": {
         "compress": "node ./minifier.js",
-        "devStart": "node ./minifier.js && electron . --dev",
-        "distStart": "node ./minifier.js && electron .",
-        "packageWindows-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the EXE File: && npm exec electron-packager . Trak --platform=win32 --arch=x64",
-        "buildWindows-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the EXE File: && npm exec electron-packager . Trak --platform=win32 --arch=x64 && echo Building the MSI Package: && node build.js -amdWindows",
-        "buildLinux-amd64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the Executable File: && npm exec electron-packager . --platform=linux --arch=x64 && echo Building the Debian Package: && node build.js -amdDebian",
-        "buildLinux-arm64": "echo Compressing Files: && node ./minifier.js && echo Electron-Packager is Creating the Executable File: && npm exec electron-packager . --platform=linux --arch=arm && echo Building the Debian Package: && node build.js -armDebian"
+        "dev": "node ./minifier.js && electron . --dev",
+        "dist": "node ./minifier.js && electron .",
+        "build": "echo Compressing Files: && node ./minifier.js && echo Electron-Builder is Building the installer File: && electron-builder"
+    },
+    "build": {
+        "appId": "Trak",
+        "win": {
+            "target": ["nsis"],
+            "icon": "./assets/app.ico"
+        },
+        "nsis": {
+            "oneClick": false,
+            "installerIcon": "./assets/app.ico",
+            "uninstallerIcon": "./assets/app.ico",
+            "uninstallDisplayName": "Trak",
+            "license": "./LICENSE.md",
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": false,
+            "createStartMenuShortcut": true,
+            "artifactName": "Trak-Windows-amd64.exe"
+        },
+        "linux": {
+            "target": ["snap"],
+            "icon": "./assets/greyLogo.png",
+            "category": "Utility"
+        },
+        "snap": {
+            "artifactName": "Trak-Linux-${arch}.snap"
+        }
     }
 }

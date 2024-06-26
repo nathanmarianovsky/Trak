@@ -2354,7 +2354,7 @@ exports.createWindow = (extension, dir, BrowserWindow, fs, path, log, devCheck, 
     		"contextIsolation": false
     	},
     	"icon": iconPath,
-    	"frame": extension != "splash",
+    	"frame": false,
     	"titleBarStyle": "hidden"
 	});
 	extension != "splash" ? win.loadFile(path.join(dir, "Trak", "localPages", extension + ".html")) : win.loadFile(path.join(__dirname, "../../../pages", "dist", extension + ".html"));
@@ -2475,8 +2475,8 @@ exports.checkForUpdate = (os, https, fs, path, log, dir, win) => {
 	                	let fileName = "Trak-",
 	                		ending = ""
 	                		downloadURL = "";
-	                	if(os.type() == "Windows_NT") { fileName += "Windows-"; ending = ".msi"; }
-	                	else if(os.type() == "Linux") { fileName += "Linux-"; ending = ".deb"; }
+	                	if(os.type() == "Windows_NT") { fileName += "Windows-"; ending = ".exe"; }
+	                	else if(os.type() == "Linux") { fileName += "Linux-"; ending = ".snap"; }
 	                	if(os.arch() == "x64") { fileName += "amd64" }
 	                	else if(os.arch() == "arm64") { fileName += "arm64" }
 	                	fileName += ending;
