@@ -587,7 +587,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hid
 			list = [],
 			submissionList = [];
 		// Define the collection of library records if it exists.
-		if(fs.existsSync(pathDir)) { list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()); }
+		if(fs.existsSync(pathDir)) { list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory() && file.split("-").length > 2); }
 		// Iterate through the collection of library records.
 		for(let r = 0; r < list.length; r++) {
 			// Read the library record data file and push a promise of the record data into the overall collection.

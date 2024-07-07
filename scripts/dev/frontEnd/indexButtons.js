@@ -250,8 +250,10 @@ window.addEventListener("load", () => {
         outerLayer.style.display = "block";
         // Display the content search button.
         contentSearch.style.display = "inline-block";
-        // Display the bookmarks button.
-        updateBookmark.style.display = "inline-block";
+        if(document.getElementById("tableBody").children.length > 0) {
+            // Display the bookmarks button.
+            updateBookmark.style.display = "inline-block";
+        }
         // Hide the home button.
         indexHome.style.display = "none";
         // Hide the content search inputs.
