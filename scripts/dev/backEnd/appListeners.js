@@ -503,7 +503,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hid
 		// Read the data file associated to the library record.
 		fs.readFile(path.join(originalPath, "Trak", "data", submissionArr[0], "data.json"), "UTF8", (err, file) => {
 			// Send the record data to the front-end.
-			event.sender.send("sentLibraryRecord" + submissionArr[1], [submissionArr[0], err ? "" : file]);
+			event.sender.send("sentLibraryRecord" + submissionArr[1], [submissionArr[0], err ? "" : file, dataPath]);
 			// Log that there was an issue reading the data file associated to the library record requested.
 			if(err) { log.error("There was an issue reading the library record data file associated to the " + tools.parseFolder(submissionArr[0]) + "."); }
 		});
@@ -618,7 +618,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hid
 		let pathDir = path.join(originalPath, "Trak", "data"),
 			list = [];
 			// Define the collection of library records if it exists.
-		if(fs.existsSync(pathDir)) { list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory()); }
+		if(fs.existsSync(pathDir)) { list = fs.readdirSync(pathDir).filter(file => fs.statSync(path.join(pathDir, file)).isDirectory() && file.split("-").length > 2); }
 		let n = 0;
 		// Iterate through the collection of library records.
 		for(; n < list.length; n++) {

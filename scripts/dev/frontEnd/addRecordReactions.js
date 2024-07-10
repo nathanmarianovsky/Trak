@@ -297,7 +297,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 relatedContentListeners(animeStudio);
                 updateFetchedDataString(animeLicense, recordData.license, true);
                 relatedContentListeners(animeLicense);
-                updateImgLoad("Anime", animeImg, recordData.img);
+                updateImgLoad("Anime", animeImg, recordData.img, recordArr[2]);
                 updateGenreLoad("Anime", animeOtherGenres, recordData.genres);
                 relatedContentListeners(animeOtherGenres);
                 // Display a preloader to indicate that the page is still loading the anime related content. This can take a bit of time depending on the amount to be loaded.
@@ -434,7 +434,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 updateFetchedDataDate(bookLastRead, recordData.read, true);
                 relatedContentListeners(bookLastRead);
                 bookMediaType.value = recordData.media;
-                updateImgLoad("Book", bookImg, recordData.img);
+                updateImgLoad("Book", bookImg, recordData.img, recordArr[2]);
                 updateGenreLoad("Book", bookOtherGenres, recordData.genres);
                 relatedContentListeners(bookOtherGenres);
                 const updateBookPreloader = document.getElementById("bookPreloader");
@@ -512,7 +512,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 updateFetchedDataString(filmStarring, recordData.stars, true);
                 relatedContentListeners(filmStarring);
                 filmRating.value = recordData.rating;
-                updateImgLoad("Film", filmImg, recordData.img);
+                updateImgLoad("Film", filmImg, recordData.img, recordArr[2]);
                 updateGenreLoad("Film", filmOtherGenres, recordData.genres);
                 relatedContentListeners(filmOtherGenres);
                 const updateFilmPreloader = document.getElementById("filmPreloader");
@@ -581,7 +581,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 updateFetchedDataDate(mangaEndDate, recordData.end, true);
                 relatedContentListeners(mangaEndDate);
                 updateFetchedDataDate(mangaEndDate, recordData.end, true);
-                updateImgLoad("Manga", mangaImg, recordData.img);
+                updateImgLoad("Manga", mangaImg, recordData.img, recordArr[2]);
                 updateGenreLoad("Manga", mangaOtherGenres, recordData.genres);
                 relatedContentListeners(mangaOtherGenres);
                 // Display a preloader to indicate that the page is still loading the manga related content. This can take a bit of time depending on the amount to be loaded.
@@ -715,7 +715,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 relatedContentListeners(showProductionCompanies);
                 updateFetchedDataString(showStarring, recordData.stars, true);
                 relatedContentListeners(showStarring);
-                updateImgLoad("Show", showImg, recordData.img);
+                updateImgLoad("Show", showImg, recordData.img, recordArr[2]);
                 updateGenreLoad("Show", showOtherGenres, recordData.genres);
                 relatedContentListeners(showOtherGenres);
                 // Display a preloader to indicate that the page is still loading the show related content. This can take a bit of time depending on the amount to be loaded.

@@ -68,11 +68,18 @@ Updates the current record image input.
    - category is a string representing whether the current record if an anime, book, film, manga, or show.
    - imgElem is the page input corresponding to the record image.
    - imgData is an array containing the source links to record images.
+   - curPath is a string corresponding to the current user data path.
 
 */
-const updateImgLoad = (category, imgElem, imgData) => {
-    imgElem.setAttribute("list", imgData.join(","));
-    imgElem.setAttribute("previous", imgData.join(","));
+const updateImgLoad = (category, imgElem, imgData, curPath) => {
+    imgData = imgData.map(elem => {
+        let splitter1 = elem.split("Trak/data"),
+            splitter2 = elem.split("Trak\\data");
+        return curPath + (splitter1.length > 1 ? "/Trak/data" + splitter1[1] : "\\Trak\\data" + splitter2[1]);
+    });
+    const imgStr = imgData.join(",");
+    imgElem.setAttribute("list", imgStr);
+    imgElem.setAttribute("previous", imgStr);
     imgElem.setAttribute("src", imgData.length > 0 && imgData[0] != "" ? imgData[0] : imgElem.getAttribute("default"));
     const favImgLink = document.getElementById(category.toLowerCase() + "FavoriteImageLink");
     if(!imgElem.getAttribute("src").includes("imgDef.png")) {
@@ -778,9 +785,9 @@ const associationsInit = ipcElec => {
     // Proceed once all library records have been obtained.
     ipcElec.on("sentAllRecords", (recordsEvent, recordsArr) => {
         // Iterate through the list of library records.
-        for(let m = 0; m < recordsArr.length; m++) {
+        for(let m = 0; m < recordsArr[0].length; m++) {
             // Define the current library record data.
-            let curData = JSON.parse(recordsArr[m][1]);
+            let curData = JSON.parse(recordsArr[0][m][1]);
             // Create an entry in the associations data object.
             associationsDataObj[curData.name + " (" + curData.category + ")"] = (curData.img.length > 0 ? curData.img[0] : "");
         }
