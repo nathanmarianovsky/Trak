@@ -432,7 +432,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
     // Send a request to the back-end to obtain all library records.
     ipcRenderer.send("getAllRecords");
     // Once the library records have been obtained properly attach them to the page.
-    ipcRenderer.once("sentAllRecords", (recordsEvent, recordsArr) => {
+    ipcRenderer.once("sentAllRecords", (recordsEvent, inputArr) => {
         // Attach a row to the html table body for each record.
         const tableDiv = document.getElementById("tableDiv"),
             tableBody = document.getElementById("tableBody"),
@@ -440,6 +440,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
             synopsisModalContent = document.getElementById("synopsisModalContent");
         tableDiv.style.height = (diff + 506) + "px";
         tableBody.innerHTML = "";
+        let recordsArr = inputArr[0];
         if(recordsArr.length > 0) { document.getElementById("updateBookmark").style.display = "inline-block"; }
         // Listen for a window resize event in order to change the table height.
         window.addEventListener("resize", () => ipcRenderer.send("getAppHeight"));
@@ -510,7 +511,11 @@ ipcRenderer.on("loadRows", (event, diff) => {
                     // Define the record tooltip image if available.
                     let imgStr = "";
                     if(recordData.img[0] != "") {
-                        imgStr = '<img width="150" height="auto" src="' + recordData.img[0] + '">';
+                        let splitter1 = recordData.img[0].split("Trak/data"),
+                            splitter2 = recordData.img[0].split("Trak\\data"),
+                            split = inputArr[1] + (splitter1.length > 1 ? "/Trak/data" + splitter1[1] : "\\Trak\\data" + splitter2[1]);
+                        imgStr = '<img width="150" height="auto" src="' + split + '">';
+                        // imgStr = '<img width="150" height="auto" src="' + recordData.img[0] + '">';
                     }
                     // Proceed only if the record is an anime with related content.
                     if(recordData.category == "Anime" && recordData.content.length > 0) {

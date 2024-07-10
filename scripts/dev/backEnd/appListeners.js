@@ -608,7 +608,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hid
 		}
 		// Once all promised associated to the library records have been resolved asend the final collection to the front-end.
 		Promise.all(submissionList).then(results => {
-			event.sender.send("sentAllRecords", results);
+			event.sender.send("sentAllRecords", [results, dataPath]);
 		});
 	});
 
