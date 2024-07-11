@@ -349,14 +349,12 @@ window.addEventListener("load", () => {
         	});
             // Listen for a click on the apply button in order to submit a back-end request to update the configuration files.
         	settingsApply.addEventListener("click", e => {
-                // Format the submitted directory.
-        		const submitPath = appPath.value.substring(appPath.value.length - 10) == "\\Trak\\data" ? appPath.value : appPath.value + "\\Trak\\data";
                 // Check that the window sizes meet the minimal requirements.
                 if(parseInt(primaryWindowWidth.value) >= 1000 && parseInt(primaryWindowHeight.value) >= 800 && parseInt(secondaryWindowWidth.value) >= 1400 && parseInt(secondaryWindowHeight.value) >= 1000
                     && Array.from(document.getElementsByClassName("categoryActiveCheckbox")).map(elem => elem.children[0].checked).reduce((accum, cur) => accum || cur, false)) {
             		// Submit a back-end request to update the configuration files.
                     ipcRenderer.send("settingsSave", [
-            			submitPath,
+            			appPath.value,
         				primaryColor.value,
         				secondaryColor.value,
         				primaryWindowWidth.value,

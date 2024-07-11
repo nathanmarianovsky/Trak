@@ -49,8 +49,11 @@ Handles the update of all settings files.
 */
 exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, evnt) => {
     // Define the new data to be saved for the settings configuration file.
+    const checkVal = dataArr[0].substring(dataArr[0].length - 10),
+        formattedPath = ((checkVal == "\\Trak\\data") || (checkVal == "/Trak/data"))
+            ? dataArr[0] : (dataArr[0] + (process.env.APPDATA ? "\\Trak\\data" : "/Trak/data"));
     const writeData = {
-        "path": dataArr[0],
+        "path": formattedPath,
         "primaryColor": dataArr[1],
         "secondaryColor": dataArr[2],
         "primaryWindowWidth": dataArr[3],
@@ -234,11 +237,11 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                         fs.copy(configurationData.current.path, path.join(writeData.path), err => {
                                             if(err) {
                                                 log.error("There was an error in copying the original data associated to the records.");
-                                                event.sender.send("dataCopyFailure");
+                                                evnt.sender.send("dataCopyFailure");
                                             }
                                             else {
                                                 log.info("The user is being asked on whether they would like to delete the library records data in the previous save location.");
-                                                event.sender.send("dataOriginalDeleteAsk", false);
+                                                evnt.sender.send("dataOriginalDeleteAsk", false);
                                             }
                                         });
                                     }
