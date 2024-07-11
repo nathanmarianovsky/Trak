@@ -768,7 +768,7 @@ const associationsInit = ipcElec => {
                     let selectedData = JSON.parse(autoArr[1]),
                         itemRelease = getRecordRelease(selectedData);
                     // Create an association on the associations modal.
-                    associationCreation(autoArr[0], selectedData.category, itemRelease, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "");
+                    associationCreation(ipcElec, autoArr[0], selectedData.category, itemRelease, selectedData.name, selectedData.img.length > 0 ? selectedData.img[0] : "");
                     // Clear the autocomplete input search bar.
                     autocompleteInput.value = "";
                     autocompleteInput.nextElementSibling.nextElementSibling.classList.remove("active");
@@ -802,6 +802,7 @@ const associationsInit = ipcElec => {
 
 Creates an association listing in the notifications modal.
 
+   - ipcApp provides the means to operate the Electron app.
    - itemId is a string corresponding to the id of a record.
    - itemCategory is a string corresponding to the category of a record.
    - itemRel is a string corresponding to the release date of a record.
@@ -809,48 +810,57 @@ Creates an association listing in the notifications modal.
    - itemImg is a string corresponding to the image of a record.
 
 */
-const associationCreation = (itemId, itemCategory, itemRel, itemTitle, itemImg) => {
-    // Define the portions of the association listed item.
-    const associationsCollection = document.getElementById("associationsCollection");
-    let hldr = [];
-    if(!Array.from(associationsCollection.children).map(elem => elem.getAttribute("associationId")).includes(itemId)) {
-        const outerLI = document.createElement("li"),
-            img = document.createElement("img"),
-            imgIcon = document.createElement("i"),
-            span = document.createElement("span"),
-            par = document.createElement("p"),
-            link = document.createElement("a"),
-            linkIcon = document.createElement("i");
-        // Modify the association components appropriately.
-        outerLI.classList.add("collection-item", "avatar");
-        outerLI.setAttribute("associationId", itemId);
-        outerLI.setAttribute("associationCategory", itemCategory);
-        outerLI.setAttribute("associationTitle", itemTitle);
-        if(itemRel != "N/A") {
-            hldr = itemRel.split("/");
+const associationCreation = (ipcApp, itemId, itemCategory, itemRel, itemTitle, itemImg) => {
+    // Fetch the data directory.
+    ipcApp.send("getDataPath");
+    // Proceed once the data directory has been properly fetched.
+    ipcApp.on("sentDataPath", (event, imgBasePath) => {
+        // Define the portions of the association listed item.
+        const associationsCollection = document.getElementById("associationsCollection");
+        let hldr = [];
+        if(!Array.from(associationsCollection.children).map(elem => elem.getAttribute("associationId")).includes(itemId)) {
+            const outerLI = document.createElement("li"),
+                img = document.createElement("img"),
+                imgIcon = document.createElement("i"),
+                span = document.createElement("span"),
+                par = document.createElement("p"),
+                link = document.createElement("a"),
+                linkIcon = document.createElement("i");
+            // Modify the association components appropriately.
+            outerLI.classList.add("collection-item", "avatar");
+            outerLI.setAttribute("associationId", itemId);
+            outerLI.setAttribute("associationCategory", itemCategory);
+            outerLI.setAttribute("associationTitle", itemTitle);
+            if(itemRel != "N/A") {
+                hldr = itemRel.split("/");
+            }
+            outerLI.setAttribute("associationRelease", itemRel == "N/A" ? "" : hldr[2] + "-" + hldr[0] + "-" + hldr[1]);
+            // Modify the saved absolute path of an association image to a relative one.
+            let splitter1 = itemImg.split("Trak/data"),
+                splitter2 = itemImg.split("Trak\\data"),
+                split = imgBasePath + (splitter1.length > 1 ? "/Trak/data" + splitter1[1] : "\\Trak\\data" + splitter2[1]);
+            img.setAttribute("src", split);
+            img.classList.add("circle");
+            imgIcon.classList.add("material-icons", "circle");
+            imgIcon.textContent = "bookmark";
+            span.classList.add("title", "recordsNameRowDiv", "associationTitle");
+            span.textContent = itemTitle;
+            span.setAttribute("id", itemId);
+            par.innerHTML = itemCategory + "<br>Released: " + itemRel;
+            link.classList.add("secondary-content");
+            linkIcon.classList.add("material-icons", "associationDelete");
+            linkIcon.textContent = "close";
+            link.append(linkIcon);
+            // Attach the association to the associations modal.
+            outerLI.append(itemImg != "" ? img : imgIcon, span, par, link);
+            associationsCollection.append(outerLI);
+            // Sort the associations alphabetically on the associations modal.
+            let newLst = Array.from(associationsCollection.children);
+            newLst.sort((lhs, rhs) => (new Date(lhs.getAttribute("associationRelease"))).getTime() - (new Date(rhs.getAttribute("associationRelease"))).getTime());
+            associationsCollection.innerHTML = "";
+            newLst.forEach(elem => associationsCollection.append(elem));
         }
-        outerLI.setAttribute("associationRelease", itemRel == "N/A" ? "" : hldr[2] + "-" + hldr[0] + "-" + hldr[1]);
-        img.setAttribute("src", itemImg);
-        img.classList.add("circle");
-        imgIcon.classList.add("material-icons", "circle");
-        imgIcon.textContent = "bookmark";
-        span.classList.add("title", "recordsNameRowDiv", "associationTitle");
-        span.textContent = itemTitle;
-        span.setAttribute("id", itemId);
-        par.innerHTML = itemCategory + "<br>Released: " + itemRel;
-        link.classList.add("secondary-content");
-        linkIcon.classList.add("material-icons", "associationDelete");
-        linkIcon.textContent = "close";
-        link.append(linkIcon);
-        // Attach the association to the associations modal.
-        outerLI.append(itemImg != "" ? img : imgIcon, span, par, link);
-        associationsCollection.append(outerLI);
-        // Sort the associations alphabetically on the associations modal.
-        let newLst = Array.from(associationsCollection.children);
-        newLst.sort((lhs, rhs) => (new Date(lhs.getAttribute("associationRelease"))).getTime() - (new Date(rhs.getAttribute("associationRelease"))).getTime());
-        associationsCollection.innerHTML = "";
-        newLst.forEach(elem => associationsCollection.append(elem));
-    }
+    });
 };
 
 

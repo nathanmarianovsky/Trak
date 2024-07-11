@@ -515,7 +515,6 @@ ipcRenderer.on("loadRows", (event, diff) => {
                             splitter2 = recordData.img[0].split("Trak\\data"),
                             split = inputArr[1] + (splitter1.length > 1 ? "/Trak/data" + splitter1[1] : "\\Trak\\data" + splitter2[1]);
                         imgStr = '<img width="150" height="auto" src="' + split + '">';
-                        // imgStr = '<img width="150" height="auto" src="' + recordData.img[0] + '">';
                     }
                     // Proceed only if the record is an anime with related content.
                     if(recordData.category == "Anime" && recordData.content.length > 0) {

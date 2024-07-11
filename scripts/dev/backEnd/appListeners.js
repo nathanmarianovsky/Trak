@@ -388,6 +388,11 @@ Driver function for adding all listeners associated to the maintenance of record
 
 */
 exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hiddenArr, goodreadsScraper, malScraper, movier, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+	// Handles the fetching of the user data directory.
+	ipc.on("getDataPath", event => {
+		event.sender.send("sentDataPath", dataPath);
+	});
+
 	// Create the listeners for adding and updating library records.
 	const operationsArr = ["Add", "Update"];
 	for(let p = 0; p < operationsArr.length; p++) {
