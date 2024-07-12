@@ -1165,26 +1165,31 @@ ipcRenderer.on("loadRows", (event, diff) => {
                 ipcRenderer.send("notificationsSave", newNotificationsArr);
                 // Once the back-end has processed the list of notifications sent over display the appropriate notifications on the home page.
                 ipcRenderer.once("notificationsReady", (event, currentNotificationsFileStr) => {
-                    // Read the notifications configuration file.
-                    const curNotifications = JSON.parse(currentNotificationsFileStr);
-                    // Clear any current notifications.
-                    document.getElementById("notificationsCollection").innerHTML = "";
-                    // Iterate through all application notifications.
-                    for(let k = 0; k < curNotifications.notifications.length; k++) {
-                        // Display an application notification only if it has not been cleared and snoozed and is within the desired interval.
-                        if(curNotifications.notifications[k].hidden == false && convertToDays((new Date(curNotifications.notifications[k].date)).getTime() - curTime) <= userInterval
-                            && (curNotifications.notifications[k].snooze == "" || (curTime >= (new Date(curNotifications.notifications[k].snooze)).getTime()))) {
-                            // Create a notification.
-                            notificationCreation(curNotifications.notifications[k].id, curNotifications.notifications[k].category,
-                                curNotifications.notifications[k].name, curNotifications.notifications[k].text, curNotifications.notifications[k].date, curNotifications.notifications[k].img, curNotifications.notifications[k].snooze);
+                    // Fetch the data directory.
+                    ipcRenderer.send("getDataPath");
+                    // Proceed once the data directory has been properly fetched.
+                    ipcRenderer.on("sentDataPath", (event, imgBasePath) => {
+                        // Read the notifications configuration file.
+                        const curNotifications = JSON.parse(currentNotificationsFileStr);
+                        // Clear any current notifications.
+                        document.getElementById("notificationsCollection").innerHTML = "";
+                        // Iterate through all application notifications.
+                        for(let k = 0; k < curNotifications.notifications.length; k++) {
+                            // Display an application notification only if it has not been cleared and snoozed and is within the desired interval.
+                            if(curNotifications.notifications[k].hidden == false && convertToDays((new Date(curNotifications.notifications[k].date)).getTime() - curTime) <= userInterval
+                                && (curNotifications.notifications[k].snooze == "" || (curTime >= (new Date(curNotifications.notifications[k].snooze)).getTime()))) {
+                                // Create a notification.
+                                notificationCreation(imgBasePath, curNotifications.notifications[k].id, curNotifications.notifications[k].category,
+                                    curNotifications.notifications[k].name, curNotifications.notifications[k].text, curNotifications.notifications[k].date, curNotifications.notifications[k].img, curNotifications.notifications[k].snooze);
+                            }
                         }
-                    }
-                    // If there are notifications to be displayed then show the notifications modal button, initialize the dropdown menu, and add notification listeners.
-                    if(notificationsArr.children.length > 0) {
-                        document.getElementById("notifications").style.display = "inline-block";
-                        initDropdown();
-                        notificationsListeners(ipcRenderer);
-                    }
+                        // If there are notifications to be displayed then show the notifications modal button, initialize the dropdown menu, and add notification listeners.
+                        if(notificationsArr.children.length > 0) {
+                            document.getElementById("notifications").style.display = "inline-block";
+                            initDropdown();
+                            notificationsListeners(ipcRenderer);
+                        }
+                    });
                 });
                 // Initialize the tooltips.
                 initTooltips();

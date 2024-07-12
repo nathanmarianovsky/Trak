@@ -558,6 +558,7 @@ const fadeOut = (el, diff) => {
 
 Creates a notification listing in the notifications modal.
 
+   - curPath is a string corresponding to the current user data path.
    - itemId is a string corresponding to the id of a record.
    - itemCategory is a string corresponding to the category of a record.
    - itemTitle is a string corresponding to the name of a record.
@@ -567,7 +568,7 @@ Creates a notification listing in the notifications modal.
    - itemSnooze is a string corresponding to the snooze date of a record notification.
 
 */
-const notificationCreation = (itemId, itemCategory, itemTitle, itemScenario, itemRelease, itemImg, itemSnooze) => {
+const notificationCreation = (curPath, itemId, itemCategory, itemTitle, itemScenario, itemRelease, itemImg, itemSnooze) => {
     // Define the portions of the notification listed item.
     const outerLI = document.createElement("li"),
         img = document.createElement("img"),
@@ -585,7 +586,11 @@ const notificationCreation = (itemId, itemCategory, itemTitle, itemScenario, ite
     outerLI.setAttribute("notificationScenario", itemScenario);
     outerLI.setAttribute("notificationRelease", itemRelease);
     outerLI.setAttribute("notificationSnooze", itemSnooze);
-    img.setAttribute("src", itemImg);
+    // Modify the saved absolute path of an association image to a relative one.
+    let splitter1 = itemImg.split("Trak/data"),
+        splitter2 = itemImg.split("Trak\\data"),
+        split = curPath + (splitter1.length > 1 ? "/Trak/data" + splitter1[1] : "\\Trak\\data" + splitter2[1]);
+    img.setAttribute("src", split);
     img.classList.add("circle");
     imgIcon.classList.add("material-icons", "circle");
     imgIcon.textContent = "notifications_active";
