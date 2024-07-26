@@ -67,11 +67,15 @@
 	bottom: 15px;
 }
 
-#homeCounter {
+#homeCounter, #homeCounterModified {
 	text-align: center;
     width: 105%;
     position: absolute;
     bottom: -10%;
+}
+
+#homeCounterModified {
+	display: none;
 }
 
 #homeSelected {

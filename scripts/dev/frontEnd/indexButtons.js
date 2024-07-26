@@ -30,7 +30,6 @@ const cleanFilter = () => {
     // Iterate through the records rows.
     for(let z = 0; z < pageTable.length; z++) {
         // Show all record rows.
-        // pageTable[z].style.display = homeIcon.style.display == "none" ? "table-row" : "inline-block";
         if(homeIcon.style.display == "none" || homeIcon.style.display == "") {
             pageTable[z].style.display = "table-row";
             pageTable[z].setAttribute("genreFiltered", "1");
@@ -47,6 +46,8 @@ const cleanFilter = () => {
         searchBar.parentNode.children[2].classList.remove("active");
         searchBar.classList.remove("valid");
         searchBar.value = "";
+        document.getElementById("homeCounterModified").style.display = "none";
+        document.getElementById("homeCounter").style.display = "block";
     }
 };
 

@@ -1118,15 +1118,18 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 bottomStr += counters[catIter];
                                 if(catIter == 1) {
                                     bottomStr += " Book";
+                                    if(counters[catIter] > 1) { bottomStr += "s"; }
                                 }
                                 else if(catIter == 2) {
                                     bottomStr += " Film";
+                                    if(counters[catIter] > 1) { bottomStr += "s"; }
                                 }
                                 else if(catIter == 3) {
                                     bottomStr += " Manga";
                                 }
                                 else if(catIter == 4) {
                                     bottomStr += " Show";
+                                    if(counters[catIter] > 1) { bottomStr += "s"; }
                                 }
                             }
                         }
@@ -1212,6 +1215,7 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         // Define the category and genre arrays along with the record rows.
                         const categoryList = ["Anime", "Book", "Film", "Manga", "Show"],
                             catCheck = [],
+                            countersFiltered = [0, 0, 0, 0, 0];
                             bookmarkRequirement = document.getElementById("filterBookmark").checked,
                             currentRequirement = document.getElementById("filterCurrent").checked,
                             futureRequirement = document.getElementById("filterFuture").checked,
@@ -1281,6 +1285,55 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                     pageTable[x].setAttribute("genreFiltered", "0");
                                 }
                             }
+                            if(pageTable[x].getAttribute("genreFiltered") == "1") {
+                                if(pageTable[x].getAttribute("category") == "Anime") { countersFiltered[0] += 1; }
+                                else if(pageTable[x].getAttribute("category") == "Book") { countersFiltered[1] += 1; }
+                                else if(pageTable[x].getAttribute("category") == "Film") { countersFiltered[2] += 1; }
+                                else if(pageTable[x].getAttribute("category") == "Manga") { countersFiltered[3] += 1; }
+                                else if(pageTable[x].getAttribute("category") == "Show") { countersFiltered[4] += 1; }
+                            }
+                        }
+                        // Attach the bottom text on the index page corresponding to the filtered library records.
+                        let filterCount = pageTable.filter(elem => elem.getAttribute("genreFiltered") == "1").length,
+                            bottomStrModified = "Filtered Records: " + filterCount;
+                        if(countersFiltered.reduce(sumFunc, 0) > 0) {
+                            bottomStrModified += " (";
+                            for(let catIter = 0; catIter < countersFiltered.length; catIter++) {
+                                if(countersFiltered[catIter] > 0) {
+                                    if(catIter == 0) {
+                                        bottomStrModified += countersFiltered[0] + " Anime";
+                                    }
+                                    else {
+                                        let prevSum = countersFiltered.slice(0, catIter).reduce(sumFunc, 0);
+                                        if(prevSum != 0) {
+                                            bottomStrModified += ", ";
+                                        }
+                                        bottomStrModified += countersFiltered[catIter];
+                                        if(catIter == 1) {
+                                            bottomStrModified += " Book";
+                                            if(countersFiltered[catIter] > 1) { bottomStrModified += "s"; }
+                                        }
+                                        else if(catIter == 2) {
+                                            bottomStrModified += " Film";
+                                            if(countersFiltered[catIter] > 1) { bottomStrModified += "s"; }
+                                        }
+                                        else if(catIter == 3) {
+                                            bottomStrModified += " Manga";
+                                        }
+                                        else if(catIter == 4) {
+                                            bottomStrModified += " Show";
+                                            if(countersFiltered[catIter] > 1) { bottomStrModified += "s"; }
+                                        }
+                                    }
+                                }
+                            }
+                            bottomStrModified += ")";
+                        }
+                        if(filterCount != pageTable.length) {
+                            document.getElementById("homeCounter").style.display = "none";
+                            let modBottom = document.getElementById("homeCounterModified");
+                            modBottom.textContent = bottomStrModified;
+                            modBottom.style.display = "block";
                         }
                         // Upon the submission of a filter clear the search bar.
                         searchBar.parentNode.children[0].classList.remove("active");
