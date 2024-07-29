@@ -2,7 +2,7 @@
 
 BASIC DETAILS: Provides all actions associated to working with anime records.
 
-   - animeSave: Handles the saving of an anime record by creating the associated folders and data file.
+   - animeAdd: Handles the saving of an anime record by creating the associated folders and data file.
    - animeUpdate: Handles the update of an anime record.
    - animeSearch: Handles the search of myanimelist anime records based on a query.
    - animeFetchDetails: Handles the fetching of an anime record from myanimelist based on a name.
@@ -40,7 +40,7 @@ Handles the saving of an anime record by creating the associated folders and dat
    - fldrValue is a string corresponding to an existing record's folder name.
 
 */
-exports.animeAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto, fldrValue) => {
+exports.animeAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, dataPath, evnt, data, auto, fldrValue = "") => {
     // Define the primary section of the folder name.
     const primaryName = data[0] + "-" + tools.formatFolderName(data[1] != "" ? data[1] : data[2]);
     let assetsPath = "";
@@ -295,7 +295,6 @@ exports.animeFetchDetails = (log, malScraper, tools, ev, name) => {
                 animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
             ]);
         }).catch(err => {
-            console.log(err);
             log.error("There was an issue in obtaining the pictures associated to the anime record " + name + ".");
             ev.sender.send("animeFetchDetailsResult", [
                 animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, [animeData.picture]], startDate, endDate,
@@ -503,7 +502,7 @@ exports.animeRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScrap
             ]);
             ipc.once("performSave", (event, submission) => {
                 // Save the corresponding data.
-                exports.animeSave(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission);
+                exports.animeAdd(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission[1], false);
             });
         }).catch(err => log.error("There was an issue getting the pictures associated to the anime " + animeData.title + "."));
     }).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));

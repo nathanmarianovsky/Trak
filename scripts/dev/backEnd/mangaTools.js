@@ -2,7 +2,7 @@
 
 BASIC DETAILS: Provides all actions associated to working with manga records.
 
-   - mangaSave: Handles the saving of a manga record by creating the associated folders and data file.
+   - mangaAdd: Handles the saving of a manga record by creating the associated folders and data file.
    - mangaUpdate: Handles the update of a manga record.
    - mangaSearch: Handles the search of myanimelist manga records based on a query.
    - mangaFetchDetails: Handles the fetching of a manga record from myanimelist based on a name.
@@ -415,7 +415,7 @@ exports.mangaRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScrap
         ]);
         ipc.once("performSave", (event, submission) => {
             // Save the corresponding data.
-            exports.mangaSave(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission);
+            exports.mangaAdd(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission[1], submission[2], submission[3]);
         });
         for(let k = 1; k <= parseInt(mangaData.volumes); k++) {
             // Fetch book search results.

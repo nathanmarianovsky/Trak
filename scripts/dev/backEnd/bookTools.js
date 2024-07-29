@@ -2,7 +2,7 @@
 
 BASIC DETAILS: Provides all actions associated to working with book records.
 
-   - bookSave: Handles the saving of a book record by creating the associated folders and data file.
+   - bookAdd: Handles the saving of a book record by creating the associated folders and data file.
    - bookUpdate: Handles the update of a book record.
    - bookSearch: Handles the search of goodreads book records based on a query.
    - bookFetchDetailsByName: Handles the fetching of a book record from goodreads based on a name.
@@ -265,7 +265,7 @@ exports.bookRecordRequest = (BrowserWindow, ipc, path, fs, log, https, GoodReads
         ]);
         ipc.once("performSave", (event, submission) => {
             // Save the corresponding data.
-            exports.bookSave(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission);
+            exports.bookAdd(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission[1], submission[2]);
         });
     }).catch(err => log.error("There was an issue getting the book details based on the url " + link + "."));
 };

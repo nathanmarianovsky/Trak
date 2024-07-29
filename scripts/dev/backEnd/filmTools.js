@@ -2,7 +2,7 @@
 
 BASIC DETAILS: Provides all actions associated to working with film records.
 
-   - filmSave: Handles the saving of a film record by creating the associated folders and data file.
+   - filmAdd: Handles the saving of a film record by creating the associated folders and data file.
    - filmUpdate: Handles the update of a film record.
    - filmSearch: Handles the search of imdb film records based on a query.
    - filmFetchDetails: Handles the fetching of a film record from imdb based on a name.
@@ -310,7 +310,7 @@ exports.filmRecordRequest = (BrowserWindow, ipc, path, fs, log, https, movier, t
         ]);
         ipc.once("performSave", (event, submission) => {
             // Save the corresponding data.
-            exports.filmSave(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission);
+            exports.filmAdd(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission[1], submission[2], submission[3]);
         });
     }).catch(err => log.error("There was an issue getting the film details based on the url " + link + "."));
 };

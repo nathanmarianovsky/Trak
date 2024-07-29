@@ -2,7 +2,7 @@
 
 BASIC DETAILS: Provides all actions associated to working with show records.
 
-   - showSave: Handles the saving of a show record by creating the associated folders and data file.
+   - showAdd: Handles the saving of a show record by creating the associated folders and data file.
    - showUpdate: Handles the update of a show record.
    - showSearch: Handles the search of imdb show records based on a query.
    - showFetchDetails: Handles the fetching of a show record from imdb based on a name.
@@ -310,7 +310,7 @@ exports.showRecordRequest = (BrowserWindow, ipc, path, fs, log, https, movier, t
         ]);
         ipc.once("performSave", (event, submission) => {
             // Save the corresponding data.
-            exports.showSave(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission);
+            exports.showAdd(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission[1], submission[2], submission[3]);
         });
     }).catch(err => log.error("There was an issue getting the show details based on the url " + link + "."));
 };
