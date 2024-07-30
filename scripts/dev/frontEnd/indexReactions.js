@@ -1137,7 +1137,14 @@ ipcRenderer.on("loadRows", (event, diff) => {
                     bottomStr += ")";
                 }
                 // Provide the settings modal with the library record analytics.
-                document.getElementById("homeCounter").textContent = bottomStr;
+                const homeCounter = document.getElementById("homeCounter");
+                homeCounter.textContent = bottomStr;
+                homeCounter.setAttribute("totalCounter", counters.reduce(sumFunc, 0));
+                homeCounter.setAttribute("animeCounter", counters[0]);
+                homeCounter.setAttribute("bookCounter", counters[1]);
+                homeCounter.setAttribute("filmCounter", counters[2]);
+                homeCounter.setAttribute("mangaCounter", counters[3]);
+                homeCounter.setAttribute("showCounter", counters[4]);
                 document.getElementById("settingsTotalAnime").textContent = counters[0];
                 document.getElementById("settingsTotalBook").textContent = counters[1];
                 document.getElementById("settingsTotalFilm").textContent = counters[2];
@@ -1295,13 +1302,15 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         }
                         // Attach the bottom text on the index page corresponding to the filtered library records.
                         let filterCount = pageTable.filter(elem => elem.getAttribute("genreFiltered") == "1").length,
-                            bottomStrModified = "Filtered Records: " + filterCount;
+                            bottomStrModified = "Filtered Records: " + filterCount + " [" + ((countersFiltered.reduce(sumFunc, 0) / parseInt(homeCounter.getAttribute("totalCounter"))) * 100).toFixed(0) + "%]";
                         if(countersFiltered.reduce(sumFunc, 0) > 0) {
                             bottomStrModified += " (";
                             for(let catIter = 0; catIter < countersFiltered.length; catIter++) {
+                                let recType = "";
                                 if(countersFiltered[catIter] > 0) {
                                     if(catIter == 0) {
                                         bottomStrModified += countersFiltered[0] + " Anime";
+                                        recType = "anime";
                                     }
                                     else {
                                         let prevSum = countersFiltered.slice(0, catIter).reduce(sumFunc, 0);
@@ -1312,19 +1321,24 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                         if(catIter == 1) {
                                             bottomStrModified += " Book";
                                             if(countersFiltered[catIter] > 1) { bottomStrModified += "s"; }
+                                            recType = "book";
                                         }
                                         else if(catIter == 2) {
                                             bottomStrModified += " Film";
                                             if(countersFiltered[catIter] > 1) { bottomStrModified += "s"; }
+                                            recType = "film";
                                         }
                                         else if(catIter == 3) {
                                             bottomStrModified += " Manga";
+                                            recType = "manga";
                                         }
                                         else if(catIter == 4) {
                                             bottomStrModified += " Show";
                                             if(countersFiltered[catIter] > 1) { bottomStrModified += "s"; }
+                                            recType = "show";
                                         }
                                     }
+                                    bottomStrModified += " [" + ((countersFiltered[catIter] / parseInt(homeCounter.getAttribute(recType + "Counter"))) * 100).toFixed(0) + "%]"
                                 }
                             }
                             bottomStrModified += ")";
