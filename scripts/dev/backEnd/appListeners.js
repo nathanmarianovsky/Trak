@@ -309,7 +309,7 @@ exports.addBasicListeners = (app, BrowserWindow, path, fs, log, dev, ipc, tools,
   	// Handle the update of the associations configuration file.
   	ipc.on("associationsSave", (event, submissionArr) => {
   		// Define the path to the associations configuration file.
-  		const associationsPath = path.join(originalPath, "Trak", "config", "associations.json");
+  		const associationsPath = path.join(originalPath, "Trak", "data", "associations.json");
 		// Read the associations configuration file.
   		fs.readFile(associationsPath, "UTF8", (err, file) => {
   			// If an error occured in reading the associations configuration file then log it and notify the user.
@@ -426,7 +426,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hid
   		// Remove the desired records.
   		tools.removeRecords(log, BrowserWindow.getFocusedWindow(), dataPath, fs, path, list);
   		// Define the path to the associations configuration file.
-  		const associationsPath = path.join(originalPath, "Trak", "config", "associations.json"),
+  		const associationsPath = path.join(originalPath, "Trak", "data", "associations.json"),
   			notificationsPath = path.join(originalPath, "Trak", "config", "notifications.json");
   		// Read the associations configuration file.
   		fs.readFile(associationsPath, "UTF8", (err, file) => {
@@ -541,7 +541,7 @@ exports.addRecordListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, hid
 	// Handles the process of obtaining the list of library records which share an associated with a requested library record.
 	ipc.on("getAssociations", (event, name) => {
 		// Read the configurations associations file.
-		fs.readFile(path.join(originalPath, "Trak", "config", "associations.json"), "UTF8", (err, file) => {
+		fs.readFile(path.join(originalPath, "Trak", "data", "associations.json"), "UTF8", (err, file) => {
 			// Log if there was an issue in reading the configurations associations file.
 			if(err) { log.error("There was an issue reading the application associations configuration file."); }
 			// Otherwise proceed by finding the desired associations.

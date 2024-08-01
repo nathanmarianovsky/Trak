@@ -57,9 +57,17 @@ app.whenReady().then(() => {
 		if(!fs.existsSync(path.join(basePath, "Trak", "config", "notifications.json"))) {
 			fs.writeFileSync(path.join(basePath, "Trak", "config", "notifications.json"), JSON.stringify({"interval": 14, "notifications": []}), "UTF8");
 		}
-		// Create the associations file if it does not exist.
-		if(!fs.existsSync(path.join(basePath, "Trak", "config", "associations.json"))) {
-			fs.writeFileSync(path.join(basePath, "Trak", "config", "associations.json"), JSON.stringify({"associations": []}), "UTF8");
+		// Create the associations file if it does not exist or move it for legacy support.
+		const oldPath = path.join(basePath, "Trak", "config", "associations.json"),
+			newPath = path.join(basePath, "Trak", "data", "associations.json");
+		if(fs.existsSync(oldPath)) {
+			fs.rename(oldPath, newPath, assocErr => {
+				if(assocErr) { log.error("There was an error in moving the associations.json file from " + oldPath + " to " + newPath + "."); }
+				else { log.info("The associations.json file was successfully moved from " + oldPath + " to " + newPath + "."); }
+			});
+		}
+		else if(!fs.existsSync(path.join(basePath, "Trak", "data", "associations.json"))) {
+			fs.writeFileSync(path.join(basePath, "Trak", "data", "associations.json"), JSON.stringify({"associations": []}), "UTF8");
 		}
 		// Create the configuration file if it does not exist.
 		if(!fs.existsSync(path.join(basePath, "Trak", "config", "configuration.json"))) {
