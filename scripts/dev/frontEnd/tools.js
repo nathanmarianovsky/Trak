@@ -29,6 +29,7 @@ BASIC DETAILS: This file provides front-end functions designed to be used by mul
     - notificationsListeners: Adds the listeners associated to a record notification listing.
     - convertToDays: Converts a length of time in milliseconds to days.
     - settingsBtnsInit: Initializes the behavior for the top nav buttons on the settings modal.
+    - updateCountString: Attach the bottom text on the index page corresponding to the filtered library records.
 
 */
 
@@ -704,4 +705,78 @@ const settingsBtnsInit = (ipcElec, btn, containers, selections, btnContainer, sh
             Array.from(document.getElementsByClassName(className)).forEach(otherBtn => otherBtn.style.display = "none");
         });
     });
+};
+
+
+
+/*
+
+Attach the bottom text on the index page corresponding to the filtered library records.
+
+   - tbleTotal is an integer corresponding to the total number of library records.
+   - countersArr is an array of integers corresponding to the number of library records that have been filtered, with a count denoted for each category.
+
+*/
+const updateCountString = (tbleTotal, countersArr) => {
+    // Define the standard reduction function to get the sum of an array.
+    const arrSum = (accum, cur) => accum + cur;
+    // Define the total number of filtered records and the initial component of the filtered bottom message.
+    let filterCount = countersArr.reduce(arrSum),
+        bottomStrModified = "Filtered Records: " + filterCount + " [" + ((countersArr.reduce(arrSum, 0) / parseInt(homeCounter.getAttribute("totalCounter"))) * 100).toFixed(0) + "%]";
+    // If there are filtered records then modify the bottom message accordingly depending on the categories present.
+    if(countersArr.reduce(arrSum, 0) > 0) {
+        bottomStrModified += " (";
+        for(let catIter = 0; catIter < countersArr.length; catIter++) {
+            let recType = "";
+            if(countersArr[catIter] > 0) {
+                if(catIter == 0) {
+                    bottomStrModified += countersArr[0] + " Anime";
+                    recType = "anime";
+                }
+                else {
+                    let prevSum = countersArr.slice(0, catIter).reduce(arrSum, 0);
+                    if(prevSum != 0) {
+                        bottomStrModified += ", ";
+                    }
+                    bottomStrModified += countersArr[catIter];
+                    if(catIter == 1) {
+                        bottomStrModified += " Book";
+                        if(countersArr[catIter] > 1) { bottomStrModified += "s"; }
+                        recType = "book";
+                    }
+                    else if(catIter == 2) {
+                        bottomStrModified += " Film";
+                        if(countersArr[catIter] > 1) { bottomStrModified += "s"; }
+                        recType = "film";
+                    }
+                    else if(catIter == 3) {
+                        bottomStrModified += " Manga";
+                        recType = "manga";
+                    }
+                    else if(catIter == 4) {
+                        bottomStrModified += " Show";
+                        if(countersArr[catIter] > 1) { bottomStrModified += "s"; }
+                        recType = "show";
+                    }
+                }
+                bottomStrModified += " [" + ((countersArr[catIter] / parseInt(homeCounter.getAttribute(recType + "Counter"))) * 100).toFixed(0) + "%]"
+            }
+        }
+        bottomStrModified += ")";
+    }
+    // Define the original and filtered bottom messages.
+    const ogCounter = document.getElementById("homeCounter"),
+        filterCounter = document.getElementById("homeCounterModified");
+    // If the number of filtered records is less than the total available then hide the original message and display the filtered one.
+    if(filterCount != tbleTotal) {
+        ogCounter.style.display = "none";
+        filterCounter.textContent = bottomStrModified;
+        filterCounter.style.display = "block";
+    }
+    // Otherwise, hide the filtered message and display the original one.
+    else {
+        filterCounter.style.display = "none";
+        filterCounter.textContent = "";
+        ogCounter.style.display = "block";
+    }
 };

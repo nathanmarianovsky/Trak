@@ -1300,55 +1300,8 @@ ipcRenderer.on("loadRows", (event, diff) => {
                                 else if(pageTable[x].getAttribute("category") == "Show") { countersFiltered[4] += 1; }
                             }
                         }
-                        // Attach the bottom text on the index page corresponding to the filtered library records.
-                        let filterCount = pageTable.filter(elem => elem.getAttribute("genreFiltered") == "1").length,
-                            bottomStrModified = "Filtered Records: " + filterCount + " [" + ((countersFiltered.reduce(sumFunc, 0) / parseInt(homeCounter.getAttribute("totalCounter"))) * 100).toFixed(0) + "%]";
-                        if(countersFiltered.reduce(sumFunc, 0) > 0) {
-                            bottomStrModified += " (";
-                            for(let catIter = 0; catIter < countersFiltered.length; catIter++) {
-                                let recType = "";
-                                if(countersFiltered[catIter] > 0) {
-                                    if(catIter == 0) {
-                                        bottomStrModified += countersFiltered[0] + " Anime";
-                                        recType = "anime";
-                                    }
-                                    else {
-                                        let prevSum = countersFiltered.slice(0, catIter).reduce(sumFunc, 0);
-                                        if(prevSum != 0) {
-                                            bottomStrModified += ", ";
-                                        }
-                                        bottomStrModified += countersFiltered[catIter];
-                                        if(catIter == 1) {
-                                            bottomStrModified += " Book";
-                                            if(countersFiltered[catIter] > 1) { bottomStrModified += "s"; }
-                                            recType = "book";
-                                        }
-                                        else if(catIter == 2) {
-                                            bottomStrModified += " Film";
-                                            if(countersFiltered[catIter] > 1) { bottomStrModified += "s"; }
-                                            recType = "film";
-                                        }
-                                        else if(catIter == 3) {
-                                            bottomStrModified += " Manga";
-                                            recType = "manga";
-                                        }
-                                        else if(catIter == 4) {
-                                            bottomStrModified += " Show";
-                                            if(countersFiltered[catIter] > 1) { bottomStrModified += "s"; }
-                                            recType = "show";
-                                        }
-                                    }
-                                    bottomStrModified += " [" + ((countersFiltered[catIter] / parseInt(homeCounter.getAttribute(recType + "Counter"))) * 100).toFixed(0) + "%]"
-                                }
-                            }
-                            bottomStrModified += ")";
-                        }
-                        if(filterCount != pageTable.length) {
-                            document.getElementById("homeCounter").style.display = "none";
-                            let modBottom = document.getElementById("homeCounterModified");
-                            modBottom.textContent = bottomStrModified;
-                            modBottom.style.display = "block";
-                        }
+                        // Update the bottom message corresponding to record totals.
+                        updateCountString(pageTable.length, countersFiltered);
                         // Upon the submission of a filter clear the search bar.
                         searchBar.parentNode.children[0].classList.remove("active");
                         searchBar.parentNode.children[2].classList.remove("active");

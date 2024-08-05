@@ -458,8 +458,9 @@ window.addEventListener("load", () => {
     // Listen for an input change event on the search bar in order to filter the records table.
     searchBar.addEventListener("input", e => {
         // Define the collection of all record rows and the current string being searched.
-        const rowList = document.querySelectorAll("#tableBody tr"),
-            curSearch = e.target.value.toLowerCase();
+        const rowList = Array.from(document.querySelectorAll("#tableBody tr")),
+            curSearch = e.target.value.toLowerCase(),
+            countersFiltered = [0, 0, 0, 0, 0];
         // Iterate through all of the rows and check whether the record name contains the desired search string.
         for(let i = 0; i < rowList.length; i++) {
             let rowDiv = rowList[i].children[1].children[0];
@@ -621,6 +622,13 @@ window.addEventListener("load", () => {
             else {
                 rowList[i].getAttribute("genreFiltered") == "1" && rowDiv.textContent.toLowerCase().includes(curSearch) ? rowList[i].style.display = "table-row" : rowList[i].style.display = "none";
             }
+            if(rowList[i].style.display == "table-row") {
+                if(rowList[i].getAttribute("category") == "Anime") { countersFiltered[0] += 1; }
+                else if(rowList[i].getAttribute("category") == "Book") { countersFiltered[1] += 1; }
+                else if(rowList[i].getAttribute("category") == "Film") { countersFiltered[2] += 1; }
+                else if(rowList[i].getAttribute("category") == "Manga") { countersFiltered[3] += 1; }
+                else if(rowList[i].getAttribute("category") == "Show") { countersFiltered[4] += 1; }
+            }
         }
         // Reset the checkAll listener.
         checkAll.removeEventListener("click", checkAllFunc);
@@ -632,6 +640,8 @@ window.addEventListener("load", () => {
                 checkElem.addEventListener("change", recordCheckFunc);
             }
         });
+        // Update the bottom message corresponding to record totals.
+        updateCountString(rowList.length, countersFiltered);
     });
     // Listen for a click event on the check all checkbox in order to check or uncheck all record checkboxes.
     checkAll.addEventListener("click", checkAllFunc);
