@@ -263,10 +263,6 @@ exports.bookRecordRequest = (BrowserWindow, ipc, path, fs, log, https, GoodReads
             (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
             bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres
         ]);
-        ipc.once("performSave", (event, submission) => {
-            // Save the corresponding data.
-            exports.bookAdd(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission[1], submission[2]);
-        });
     }).catch(err => log.error("There was an issue getting the book details based on the url " + link + "."));
 };
 

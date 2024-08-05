@@ -83,7 +83,7 @@ var mangaSaveFunc = (auto = false) => {
             mangaDemographic, mangaStart, mangaFiles, mangaEnd, content, [genresLst, genres, otherGenres], mangaSynopsis,
             [document.getElementById("addRecordMangaImg").getAttribute("list") == document.getElementById("addRecordMangaImg").getAttribute("previous"), mangaImg],
             mangaBookmarkValue, oldTitle];
-        ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
+        ipcRenderer.send("performSave", [(document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("mangaName").getAttribute("lastValue") != null) ? true : false, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
         saveAssociations("Manga", mangaName, fidValue != null ? fidValue : "", ipcRenderer);
     }
     // If no name has been provided then notify the user.

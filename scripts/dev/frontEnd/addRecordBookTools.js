@@ -54,7 +54,7 @@ var bookSaveFunc = (auto = false) => {
             bookPages, bookLastRead, bookMediaType, bookFiles, bookSynopsis, bookRating, bookReview, [genresLst, genres, otherGenres],
             [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), bookImg],
             bookBookmarkValue, [oldISBN, oldTitle]];
-        ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto]);
+        ipcRenderer.send("performSave", [(document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("bookTitle").getAttribute("lastValue") != null) ? true : false, submissionMaterial, auto]);
         saveAssociations("Book", bookTitle, "", ipcRenderer);
     }
     // If no ISBN has been provided then notify the user.

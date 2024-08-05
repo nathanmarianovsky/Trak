@@ -51,7 +51,7 @@ exports.mangaAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, data
         assetsPath = path.join(dataPath, "Trak", "data", primaryName + "-0", "assets");
         log.info("Creating the assets directory for the new manga record. To be located at " + assetsPath);
         fs.mkdirSync(assetsPath, { "recursive": true });
-        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, "0"), "A", dataPath, fs, path, evnt, data, false);
+        tools.writeDataFile(log, mainWindow, BrowserWindow.getFocusedWindow(), tools.recordObjCreation(path, fs, https, dataPath, data, 0), "A", dataPath, fs, path, evnt, data, false);
     }
     else {
         // Define the list of library records sharing the same name along with the current record's release date.
@@ -60,12 +60,14 @@ exports.mangaAdd = (BrowserWindow, path, fs, log, https, tools, mainWindow, data
         // Iterate through the list of comparable library records and determine if there is one that already matches the current record by comparing release dates.
         let q = 0;
         for(; q < compareList.length; q++) {
-            // Define the release date from the library record being compared to.
-            let compareData = JSON.parse(fs.readFileSync(path.join(dataPath, "Trak", "data", compareList[q], "data.json"), "UTF8")),
-                compareDate = compareData.start;
-            // Break out of the loop if the release dates match.
-            if(compareDate == currentDate) {
-                break;
+            let fle = fs.readFileSync(path.join(dataPath, "Trak", "data", compareList[q], "data.json"), "UTF8");
+            if(fle == "") { break; }
+            else {
+                // Define the release date from the library record being compared to.
+                let compareData = JSON.parse(fle),
+                    compareDate = compareData.start;
+                // Break out of the loop if the release dates match.
+                if(compareDate == currentDate) { break; }
             }
         }
         // If none of the library records being compared to matched up to the current one, then create a library record for the new one.
@@ -114,12 +116,14 @@ exports.mangaUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, d
         // Iterate through the list of comparable library records and determine if there is one that already matches the current record by comparing release dates.
         let q = 0;
         for(; q < compareList.length; q++) {
-            // Define the release date from the library record being compared to.
-            let compareData = JSON.parse(fs.readFileSync(path.join(dataPath, "Trak", "data", compareList[q], "data.json"), "UTF8")),
-                compareDate = compareData.start;
-            // Break out of the loop if the release dates match.
-            if(compareDate == currentDate) {
-                break;
+            let fle = fs.readFileSync(path.join(dataPath, "Trak", "data", compareList[q], "data.json"), "UTF8");
+            if(fle == "") { break; }
+            else {
+                // Define the release date from the library record being compared to.
+                let compareData = JSON.parse(fle),
+                    compareDate = compareData.start;
+                // Break out of the loop if the release dates match.
+                if(compareDate == currentDate) { break; }
             }
         }
         // If none of the library records being compared to matched up to the current one, then create a library record for the renamed one.
@@ -413,10 +417,6 @@ exports.mangaRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScrap
             (mangaData.englishTitle != "" ? mangaData.englishTitle : mangaData.title), mangaData.japaneseTitle, [mangaData.picture, [mangaData.picture]], startDate, endDate,
             mangaData.chapters, mangaData.volumes, mangaData.genres, mangaData.authors, mangaData.synopsis
         ]);
-        ipc.once("performSave", (event, submission) => {
-            // Save the corresponding data.
-            exports.mangaAdd(BrowserWindow, path, fs, log, https, tools, globalWin, usrDataPath, event, submission[1], submission[2], submission[3]);
-        });
         for(let k = 1; k <= parseInt(mangaData.volumes); k++) {
             // Fetch book search results.
             volumePromiseArr.push(new Promise((resolve, reject) => {

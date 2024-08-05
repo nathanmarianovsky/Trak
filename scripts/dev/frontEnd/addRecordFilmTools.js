@@ -58,7 +58,7 @@ var filmSaveFunc = (auto = false) => {
             filmCinematographers, filmFiles, filmDistributors, filmProductionCompanies, filmStarring, [genresLst, genres, otherGenres], filmSynopsis, filmRating, filmReleaseDate, filmRunningTime,
             filmLastWatched, [document.getElementById("addRecordFilmImg").getAttribute("list") == document.getElementById("addRecordFilmImg").getAttribute("previous"), filmImg],
             filmBookmarkValue, oldTitle];
-        ipcRenderer.send("performSave", [document.getElementById("addRecordsNav").style.display == "none" ? true : false, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
+        ipcRenderer.send("performSave", [(document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("filmName").getAttribute("lastValue") != null) ? true : false, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
         saveAssociations("Film", filmName, fidValue != null ? fidValue : "", ipcRenderer);
     }
     // If no name has been provided then notify the user.
