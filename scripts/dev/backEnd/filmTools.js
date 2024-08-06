@@ -305,6 +305,7 @@ exports.filmRecordRequest = (BrowserWindow, ipc, path, fs, log, https, movier, t
         log.info("Movier has finished getting the details associated to the film " + filmData.name + ".");
         const runtimeArr = filmData.runtime.title.split(" ");
         // Send the attained data to the front-end.
+        win.webContents.send("contentSearchFix");
         win.webContents.send("filmFetchDetailsResult", [
             filmData.name, filmData.otherNames.join(", "), [filmData.posterImage.url, filmData.allImages.slice(0, 10).map(elem => elem.url)], String(filmData.dates.startDate),
             (parseInt(runtimeArr[0]) * 60) + parseInt(runtimeArr[runtimeArr.length - 2]), filmData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),

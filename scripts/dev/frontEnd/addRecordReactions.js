@@ -94,6 +94,13 @@ ipcRenderer.on("animeFetchDetailsResultName", (event, name) => {
 
 
 
+// On a load from the index page content search update the addRecordsNav accordingly.
+ipcRenderer.on("contentSearchFix", event => {
+    document.getElementById("addRecordsNav").setAttribute("origin", "content");
+});
+
+
+
 // Hides record categories on the addRecord page if the user has chosen to hide them.
 ipcRenderer.on("activeCategories", (event, activeArr) => {
     // Define the category selection container.

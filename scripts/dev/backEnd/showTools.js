@@ -305,6 +305,7 @@ exports.showRecordRequest = (BrowserWindow, ipc, path, fs, log, https, movier, t
         log.info("Movier has finished getting the details associated to the show " + showData.name + ".");
         const runtimeNum = parseInt(showData.runtime.seconds / 60);
         // Send the attained data to the front-end.
+        win.webContents.send("contentSearchFix");
         win.webContents.send("showFetchDetailsResult", [
             showData.name, showData.otherNames.join(", "), [showData.posterImage.url, showData.allImages.slice(0, 10).map(elem => elem.url)],
             String(showData.dates.startDate), runtimeNum, showData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1)),

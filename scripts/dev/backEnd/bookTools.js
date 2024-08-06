@@ -258,6 +258,7 @@ exports.bookRecordRequest = (BrowserWindow, ipc, path, fs, log, https, GoodReads
     GoodReadsScraper.getBook({ "url": link }).then(bookData => {
         // Send the attained data to the front-end.
         log.info("GoodReads-Scraper has finished getting the details associated to the book " + bookData.title + ".");
+        win.webContents.send("contentSearchFix");
         win.webContents.send("bookFetchDetailsResult", [
             bookData.title, bookData.originalTitle, bookData.coverLarge,
             (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,

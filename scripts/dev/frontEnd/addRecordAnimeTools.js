@@ -31,7 +31,8 @@ Driver function for saving an anime record.
 */
 var animeSaveFunc = (auto = false) => {
     // Define the page components which will contain all associated details.
-    const animeList = document.getElementById("animeList"),
+    const addRecordsNav = document.getElementById("addRecordsNav"),
+        animeList = document.getElementById("animeList"),
         animeBookmarkValue = document.getElementById("animeBookmark").children[0].textContent == "check_box",
         animeName = document.getElementById("animeName").value,
         animeJapaneseName = document.getElementById("animeJapaneseName").value,
@@ -97,7 +98,7 @@ var animeSaveFunc = (auto = false) => {
             animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres, otherGenres], content, animeSynopsis,
             [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), animeImg],
             animeBookmarkValue, oldTitle];
-        ipcRenderer.send("performSave", [(document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("animeName").getAttribute("lastValue") != null) ? true : false, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
+        ipcRenderer.send("performSave", [(addRecordsNav.style.display != "none" || addRecordsNav.getAttribute("origin") == "content") ? false : true, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
         saveAssociations("Anime", animeName, fidValue != null ? fidValue : "", ipcRenderer);
     }
     // If no name has been provided then notify the user.

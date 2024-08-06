@@ -21,7 +21,8 @@ Driver function for saving a book record.
 */
 var bookSaveFunc = (auto = false) => {
     // Define the page components which will contain all associated details.
-    const bookBookmarkValue = document.getElementById("bookBookmark").children[0].textContent == "check_box",
+    const addRecordsNav = document.getElementById("addRecordsNav"),
+        bookBookmarkValue = document.getElementById("bookBookmark").children[0].textContent == "check_box",
         bookTitle = document.getElementById("bookTitle").value,
         bookOriginalTitle = document.getElementById("bookOriginalTitle").value,
         bookISBN = document.getElementById("bookISBN").value.replace(/\W/g,""),
@@ -54,7 +55,7 @@ var bookSaveFunc = (auto = false) => {
             bookPages, bookLastRead, bookMediaType, bookFiles, bookSynopsis, bookRating, bookReview, [genresLst, genres, otherGenres],
             [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), bookImg],
             bookBookmarkValue, [oldISBN, oldTitle]];
-        ipcRenderer.send("performSave", [(document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("bookTitle").getAttribute("lastValue") != null) ? true : false, submissionMaterial, auto]);
+        ipcRenderer.send("performSave", [(addRecordsNav.style.display != "none" || addRecordsNav.getAttribute("origin") == "content") ? false : true, submissionMaterial, auto]);
         saveAssociations("Book", bookTitle, "", ipcRenderer);
     }
     // If no ISBN has been provided then notify the user.

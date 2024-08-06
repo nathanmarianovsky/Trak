@@ -413,6 +413,7 @@ exports.mangaRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScrap
             }
         }
         log.info("MyAnimeList-Scraper has finished getting the details associated to the manga " + mangaData.englishTitle + ".");
+        win.webContents.send("contentSearchFix");
         win.webContents.send("mangaFetchDetailsResult", [
             (mangaData.englishTitle != "" ? mangaData.englishTitle : mangaData.title), mangaData.japaneseTitle, [mangaData.picture, [mangaData.picture]], startDate, endDate,
             mangaData.chapters, mangaData.volumes, mangaData.genres, mangaData.authors, mangaData.synopsis

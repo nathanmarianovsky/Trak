@@ -499,6 +499,7 @@ exports.animeRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScrap
             log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + animeData.title + ".");
             let allImgArr = malImgArr.map(pic => pic.imageLink);
             tools.arrayMove(allImgArr, allImgArr.indexOf(animeData.picture), 0);
+            win.webContents.send("contentSearchFix");
             win.webContents.send("animeFetchDetailsResult", [
                 animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, allImgArr], startDate, endDate,
                 animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,

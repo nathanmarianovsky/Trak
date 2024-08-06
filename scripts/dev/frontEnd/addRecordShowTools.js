@@ -29,7 +29,8 @@ Driver function for saving a show record.
 */
 var showSaveFunc = (auto = false) => {
     // Define the page components which will contain all associated details.
-    const showList = document.getElementById("showList"),
+    const addRecordsNav = document.getElementById("addRecordsNav"),
+        showList = document.getElementById("showList"),
         showBookmarkValue = document.getElementById("showBookmark").children[0].textContent == "check_box",
         showName = document.getElementById("showName").value,
         showAlternateName = document.getElementById("showAlternateName").value,
@@ -89,7 +90,7 @@ var showSaveFunc = (auto = false) => {
             showCinematographers, showFiles, showDistributors, showProductionCompanies, showStarring, [genresLst, genres, otherGenres], showSynopsis, showRating, showReleaseDate, showRunningTime,
             [document.getElementById("addRecordShowImg").getAttribute("list") == document.getElementById("addRecordShowImg").getAttribute("previous"), showImg], content,
             showBookmarkValue, oldTitle];
-        ipcRenderer.send("performSave", [(document.getElementById("addRecordsNav").style.display == "none" && document.getElementById("showName").getAttribute("lastValue") != null) ? true : false, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
+        ipcRenderer.send("performSave", [(addRecordsNav.style.display != "none" || addRecordsNav.getAttribute("origin") == "content") ? false : true, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
         saveAssociations("Show", showName, fidValue != null ? fidValue : "", ipcRenderer);
     }
     // If no name has been provided then notify the user.
