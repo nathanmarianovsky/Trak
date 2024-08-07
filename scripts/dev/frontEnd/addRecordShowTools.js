@@ -161,7 +161,14 @@ const calculateShowRating = () => {
         }
     }
     // Update the page global rating input accordingly.
-    count == 0 ? globalRating.value = "N/A" : globalRating.value = (sum / count).toFixed(2);
+    if(count == 0) {
+        globalRating.value = "N/A";
+        globalRating.classList.remove("valid");
+    }
+    else {
+        globalRating.value = (sum / count).toFixed(2);
+        globalRating.classList.add("valid");
+    }
 };
 
 
@@ -241,9 +248,9 @@ const showSeasonContentButtons = (ratingSelect, delButton) => {
             seasonNum = selectIdArr[1],
             episodesArr = document.querySelectorAll('[id^="li_' + seasonNum + '_ShowEpisode_Rating_"]'),
             episodesArrFiltered = Array.from(episodesArr).filter(elem => elem.value != ""),
-            avg = episodesArrFiltered.reduce((total, current) => total + parseInt(current.value), 0) / episodesArrFiltered.length;
+            avg = episodesArrFiltered.length != 0 ? (episodesArrFiltered.reduce((total, current) => total + parseInt(current.value), 0) / episodesArrFiltered.length).toFixed(2) : "N/A";
         // Write the new rating average to the page.
-        document.getElementById("li_" + seasonNum + "_ShowSeason_AverageRating").value = avg.toFixed(2);
+        document.getElementById("li_" + seasonNum + "_ShowSeason_AverageRating").value = avg;
         // Calculate and write the new show global rating.
         calculateShowRating();
     });

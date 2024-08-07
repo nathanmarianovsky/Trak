@@ -88,8 +88,12 @@ ipcRenderer.on("recordAddInfo", event => {
 
 // On an anime details fetch from myanimelist update the name accordingly if the addRecord page opened from an index page anime search.
 ipcRenderer.on("animeFetchDetailsResultName", (event, name) => {
-    document.getElementById("animeName").value = name;
-    document.getElementById("animeName").parentNode.children[2].classList.add("active");
+    const aniName = document.getElementById("animeName");
+    aniName.value = name;
+    if(name != "") {
+        aniName.classList.add("valid");
+        aniName.parentNode.children[2].classList.add("active");
+    }
 });
 
 
@@ -382,8 +386,10 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     relatedContentFinisher();
                     resetAnimeContentCounters();
                     // Write the global average rating of the anime record on the page.
-                    const animeRtng = rtngList.length > 0 ? (rtngList.reduce((accum, cur) => accum + cur, 0) / rtngList.length).toFixed(2) : "N/A";
-                    document.getElementById("animeRating").value = animeRtng;
+                    const animeRtng = rtngList.length > 0 ? (rtngList.reduce((accum, cur) => accum + cur, 0) / rtngList.length).toFixed(2) : "N/A",
+                        aniRating = document.getElementById("animeRating");
+                    aniRating.value = animeRtng;
+                    if(animeRtng != "N/A") { aniRating.classList.add("valid"); }
                     // Display all page buttons now that all data has loaded.
                     animeSave.style.visibility = "visible";
                     if(recordData.bookmark == true) { animeBookmark.children[0].textContent = "check_box"; }
@@ -441,6 +447,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 updateFetchedDataDate(bookLastRead, recordData.read, true);
                 relatedContentListeners(bookLastRead);
                 bookMediaType.value = recordData.media;
+                bookRating.value = recordData.rating;
+                if(recordData.rating != "N/A") { bookRating.classList.add("valid"); }
                 updateImgLoad("Book", bookImg, recordData.img, recordArr[2]);
                 updateGenreLoad("Book", bookOtherGenres, recordData.genres);
                 relatedContentListeners(bookOtherGenres);
@@ -519,6 +527,7 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 updateFetchedDataString(filmStarring, recordData.stars, true);
                 relatedContentListeners(filmStarring);
                 filmRating.value = recordData.rating;
+                if(recordData.rating != "N/A") { filmRating.classList.add("valid"); }
                 updateImgLoad("Film", filmImg, recordData.img, recordArr[2]);
                 updateGenreLoad("Film", filmOtherGenres, recordData.genres);
                 relatedContentListeners(filmOtherGenres);
@@ -638,8 +647,10 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     resetMangaContentCounters();
                     // Write the global average rating of the anime record on the page.
                     const mangaRtng = rtngList[0].length + rtngList[1].length == 0 ? "N/A" : (((rtngList[0].length == 0 ? 0 : (rtngList[0].reduce((accum, cur) => accum + cur, 0) / rtngList[0].length))
-                        + (rtngList[1].length == 0 ? 0 : (rtngList[1].reduce((accum, cur) => accum + cur, 0) / rtngList[1].length))) / (rtngList[0].length != 0 && rtngList[1].length != 0 ? 2 : 1)).toFixed(2);
-                    document.getElementById("mangaRating").value = mangaRtng;
+                        + (rtngList[1].length == 0 ? 0 : (rtngList[1].reduce((accum, cur) => accum + cur, 0) / rtngList[1].length))) / (rtngList[0].length != 0 && rtngList[1].length != 0 ? 2 : 1)).toFixed(2),
+                        manRating = document.getElementById("mangaRating");
+                    manRating.value = mangaRtng;
+                    if(mangaRtng != "N/A") { manRating.classList.add("valid"); }
                     // Display all page buttons now that all data has loaded.
                     mangaSave.style.visibility = "visible";
                     if(recordData.bookmark == true) { mangaBookmark.children[0].textContent = "check_box"; }
@@ -776,8 +787,10 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     relatedContentFinisher();
                     resetShowContentCounters();
                     // Write the global average rating of the show record on the page.
-                    const showRtng = rtngList.length > 0 ? (rtngList.reduce((accum, cur) => accum + cur, 0) / rtngList.length).toFixed(2) : "N/A";
-                    document.getElementById("showRating").value = showRtng;
+                    const showRtng = rtngList.length > 0 ? (rtngList.reduce((accum, cur) => accum + cur, 0) / rtngList.length).toFixed(2) : "N/A",
+                        shRating = document.getElementById("showRating");
+                    shRating.value = showRtng;
+                    if(showRtng != "N/A") { shRating.classList.add("valid"); }
                     // Display all page buttons now that all data has loaded.
                     showSave.style.visibility = "visible";
                     if(recordData.bookmark == true) { showBookmark.children[0].textContent = "check_box"; }

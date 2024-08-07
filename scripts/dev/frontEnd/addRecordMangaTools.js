@@ -194,8 +194,14 @@ const calculateMangaRating = () => {
         }
     }
     // Update the page global rating input accordingly.
-    chapterCount + volumeCount == 0 ? globalRating.value = "N/A"
-        : globalRating.value = (((chapterCount == 0 ? 0 : (chapterSum / chapterCount)) + (volumeCount == 0 ? 0 : (volumeSum / volumeCount))) / (chapterCount != 0 && volumeCount != 0 ? 2 : 1)).toFixed(2);
+    if(chapterCount + volumeCount == 0) {
+        globalRating.value = "N/A"
+        globalRating.classList.remove("valid");
+    }
+    else {
+        globalRating.value = (((chapterCount == 0 ? 0 : (chapterSum / chapterCount)) + (volumeCount == 0 ? 0 : (volumeSum / volumeCount))) / (chapterCount != 0 && volumeCount != 0 ? 2 : 1)).toFixed(2);
+        globalRating.classList.add("valid");
+    }
 };
 
 
