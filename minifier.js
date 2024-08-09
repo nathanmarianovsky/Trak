@@ -17,7 +17,8 @@ const htmlMinify = require("html-minifier").minify,
 	cliProgress = require("cli-progress"),
 	fs = require("fs-extra"),
 	path = require("path"),
-	cheerio = require("cheerio");
+	cheerio = require("cheerio"),
+	store = process.argv.includes("--store");
 
 
 
@@ -43,6 +44,7 @@ let data = fs.readFileSync(path.join(__dirname, "pages", "dev", "index.html"), "
 if(!fs.existsSync(path.join(__dirname, "pages", "dev", "sectionsAttached"))) {
 	fs.mkdirSync(path.join(__dirname, "pages", "dev", "sectionsAttached"), { "recursive": true });
 }
+else { fs.emptyDirSync(path.join(__dirname, "pages", "dev", "sectionsAttached")); }
 $("#settingsModal").html(htmlSettings);
 $("#updateModal").html(htmlUpdate);
 $("#iconModal").html(htmlIcon);
@@ -69,6 +71,7 @@ console.log("Starting Compression of HTML Files without Sections:");
 if(!fs.existsSync(path.join(__dirname, "pages", "dist"))) {
 	fs.mkdirSync(path.join(__dirname, "pages", "dist"));
 }
+else { fs.emptyDirSync(path.join(__dirname, "pages", "dist")); }
 const htmlBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect);
 for(let r = 0; r < htmlList.length; r++) {
 	let file = htmlList[r],
@@ -112,6 +115,7 @@ console.log("Starting Compression of CSS Files:");
 if(!fs.existsSync(path.join(__dirname, "styles", "dist"))) {
 	fs.mkdirSync(path.join(__dirname, "styles", "dist"));
 }
+else { fs.emptyDirSync(path.join(__dirname, "styles", "dist")); }
 const cssBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect),
 	inputDir = path.join(__dirname, "styles", "dev");
 let cssBarRow = cssBar.create(1, 0, {}, {"format": "[{bar}] {percentage}% | styles.css"});
@@ -149,31 +153,36 @@ console.log("Starting Compression of BackEnd JS Files:");
 if(!fs.existsSync(path.join(__dirname, "scripts", "dist"))) {
 	fs.mkdirSync(path.join(__dirname, "scripts", "dist"));
 }
+else { fs.emptyDirSync(path.join(__dirname, "scripts", "dist")); }
 if(!fs.existsSync(path.join(__dirname, "scripts", "dist", "backEnd"))) {
 	fs.mkdirSync(path.join(__dirname, "scripts", "dist", "backEnd"));
 }
+else { fs.emptyDirSync(path.join(__dirname, "scripts", "dist", "backEnd")); }
 if(!fs.existsSync(path.join(__dirname, "scripts", "dist", "frontEnd"))) {
 	fs.mkdirSync(path.join(__dirname, "scripts", "dist", "frontEnd"));
 }
+else { fs.emptyDirSync(path.join(__dirname, "scripts", "dist", "frontEnd")); }
 const jsEndList = fs.readdirSync("./scripts/dev/backEnd"),
 	jsFrontList = fs.readdirSync("./scripts/dev/frontEnd"),
 	jsEndBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect),
 	jsFrontBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect);
 for(let k = 0; k < jsEndList.length; k++) {
-	let file = jsEndList[k],
-		jsEndBarRow = jsEndBar.create(1, 0, {}, {"format": "[{bar}] {percentage}% | " + file});
-	minify({
-		"compressor": uglifyJS,
-		"type": "js",
-		"input": path.join(__dirname, "scripts", "dev", "backEnd", file),
-		"output": path.join(__dirname, "scripts", "dist", "backEnd", file),
-		"callback": (err, result) => {
-			if(err) {
-				console.log("Minifying the js file " + file + " threw an error: " + err.stack);
+	if(jsEndList[k] != "update.js" || (jsEndList[k] == "update.js" && store == false)) {
+		let file = jsEndList[k],
+			jsEndBarRow = jsEndBar.create(1, 0, {}, {"format": "[{bar}] {percentage}% | " + file});
+		minify({
+			"compressor": uglifyJS,
+			"type": "js",
+			"input": path.join(__dirname, "scripts", "dev", "backEnd", file),
+			"output": path.join(__dirname, "scripts", "dist", "backEnd", file),
+			"callback": (err, result) => {
+				if(err) {
+					console.log("Minifying the js file " + file + " threw an error: " + err.stack);
+				}
 			}
-		}
-	});
-	jsEndBarRow.update(1);
+		});
+		jsEndBarRow.update(1);
+	}
 }
 jsEndBar.stop();
 
@@ -188,6 +197,7 @@ for(let l = 0; l < jsFrontList.length; l++) {
 		if(!fs.existsSync(path.join(__dirname, "scripts", "dist", "frontEnd", file))) {
 			fs.mkdirSync(path.join(__dirname, "scripts", "dist", "frontEnd", file));
 		}
+		else { fs.emptyDirSync(path.join(__dirname, "scripts", "dist", "frontEnd", file)); }
 		for(let t = 0; t < jsFrontSublist.length; t++) {
 			let subFile = jsFrontSublist[t];
 				jsSubFrontBarRow = jsFrontBar.create(1, 0, {}, {"format": "[{bar}] {percentage}% | " + file + "/" + subFile});

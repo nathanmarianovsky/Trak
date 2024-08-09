@@ -29,7 +29,6 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
    - createTrayMenu: Create the system tray icon and menu.
    - createWindow: Executes the creation of the primary window with all necessary parameters.
    - tutorialLoad: Tells the front-end to load the application tutorial.
-   - startCommandLineFolder: Provides the necessary command to execute the opening of a folder.
    - isURL: Tests whether a given string represents a url.
    - parseURLFilename: Extracts the filename from a given string representing a url.
    - checkForUpdate: Checks against the most recent release on github to determine if an update is available.
@@ -2393,22 +2392,6 @@ exports.tutorialLoad = (fs, path, log, win, sysPath) => {
 
 /*
 
-Provides the necessary command to execute the opening of a folder.
-
-*/
-exports.startCommandLineFolder = () => {
-    switch(process.platform) { 
-      	case "darwin" : return "open";
-      	case "win32" : return "explorer";
-      	case "win64" : return "explorer";
-  		default : return "xdg-open";
-   }
-};
-
-
-
-/*
-
 Tests whether a given string represents a url.
 
     - url is the string to be tested.
@@ -2432,72 +2415,72 @@ exports.parseURLFilename = url => new URL(url, "https://example.com").href.split
 
 
 
-/*
+// /*
 
-Checks against the most recent release on github to determine if an update is available.
+// Checks against the most recent release on github to determine if an update is available.
 
-	- os provides the means to get information on the user operating system.
-    - https provides the means to download files.
-    - fs and path provide the means to work with local files.
-    - log provides the means to create application logs to keep track of what is going on.
-    - dir is the directory containing the configuration files.
-    - win is an object that represents the primary window of the Electron app.
+// 	- os provides the means to get information on the user operating system.
+//     - https provides the means to download files.
+//     - fs and path provide the means to work with local files.
+//     - log provides the means to create application logs to keep track of what is going on.
+//     - dir is the directory containing the configuration files.
+//     - win is an object that represents the primary window of the Electron app.
 
-*/
-exports.checkForUpdate = (os, https, fs, path, log, dir, win) => {
-	log.info("The application is checking for any available update.");
-	// Check that the application is connected to the internet prior to checking for an available update.
-	require("check-internet-connected")({ "timeout": 500, "retries": 5, "domain": "https://google.com" }).then(() => {
-		// Define the options associated to the GET request for github releases.
-		const options = { "host": "api.github.com", "path": "/repos/nathanmarianovsky/Trak/releases", "method": "GET", "headers": { "user-agent": "node.js" } };
-		// Put the GET request in.
-		const request = https.request(options, response => {
-			// Define the holder for the fetched data.
-			let body = "";
-			// Update the holder as the data is fetched.
-			response.on("data", chunk => body += chunk.toString("UTF8"));
-			// Once the data has been fetched completely check the current app version against the latest in the github releases.
-			response.on("end", () => {
-				// Define the latest release from github.
-			    const githubData = JSON.parse(body)[0];
-			    // Read the location.json file to extract the location of the app installation location.
-			    fs.readFile(path.join(dir, "Trak", "config", "location.json"), "UTF8", (resp, fl) => {
-			    	// Define the current version of the app.
-			    	const curVer = JSON.parse(fs.readFileSync(path.join(JSON.parse(fl).appLocation, "package.json"), "UTF8")).version;
-			    	// If there was an issue reading the location.json file notify the user.
-	                if(resp) {
-	                	log.error("There was an issue reading the location.json file.");
-	                	win.webContents.send("locationFileIssue");
-	                }
-	                // Compare the current version against the latest version on github to determine whether an update is available.
-	                else if(require("semver").gt(githubData.tag_name.substring(1), curVer)) {
-	                	log.info("The application has found a newer version available as a release on Github corresponding to version " + githubData.tag_name.substring(1) + ".");
-	                	let fileName = "Trak-",
-	                		ending = ""
-	                		downloadURL = "";
-	                	if(os.type() == "Windows_NT") { fileName += "Windows-"; ending = ".exe"; }
-	                	else if(os.type() == "Linux") { fileName += "Linux-"; ending = ".snap"; }
-	                	if(os.arch() == "x64") { fileName += "amd64" }
-	                	else if(os.arch() == "arm64") { fileName += "arm64" }
-	                	fileName += ending;
-	                	for(let q = 0; q < githubData.assets.length; q++) {
-	                		if(githubData.assets[q].name == fileName) {
-	                			downloadURL = githubData.assets[q].browser_download_url;
-	                			break;
-	                		}
-	                	}
-	                	// With an update available send a request to the front-end to display the associated update button on the top nav.
-	                	win.webContents.send("updateAvailable", [[githubData.html_url, githubData.tag_name.substring(1), curVer, githubData.body, downloadURL, fileName], JSON.parse(body).slice(1).map(entry => [entry.name, entry.body.split("introduces the following features:")[1]])]);
-	                }
-	            });
-		    });
-		});
-		// End the HTTPS request.
-		request.end();
-	}).catch(err => {
-		log.warn("The app failed to check for an update because it could not connect to the internet. More specifically, connecting to https://google.com failed at the address " + err.address + ":" + err.port + " with exit code " + err.code + ".");
-	});
-};
+// */
+// exports.checkForUpdate = (os, https, fs, path, log, dir, win) => {
+// 	log.info("The application is checking for any available update.");
+// 	// Check that the application is connected to the internet prior to checking for an available update.
+// 	require("check-internet-connected")({ "timeout": 500, "retries": 5, "domain": "https://google.com" }).then(() => {
+// 		// Define the options associated to the GET request for github releases.
+// 		const options = { "host": "api.github.com", "path": "/repos/nathanmarianovsky/Trak/releases", "method": "GET", "headers": { "user-agent": "node.js" } };
+// 		// Put the GET request in.
+// 		const request = https.request(options, response => {
+// 			// Define the holder for the fetched data.
+// 			let body = "";
+// 			// Update the holder as the data is fetched.
+// 			response.on("data", chunk => body += chunk.toString("UTF8"));
+// 			// Once the data has been fetched completely check the current app version against the latest in the github releases.
+// 			response.on("end", () => {
+// 				// Define the latest release from github.
+// 			    const githubData = JSON.parse(body)[0];
+// 			    // Read the location.json file to extract the location of the app installation location.
+// 			    fs.readFile(path.join(dir, "Trak", "config", "location.json"), "UTF8", (resp, fl) => {
+// 			    	// Define the current version of the app.
+// 			    	const curVer = JSON.parse(fs.readFileSync(path.join(JSON.parse(fl).appLocation, "package.json"), "UTF8")).version;
+// 			    	// If there was an issue reading the location.json file notify the user.
+// 	                if(resp) {
+// 	                	log.error("There was an issue reading the location.json file.");
+// 	                	win.webContents.send("locationFileIssue");
+// 	                }
+// 	                // Compare the current version against the latest version on github to determine whether an update is available.
+// 	                else if(require("semver").gt(githubData.tag_name.substring(1), curVer)) {
+// 	                	log.info("The application has found a newer version available as a release on Github corresponding to version " + githubData.tag_name.substring(1) + ".");
+// 	                	let fileName = "Trak-",
+// 	                		ending = ""
+// 	                		downloadURL = "";
+// 	                	if(os.type() == "Windows_NT") { fileName += "Windows-"; ending = ".exe"; }
+// 	                	else if(os.type() == "Linux") { fileName += "Linux-"; ending = ".snap"; }
+// 	                	if(os.arch() == "x64") { fileName += "amd64" }
+// 	                	else if(os.arch() == "arm64") { fileName += "arm64" }
+// 	                	fileName += ending;
+// 	                	for(let q = 0; q < githubData.assets.length; q++) {
+// 	                		if(githubData.assets[q].name == fileName) {
+// 	                			downloadURL = githubData.assets[q].browser_download_url;
+// 	                			break;
+// 	                		}
+// 	                	}
+// 	                	// With an update available send a request to the front-end to display the associated update button on the top nav.
+// 	                	win.webContents.send("updateAvailable", [[githubData.html_url, githubData.tag_name.substring(1), curVer, githubData.body, downloadURL, fileName], JSON.parse(body).slice(1).map(entry => [entry.name, entry.body.split("introduces the following features:")[1]])]);
+// 	                }
+// 	            });
+// 		    });
+// 		});
+// 		// End the HTTPS request.
+// 		request.end();
+// 	}).catch(err => {
+// 		log.warn("The app failed to check for an update because it could not connect to the internet. More specifically, connecting to https://google.com failed at the address " + err.address + ":" + err.port + " with exit code " + err.code + ".");
+// 	});
+// };
 
 
 

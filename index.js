@@ -12,7 +12,7 @@ Declare all of the necessary variables.
 	- localPath is the path to the local user data.
 
 */
-const { app, BrowserWindow, Menu, Tray } = require("electron"),
+const { app, BrowserWindow, Menu, shell, Tray } = require("electron"),
 	ipc = require("electron").ipcMain,
 	dev = process.argv.includes("--dev"),
 	path = require("path"),
@@ -261,8 +261,8 @@ app.whenReady().then(() => {
 																	primaryWindow.webContents.send("loadRows", [true, primaryWindow.getContentSize()[1] - 800]);
 																	primaryWindow.webContents.send("activeCategories", categoryActiveArr);
 																	// Check for an available application update.
-																	if(updateCheck == false && updateConfig == true) {
-																		tools.checkForUpdate(require("os"), require("https"), fs, path, log, basePath, primaryWindow);
+																	if(updateCheck == false && updateConfig == true && fs.existsSync("./scripts/dist/backEnd/update.js")) {
+																		require("./scripts/dist/backEnd/update").checkForUpdate(require("os"), require("https"), fs, path, log, basePath, primaryWindow);
 																		updateCheck = true;
 																	}
 																});
@@ -271,7 +271,7 @@ app.whenReady().then(() => {
 															  	tray = new Tray(path.join(__dirname, "assets", iconChoice + "Logo.png"));
 																tools.createTrayMenu("h", primaryWindow, tray, Menu);
 																// Add all of the back-end listeners.
-																require("./scripts/dist/backEnd/appListeners").addListeners(app, BrowserWindow, path, fs, log, dev, ipc, tools, categoryActiveArr, goodreadsScraper, malScraper, movier,
+																require("./scripts/dist/backEnd/appListeners").addListeners(app, shell, BrowserWindow, path, fs, log, dev, ipc, tools, categoryActiveArr, goodreadsScraper, malScraper, movier,
 																	updateCheck, primaryWindow, splashWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 															}
 														});

@@ -1,6 +1,6 @@
 {
     "name": "Trak",
-    "version": "0.8.0",
+    "version": "0.8.1",
     "description": "A tracker designed to display and maintain details of content read and/or watched.",
     "main": "index.js",
     "author": {
@@ -18,7 +18,7 @@
         "cli-progress": "^3.12.0",
         "download-github-release": "^0.3.2",
         "electron-context-menu": "^3.6.1",
-        "electron-log": "^5.1.5",
+        "electron-log": "^5.1.7",
         "exceljs": "^4.4.0",
         "fs-extra": "^11.2.0",
         "goodreads-scraper": "^1.4.4",
@@ -27,18 +27,19 @@
         "mal-scraper": "^2.13.1",
         "movier": "^3.0.8",
         "node-minify": "^3.6.0",
-        "semver": "^7.6.2",
+        "semver": "^7.6.3",
         "zip-local": "^0.3.5"
     },
     "devDependencies": {
-        "electron": "^31.2.0",
+        "electron": "^31.3.1",
         "electron-builder": "^24.13.3"
     },
     "scripts": {
         "compress": "node ./minifier.js",
         "dev": "node ./minifier.js && electron . --dev",
         "dist": "node ./minifier.js && electron .",
-        "build": "echo Compressing Files: && node ./minifier.js && echo Electron-Builder is Building the installer File: && electron-builder"
+        "build": "echo Compressing Files: && node ./minifier.js && echo Electron-Builder is Building the installer File: && electron-builder",
+        "store": "echo Compressing Files: && node ./minifier.js --store && echo Electron-Builder is Building the installer File: && electron-builder"
     },
     "build": {
         "appId": "Trak",

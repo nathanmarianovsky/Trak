@@ -212,7 +212,6 @@ ipcRenderer.on("updateAvailable", (event, response) => {
     // Fill the update modal with changelog content.
     const changelog = document.getElementById("updateModalChangelog");
     for(let r = 0; r < response[1].length; r++) {
-        // document.getElementById("updateModalChangelog").innerHTML += "<h6>" + response[1][r][0] + "</h6><br>";
         let changelogHeading = document.createElement("h6"),
             changelogBody = document.createElement("div");
         changelogHeading.textContent = response[1][r][0];
