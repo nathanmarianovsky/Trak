@@ -131,7 +131,7 @@ exports.showUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, da
             fs.rename(path.join(dataPath, "Trak", "data", fldrValue), path.join(dataPath, "Trak", "data", newFldr), err => {
                 // If there was an error in renaming the record folder notify the user.
                 if(err) {
-                    log.error("There was an error in renaming the show record folder " + data[data.length - 1] + " to " + data[1] + ".");
+                    log.error("There was an issue in renaming the show record folder " + data[data.length - 1] + " to " + data[1] + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
                     evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1]]);
                 }
                 // If no error occured in renaming the record folder write the data file, and copy over the file assets.
@@ -170,7 +170,7 @@ exports.showSearch = (log, movier, ev, search) => {
         log.info("Movier has finished getting the search results for the query " + search[1] + ".");
         // Send the attained data to the front-end.
         ev.sender.send("showSearchResults", [search[0], search[1], data.filter(elem => elem.titleType == "series").map(elem => [elem.name, elem.thumbnailImageUrl])]);
-    }).catch(err => log.error("There was an issue in obtaining the show search results for autocomplete options associated to the query " + search[1] + "."));
+    }).catch(err => log.error("There was an issue in obtaining the show search results for autocomplete options associated to the query " + search[1] + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -199,7 +199,7 @@ exports.showFetchDetails = (log, movier, tools, ev, name) => {
             showData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), showData.producers.map(producers => producers.name),
             showData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name), showData.casts.map(star => star.name), showData.plot
         ]);
-    }).catch(err => log.error("There was an issue in obtaining the details associated to the show name " + name + "."));
+    }).catch(err => log.error("There was an issue in obtaining the details associated to the show name " + name + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -241,7 +241,7 @@ exports.showFetchSearch = (log, movier, ev, search, path) => {
                         resultsArr.push([elem.name, (elem.thumbnailImageUrl != "" ? elem.thumbnailImageUrl.split("V1_")[0] + "V1_" + path.extname(elem.thumbnailImageUrl) : elemData.posterImage.url), elem.url, (elemData.mainRate.votesCount != 0 ? elemData.mainRate.rate : "N/A"), elemData.genres]);
                         if(resultsArr.length == results.length) { resolve(); }
                     }).catch(err => {
-                        log.error("There was an issue getting the show details based on the url " + elem.url + ".");
+                        log.error("There was an issue getting the show details based on the url " + elem.url + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
                         resultsArr.push([elem.name, elem.thumbnailImageUrl.split("V1_")[0] + "V1_" + path.extname(elem.thumbnailImageUrl), elem.url, "N/A", []]);
                         if(resultsArr.length == results.length) { resolve(); }
                     });
@@ -250,7 +250,7 @@ exports.showFetchSearch = (log, movier, ev, search, path) => {
             // Once all show results have an associated picture send the list of show releases to the front-end.
             detPromise.then(() => {
                 ev.sender.send("fetchResult", [resultsArr, false, "Show", search[1] == 1]);
-            }).catch(err => log.error("There was an issue resolving the promise associated to grabbing show details based on the search query " + search[0] + "."));
+            }).catch(promiseErr => log.error("There was an issue resolving the promise associated to grabbing show details based on the search query " + search[0] + ". Error Type: " + promiseErr.name + ". Error Message: " + promiseErr.message + "."));
         }).catch(err => {
             log.warn("There was an issue obtaining the show releases based on the query " + search[0] + ". Returning an empty collection.");
             ev.sender.send("fetchResult", [[], false, "Show", search[1] == 1]);
@@ -278,7 +278,7 @@ exports.showSynopsisFetch = (log, movier, ev, link) => {
     movier.getTitleDetailsByUrl(link).then(data => {
         // Provide the show synopsis to the front-end.
         ev.sender.send("showSynopsisFetchResult", data.plot);
-    }).catch(err => log.error("There was an issue getting the show synopsis based on the url " + link + "."));
+    }).catch(err => log.error("There was an issue getting the show synopsis based on the url " + link + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -313,7 +313,7 @@ exports.showRecordRequest = (BrowserWindow, ipc, path, fs, log, https, movier, t
             showData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name), showData.producers.map(producers => producers.name),
             showData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name), showData.casts.map(star => star.name), showData.plot
         ]);
-    }).catch(err => log.error("There was an issue getting the show details based on the url " + link + "."));
+    }).catch(err => log.error("There was an issue getting the show details based on the url " + link + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 

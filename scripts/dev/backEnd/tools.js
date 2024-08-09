@@ -31,7 +31,6 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
    - tutorialLoad: Tells the front-end to load the application tutorial.
    - isURL: Tests whether a given string represents a url.
    - parseURLFilename: Extracts the filename from a given string representing a url.
-   - checkForUpdate: Checks against the most recent release on github to determine if an update is available.
    - parseFolder: Formats a folder name into a readable form for logging purposes.
 
 */
@@ -90,7 +89,7 @@ Checks the configuration setup to ensure that all proper parameters exist if upg
 exports.compatibilityCheck = (fs, path, log, dir) => {
 	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, curConfig) => {
 		if(err) {
-			log.error("There was an error in reading the application configuration file.");
+			log.error("There was an issue in reading the application configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
 		}
 		else {
 			const typeArr = ["original"],
@@ -469,15 +468,15 @@ exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, 
 		// If there was an error in writing to the data file, then notify the user.
 		if(err) {
 			if(info[0] == "Anime" || info[0] == "Manga") {
-				log.error("There was an issue in writing the data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]));
+				log.error("There was an issue in writing the data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[2]) + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
 				evt.sender.send("writeRecordFailure", fldr);
 			}
 			else if(info[0] == "Book") {
-				log.error("There was an issue in writing the data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[3]));
+				log.error("There was an issue in writing the data file associated to the " + info[0].toLowerCase() + " " + (info[1] != "" ? info[1] : info[3]) + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
 				evt.sender.send("writeRecordFailure", info[0] + "-" + (info[1] != "" ? info[1] : info[3]));
 			}
 			else if(info[0] == "Film" || info[0] == "Show") {
-				log.error("There was an issue in writing the data file associated to the " + info[0].toLowerCase() + " " + info[1]);
+				log.error("There was an issue in writing the data file associated to the " + info[0].toLowerCase() + " " + info[1] + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
 				evt.sender.send("writeRecordFailure", info[0] + "-" + info[1]);
 			}
 		}
@@ -495,9 +494,9 @@ exports.writeDataFile = (log, globalWin, curWin, writeData, mode, savePath, fs, 
 			let i = 0;
 			for(; i < info[10].length; i++) {
 				let dest = path.join(savePath, "Trak", "data", fldr, "assets", path.basename(info[10][i]));
-				fs.copyFile(info[10][i], dest, err => {
-					if(err) {
-						log.error("There was an error in copying over the file " + info[10][i] + " as an asset.");
+				fs.copyFile(info[10][i], dest, cpErr => {
+					if(cpErr) {
+						log.error("There was an issue in copying over the file " + info[10][i] + " as an asset. Error Type: " + cpErr.name + ". Error Message: " + cpErr.message + ".");
 						evt.sender.send("copyFailure", info[10][i]);
 					}
 				});
@@ -551,7 +550,7 @@ exports.removeRecords = (log, primaryWin, userPath, fs, path, data) => {
 		fs.rm(path.join(userPath, "Trak", "data", data[j]), { "force": true, "recursive": true }, err => {
 			// If there was an error in deleting the record folder notify the user.
 			if(err) {
-				log.error("There was an issue removing the data record associated to the " + data[j].split("-")[0].toLowerCase() + " " + data[j].substring(data[j].split("-")[0].length + 1) + ".");
+				log.error("There was an issue removing the data record associated to the " + data[j].split("-")[0].toLowerCase() + " " + data[j].substring(data[j].split("-")[0].length + 1) + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
 				primaryWin.webContents.send("recordRemovalFailure", data[j]);
 			}
 		});
@@ -862,7 +861,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
 		// If there was an issue reading the settings configuration file notify the user.
 		if(err) {
-			log.error("There was an error in reading the settings configuration file.");
+			log.error("There was an issue in reading the settings configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
 			eve.sender.send("configurationFileOpeningFailure");
 		}
 		else {
@@ -1359,7 +1358,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					zipper.zip(path.join(dir, "Trak", "exportTemp"), (prob, zipped) => {
 						// If there was an issue creating the zip file notify the user.
 						if(prob) {
-							log.error("There was an error in zipping up the library assets.");
+							log.error("There was an issue in zipping up the library assets. Error Type: " + prob.name + ". Error Message: " + prob.message + ".");
 							eve.sender.send("exportXLSXZippingFailure");
 						}
 						else {
@@ -1375,7 +1374,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 							// Save the assets zip file, empty the exportTemp folder, and notify the user that the export process has finished.
 							zipped.save(path.join(xlsxExportFolder, zipStr), zipErr => {
 								if(zipErr) {
-									log.error("There was an error in creating the zip file for the library records assets export.");
+									log.error("There was an issue in creating the zip file for the library records assets export. Error Type: " + zipErr.name + ". Error Message: " + zipErr.message + ".");
 									eve.sender.send("exportXLSXFileFailure");
 								}
 								else {
@@ -1388,8 +1387,8 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 							});
 						}
 					});
-				}).catch(err => log.error("There was an issue in resolving the promise associated to the copying of all records which are to be exported."));
-			}).catch(err => log.error("There was an issue in writing the xlsx file " + path.join(xlsxExportFolder, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate + ".xlsx")));
+				}).catch(copyErr => log.error("There was an issue in resolving the promise associated to the copying of all records which are to be exported. Error Type: " + copyErr.name + ". Error Message: " + copyErr.message + "."));
+			}).catch(xlsxErr => log.error("There was an issue in writing the xlsx file " + path.join(xlsxExportFolder, "Trak-" + (detailed == true ? "Detailed-" : "Simple-") + "XLSX-Export-" + fileDate + ".xlsx") + ". Error Type: " + xlsxErr.name + ". Error Message: " + xlsxErr.message + "."));
 		}
 	});
 };
@@ -1429,7 +1428,7 @@ exports.exportDataZIP = (fs, path, log, zipper, eve, dir, exportLocation, record
 	fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
 		// If there was an issue reading the settings configuration file notify the user.
 		if(err) {
-			log.error("There was an error in reading the settings configuration file.");
+			log.error("There was an issue in reading the settings configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
 			eve.sender.send("configurationFileOpeningFailure");
 		}
 		else {
@@ -1450,7 +1449,7 @@ exports.exportDataZIP = (fs, path, log, zipper, eve, dir, exportLocation, record
 				zipper.zip(exportTempFolder, (prob, zipped) => {
 					// If there was an issue creating the zip file notify the user.
 					if(prob) {
-						log.error("There was an error in zipping up the library assets.");
+						log.error("There was an issue in zipping up the library assets. Error Type: " + prob.name + ". Error Message: " + prob.message + ".");
 						eve.sender.send("exportZIPZippingFailure");
 					}
 					else {
@@ -1468,7 +1467,7 @@ exports.exportDataZIP = (fs, path, log, zipper, eve, dir, exportLocation, record
 							if(fs.existsSync(path.join(exportLocation, zipStr))) {
 								fs.unlink(path.join(exportLocation, zipStr), delErr => {
 									if(delErr) {
-										log.error("There was an error in deleting the zip file associated to a previous export today.");
+										log.error("There was an issue in deleting the zip file associated to a previous export today. Error Type: " + delErr.name + ". Error Message: " + delErr.message + ".");
 										eve.sender.send("exportZIPFileDeleteFailure");
 									}
 									else {
@@ -1483,7 +1482,7 @@ exports.exportDataZIP = (fs, path, log, zipper, eve, dir, exportLocation, record
 						deletePromise.then(() => {
 							zipped.save(path.join(exportLocation, zipStr), zipErr => {
 								if(zipErr) {
-									log.error("There was an error in creating the zip file for the library records assets export.");
+									log.error("There was an issue in creating the zip file for the library records assets export. Error Type: " + zipErr.name + ". Error Message: " + zipErr.message + ".");
 									eve.sender.send("exportZIPFileFailure");
 								}
 								else {
@@ -1494,10 +1493,10 @@ exports.exportDataZIP = (fs, path, log, zipper, eve, dir, exportLocation, record
 									log.info("The ZIP export process has ended.");
 								}
 							});
-						}).catch(err => log.error("There was an issue in resolving the promise associated to the deletion of a zip file in a previous export."));
+						}).catch(promiseErr => log.error("There was an issue in resolving the promise associated to the deletion of a zip file in a previous export. Error Type: " + promiseErr.name + ". Error Message: " + promiseErr.message + "."));
 					}
 				});
-			}).catch(err => log.error("There was an issue in resolving the promise associated to the copying of all records which are to be exported."));
+			}).catch(promiseCopyErr => log.error("There was an issue in resolving the promise associated to the copying of all records which are to be exported. Error Type: " + promiseCopyErr.name + ". Error Message: " + promiseCopyErr.message + "."));
 		}
 	});
 };
@@ -1567,7 +1566,7 @@ exports.importCompare = (fs, path, log, ipc, appWin, winEvent, promiseResolver, 
 					appWin.webContents.send("importFileSuccess", impFile);
 					log.info("The " + mode + " import process has ended.");
 				}, 1000);
-			}).catch(err => log.error("There was an issue in resolving the promise associaed to the overwriting process of imported records."));
+			}).catch(err => log.error("There was an issue in resolving the promise associaed to the overwriting process of imported records. Error Type: " + err.name + ". Error Message: " + err.message + "."));
 		});
 	}
 };
@@ -1612,7 +1611,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 		fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
 			// If there was an issue reading the settings configuration file notify the user.
 			if(err) {
-				log.error("There was an error in reading the settings configuration file.");
+				log.error("There was an issue in reading the settings configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
 				eve.sender.send("configurationFileOpeningFailure");
 			}
 			else {
@@ -2168,8 +2167,9 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 						});
 					});
 					// Once all records have been imported into the temporary folder check them against the current ones to see which ones will be kept.
-					workbookPromise.then(() => exports.importCompare(fs, path, log, ipc, win, eve, res, dir, fileData, xlsxFile, "XLSX")).catch(err => log.error("There was an issue in resolving the promise associated to importing the xlsx file " + xlsxFile + "."));
-				}).catch(err => log.error("There was an issue in reading the xlsx file " + xlsxFile + "."));
+					workbookPromise.then(() => exports.importCompare(fs, path, log, ipc, win, eve, res, dir, fileData, xlsxFile, "XLSX"))
+						.catch(wbErr => log.error("There was an issue in resolving the promise associated to importing the xlsx file " + xlsxFile + ". Error Type: " + wbErr.name + ". Error Message: " + wbErr.message + "."));
+				}).catch(xlsxReadErr => log.error("There was an issue in reading the xlsx file " + xlsxFile + ". Error Type: " + xlsxReadErr.name + ". Error Message: " + xlsxReadErr.message + "."));
 			}
 		});
 	});
@@ -2233,7 +2233,7 @@ exports.importDataZIP = async (fs, path, log, ipc, zipper, win, eve, dir, zipFil
 		fs.readFile(path.join(dir, "Trak", "config", "configuration.json"), "UTF8", (err, fileContent) => {
 			// If there was an issue reading the settings configuration file notify the user.
 			if(err) {
-				log.error("There was an error in reading the settings configuration file.");
+				log.error("There was an issue in reading the settings configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
 				eve.sender.send("configurationFileOpeningFailure");
 			}
 			else {
@@ -2244,7 +2244,7 @@ exports.importDataZIP = async (fs, path, log, ipc, zipper, win, eve, dir, zipFil
 				zipper.unzip(zipFile, (er, unzipped) => {
 					// If there was an issue unzipping the zip file notify the user.
 					if(er) {
-						log.error("There was an error in unzipping the import file " + zipFile + ".")
+						log.error("There was an issue in unzipping the import file " + zipFile + ". Error Type: " + er.name + ". Error Message: " + er.message + ".")
 						eve.sender.send("importUnzippingFailure", zipFile);
 					}
 					else {
@@ -2253,7 +2253,7 @@ exports.importDataZIP = async (fs, path, log, ipc, zipper, win, eve, dir, zipFil
 						unzipped.save(path.join(dir, "Trak", "importTemp"), issue => {
 							// If there was an issue saving the contents of the zip file notify the user.
 							if(issue) {
-								log.error("There was an error in saving the contents of the import file " + zipFile + ".")
+								log.error("There was an issue in saving the contents of the import file " + zipFile + ". Error Type: " + issue.name + ". Error Message: " + issue.message + ".")
 								eve.sender.send("importZipFileFailure", zipFile);
 							}
 							// Once all records have been imported into the temporary folder check them against the current ones to see which ones will be kept.
@@ -2412,75 +2412,6 @@ Extracts the filename from a given string representing a url.
 
 */
 exports.parseURLFilename = url => new URL(url, "https://example.com").href.split("#").shift().split("?").shift().split("/").pop();
-
-
-
-// /*
-
-// Checks against the most recent release on github to determine if an update is available.
-
-// 	- os provides the means to get information on the user operating system.
-//     - https provides the means to download files.
-//     - fs and path provide the means to work with local files.
-//     - log provides the means to create application logs to keep track of what is going on.
-//     - dir is the directory containing the configuration files.
-//     - win is an object that represents the primary window of the Electron app.
-
-// */
-// exports.checkForUpdate = (os, https, fs, path, log, dir, win) => {
-// 	log.info("The application is checking for any available update.");
-// 	// Check that the application is connected to the internet prior to checking for an available update.
-// 	require("check-internet-connected")({ "timeout": 500, "retries": 5, "domain": "https://google.com" }).then(() => {
-// 		// Define the options associated to the GET request for github releases.
-// 		const options = { "host": "api.github.com", "path": "/repos/nathanmarianovsky/Trak/releases", "method": "GET", "headers": { "user-agent": "node.js" } };
-// 		// Put the GET request in.
-// 		const request = https.request(options, response => {
-// 			// Define the holder for the fetched data.
-// 			let body = "";
-// 			// Update the holder as the data is fetched.
-// 			response.on("data", chunk => body += chunk.toString("UTF8"));
-// 			// Once the data has been fetched completely check the current app version against the latest in the github releases.
-// 			response.on("end", () => {
-// 				// Define the latest release from github.
-// 			    const githubData = JSON.parse(body)[0];
-// 			    // Read the location.json file to extract the location of the app installation location.
-// 			    fs.readFile(path.join(dir, "Trak", "config", "location.json"), "UTF8", (resp, fl) => {
-// 			    	// Define the current version of the app.
-// 			    	const curVer = JSON.parse(fs.readFileSync(path.join(JSON.parse(fl).appLocation, "package.json"), "UTF8")).version;
-// 			    	// If there was an issue reading the location.json file notify the user.
-// 	                if(resp) {
-// 	                	log.error("There was an issue reading the location.json file.");
-// 	                	win.webContents.send("locationFileIssue");
-// 	                }
-// 	                // Compare the current version against the latest version on github to determine whether an update is available.
-// 	                else if(require("semver").gt(githubData.tag_name.substring(1), curVer)) {
-// 	                	log.info("The application has found a newer version available as a release on Github corresponding to version " + githubData.tag_name.substring(1) + ".");
-// 	                	let fileName = "Trak-",
-// 	                		ending = ""
-// 	                		downloadURL = "";
-// 	                	if(os.type() == "Windows_NT") { fileName += "Windows-"; ending = ".exe"; }
-// 	                	else if(os.type() == "Linux") { fileName += "Linux-"; ending = ".snap"; }
-// 	                	if(os.arch() == "x64") { fileName += "amd64" }
-// 	                	else if(os.arch() == "arm64") { fileName += "arm64" }
-// 	                	fileName += ending;
-// 	                	for(let q = 0; q < githubData.assets.length; q++) {
-// 	                		if(githubData.assets[q].name == fileName) {
-// 	                			downloadURL = githubData.assets[q].browser_download_url;
-// 	                			break;
-// 	                		}
-// 	                	}
-// 	                	// With an update available send a request to the front-end to display the associated update button on the top nav.
-// 	                	win.webContents.send("updateAvailable", [[githubData.html_url, githubData.tag_name.substring(1), curVer, githubData.body, downloadURL, fileName], JSON.parse(body).slice(1).map(entry => [entry.name, entry.body.split("introduces the following features:")[1]])]);
-// 	                }
-// 	            });
-// 		    });
-// 		});
-// 		// End the HTTPS request.
-// 		request.end();
-// 	}).catch(err => {
-// 		log.warn("The app failed to check for an update because it could not connect to the internet. More specifically, connecting to https://google.com failed at the address " + err.address + ":" + err.port + " with exit code " + err.code + ".");
-// 	});
-// };
 
 
 

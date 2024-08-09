@@ -132,7 +132,7 @@ exports.mangaUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, d
             fs.rename(path.join(dataPath, "Trak", "data", fldrValue), path.join(dataPath, "Trak", "data", newFldr), err => {
                 // If there was an error in renaming the record folder notify the user.
                 if(err) {
-                    log.error("There was an error in renaming the manga record folder " + data[data.length - 1] + " to " + (data[1] != "" ? data[1] : data[2]) + ".");
+                    log.error("There was an issue in renaming the manga record folder " + data[data.length - 1] + " to " + (data[1] != "" ? data[1] : data[2]) + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
                     evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1] != "" ? data[1] : data[2]]);
                 }
                 // If no error occured in renaming the record folder write the data file, and copy over the file assets.
@@ -171,7 +171,7 @@ exports.mangaSearch = (log, malScraper, ev, search) => {
         log.info("MyAnimeList-Scraper has finished getting the search results for the query " + search[1] + ".");
         // Send the attained data to the front-end.
         ev.sender.send("mangaSearchResults", [search[0], search[1], data.map(elem => [elem.name, elem.image_url])]);
-    }).catch(err => log.error("There was an issue in obtaining the manga search results for autocomplete options associated to the query " + search[1] + "."));
+    }).catch(err => log.error("There was an issue in obtaining the manga search results for autocomplete options associated to the query " + search[1] + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -245,7 +245,7 @@ exports.mangaFetchDetails = (log, malScraper, tools, ev, name, GoodReadsScraper)
             log.info("GoodReads-Scraper has finished getting the details associated to the manga volumes of " + name + ".");
             ev.sender.send("mangaVolumeFetchDetailsResult", results);
         });
-    }).catch(err => log.error("There was an issue in obtaining the details associated to the manga " + name + "."));
+    }).catch(err => log.error("There was an issue in obtaining the details associated to the manga " + name + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -268,7 +268,7 @@ exports.mangaVolumeFetchDetailsByISBN = (log, GoodReadsScraper, ev, isbn, tgt) =
         ev.sender.send("mangaSingleVolumeFetchDetailsResult", [tgt, bookData.title, bookData.coverLarge,
             (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.publisher,
             bookData.publicationDate, bookData.description]);
-    }).catch(err => log.error("There was an issue in obtaining the details associated to the manga volume whose ISBN is " + isbn + "."));
+    }).catch(err => log.error("There was an issue in obtaining the details associated to the manga volume whose ISBN is " + isbn + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -296,8 +296,8 @@ exports.mangaVolumeFetchDetailsByName = (log, GoodReadsScraper, ev, name, tgt) =
             ev.sender.send("mangaSingleVolumeFetchDetailsResult", [tgt, bookData.title, bookData.coverLarge,
                 (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.publisher,
                 bookData.publicationDate, bookData.description]);
-        }).catch(err => log.error("There was an issue in obtaining the details associated to the manga volume " + name + " via the url " + bookLstItem.url + "."));
-    }).catch(err => log.error("There was an issue in obtaining the details associated to the manga volume " + name + "."));
+        }).catch(err => log.error("There was an issue in obtaining the details associated to the manga volume " + name + " via the url " + bookLstItem.url + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
+    }).catch(err => log.error("There was an issue in obtaining the details associated to the manga volume " + name + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -342,7 +342,7 @@ exports.mangaFetchSearch = (log, malScraper, ev, search) => {
                     resultsArr.push([elem.title, elem.thumbnail.replace("/r/100x140", ""), elem.url, elem.score, elemData.genres]);
                     if(resultsArr.length == results.length) { resolve(); }
                 }).catch(err => {
-                    log.error("There was an issue getting the manga details based on the url " + elem.url + ".");
+                    log.error("There was an issue getting the manga details based on the url " + elem.url + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
                     resultsArr.push([elem.title, elem.thumbnail.replace("/r/100x140", ""), elem.url, elem.score, []]);
                     if(resultsArr.length == results.length) { resolve(); }
                 });
@@ -351,7 +351,7 @@ exports.mangaFetchSearch = (log, malScraper, ev, search) => {
         // Once all manga results have an associated picture send the list of manga releases to the front-end.
         picPromise.then(() => {
             ev.sender.send("fetchResult", [resultsArr, false, "Manga", search[1] == 1]);
-        }).catch(err => log.error("There was an issue resolving the promise associated to grabbing manga release pictures based on the search query " + search[0] + "."));
+        }).catch(err => log.error("There was an issue resolving the promise associated to grabbing manga release pictures based on the search query " + search[0] + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
     }).catch(err => {
         log.warn("There was an issue obtaining the manga releases based on the query " + search[0] + ". Returning an empty collection.");
         ev.sender.send("fetchResult", [[], false, "Manga", search[1] == 1]);
@@ -375,7 +375,7 @@ exports.mangaSynopsisFetch = (log, malScraper, ev, link) => {
     malScraper.getInfoFromURL(link).then(data => {
         // Provide the manga synopsis to the front-end.
         ev.sender.send("mangaSynopsisFetchResult", data.synopsis);
-    }).catch(err => log.error("There was an issue getting the manga details based on the url " + link + "."));
+    }).catch(err => log.error("There was an issue getting the manga details based on the url " + link + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -455,7 +455,7 @@ exports.mangaRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScrap
             log.info("GoodReads-Scraper has finished getting the details associated to the manga volumes of " + mangaData.englishTitle + ".");
             win.webContents.send("mangaVolumeFetchDetailsResult", results);
         });
-    }).catch(err => log.error("There was an issue getting the manga details based on the url " + link + "."));
+    }).catch(err => log.error("There was an issue getting the manga details based on the url " + link + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 

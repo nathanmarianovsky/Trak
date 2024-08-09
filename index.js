@@ -62,7 +62,7 @@ app.whenReady().then(() => {
 			newPath = path.join(basePath, "Trak", "data", "associations.json");
 		if(fs.existsSync(oldPath)) {
 			fs.rename(oldPath, newPath, assocErr => {
-				if(assocErr) { log.error("There was an error in moving the associations.json file from " + oldPath + " to " + newPath + "."); }
+				if(assocErr) { log.error("There was an issue in moving the associations.json file from " + oldPath + " to " + newPath + ". Error Type: " + assocErr.name + ". Error Message: " + assocErr.message + "."); }
 				else { log.info("The associations.json file was successfully moved from " + oldPath + " to " + newPath + "."); }
 			});
 		}
@@ -125,7 +125,7 @@ app.whenReady().then(() => {
 		// Load the user's preferred window sizes if they exist.
 		fs.readFile(path.join(basePath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
 			// If there was an issue reading the configuration.json file display a notification on the console.
-			if(err) { log.error("There was an issue reading the settings configuration file."); }
+			if(err) { log.error("There was an issue reading the settings configuration file. Error Type: " + err.name + ". Error Message: " + err.message + "."); }
 			else {
 				log.info("The settings configuration file has been successfully read.");
 				// Define the proper window parameters based on whether a current configuration exists.
@@ -165,7 +165,7 @@ app.whenReady().then(() => {
 			    // Read the index.html file.
 			    fs.readFile(path.join(__dirname, "pages", "dist", "index.html"), "UTF8", (issue, indexPage) => {
 			    	// If there was an issue reading the index.html file display a notification on the console.
-			    	if(issue) { log.error("There was an issue reading the index.html file."); }
+			    	if(issue) { log.error("There was an issue reading the index.html file. Error Type: " + issue.name + ". Error Message: " + issue.message + "."); }
 			    	else {
 			    		log.info("The index.html file has been successfully read.");
 			    		// Update the href values of the css and js files referenced in the index.html file and icon references as needed.
@@ -179,13 +179,13 @@ app.whenReady().then(() => {
 						if(!darkCondition && configObj.current != undefined) { indexPage = indexPage.replace(new RegExp("-w-", "g"), "-k-"); }
 						fs.writeFile(path.join(basePath, "Trak", "localPages", "index.html"), indexPage, "UTF8", prob => {
 							// If there was an issue writing the index.html file display a notification on the console.
-							if(prob) { log.error("There was an issue writing the index.html file to the localPages folder."); }
+							if(prob) { log.error("There was an issue writing the index.html file to the localPages folder. Error Type: " + prob.name + ". Error Message: " + prob.message + "."); }
 							else {
 								log.info("The index.html file has been successfully rewritten to the localPages folder.");
 								// Read the addRecord.html file.
 								fs.readFile(path.join(__dirname, "pages", "dist", "addRecord.html"), "UTF8", (iss, addRecordPage) => {
 									// If there was an issue reading the addRecord.html file display a notification on the console.
-									if(iss) { log.error("There was an issue reading the addRecord.html file."); }
+									if(iss) { log.error("There was an issue reading the addRecord.html file. Error Type: " + iss.name + ". Error Message: " + iss.message + "."); }
 									else {
 										log.info("The addRecord.html file has been successfully read.");
 										// Update the href values of the css and js files along with src values associated to images referenced in the addRecord.html file.
@@ -196,13 +196,13 @@ app.whenReady().then(() => {
 										if(!darkCondition && configObj.current != undefined) { addRecordPage = addRecordPage.replace(new RegExp("-w-", "g"), "-k-"); }
 										fs.writeFile(path.join(basePath, "Trak", "localPages", "addRecord.html"), addRecordPage, "UTF8", problem => {
 											// If there was an issue writing the addRecord.html file display a notification on the console.
-											if(problem) { log.error("There was an issue writing the addRecord.html file to the localPages folder."); }
+											if(problem) { log.error("There was an issue writing the addRecord.html file to the localPages folder. Error Type: " + problem.name + ". Error Message: " + problem.message + "."); }
 											else {
 												log.info("The addRecord.html file has been successfully rewritten to the localPages folder.");
 												// Read the styles.css file.
-												fs.readFile(path.join(__dirname, "styles", "dist", "styles.css"), "UTF8", (err, stylesFile) => {
+												fs.readFile(path.join(__dirname, "styles", "dist", "styles.css"), "UTF8", (readErr, stylesFile) => {
 													// If there was an issue reading the styles.css file display a notification on the console.
-													if(err) { log.error("There was an issue reading the application styles file."); }
+													if(readErr) { log.error("There was an issue reading the application styles file. Error Type: " + readErr.name + ". Error Message: " + readErr.message + "."); }
 													else {
 														log.info("The styles.css file has been successfully read.");
 														if(configObj.current != undefined) {
@@ -235,9 +235,9 @@ app.whenReady().then(() => {
 																stylesFile += "#addRecordsNav{display:none;}";
 															}
 														}
-														fs.writeFile(path.join(basePath, "Trak", "localStyles", "styles.css"), stylesFile, "UTF8", err => {
+														fs.writeFile(path.join(basePath, "Trak", "localStyles", "styles.css"), stylesFile, "UTF8", writeErr => {
 															// If there was an issue writing the styles.css file display a notification on the console.
-															if(err) { log.error("There was an issue writing the application styles file to the localStyles folder."); }
+															if(writeErr) { log.error("There was an issue writing the application styles file to the localStyles folder. Error Type: " + writeErr.name + ". Error Message: " + writeErr.message + "."); }
 															else {
 																log.info("The styles.css file has been successfully rewritten to the localStyles folder.");
 																// Update the splash screen to indicate that the primary window is being created.
@@ -288,7 +288,7 @@ app.whenReady().then(() => {
 			}
 		});
 	});
-}).catch(err => { log.error("The application failed to start."); console.log(err); });
+}).catch(loadErr => { log.error("The application failed to start. Error Type: " + loadErr.name + ". Error Message: " + loadErr.message + "."); });
 
 
 

@@ -51,7 +51,7 @@ exports.checkForUpdate = (os, https, fs, path, log, dir, win) => {
 			    	const curVer = JSON.parse(fs.readFileSync(path.join(JSON.parse(fl).appLocation, "package.json"), "UTF8")).version;
 			    	// If there was an issue reading the location.json file notify the user.
 	                if(resp) {
-	                	log.error("There was an issue reading the location.json file.");
+	                	log.error("There was an issue reading the location.json file. Error Type: " + resp.name + ". Error Message: " + resp.message + ".");
 	                	win.webContents.send("locationFileIssue");
 	                }
 	                // Compare the current version against the latest version on github to determine whether an update is available.
@@ -125,7 +125,7 @@ exports.updateExec = (elec, path, fs, log, ipcElec) => {
 				log.info("The application is launching the updated release installer.");
 				elec.quit();
 		    }, 5000);
-		}).catch(err => log.error("There was an issue in downloading the latest Github release of the application."));
+		}).catch(err => log.error("There was an issue in downloading the latest Github release of the application. Error Type: " + err.name + ". Error Message: " + err.message + "."));
 	});
 };
 

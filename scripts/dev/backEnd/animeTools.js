@@ -197,7 +197,7 @@ exports.animeUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, d
             fs.rename(path.join(dataPath, "Trak", "data", fldrValue), path.join(dataPath, "Trak", "data", newFldr), err => {
                 // If there was an error in renaming the record folder notify the user.
                 if(err) {
-                    log.error("There was an error in renaming the anime record folder " + data[data.length - 1] + " to " + (data[1] != "" ? data[1] : data[2]) + ".");
+                    log.error("There was an issue in renaming the anime record folder " + data[data.length - 1] + " to " + (data[1] != "" ? data[1] : data[2]) + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
                     evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1], data[1] != "" ? data[1] : data[2]]);
                 }
                 // If no error occured in renaming the record folder write the data file, and copy over the file assets.
@@ -236,7 +236,7 @@ exports.animeSearch = (log, malScraper, ev, search) => {
         log.info("MyAnimeList-Scraper has finished getting the search results for the query " + search[1] + ".");
         // Send the attained data to the front-end.
         ev.sender.send("animeSearchResults", [search[0], search[1], data.map(elem => [elem.name, elem.image_url])]);
-    }).catch(err => log.error("There was an issue in obtaining the anime search results for autocomplete options associated to the query " + search[1] + "."));
+    }).catch(err => log.error("There was an issue in obtaining the anime search results for autocomplete options associated to the query " + search[1] + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -299,14 +299,14 @@ exports.animeFetchDetails = (log, malScraper, tools, ev, name) => {
                 animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
             ]);
         }).catch(err => {
-            log.error("There was an issue in obtaining the pictures associated to the anime record " + name + ".");
+            log.error("There was an issue in obtaining the pictures associated to the anime record " + name + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
             ev.sender.send("animeFetchDetailsResult", [
                 animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, [animeData.picture]], startDate, endDate,
                 animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
                 animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
             ]);
         });
-    }).catch(err => log.error("There was an issue in obtaining the details associated to the anime name " + name + "."));
+    }).catch(err => log.error("There was an issue in obtaining the details associated to the anime name " + name + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -358,7 +358,7 @@ exports.animeFetchSeason = (log, malScraper, ev, seasonInfo) => {
         });
         // Send the list of anime releases for the season to the front-end.
         ev.sender.send("fetchResult", [seasonContent.map(elem => [elem.title, elem.picture, elem.link, elem.score, elem.genres]), true, "Anime"]);
-    }).catch(err => log.error("There was an issue in obtaining the releases for the anime season " + seasonInfo[0] + " " + seasonInfo[1].charAt(0).toUpperCase() + seasonInfo[1].slice(1) + "."));
+    }).catch(err => log.error("There was an issue in obtaining the releases for the anime season " + seasonInfo[0] + " " + seasonInfo[1].charAt(0).toUpperCase() + seasonInfo[1].slice(1) + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -403,7 +403,7 @@ exports.animeFetchSearch = (log, malScraper, ev, search) => {
                     resultsArr.push([elem.title, elem.thumbnail.replace("/r/100x140", ""), elem.url, elem.score, elemData.genres]);
                     if(resultsArr.length == results.length) { resolve(); }
                 }).catch(err => {
-                    log.error("There was an issue getting the anime details based on the url " + elem.url + ".");
+                    log.error("There was an issue getting the anime details based on the url " + elem.url + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
                     resultsArr.push([elem.title, elem.thumbnail.replace("/r/100x140", ""), elem.url, elem.score, []]);
                     if(resultsArr.length == results.length) { resolve(); }
                 });
@@ -412,7 +412,7 @@ exports.animeFetchSearch = (log, malScraper, ev, search) => {
         // Once all anime results have an associated picture send the list of anime releases to the front-end.
         picPromise.then(() => {
             ev.sender.send("fetchResult", [resultsArr, false, "Anime", search[1] == 1]);
-        }).catch(err => log.error("There was an issue resolving the promise associated to grabbing anime release pictures based on the search query " + search[0] + "."));
+        }).catch(err => log.error("There was an issue resolving the promise associated to grabbing anime release pictures based on the search query " + search[0] + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
     }).catch(err => {
         log.warn("There was an issue obtaining the anime releases based on the query " + search[0] + ". Returning an empty collection.");
         ev.sender.send("fetchResult", [[], false, "Anime", search[1] == 1]);
@@ -436,7 +436,7 @@ exports.animeSynopsisFetch = (log, malScraper, ev, link) => {
     malScraper.getInfoFromURL(link).then(data => {
         // Provide the anime synopsis to the front-end.
         ev.sender.send("animeSynopsisFetchResult", data.synopsis);
-    }).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
+    }).catch(err => log.error("There was an issue getting the anime details based on the url " + link + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -505,8 +505,8 @@ exports.animeRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScrap
                 animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
                 animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
             ]);
-        }).catch(err => log.error("There was an issue getting the pictures associated to the anime " + animeData.title + "."));
-    }).catch(err => log.error("There was an issue getting the anime details based on the url " + link + "."));
+        }).catch(err => log.error("There was an issue getting the pictures associated to the anime " + animeData.title + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
+    }).catch(err => log.error("There was an issue getting the anime details based on the url " + link + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 

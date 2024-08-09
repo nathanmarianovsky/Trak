@@ -77,7 +77,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
     fs.readFile(path.join(appDirectory, "Trak", "config", "tutorial.json"), "UTF8", (er, tutorialFile) => {
         // If there was an issue reading the tutorial.json file notify the user.
         if(er) {
-            log.error("There was an error in reading the tutorial configuration file.");
+            log.error("There was an issue in reading the tutorial configuration file. Error Type: " + er.name + ". Error Message: " + er.message + ".");
             evnt.sender.send("introductionFileReadFailure");
         }
         else {
@@ -85,10 +85,10 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
             // Define the tutorial boolean.
             const origIntro = JSON.parse(tutorialFile).introduction;
             // Write the tutorial.json file with the submitted data.
-            fs.writeFile(path.join(appDirectory, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": dataArr[dataArr.length - 1] }), "UTF8", error => {
+            fs.writeFile(path.join(appDirectory, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": dataArr[dataArr.length - 1] }), "UTF8", writeErr => {
                 // If there was an issue writing the tutorial.json file notify the user.
-                if(error) {
-                    log.error("There was an error in updating the tutorial configuration file.");
+                if(writeErr) {
+                    log.error("There was an issue in updating the tutorial configuration file. Error Type: " + writeErr.name + ". Error Message: " + writeErr.message + ".");
                     evnt.sender.send("introductionFileSaveFailure");
                 }
                 else {
@@ -99,7 +99,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                     fs.readFile(path.join(appDirectory, "Trak", "config", "configuration.json"), (err, file) => {
                         // If there was an issue in reading the configuration.json file notify the user.
                         if(err) {
-                            log.error("There was an error in reading the settings configuration file.");
+                            log.error("There was an issue in reading the settings configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
                             evnt.sender.send("configurationFileOpeningFailure");
                         }
                         else {
@@ -111,10 +111,10 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                 // Only delete the previous user records if the user wants to.
                                 if(resp[0] == true) {
                                     // Remove the directory and all content in it.
-                                    fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, er => {
+                                    fs.rm(configurationData.current.path, { "forced": true, "recursive": true}, rmErr => {
                                         // If there was an issue in removing the directory notify the user.
-                                        if(er) {
-                                            log.error("There was an error in deleting the original data associated to the records.");
+                                        if(rmErr) {
+                                            log.error("There was an issue in deleting the original data associated to the records. Error Type: " + rmErr.name + ". Error Message: " + rmErr.message + ".");
                                             eve.sender.send("dataDeleteFailure");
                                         }
                                         else {
@@ -130,10 +130,10 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                             }
                                             configurationData.current = writeData;
                                             // Write the configuration.json file with the submitted data.
-                                            fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+                                            fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", wrErr => {
                                                 // If there was an issue in writing the configuration.json notify the user.
-                                                if(err) {
-                                                    log.error("There was an error writing the configuration file associated to the application settings.");
+                                                if(wrErr) {
+                                                    log.error("There was an issue writing the configuration file associated to the application settings. Error Type: " + wrErr.name + ". Error Message: " + wrErr.message + ".");
                                                     eve.sender.send("configurationFileWritingFailure");
                                                 }
                                                 else {
@@ -161,10 +161,10 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                     }
                                     configurationData.current = writeData;
                                     // Write the configuration.json file with the submitted data.
-                                    fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+                                    fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", errWrite => {
                                         // If there was an issue in writing the configuration.json notify the user.
-                                        if(err) {
-                                            log.error("There was an error writing the configuration file associated to the application settings.");
+                                        if(errWrite) {
+                                            log.error("There was an issue writing the configuration file associated to the application settings. Error Type: " + errWrite.name + ". Error Message: " + errWrite.message + ".");
                                             eve.sender.send("configurationFileWritingFailure");
                                         }
                                         else {
@@ -192,10 +192,10 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                     writeData.previousSecondaryColor = configurationData.original.secondaryColor;
                                     configurationData.current = writeData;
                                     // Write the configuration.json file with the submitted data.
-                                    fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+                                    fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", curErr => {
                                         // If there was an issue in writing the configuration.json notify the user.
-                                        if(err) {
-                                            log.error("There was an error writing the configuration file associated to the application settings.");
+                                        if(curErr) {
+                                            log.error("There was an issue writing the configuration file associated to the application settings. Error Type: " + curErr.name + ". Error Message: " + curErr.message + ".");
                                             evnt.sender.send("configurationFileWritingFailure");
                                         }
                                         else {
@@ -215,10 +215,10 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                         writeData.previousSecondaryColor = configurationData.original.secondaryColor;
                                         configurationData.current = writeData;
                                         // Write the configuration.json file with the submitted data.
-                                        fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+                                        fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", resErr => {
                                             // If there was an issue in writing the configuration.json notify the user.
-                                            if(err) {
-                                                log.error("There was an error writing the configuration file associated to the application settings.");
+                                            if(resErr) {
+                                                log.error("There was an issue writing the configuration file associated to the application settings. Error Type: " + resErr.name + ". Error Message: " + resErr.message + ".");
                                                 evnt.sender.send("configurationFileWritingFailure");
                                             }
                                             else {
@@ -234,9 +234,9 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                     }
                                     // If the provided data path is different than the original path then proceed by copying the user records and asking if they would like to remove the original directory.
                                     else {
-                                        fs.copy(configurationData.current.path, path.join(writeData.path), err => {
-                                            if(err) {
-                                                log.error("There was an error in copying the original data associated to the records.");
+                                        fs.copy(configurationData.current.path, path.join(writeData.path), cpErr => {
+                                            if(cpErr) {
+                                                log.error("There was an issue in copying the original data associated to the records. Error Type: " + cpErr.name + ". Error Message: " + cpErr.message + ".");
                                                 evnt.sender.send("dataCopyFailure");
                                             }
                                             else {
@@ -260,10 +260,10 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                     writeData.previousSecondaryColor = configurationData.current.secondaryColor;
                                     configurationData.current = writeData;
                                     // Write the configuration.json file with the submitted data.
-                                    fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+                                    fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", ogErr => {
                                         // If there was an issue in writing the configuration.json notify the user.
-                                        if(err) {
-                                            log.error("There was an error writing the configuration file associated to the application settings.");
+                                        if(ogErr) {
+                                            log.error("There was an issue writing the configuration file associated to the application settings. Error Type: " + ogErr.name + ". Error Message: " + ogErr.message + ".");
                                             evnt.sender.send("configurationFileWritingFailure");
                                         }
                                         else {
@@ -282,10 +282,10 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                         writeData.previousSecondaryColor = configurationData.current.secondaryColor;
                                         configurationData.current = writeData;
                                         // Write the configuration.json file with the submitted data.
-                                        fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", err => {
+                                        fs.writeFile(path.join(appDirectory, "Trak", "config", "configuration.json"), JSON.stringify(configurationData), "UTF8", configErr => {
                                             // If there was an issue in writing the configuration.json notify the user.
-                                            if(err) {
-                                                log.error("There was an error writing the configuration file associated to the application settings.");
+                                            if(configErr) {
+                                                log.error("There was an issue writing the configuration file associated to the application settings. Error Type: " + configErr.name + ". Error Message: " + configErr.message + ".");
                                                 evnt.sender.send("configurationFileWritingFailure");
                                             }
                                             else {
@@ -301,9 +301,9 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                     }
                                     // If the provided data path is different than the current path then proceed by copying the user records and asking if they would like to remove the current directory.
                                     else {
-                                        fs.copy(configurationData.current.path, path.join(writeData.path), err => {
-                                            if(err) {
-                                                log.error("There was an error in copying the original data associated to the records.");
+                                        fs.copy(configurationData.current.path, path.join(writeData.path), copyErr => {
+                                            if(copyErr) {
+                                                log.error("There was an issue in copying the original data associated to the records. Error Type: " + copyErr.name + ". Error Message: " + copyErr.message + ".");
                                                 evnt.sender.send("dataCopyFailure");
                                             }
                                             else {

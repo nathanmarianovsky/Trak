@@ -43,7 +43,7 @@ exports.addConfigurationListeners = (path, fs, log, ipc, originalPath) => {
 	ipc.on("getConfigurations", event => {
 		fs.readFile(path.join(originalPath, "Trak", "config", "configuration.json"), "UTF8", (err, file) => {
 			event.sender.send("sentConfigurations", err ? "" : file);
-			if(err) { log.error("There was an issue reading the application settings configuration file."); }
+			if(err) { log.error("There was an issue reading the application settings configuration file. Error Type: " + err.name + ". Error Message: " + err.message + "."); }
 		});
 	});
 
@@ -51,7 +51,7 @@ exports.addConfigurationListeners = (path, fs, log, ipc, originalPath) => {
 	ipc.on("getNotifications", event => {
 		fs.readFile(path.join(originalPath, "Trak", "config", "notifications.json"), "UTF8", (err, file) => {
 			event.sender.send("sentNotifications", err ? "" : file);
-			if(err) { log.error("There was an issue reading the application notifications file."); }
+			if(err) { log.error("There was an issue reading the application notifications file. Error Type: " + err.name + ". Error Message: " + err.message + "."); }
 		});
 	});
 
@@ -60,7 +60,7 @@ exports.addConfigurationListeners = (path, fs, log, ipc, originalPath) => {
 		if(fs.existsSync(path.join(originalPath, "Trak", "config", "tutorial.json"))) {
 			fs.readFile(path.join(originalPath, "Trak", "config", "tutorial.json"), "UTF8", (err, file) => {
 				event.sender.send("sentTutorial", err ? "" : file);
-				if(err) { log.error("There was an issue reading the application settings tutorial file."); }
+				if(err) { log.error("There was an issue reading the application settings tutorial file. Error Type: " + err.name + ". Error Message: " + err.message + "."); }
 			});
 		}
 		else {
@@ -74,7 +74,7 @@ exports.addConfigurationListeners = (path, fs, log, ipc, originalPath) => {
 	ipc.on("getVersion", event => {
 		fs.readFile(path.join(__dirname, "../../../package.json"), "UTF8", (err, file) => {
 			event.sender.send("sentVersion", err ? "" : file);
-			if(err) { log.error("There was an issue reading the application package.json file."); }
+			if(err) { log.error("There was an issue reading the application package.json file. Error Type: " + err.name + ". Error Message: " + err.message + "."); }
 		});
 	});
 };
@@ -211,7 +211,7 @@ exports.addBasicListeners = (app, shell, BrowserWindow, path, fs, log, dev, ipc,
     	fs.readFile(notificationsPath, "UTF8", (err, file) => {
     		// If an error occured in reading the notifications configuration file then log it and notify the user.
     		if(err) {
-        		log.error("There was an issue reading the notifications configuration file.");
+        		log.error("There was an issue reading the notifications configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
         		event.sender.send("notificationsFileReadFailure");
         	}
         	// Otherwise, if no error was thrown proceed as designed.
@@ -266,7 +266,7 @@ exports.addBasicListeners = (app, shell, BrowserWindow, path, fs, log, dev, ipc,
         		fs.writeFile(notificationsPath, JSON.stringify(currentNotificationsFile), "UTF8", er => {
         			// If an error occured in writing the notifications configuration file then log it and notify the user.
         			if(er) {
-        				log.error("There was an issue writing to the notifications configuration file.");
+        				log.error("There was an issue writing to the notifications configuration file. Error Type: " + er.name + ". Error Message: " + er.message + ".");
         				event.sender.send("notificationsFileWriteFailure");
         			}
         			// Otherwise, send a request to the front-end to display the notifications, if any exist.
@@ -286,7 +286,7 @@ exports.addBasicListeners = (app, shell, BrowserWindow, path, fs, log, dev, ipc,
   		fs.readFile(notificationsPath, "UTF8", (err, file) => {
   			// If an error occured in reading the notifications configuration file then log it and notify the user.
   			if(err) {
-        		log.error("There was an issue reading the notifications configuration file.");
+        		log.error("There was an issue reading the notifications configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
         		event.sender.send("notificationsFileReadFailure");
         	}
         	// Otherwise, if no error was thrown proceed as designed.
@@ -298,7 +298,7 @@ exports.addBasicListeners = (app, shell, BrowserWindow, path, fs, log, dev, ipc,
         		fs.writeFile(notificationsPath, JSON.stringify(curFile), "UTF8", er => {
         			// If an error occured in writing the notifications configuration file then log it and notify the user.
         			if(er) {
-        				log.error("There was an issue writing to the notifications configuration file.");
+        				log.error("There was an issue writing to the notifications configuration file. Error Type: " + er.name + ". Error Message: " + er.message + ".");
         				event.sender.send("notificationsFileWriteFailure");
         			}
         		});
@@ -314,7 +314,7 @@ exports.addBasicListeners = (app, shell, BrowserWindow, path, fs, log, dev, ipc,
   		fs.readFile(associationsPath, "UTF8", (err, file) => {
   			// If an error occured in reading the associations configuration file then log it and notify the user.
   			if(err) {
-        		log.error("There was an issue reading the associations configuration file.");
+        		log.error("There was an issue reading the associations configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
         		event.sender.send("associationsFileReadFailure");
         	}
         	// Otherwise, if no error was thrown proceed as designed.
@@ -342,7 +342,7 @@ exports.addBasicListeners = (app, shell, BrowserWindow, path, fs, log, dev, ipc,
         		fs.writeFile(associationsPath, JSON.stringify({"associations": associationsFileList.filter(arrElem => arrElem.length > 1 && !arrElem.every( (val, i, arr) => val === arr[0] ))}), "UTF8", er => {
         			// If an error occured in writing the associations configuration file then log it and notify the user.
         			if(er) {
-        				log.error("There was an issue writing to the associations configuration file.");
+        				log.error("There was an issue writing to the associations configuration file. Error Type: " + er.name + ". Error Message: " + er.message + ".");
         				event.sender.send("associationsFileWriteFailure");
         			}
         		});
@@ -432,7 +432,7 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
   		fs.readFile(associationsPath, "UTF8", (err, file) => {
   			// If an error occured in reading the associations configuration file then log it and notify the user.
   			if(err) {
-        		log.error("There was an issue reading the associations configuration file.");
+        		log.error("There was an issue reading the associations configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
         		event.sender.send("associationsFileReadFailure");
         	}
         	// Otherwise, if no error was thrown proceed as designed.
@@ -454,7 +454,7 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 	  			fs.writeFile(associationsPath, JSON.stringify({"associations": associationsLst}), "UTF8", er => {
 	  				// If an error occured in writing the associations configuration file then log it and notify the user.
         			if(er) {
-        				log.error("There was an issue writing to the associations configuration file.");
+        				log.error("There was an issue writing to the associations configuration file. Error Type: " + er.name + ". Error Message: " + er.message + ".");
         				event.sender.send("associationsFileWriteFailure");
         			}
         		});
@@ -464,7 +464,7 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
   		fs.readFile(notificationsPath, "UTF8", (err, file) => {
   			// If an error occured in reading the notifications configuration file then log it and notify the user.
   			if(err) {
-        		log.error("There was an issue reading the notifications configuration file.");
+        		log.error("There was an issue reading the notifications configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
         		event.sender.send("notificationsFileReadFailure");
         	}
         	// Otherwise, if no error was thrown proceed as designed.
@@ -487,7 +487,7 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 	  			fs.writeFile(notificationsPath, JSON.stringify(notificationsFile), "UTF8", er => {
 	  				// If an error occured in writing the notifications configuration file then log it and notify the user.
         			if(er) {
-        				log.error("There was an issue writing to the notifications configuration file.");
+        				log.error("There was an issue writing to the notifications configuration file. Error Type: " + er.name + ". Error Message: " + er.message + ".");
         				event.sender.send("notificationsFileWriteFailure");
         			}
         		});
@@ -510,7 +510,7 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 			// Send the record data to the front-end.
 			event.sender.send("sentLibraryRecord" + submissionArr[1], [submissionArr[0], err ? "" : file, dataPath]);
 			// Log that there was an issue reading the data file associated to the library record requested.
-			if(err) { log.error("There was an issue reading the library record data file associated to the " + tools.parseFolder(submissionArr[0]) + "."); }
+			if(err) { log.error("There was an issue reading the library record data file associated to the " + tools.parseFolder(submissionArr[0]) + ". Error Type: " + err.name + ". Error Message: " + err.message + "."); }
 		});
 	});
 
@@ -525,14 +525,14 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 				const curRecord = JSON.parse(submissionArr[1]);
 				if(curRecord.category == "Anime" || curRecord.category == "Manga") {
                     log.error("There was an issue reading the data file associated to the " + curRecord.category.toLowerCase() + " "
-                        + (curRecord.name != "" ? curRecord.name : curRecord.jname) + ".");
+                        + (curRecord.name != "" ? curRecord.name : curRecord.jname) + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
                 }
                 else if(curRecord.category == "Book") {
                     log.error("There was an issue reading the data file associated to the book " +
-                        (curRecord.name != "" ? curRecord.name : curRecord.isbn) + ".");
+                        (curRecord.name != "" ? curRecord.name : curRecord.isbn) + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
                 }
                 else if(curRecord.category == "Film" || curRecord.category == "Show") {
-                    log.error("There was an issue reading the data file associated to the " + curRecord.category.toLowerCase() + " " + curRecord.name + ".");
+                    log.error("There was an issue reading the data file associated to the " + curRecord.category.toLowerCase() + " " + curRecord.name + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
                 }
 			}
 		});
@@ -543,7 +543,7 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 		// Read the configurations associations file.
 		fs.readFile(path.join(originalPath, "Trak", "data", "associations.json"), "UTF8", (err, file) => {
 			// Log if there was an issue in reading the configurations associations file.
-			if(err) { log.error("There was an issue reading the application associations configuration file."); }
+			if(err) { log.error("There was an issue reading the application associations configuration file. Error Type: " + err.name + ". Error Message: " + err.message + "."); }
 			// Otherwise proceed by finding the desired associations.
 			else {
 				// Define the list of associations currently saved.
@@ -560,10 +560,10 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 		                    	// For each associated record read the data file and push it into the overall collection.
 		                        associationsArr.push(new Promise((resolve, reject) => {
 		                        	// Read the record data file.
-		                        	fs.readFile(path.join(originalPath, "Trak", "data", associationsFileList[t][y], "data.json"), "UTF8", (err, fle) => {
+		                        	fs.readFile(path.join(originalPath, "Trak", "data", associationsFileList[t][y], "data.json"), "UTF8", (readErr, fle) => {
 		                        		// Log if there was an issue in reading the record data file.
-		                        		if(err) {
-		                        			log.error("There was an issue reading the data file associated to the " + tools.parseFolder(associationsFileList[t][y]) + ".");
+		                        		if(readErr) {
+		                        			log.error("There was an issue reading the data file associated to the " + tools.parseFolder(associationsFileList[t][y]) + ". Error Type: " + readErr.name + ". Error Message: " + readErr.message + ".");
 		                        			resolve([associationsFileList[t][y], ""]);
 		                        		}
 		                        		// Otherwise push the data as expected into the overall collection.
@@ -601,7 +601,7 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 				fs.readFile(path.join(originalPath, "Trak", "data", list[r], "data.json"), "UTF8", (err, file) => {
 					// Log if there was an issue in reading the library record data file.
 					if(err) {
-						log.error("There was an issue reading the data file associated to the " + tools.parseFolder(list[r]) + ".");
+						log.error("There was an issue reading the data file associated to the " + tools.parseFolder(list[r]) + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
 						resolve([list[r], ""]);
 					}
 					// Otherwise push the data as expected into the overall collection.
@@ -849,7 +849,7 @@ exports.addSettingsListeners = (app, path, fs, log, ipc, originalPath, mainWindo
     	if(!fs.existsSync(path.join(originalPath, "Trak", "config", "tutorial.json"))) {
 	    	fs.writeFile(path.join(originalPath, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": launchIntro }), "UTF8", err => {
 	    		if(err) { 
-	    			log.error("There was an error in saving the tutorial configuration file.");
+	    			log.error("There was an issue in saving the tutorial configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
 	    			event.sender.send("introductionFileSaveFailure");
 	    		}
 	    		else {
@@ -860,7 +860,7 @@ exports.addSettingsListeners = (app, path, fs, log, ipc, originalPath, mainWindo
     	else if(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "tutorial.json"), "UTF8")).introduction != launchIntro) {
     		fs.writeFile(path.join(originalPath, "Trak", "config", "tutorial.json"), JSON.stringify({ "introduction": launchIntro }), "UTF8", err => {
 	    		if(err) {
-	    			log.error("There was an error in saving the tutorial configuration file.");
+	    			log.error("There was an issue in saving the tutorial configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
 	    			event.sender.send("introductionFileSaveFailure");
 	    		}
 	    		else {
@@ -932,7 +932,7 @@ exports.addLogListeners = (shell, path, fs, log, ipc, tools, originalPath) => {
 		// Read the logs file.
         fs.readFile(path.join(originalPath, "Trak", "logs", "main.log"), "UTF8", (err, file) => {
         	if(err) {
-        		log.error("There was an issue reading the logs file.");
+        		log.error("There was an issue reading the logs file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
         		event.sender.send("logsFileReadFailure");
         	}
             else {

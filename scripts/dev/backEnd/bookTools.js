@@ -81,7 +81,7 @@ exports.bookUpdate = (BrowserWindow, path, fs, log, https, tools, mainWindow, da
         fs.rename(path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[data.length - 1][1]) + "-" + data[data.length - 1][0]), path.join(dataPath, "Trak", "data", data[0] + "-" + tools.formatFolderName(data[1]) + "-" + data[3]), err => {
             // If there was an error in renaming the record folder notify the user.
             if(err) {
-                log.error("There was an error in renaming the book record folder " + (data[data.length - 1][1] != "" ? data[data.length - 1][1] : data[data.length - 1][0]) + " to " + (data[1] != "" ? data[1] : data[3]) + ".");
+                log.error("There was an issue in renaming the book record folder " + (data[data.length - 1][1] != "" ? data[data.length - 1][1] : data[data.length - 1][0]) + " to " + (data[1] != "" ? data[1] : data[3]) + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
                 evnt.sender.send("recordFolderRenameFailure", [data[data.length - 1][1] != "" ? data[data.length - 1][1] : data[data.length - 1][0], data[1] != "" ? data[1] : data[3]]);
             }
             // If no error occured in renaming the record folder write the data file, and copy over the file assets.
@@ -114,7 +114,7 @@ exports.bookSearch = (log, GoodReadsScraper, ev, search) => {
         log.info("GoodReadsScraper has finished getting the search results for the query " + search[1] + ".");
         // Send the attained data to the front-end.
         ev.sender.send("bookSearchResults", [search[0], search[1], data.books.map(elem => [elem.title, elem.coverLarge])]);
-    }).catch(err => log.error("There was an issue in obtaining the book search results for autocomplete options associated to the query " + search[1] + "."));
+    }).catch(err => log.error("There was an issue in obtaining the book search results for autocomplete options associated to the query " + search[1] + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -143,8 +143,8 @@ exports.bookFetchDetailsByName = (log, GoodReadsScraper, tools, ev, name, index 
             ev.sender.send("bookFetchDetailsResult", [bookData.title, bookData.originalTitle, bookData.coverLarge,
                 (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
                 bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres]);
-        }).catch(err => log.error("There was an issue in obtaining the details associated to the book " + (index == -1 ? "title " : "ASIN ") + name + " via the url " + bookLstItem.url + "."));
-    }).catch(err => log.error("There was an issue in obtaining the details associated to the book " + (index == -1 ? "title " : "ASIN ") + name + "."));
+        }).catch(err => log.error("There was an issue in obtaining the details associated to the book " + (index == -1 ? "title " : "ASIN ") + name + " via the url " + bookLstItem.url + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
+    }).catch(err => log.error("There was an issue in obtaining the details associated to the book " + (index == -1 ? "title " : "ASIN ") + name + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -167,7 +167,7 @@ exports.bookFetchDetailsByISBN = (log, GoodReadsScraper, ev, isbn) => {
         ev.sender.send("bookFetchDetailsResult", [bookData.title, bookData.originalTitle, bookData.coverLarge,
             (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
             bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres]);
-    }).catch(err => log.error("There was an issue in obtaining the details associated to the book whose ISBN is " + isbn + "."));
+    }).catch(err => log.error("There was an issue in obtaining the details associated to the book whose ISBN is " + isbn + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -198,7 +198,7 @@ exports.bookFetchSearch = (log, GoodReadsScraper, ev, search) => {
                     resultsArr.push([elemData.title, elemData.coverLarge, elemData.url, (elemData.rating * 2).toFixed(2), elemData.genres]);
                     if(resultsArr.length == results.books.length) { resolve(); }
                 }).catch(err => {
-                    log.error("There was an issue getting the book details based on the url " + elem.url + ".");
+                    log.error("There was an issue getting the book details based on the url " + elem.url + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
                     resultsArr.push([elem.title, elem.coverLarge, elem.url, (elem.rating * 2).toFixed(2), []]);
                     if(resultsArr.length == results.books.length) { resolve(); }
                 });
@@ -208,7 +208,7 @@ exports.bookFetchSearch = (log, GoodReadsScraper, ev, search) => {
         itemPromise.then(() => {
             log.info("GoodReads-Scraper has finished getting the search results for the search query " + search[0] + ".");
             ev.sender.send("fetchResult", [resultsArr, false, "Book", search[1] == 1]);
-        }).catch(err => log.error("There was an issue resolving the promise associated to grabbing book details based on the search query " + search[0] + "."));
+        }).catch(err => log.error("There was an issue resolving the promise associated to grabbing book details based on the search query " + search[0] + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
     }).catch(err => {
         log.warn("There was an issue obtaining the books based on the query " + search[0] + ". Returning an empty collection.");
         ev.sender.send("fetchResult", [[], false, "Book", search[1] == 1]);
@@ -232,7 +232,7 @@ exports.bookSynopsisFetch = (log, GoodReadsScraper, ev, link) => {
     GoodReadsScraper.getBook({ "url": link }).then(data => {
         // Provide the book synopsis to the front-end.
         ev.sender.send("bookSynopsisFetchResult", data.description);
-    }).catch(err => log.error("There was an issue getting the book details based on the url " + link + "."));
+    }).catch(err => log.error("There was an issue getting the book details based on the url " + link + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 
@@ -264,7 +264,7 @@ exports.bookRecordRequest = (BrowserWindow, ipc, path, fs, log, https, GoodReads
             (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
             bookData.publicationDate, bookData.pages, bookData.media, bookData.description, bookData.genres
         ]);
-    }).catch(err => log.error("There was an issue getting the book details based on the url " + link + "."));
+    }).catch(err => log.error("There was an issue getting the book details based on the url " + link + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
 };
 
 

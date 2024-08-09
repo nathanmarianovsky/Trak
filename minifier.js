@@ -241,4 +241,4 @@ fs.rmSync(path.join(__dirname, "pages", "dev", "sectionsAttached"), {"recursive"
 
 
 // Notify that all tasks have been handled.
-console.log("All CSS, HTML, and JS Files Have Been Minified!");
+console.log("All CSS, HTML, and JS Files have been minified!");
