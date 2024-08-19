@@ -172,7 +172,7 @@ ipcRenderer.on("exportSuccess", (event, response) => {
     Array.from(document.querySelectorAll(".recordsChecks")).forEach(elem => elem.checked = false);
     document.getElementById("databaseModalExit").click();
     document.getElementById("databasePreloader").style.display = "none";
-    document.getElementById("remove").style.display = "none";
+    document.getElementById("showRecordOptionsDiv").style.display = "none";
     M.toast({"html": "The library records have been exported to " + response + ".", "classes": "rounded"});
 });
 

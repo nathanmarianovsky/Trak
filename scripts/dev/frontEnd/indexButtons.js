@@ -102,6 +102,7 @@ window.addEventListener("load", () => {
     // Define the buttons for all actions.
     const add = document.getElementById("add"),
         remove = document.getElementById("removeConfirm"),
+        open = document.getElementById("openRecords"),
         searchBar = document.getElementById("searchBar"),
         checkAll = document.getElementById("checkAll"),
         notificationsCheckAll = document.getElementById("notificationsCheckAll"),
@@ -454,6 +455,12 @@ window.addEventListener("load", () => {
     remove.addEventListener("click", e => {
         const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
         ipcRenderer.send("removeRecords", checkAll.checked ? list.slice(1) : list);
+    });
+    // Listen for a click event on the open button in order to send a request for the opening of all checked records.
+    open.addEventListener("click", e => {
+        let openList = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
+        if(checkAll.checked == true) { openList = openList.slice(1); }
+        openList.forEach(item => ipcRenderer.send("updateRecord", [false, item]));
     });
     // Listen for an input change event on the search bar in order to filter the records table.
     searchBar.addEventListener("input", e => {
@@ -997,6 +1004,8 @@ window.addEventListener("load", () => {
     }
     // Initialize all select tags.
     initSelect();
+    // Initialize the floating action button on the page.
+    initFAB("right");
     // Listen for a scroll to the bottom in order to load chunks, if available, for any type of content search.
     bottomScrollRequest(animeSearchBar, bookSearchBar, filmSearchBar, mangaSearchBar, showSearchBar);
 });

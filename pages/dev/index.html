@@ -177,7 +177,13 @@
                             <p>Begin by clicking on the add button in order to open a separate window which handles record creation and update.</p>
                         </div>
                     </div>
-                    <a id="remove" class="btn-floating btn-large waves-effect waves-light modal-trigger tooltipped" data-position="right" data-tooltip="Remove Records" href="#removeModal"><i class="material-icons">remove</i></a>
+                    <div id="showRecordOptionsDiv" class="fixed-action-btn">
+                        <a id="showRecordOptions" class="btn-floating btn-large waves-effect waves-light optionsBtn"><i class="large material-icons">edit</i></a>
+                        <ul>
+                            <li><a id="remove" href="#removeModal" class="btn-floating btn waves-effect waves-light tooltipped modal-trigger" data-position="right" data-tooltip="Remove Records"><i class="material-icons">remove</i></a></li>
+                            <li><a id="openRecords" class="btn-floating btn waves-effect waves-light tooltipped" data-position="right" data-tooltip="Open Records"><i class="material-icons">open_in_new</i></a></li>
+                        </ul>
+                    </div>
                 </div>
                 <div id="homeSelected"></div>
                 <div id="homeCounter"></div>

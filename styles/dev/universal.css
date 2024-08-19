@@ -49,7 +49,7 @@ nav {
 	color: white !important;
 }
 
-#add i, #animeSearchSwitch i, #remove i,
+#add i, #animeSearchSwitch i, #openRecords i, #remove i,
 #windowTitle, .categoryLink, .material-icons {
 	color: white;
 }

@@ -50,7 +50,7 @@ const checkAllFunc = e => {
     // Define the collection of all record rows, the remove button, and checkAll button.
     const bodyList = Array.from(document.getElementById("tableBody").children).filter(item => item.style.display != "none"),
         homeSelected = document.getElementById("homeSelected"),
-        btn = document.getElementById("remove"),
+        btn = document.getElementById("showRecordOptionsDiv"),
         checkAll = document.getElementById("checkAll");
     // If the checkAll is checked then check all records.
     if(checkAll.checked) {
@@ -68,6 +68,7 @@ const checkAllFunc = e => {
             bodyList[i].children[0].children[0].children[0].checked = false;
         }
         btn.style.display = "none";
+        M.FloatingActionButton.getInstance(btn).close();
         homeSelected.textContent = "";
     }
 };
@@ -81,7 +82,8 @@ Handler associated to the change event listener on the index page record checkbo
 */
 const recordCheckFunc = () => {
     // Define the collection of all record rows, the remove button, checkAll button, and the associated lengths.
-    let btn = document.getElementById("remove"),
+    let btn = document.getElementById("showRecordOptionsDiv"),
+        interiorBtn = document.getElementById("showRecordOptions"),
         checkAllBtn = document.getElementById("checkAll"),
         homeSelected = document.getElementById("homeSelected"),
         checkArr = Array.from(document.querySelectorAll(".recordsChecks")).filter(item => item.parentNode.parentNode.parentNode.style.display != "none"),
@@ -98,6 +100,7 @@ const recordCheckFunc = () => {
     // Otherwise proceed for the case where no records are checked.
     else {
         btn.style.display = "none";
+        M.FloatingActionButton.getInstance(btn).close();
         homeSelected.textContent = "";
     }
 };
@@ -189,11 +192,13 @@ const initTabs = (scenario = 0) => {
 
 Initialize the floating action button on the page.
 
+   - dir is a string corresponding to the direction in which the floating-action-button should expand.
+
 */
-const initFAB = () => {
+const initFAB = (dir = "left") => {
     // Define the instance of the fixed action button on the page.
     const elemsFAB = document.querySelectorAll(".fixed-action-btn"),
-        instancesFAB = M.FloatingActionButton.init(elemsFAB, { "hoverEnabled": false, "direction": "left" });
+        instancesFAB = M.FloatingActionButton.init(elemsFAB, { "hoverEnabled": false, "direction": dir });
 };
 
 

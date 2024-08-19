@@ -14,7 +14,7 @@
         "@node-minify/uglify-js": "^8.0.6",
         "@node-minify/yui": "^8.0.6",
         "check-internet-connected": "^2.0.6",
-        "cheerio": "^1.0.0-rc.12",
+        "cheerio": "^1.0.0",
         "cli-progress": "^3.12.0",
         "download-github-release": "^0.3.2",
         "electron-context-menu": "^3.6.1",
