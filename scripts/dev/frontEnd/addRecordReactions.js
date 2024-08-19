@@ -281,6 +281,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                     animeMusicians = document.getElementById("animeMusicians"),
                     animeStudio = document.getElementById("animeStudio"),
                     animeLicense = document.getElementById("animeLicense"),
+                    animePremiereSeason = document.getElementById("animePremiereSeason"),
+                    animePremiereYear = document.getElementById("animePremiereYear"),
                     animeImg = document.getElementById("addRecordAnimeImg"),
                     animeOtherGenres = document.getElementById("animeOtherGenres");
                 // Load the anime record portion of the addRecord page.
@@ -308,6 +310,8 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
                 relatedContentListeners(animeStudio);
                 updateFetchedDataString(animeLicense, recordData.license, true);
                 relatedContentListeners(animeLicense);
+                animePremiereSeason.value = recordData.season;
+                animePremiereYear.value = recordData.year;
                 updateImgLoad("Anime", animeImg, recordData.img, recordArr[2]);
                 updateGenreLoad("Anime", animeOtherGenres, recordData.genres);
                 relatedContentListeners(animeOtherGenres);
@@ -830,6 +834,15 @@ ipcRenderer.on("recordUpdateInfo", (event, name) => {
 
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
+    // Populate the list of years available for an anime premiered year selection.
+    const maxYear = new Date().getFullYear() + 1,
+        animeYear = document.getElementById("animePremiereYear");
+    for(let curYear = maxYear; curYear >= 1917; curYear--) {
+        let curYearOption = document.createElement("option");
+        curYearOption.value = curYear;
+        curYearOption.textContent = curYear;
+        animeYear.append(curYearOption);
+    }
     // Initialize the select tags on the page.
     initSelect();
     // Initialize the floating action button on the page.

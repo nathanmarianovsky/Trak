@@ -43,6 +43,8 @@ var animeSaveFunc = (auto = false) => {
         animeMusicians = document.getElementById("animeMusicians").value,
         animeStudio = document.getElementById("animeStudio").value,
         animeLicense = document.getElementById("animeLicense").value,
+        animePremiereSeason = document.getElementById("animePremiereSeason").value,
+        animePremiereYear = document.getElementById("animePremiereYear").value,
         animeSynopsis = document.getElementById("animeSynopsis").value,
         animeImg = document.getElementById("addRecordAnimeImg").getAttribute("list").split(","),
         animeFiles = Array.from(document.getElementById("animeAddRecordFiles").files).map(elem => elem.path),
@@ -97,7 +99,7 @@ var animeSaveFunc = (auto = false) => {
         const submissionMaterial = ["Anime", animeName, animeJapaneseName, animeReview, animeDirectors, animeProducers, animeWriters,
             animeMusicians, animeStudio, animeLicense, animeFiles, [genresLst, genres, otherGenres], content, animeSynopsis,
             [document.getElementById("addRecordAnimeImg").getAttribute("list") == document.getElementById("addRecordAnimeImg").getAttribute("previous"), animeImg],
-            animeBookmarkValue, oldTitle];
+            animeBookmarkValue, animePremiereSeason, animePremiereYear, oldTitle];
         ipcRenderer.send("performSave", [(addRecordsNav.style.display != "none" || addRecordsNav.getAttribute("origin") == "content") ? false : true, submissionMaterial, auto, fidValue != null ? fidValue : ""]);
         saveAssociations("Anime", animeName, fidValue != null ? fidValue : "", ipcRenderer);
     }

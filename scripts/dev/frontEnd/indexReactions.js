@@ -1030,6 +1030,8 @@ ipcRenderer.on("loadRows", (event, diff) => {
                         tr.setAttribute("producers", recordData.producers);
                         tr.setAttribute("studio", recordData.studio);
                         tr.setAttribute("writers", recordData.writers);
+                        tr.setAttribute("season", recordData.season);
+                        tr.setAttribute("year", recordData.year);
                     }
                     else if(recordData.category == "Book") {
                         tr.setAttribute("originalName", recordData.originalName);

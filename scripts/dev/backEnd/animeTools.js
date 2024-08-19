@@ -296,14 +296,14 @@ exports.animeFetchDetails = (log, malScraper, tools, ev, name) => {
             ev.sender.send("animeFetchDetailsResult", [
                 animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, allImgArr], startDate, endDate,
                 animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
-                animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
+                animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis, animeData.premiered
             ]);
         }).catch(err => {
             log.error("There was an issue in obtaining the pictures associated to the anime record " + name + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
             ev.sender.send("animeFetchDetailsResult", [
                 animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, [animeData.picture]], startDate, endDate,
                 animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
-                animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
+                animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis, animeData.premiered
             ]);
         });
     }).catch(err => log.error("There was an issue in obtaining the details associated to the anime name " + name + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
@@ -503,7 +503,7 @@ exports.animeRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScrap
             win.webContents.send("animeFetchDetailsResult", [
                 animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, allImgArr], startDate, endDate,
                 animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
-                animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis
+                animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis, animeData.premiered
             ]);
         }).catch(err => log.error("There was an issue getting the pictures associated to the anime " + animeData.title + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
     }).catch(err => log.error("There was an issue getting the anime details based on the url " + link + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));

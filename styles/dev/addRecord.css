@@ -8,6 +8,11 @@
 	overflow-y: hidden;
 }
 
+#animePremiereText {
+	text-align: center;
+	margin-top: 3%;
+}
+
 #animeReview, #animeSynopsis,
 #bookReview, #bookSynopsis {
 	max-height: 400px;

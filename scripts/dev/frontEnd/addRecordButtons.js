@@ -108,7 +108,10 @@ const recordChoicesButtons = () => {
                 directorsInput = document.getElementById("animeDirectors"),
                 producersInput = document.getElementById("animeProducers"),
                 writersInput = document.getElementById("animeWriters"),
-                musicInput = document.getElementById("animeMusicians");
+                musicInput = document.getElementById("animeMusicians"),
+                animePremiereSeasonInput = document.getElementById("animePremiereSeason"),
+                animePremiereYearInput = document.getElementById("animePremiereYear"),
+                premiereArr = newResponse[14].split(" ");
             updateFetchedDataString(jnameInput, newResponse[1], updateDetector);
             setFetchedImages("Anime", btnColorFavorite, newResponse[2]);
             updateFetchedDataString(studioInput, newResponse[8].join(", "), updateDetector);
@@ -117,6 +120,8 @@ const recordChoicesButtons = () => {
             updateFetchedDataString(writersInput, newResponse[11].join(", "), updateDetector);
             updateFetchedDataString(musicInput, newResponse[12].join(", "), updateDetector);
             updateFetchedDataTextArea(animeSynopsis, newResponse[13], updateDetector);
+            animePremiereSeasonInput.value = premiereArr[0].toLowerCase();
+            animePremiereYearInput.value = premiereArr[1];
             // Update the anime genres if available.
             genreFill("Anime", newResponse[7]);
             setTimeout(() => {

@@ -285,6 +285,8 @@ exports.recordObjCreation = (path, fs, https, dir, providedData, extension) => {
 	    recordObj.genres = providedData[11];
 	    recordObj.synopsis = providedData[13];
 	    recordObj.bookmark = providedData[15];
+	    recordObj.season = providedData[16];
+	    recordObj.year = providedData[17];
 	    recordObj.content = [];
     }
     // Modify the record object accordingly for a book record.

@@ -273,6 +273,10 @@ input[type="text"]:not(.browser-default):focus.valid ~ label {
 	margin-bottom: 0 !important;
 }
 
+.selectMediumVerticalScroll ul {
+	height: 205px !important;
+}
+
 .selectShortVerticalScroll ul {
 	height: 125px !important;
 }
