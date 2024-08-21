@@ -1526,7 +1526,10 @@ exports.exportDataZIP = (fs, path, log, zipper, eve, dir, exportLocation, record
 Finishes the application import process by copying new records into the library.
 
 	- fs and path provide the means to work with local files.
+	- log provides the means to create application logs to keep track of what is going on.
+	- ipc provides the means to operate the Electron app.
 	- appWin is an object referencing the primary window of the Electron app.
+	- winEvent is the object which allows for interaction with the fron-end of the Electron application.
 	- promiseResolver is the resolver callback for the file import promise.
 	- configFir is a string representing the base directory corresponding to the location of the configuration file.
 	- dataDir is the directory where the user library records are stored.
@@ -1534,22 +1537,37 @@ Finishes the application import process by copying new records into the library.
 	- mode is a string corresponding to which import process is being utilized.
 
 */ 
-exports.importCompare = (fs, path, log, appWin, promiseResolver, configDir, dataDir, impFile, mode) => {
-	// Look at the list of records in the zip file and compare them to the current library records to see which reference the same record.
-	let list = fs.readdirSync(path.join(configDir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(configDir, "Trak", "importTemp"), file)).isDirectory());
-	// If there are records being imported simply copy them over.
-	if(list.length > 0) {
-		log.info("The " + mode + " import process is copying over import records which do not currently exist in the library records.");
-		list.forEach(elem => { fs.moveSync(path.join(configDir, "Trak", "importTemp", elem), path.join(dataDir, elem)); });
+exports.importCompare = (fs, path, log, ipc, appWin, winEvent, promiseResolver, configDir, dataDir, impFile, mode) => {
+	winEvent.sender.send("importFetchAsk");
+	ipc.on("importFetchConfirm", (fetchEvent, fetchCheck) => {
+		if(fetchCheck == false) {
+			let list = fs.readdirSync(path.join(configDir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(configDir, "Trak", "importTemp"), file)).isDirectory());
+			// If there are records being imported simply copy them over.
+			if(list.length > 0) {
+				log.info("The " + mode + " import process is copying over records into the library.");
+				list.forEach(elem => { fs.moveSync(path.join(configDir, "Trak", "importTemp", elem), path.join(dataDir, elem)); });
+				log.info("Emptying the importTemp folder.");
+				fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
+				appWin.reload();
+				setTimeout(() => {
+					promiseResolver();
+					appWin.webContents.send("importFileSuccess", impFile);
+					log.info("The " + mode + " import process has ended.");
+				}, 1000);
+			}
+		}
+		else {
+
+		}
+	});
+	ipc.on("importFetchDenial", denEvent => {
 		log.info("Emptying the importTemp folder.");
 		fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
-		appWin.reload();
 		setTimeout(() => {
 			promiseResolver();
-			appWin.webContents.send("importFileSuccess", impFile);
 			log.info("The " + mode + " import process has ended.");
 		}, 1000);
-	}
+	});
 };
 
 
@@ -2154,7 +2172,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 						});
 					});
 					// Once all records have been imported into the temporary folder check them against the current ones to see which ones will be kept.
-					workbookPromise.then(() => exports.importCompare(fs, path, log, win, res, dir, fileData, xlsxFile, "XLSX"))
+					workbookPromise.then(() => exports.importCompare(fs, path, log, ipc, win, eve, res, dir, fileData, xlsxFile, "XLSX"))
 						.catch(wbErr => log.error("There was an issue in resolving the promise associated to importing the xlsx file " + xlsxFile + ". Error Type: " + wbErr.name + ". Error Message: " + wbErr.message + "."));
 				}).catch(xlsxReadErr => log.error("There was an issue in reading the xlsx file " + xlsxFile + ". Error Type: " + xlsxReadErr.name + ". Error Message: " + xlsxReadErr.message + "."));
 			}

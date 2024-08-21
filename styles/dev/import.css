@@ -7,7 +7,7 @@
 #importModal {
 	top: 20% !important;
     width: 55% !important;
-    height: 50%;
+    height: 30%;
     max-height: 50%;
     overflow-y: hidden;
 }
