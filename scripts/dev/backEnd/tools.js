@@ -930,6 +930,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 			  	{ "header": "Studios", "width": 30 },
 			  	{ "header": "Licensed By", "width": 30 },
 			  	{ "header": "Release Date", "width": 15 },
+			  	{ "header": "Premiered", "width": 15 },
 			  	{ "header": "Genres", "width": 40 },
 			];
 			bookWorksheet.columns = [
@@ -1069,10 +1070,16 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					animeWorksheet.getCell("J" + (animeRowCounter + 2)).value = iterData.studio != "" ? iterData.studio : "N/A";
 					animeWorksheet.getCell("K" + (animeRowCounter + 2)).value = iterData.license != "" ? iterData.license : "N/A";
 					worksheetDateItem(animeWorksheet, "L", animeRowCounter, exports.calculateReleaseDate(iterData.content).split("-"));
-					genreCellFill(animeWorksheet, iterData.genres, "M", animeRowCounter);
+					animeWorksheet.getCell("M" + (animeRowCounter + 2)).value = iterData.season != "" || iterData.year != "" ? iterData.season.charAt(0).toUpperCase() + iterData.season.slice(1) + " " + iterData.year : "N/A";
+					animeWorksheet.getCell("M" + (animeRowCounter + 2)).alignment = alignmentMidCenWrapParameters;
+					genreCellFill(animeWorksheet, iterData.genres, "N", animeRowCounter);
 					// If the user desires to export a detailed xlsx file then create a new worksheet for each anime record and populate it with the related content information.
 					if(detailed == true) {
-						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25);
+						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25),
+							recNum = records[x].split("-").slice(-1)[0];
+						(detailedWorksheetName + "-" + recNum).length > 25
+							? detailedWorksheetName = detailedWorksheetName.substring(0, detailedWorksheetName.length - (recNum.length + 1)) + "-" + recNum
+							: detailedWorksheetName = detailedWorksheetName + "-" + recNum;
 						// Define the worksheet associated to the anime record.
 						let detailedWorksheet = workbook.addWorksheet("Anime-" + detailedWorksheetName);
 						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
@@ -1128,6 +1135,7 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 								detailedWorksheet.getCell("B" + rowPos).value = iterData.content[v].name != "" ? iterData.content[v].name : "N/A";
 								worksheetDateItem(detailedWorksheet, "C", rowPos - 2, iterData.content[v].release.split("-"));
 								detailedWorksheet.getCell("D" + rowPos).alignment = alignmentMidCenWrapParameters;
+								dateArr = iterData.content[v].release.split("-")
 								detailedWorksheet.getCell("D" + rowPos).value = dateArr.length == 3 ? dateArr[1] + "-" + dateArr[2] + "-" + dateArr[0] : "N/A";
 								detailedWorksheet.getCell("E" + rowPos).value = "N/A";
 								worksheetDateItem(detailedWorksheet, "F", rowPos - 2, iterData.content[v].watched.split("-"));
@@ -1214,8 +1222,12 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					genreCellFill(mangaWorksheet, iterData.genres, "M", mangaRowCounter);
 					// If the user desires to export a detailed xlsx file then create a new worksheet for each manga record and populate it with the related content information.
 					if(detailed == true) {
+						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25),
+							recNum = records[x].split("-").slice(-1)[0];
+						(detailedWorksheetName + "-" + recNum).length > 25
+							? detailedWorksheetName = detailedWorksheetName.substring(0, detailedWorksheetName.length - (recNum.length + 1)) + "-" + recNum
+							: detailedWorksheetName = detailedWorksheetName + "-" + recNum;
 						// Define the worksheet associated to the manga record.
-						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25);
 						let detailedWorksheet = workbook.addWorksheet("Manga-" + detailedWorksheetName);
 						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
 						// Update the style of the first row.
@@ -1293,7 +1305,11 @@ exports.exportDataXLSX = (fs, path, log, zipper, ExcelJS, eve, dir, exportLocati
 					genreCellFill(showWorksheet, iterData.genres, "Q", showRowCounter);
 					// If the user desires to export a detailed xlsx file then create a new worksheet for each show record and populate it with the related content information.
 					if(detailed == true) {
-						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25);
+						let detailedWorksheetName = iterData.name.split(" ").map(elem => elem.charAt(0).toUpperCase() + elem.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25),
+							recNum = records[x].split("-").slice(-1)[0];
+						(detailedWorksheetName + "-" + recNum).length > 25
+							? detailedWorksheetName = detailedWorksheetName.substring(0, detailedWorksheetName.length - (recNum.length + 1)) + "-" + recNum
+							: detailedWorksheetName = detailedWorksheetName + "-" + recNum;
 						// Define the worksheet associated to the show record.
 						let detailedWorksheet = workbook.addWorksheet("Show-" + detailedWorksheetName);
 						detailedWorksheet.views = [{"state": "frozen", "ySplit": 1, "activeCell": "A2"}];
@@ -1507,12 +1523,10 @@ exports.exportDataZIP = (fs, path, log, zipper, eve, dir, exportLocation, record
 
 /*
 
-Finishes the application import process by checking whether the new records already exist in the library.
+Finishes the application import process by copying new records into the library.
 
 	- fs and path provide the means to work with local files.
-	- ipc provides the means to operate the Electron app.
 	- appWin is an object referencing the primary window of the Electron app.
-	- winEvent is the object which allows for interaction with the fron-end of the Electron application.
 	- promiseResolver is the resolver callback for the file import promise.
 	- configFir is a string representing the base directory corresponding to the location of the configuration file.
 	- dataDir is the directory where the user library records are stored.
@@ -1520,18 +1534,13 @@ Finishes the application import process by checking whether the new records alre
 	- mode is a string corresponding to which import process is being utilized.
 
 */ 
-exports.importCompare = (fs, path, log, ipc, appWin, winEvent, promiseResolver, configDir, dataDir, impFile, mode) => {
-	// Compare the list of records in the zip file and compare them to the current library records to see which reference the same record.
-	let list = fs.readdirSync(path.join(configDir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(configDir, "Trak", "importTemp"), file)).isDirectory()),
-		listFilterDoExist = list.filter(elem => fs.existsSync(path.join(dataDir, elem))),
-		listFilterDoNotExist = list.filter(elem => !fs.existsSync(path.join(dataDir, elem)));
-	// If there are records being imported which do not exist in the current library records simply copy them over.
-	if(listFilterDoNotExist.length > 0) {
+exports.importCompare = (fs, path, log, appWin, promiseResolver, configDir, dataDir, impFile, mode) => {
+	// Look at the list of records in the zip file and compare them to the current library records to see which reference the same record.
+	let list = fs.readdirSync(path.join(configDir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(configDir, "Trak", "importTemp"), file)).isDirectory());
+	// If there are records being imported simply copy them over.
+	if(list.length > 0) {
 		log.info("The " + mode + " import process is copying over import records which do not currently exist in the library records.");
-		listFilterDoNotExist.forEach(elem => { fs.moveSync(path.join(configDir, "Trak", "importTemp", elem), path.join(dataDir, elem)); });
-	}
-	// If there are no records being imported which do exist in the current library records then empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
-	if(listFilterDoExist.length == 0) {
+		list.forEach(elem => { fs.moveSync(path.join(configDir, "Trak", "importTemp", elem), path.join(dataDir, elem)); });
 		log.info("Emptying the importTemp folder.");
 		fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
 		appWin.reload();
@@ -1540,36 +1549,6 @@ exports.importCompare = (fs, path, log, ipc, appWin, winEvent, promiseResolver, 
 			appWin.webContents.send("importFileSuccess", impFile);
 			log.info("The " + mode + " import process has ended.");
 		}, 1000);
-	}
-	else {
-		// If there are records being imported which do exist in the current library records notify the user.
-		winEvent.sender.send("importRecordExists", [listFilterDoExist, listFilterDoExist.map(elem => {
-			let associatedData = JSON.parse(fs.readFileSync(path.join(dataDir, elem, "data.json")));
-			return [associatedData.category, associatedData.name];
-		})]);
-		// Once the user chooses which records to overwrite proceed by copying them from the importTemp folder.
-		ipc.once("importOveride", (event, overwriteList) => {
-			log.info("The " + mode + " import process is copying over import records which currently exist in the library records.");
-			let savePromise = new Promise((resolve, reject) => {
-			    overwriteList[0].forEach((elem, index, arr) => {
-					if(overwriteList[1][index] == true) {
-						fs.moveSync(path.join(configDir, "Trak", "importTemp", elem), path.join(dataDir, elem), {"overwrite": true});
-					}
-					if(index == arr.length - 1) { resolve(); }
-				});
-			});
-			// Once the desired records have been overwritten empty the importTemp folder, reload the primary window, and notify the user that the zip file has been imported.
-			savePromise.then(() => {
-				log.info("Emptying the importTemp folder.");
-				fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
-				appWin.reload();
-				setTimeout(() => {
-					promiseResolver();
-					appWin.webContents.send("importFileSuccess", impFile);
-					log.info("The " + mode + " import process has ended.");
-				}, 1000);
-			}).catch(err => log.error("There was an issue in resolving the promise associaed to the overwriting process of imported records. Error Type: " + err.name + ". Error Message: " + err.message + "."));
-		});
 	}
 };
 
@@ -1645,21 +1624,23 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 									let animeObj = {
 										"category": "Anime",
 										"name": (typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value,
-										"jname": elem.getCell("B" + q).value != "N/A" ? elem.getCell("B" + q).value : "", 
-										"review": elem.getCell("D" + q).value != "N/A" ? elem.getCell("D" + q).value : "", 
-										"directors": elem.getCell("F" + q).value != "N/A" ? elem.getCell("F" + q).value : "", 
-										"producers": elem.getCell("G" + q).value != "N/A" ? elem.getCell("G" + q).value : "", 
-										"writers": elem.getCell("H" + q).value != "N/A" ? elem.getCell("H" + q).value : "", 
-										"musicians": elem.getCell("I" + q).value != "N/A" ? elem.getCell("I" + q).value : "", 
-										"studio": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "", 
-										"license": elem.getCell("K" + q).value != "N/A" ? elem.getCell("K" + q).value : "", 
+										"jname": elem.getCell("B" + q).value != "N/A" ? elem.getCell("B" + q).value : "",
+										"review": elem.getCell("D" + q).value != "N/A" ? elem.getCell("D" + q).value : "",
+										"directors": elem.getCell("F" + q).value != "N/A" ? elem.getCell("F" + q).value : "",
+										"producers": elem.getCell("G" + q).value != "N/A" ? elem.getCell("G" + q).value : "",
+										"writers": elem.getCell("H" + q).value != "N/A" ? elem.getCell("H" + q).value : "",
+										"musicians": elem.getCell("I" + q).value != "N/A" ? elem.getCell("I" + q).value : "",
+										"studio": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "",
+										"license": elem.getCell("K" + q).value != "N/A" ? elem.getCell("K" + q).value : "",
+										"season": elem.getCell("M" + q).value != "N/A" ? elem.getCell("M" + q).value.split(" ")[0].toLowerCase() : "",
+										"year": elem.getCell("M" + q).value != "N/A" ? elem.getCell("M" + q).value.split(" ")[1] : "",
 										"genres": [genreLst, new Array(genreLst.length).fill(false), []],
-										"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "", 
+										"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "",
 										"img": [],
 										"content": [{ "scenario": "Single", "name": "Item 1", "type": "", "release": "", "watched": "", "rating": "", "review": "" }]
 									};
 									// Update the genres of the anime record object.
-									let genresCellList = elem.getCell("M" + q).value.split(",").map(elem => elem.trim());
+									let genresCellList = elem.getCell("N" + q).value.split(",").map(elem => elem.trim());
 									for(let p = 0; p < genresCellList.length; p++) {
 										let compare = genresCellList[p];
 										if(compare == "Coming-of-Age") {
@@ -1759,25 +1740,26 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 											}
 										});
 									}
-									let fldrName = exports.formatFolderName(animeObj.name);
+									let fldrName = exports.formatFolderName(animeObj.name),
+										fldrNum = (fs.readdirSync(path.join(dir, "Trak", "data")).filter(file => fs.statSync(path.join(dir, "Trak", "data", file)).isDirectory() && file.split("-").slice(0, -1).join("-").includes(fldrName)).length);
+									// Create the assets folder.
+									log.info("Creating the record assets folder associated to the anime " + (animeObj.name != "" ? animeObj.name : animeObj.jname));
+									fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName + "-" + fldrNum, "assets"), { "recursive": true });
 									// Check the assets that were imported from the associated zip file and add the images to the anime record object.
-									let assetsFolder = path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "assets");
-									if(fs.existsSync(assetsFolder)) {
-										log.info("Copying over the record assets for " + animeObj.name + ".");
-										fs.readdirSync(assetsFolder).forEach(asset => {
-											if(imgExtArr.includes(path.extname(asset))) {
-												animeObj.img.push(path.join(fileData, "Anime-" + fldrName, "assets", asset));
-											}
-										});
-									}
-									// Otherwise if no assets were found then create the assets folder.
-									else {
-										log.info("Creating the record assets folder associated to the anime " + (animeObj.name != "" ? animeObj.name : animeObj.jname));
-										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "assets"), { "recursive": true });
+									for(let q = 0; q <= fldrNum; q++) {
+										let assetsFolder = path.join(dir, "Trak", "importTemp", "Anime-" + fldrName + "-" + q, "assets");
+										if(fs.existsSync(assetsFolder)) {
+											log.info("Copying over the record assets for " + animeObj.name + ".");
+											fs.readdirSync(assetsFolder).forEach(asset => {
+												if(imgExtArr.includes(path.extname(asset))) {
+													animeObj.img.push(path.join(fileData, "Anime-" + fldrName + "-" + q, "assets", asset));
+												}
+											});
+										}
 									}
 									// Write data.json file associated to the anime record.
 									log.info("Writing the data file associated to the anime " + animeObj.name);
-									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName, "data.json"), JSON.stringify(animeObj), "UTF8");
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Anime-" + fldrName + "-" + fldrNum, "data.json"), JSON.stringify(animeObj), "UTF8");
 									if(q == elem.rowCount) { resolve(); }
 								}
 							}
@@ -1911,25 +1893,26 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 											filmObj.genres[1][genreIndex] = true;
 										}
 									}
-									let fldrName = exports.formatFolderName(filmObj.name);
+									let fldrName = exports.formatFolderName(filmObj.name),
+										fldrNum = (fs.readdirSync(path.join(dir, "Trak", "data")).filter(file => fs.statSync(path.join(dir, "Trak", "data", file)).isDirectory() && file.split("-").slice(0, -1).join("-").includes(fldrName)).length);
+									// Create the assets folder.
+									log.info("Creating the record assets folder associated to the film " + filmObj.name);
+									fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Film-" + fldrName + "-" + fldrNum, "assets"), { "recursive": true });
 									// Check the assets that were imported from the associated zip file and add the images to the film record object.
-									let assetsFolder = path.join(dir, "Trak", "importTemp", "Film-" + fldrName, "assets");
-									if(fs.existsSync(assetsFolder)) {
-										log.info("Copying over the record assets for " + filmObj.name + ".");
-										fs.readdirSync(assetsFolder).forEach(asset => {
-											if(imgExtArr.includes(path.extname(asset))) {
-												filmObj.img.push(path.join(fileData, "Film-" + fldrName, "assets", asset));
-											}
-										});
-									}
-									// Otherwise if no assets were found then create the assets folder.
-									else {
-										log.info("Creating the record assets folder associated to the film " + filmObj.name);
-										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Film-" + fldrName, "assets"), { "recursive": true });
+									for(let q = 0; q <= fldrNum; q++) {
+										let assetsFolder = path.join(dir, "Trak", "importTemp", "Film-" + fldrName + "-" + q, "assets");
+										if(fs.existsSync(assetsFolder)) {
+											log.info("Copying over the record assets for " + filmObj.name + ".");
+											fs.readdirSync(assetsFolder).forEach(asset => {
+												if(imgExtArr.includes(path.extname(asset))) {
+													filmObj.img.push(path.join(fileData, "Film-" + fldrName + "-" + q, "assets", asset));
+												}
+											});
+										}
 									}
 									// Write data.json file associated to the film record.
 									log.info("Writing the data file associated to the film " + filmObj.name);
-									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Film-" + fldrName, "data.json"), JSON.stringify(filmObj), "UTF8");
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Film-" + fldrName + "-" + fldrNum, "data.json"), JSON.stringify(filmObj), "UTF8");
 									if(q == elem.rowCount) { resolve(); }
 								}
 							}
@@ -2025,25 +2008,26 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 											}
 										});
 									}
-									let fldrName = exports.formatFolderName(mangaObj.name);
+									let fldrName = exports.formatFolderName(mangaObj.name),
+										fldrNum = (fs.readdirSync(path.join(dir, "Trak", "data")).filter(file => fs.statSync(path.join(dir, "Trak", "data", file)).isDirectory() && file.split("-").slice(0, -1).join("-").includes(fldrName)).length);
+									// Create the assets folder.
+									log.info("Creating the record assets folder associated to the manga " + (mangaObj.name != "" ? mangaObj.name : mangaObj.jname));
+									fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Manga-" + fldrName + "-" + fldrNum, "assets"), { "recursive": true });
 									// Check the assets that were imported from the associated zip file and add the images to the manga record object.
-									let assetsFolder = path.join(dir, "Trak", "importTemp", "Manga-" + fldrName, "assets");
-									if(fs.existsSync(assetsFolder)) {
-										log.info("Copying over the record assets for " + mangaObj.name + ".");
-										fs.readdirSync(assetsFolder).forEach(asset => {
-											if(imgExtArr.includes(path.extname(asset))) {
-												mangaObj.img.push(path.join(fileData, "Manga-" + fldrName, "assets", asset));
-											}
-										});
-									}
-									// Otherwise if no assets were found then create the assets folder.
-									else {
-										log.info("Creating the record assets folder associated to the manga " + (mangaObj.name != "" ? mangaObj.name : mangaObj.jname));
-										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Manga-" + fldrName, "assets"), { "recursive": true });
+									for(let q = 0; q <= fldrNum; q++) {
+										let assetsFolder = path.join(dir, "Trak", "importTemp", "Manga-" + fldrName + "-" + q, "assets");
+										if(fs.existsSync(assetsFolder)) {
+											log.info("Copying over the record assets for " + mangaObj.name + ".");
+											fs.readdirSync(assetsFolder).forEach(asset => {
+												if(imgExtArr.includes(path.extname(asset))) {
+													mangaObj.img.push(path.join(fileData, "Manga-" + fldrName + "-" + q, "assets", asset));
+												}
+											});
+										}
 									}
 									// Write data.json file associated to the manga record.
 									log.info("Writing the data file associated to the manga " + mangaObj.name);
-									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Manga-" + fldrName, "data.json"), JSON.stringify(mangaObj), "UTF8");
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Manga-" + fldrName + "-" + fldrNum, "data.json"), JSON.stringify(mangaObj), "UTF8");
 									if(q == elem.rowCount) { resolve(); }
 								}
 							}
@@ -2144,32 +2128,33 @@ exports.importDataXLSX = async (fs, path, log, ipc, zipper, ExcelJS, win, eve, d
 											}
 										});
 									}
-									let fldrName = exports.formatFolderName(showObj.name);
+									let fldrName = exports.formatFolderName(showObj.name),
+										fldrNum = (fs.readdirSync(path.join(dir, "Trak", "data")).filter(file => fs.statSync(path.join(dir, "Trak", "data", file)).isDirectory() && file.split("-").slice(0, -1).join("-").includes(fldrName)).length);
+									// Create the assets folder.
+									log.info("Creating the record assets folder associated to the show " + showObj.name);
+									fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Show-" + fldrName + "-" + fldrNum, "assets"), { "recursive": true });
 									// Check the assets that were imported from the associated zip file and add the images to the show record object.
-									let assetsFolder = path.join(dir, "Trak", "importTemp", "Show-" + fldrName, "assets");
-									if(fs.existsSync(assetsFolder)) {
-										log.info("Copying over the record assets for " + showObj.name + ".");
-										fs.readdirSync(assetsFolder).forEach(asset => {
-											if(imgExtArr.includes(path.extname(asset))) {
-												showObj.img.push(path.join(fileData, "Show-" + fldrName, "assets", asset));
-											}
-										});
-									}
-									// Otherwise if no assets were found then create the assets folder.
-									else {
-										log.info("Creating the record assets folder associated to the show " + showObj.name);
-										fs.mkdirSync(path.join(dir, "Trak", "importTemp", "Show-" + fldrName, "assets"), { "recursive": true });
+									for(let q = 0; q <= fldrNum; q++) {
+										let assetsFolder = path.join(dir, "Trak", "importTemp", "Show-" + fldrName + "-" + q, "assets");
+										if(fs.existsSync(assetsFolder)) {
+											log.info("Copying over the record assets for " + showObj.name + ".");
+											fs.readdirSync(assetsFolder).forEach(asset => {
+												if(imgExtArr.includes(path.extname(asset))) {
+													showObj.img.push(path.join(fileData, "Show-" + fldrName + "-" + q, "assets", asset));
+												}
+											});
+										}
 									}
 									// Write data.json file associated to the show record.
 									log.info("Writing the data file associated to the show " + showObj.name);
-									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Show-" + fldrName, "data.json"), JSON.stringify(showObj), "UTF8");
+									fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Show-" + fldrName + "-" + fldrNum, "data.json"), JSON.stringify(showObj), "UTF8");
 									if(q == elem.rowCount) { resolve(); }
 								}
 							}
 						});
 					});
 					// Once all records have been imported into the temporary folder check them against the current ones to see which ones will be kept.
-					workbookPromise.then(() => exports.importCompare(fs, path, log, ipc, win, eve, res, dir, fileData, xlsxFile, "XLSX"))
+					workbookPromise.then(() => exports.importCompare(fs, path, log, win, res, dir, fileData, xlsxFile, "XLSX"))
 						.catch(wbErr => log.error("There was an issue in resolving the promise associated to importing the xlsx file " + xlsxFile + ". Error Type: " + wbErr.name + ". Error Message: " + wbErr.message + "."));
 				}).catch(xlsxReadErr => log.error("There was an issue in reading the xlsx file " + xlsxFile + ". Error Type: " + xlsxReadErr.name + ". Error Message: " + xlsxReadErr.message + "."));
 			}
