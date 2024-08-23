@@ -1,12 +1,22 @@
 <div class="modal-content">
     <h4 class="center">Fetching of Record Details</h4>
     <p>Would you like to fetch details for the imported records from online resources? The import process can also be abandoned by exiting below.</p>
-    <div id="importModalFormDiv" class="row">
-        <form id="importModalForm" class="col s12"></form>
+    <div id="importPreloader" class="preloader-wrapper big active">
+        <div class="spinner-layer">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="modal-footer">
     <a id="importFetchExit" class="left modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
     <a id="importFetchNo" class="modal-close waves-effect waves-light btn-flat modalButtons">No</a>
-    <a id="importFetchYes" class="modal-close waves-effect waves-light btn-flat modalButtons">Yes</a>
+    <a id="importFetchYes" class="waves-effect waves-light btn-flat modalButtons">Yes</a>
 </div>

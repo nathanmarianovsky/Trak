@@ -782,12 +782,13 @@ Driver function for adding all database listeners.
 	- shell and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
+	- goodreadsScraper, malScraper, and movier provide the means to obtain record details from goodreads, myanimelist, or imdb, respectively.
 	- tools provides a collection of local functions.
 	- mainWindow is an object referencing the primary window of the Electron app.
 	- originalPath is the original path to the local user data.
 
 */
-exports.addDatabaseListeners = (shell, path, fs, log, ipc, tools, mainWindow, originalPath) => {
+exports.addDatabaseListeners = (shell, path, fs, log, ipc, goodreadsScraper, malScraper, movier, tools, mainWindow, originalPath) => {
 	// Handles the opening of the zip import sample directory.
   	ipc.on("importSampleZIP", event => {
   		shell.openPath(path.join(JSON.parse(fs.readFileSync(path.join(originalPath, "Trak", "config", "location.json"), "UTF8")).appLocation, "assets", "importSamples"));
@@ -822,10 +823,10 @@ exports.addDatabaseListeners = (shell, path, fs, log, ipc, tools, mainWindow, or
 	// Handles the import of chosen zip xlsx files containing records into the library. Duplicate records are checked for.
 	ipc.on("databaseImport", (event, submission) => {
 		if(submission[1] == "XLSX") {
-			tools.importDriverXLSX(fs, path, log, ipc, require("zip-local"), require("exceljs"), mainWindow, originalPath, event, submission[0], submission[2]);
+			tools.importDriverXLSX(fs, path, log, ipc, malScraper, goodreadsScraper, movier, require("zip-local"), require("exceljs"), mainWindow, originalPath, event, submission[0], submission[2]);
 		}
 		else if(submission[1] == "ZIP") {
-			tools.importDriverZIP(fs, path, log, ipc, require("zip-local"), mainWindow, originalPath, event, submission[0]);
+			tools.importDriverZIP(fs, path, log, ipc, malScraper, goodreadsScraper, movier, require("zip-local"), mainWindow, originalPath, event, submission[0]);
 		}
 	});
 };
@@ -1022,7 +1023,7 @@ exports.addListeners = (app, shell, BrowserWindow, path, fs, log, dev, ipc, tool
 	// Add the listeners associated to manga records.
 	exports.addMangaListeners(BrowserWindow, path, fs, log, dev, ipc, tools, goodreadsScraper, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to exporting and importing data.
-	exports.addDatabaseListeners(shell, path, fs, log, ipc, tools, mainWindow, originalPath);
+	exports.addDatabaseListeners(shell, path, fs, log, ipc, goodreadsScraper, malScraper, movier, tools, mainWindow, originalPath);
 	// Add the listeners associated to all settings actions.
 	exports.addSettingsListeners(app, path, fs, log, ipc, originalPath, mainWindow);
 	// Add the listeners associated to all update actions.

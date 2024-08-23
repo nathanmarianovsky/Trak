@@ -72,11 +72,13 @@ Updates the current record image input.
 
 */
 const updateImgLoad = (category, imgElem, imgData, curPath) => {
-    imgData = imgData.map(elem => {
-        let splitter1 = elem.split("Trak/data"),
-            splitter2 = elem.split("Trak\\data");
-        return curPath + (splitter1.length > 1 ? "/Trak/data" + splitter1[1] : "\\Trak\\data" + splitter2[1]);
-    });
+    if(imgData[0] != "") {
+        imgData = imgData.map(elem => {
+            let splitter1 = elem.split("Trak/data"),
+                splitter2 = elem.split("Trak\\data");
+            return curPath + (splitter1.length > 1 ? "/Trak/data" + splitter1[1] : "\\Trak\\data" + splitter2[1]);
+        });
+    }
     const imgStr = imgData.join(",");
     imgElem.setAttribute("list", imgStr);
     imgElem.setAttribute("previous", imgStr);

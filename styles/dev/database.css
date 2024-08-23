@@ -76,6 +76,12 @@
 	display: none;
 }
 
+#importPreloader {
+	position: fixed;
+    left: 44%;
+    top: 50%;
+}
+
 #XLSXTypeSwitchDiv {
 	display: none;
 	position: relative;

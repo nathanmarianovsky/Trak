@@ -934,6 +934,7 @@ window.addEventListener("load", () => {
     });
     // Listen for a click event on the import fetch confirmation button in order to continue the import process with fetching details.
     importFetchYes.addEventListener("click", e => {
+        document.getElementById("importPreloader").style.visibility = "visible";
         ipcRenderer.send("importFetchConfirm", true);
     });
     // Listen for a change in the import data type to change the content accordingly.
