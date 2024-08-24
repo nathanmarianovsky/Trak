@@ -1540,18 +1540,26 @@ Finishes the application import process by copying new records into the library.
 
 */ 
 exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEvent, promiseResolver, configDir, dataDir, impFile, mode) => {
+	// Send a request to the front-end to ask the user if they want to fetch details from online sources for the records being imported.
 	winEvent.sender.send("importFetchAsk");
+	// Proceed if the import process has not been abandoned by the user.
 	ipc.on("importFetchConfirm", (fetchEvent, fetchCheck) => {
+		// Define the list of records being imported, currently located in the importTemp folder.
 		let list = fs.readdirSync(path.join(configDir, "Trak", "importTemp")).filter(file => fs.statSync(path.join(path.join(configDir, "Trak", "importTemp"), file)).isDirectory());
+		// Proceed with the following only if the user has chosen not to fetch details from online sources for the records being imported.
 		if(fetchCheck == false) {
-			// If there are records being imported simply copy them over.
+			// Proceed only if there are records being imported.
 			if(list.length > 0) {
+				// Copy the records.
 				log.info("The " + mode + " import process is copying over records into the library.");
 				list.forEach(elem => { fs.moveSync(path.join(configDir, "Trak", "importTemp", elem), path.join(dataDir, elem)); });
+				// Empty the importTemp folder.
 				log.info("Emptying the importTemp folder.");
 				fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
+				// Reload the primary window.
 				appWin.reload();
 				setTimeout(() => {
+					// Formally finish the import process.
 					promiseResolver();
 					appWin.webContents.send("importFileSuccess", impFile);
 					log.info("The " + mode + " import process has ended.");
@@ -1559,20 +1567,28 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 			}
 		}
 		else {
+			// Define the collection of promises associated to fetching record details.
 			const fetchPromises = [];
+			// Iterate through all records being imported.
 			for(let p = 0; p < list.length; p++) {
+				// Define the promise associated to the current record which fetches record details.
 				let curPromise = new Promise((curRes, curRej) => {
-					// let curImport = JSON.parse(fs.readFileSync(path.join(configDir, "Trak", "importTemp", list[p], "data.json"), "UTF8"));
+					// Read the data file associated to the current record being imported.
 					fs.readFile(path.join(configDir, "Trak", "importTemp", list[p], "data.json"), "UTF8", (readImportErr, curImportData) => {
+						// If there was an issue reading the data file associated to the current record notify the user.
 						if(readImportErr) {
-							log.error("There was an issue in reading the data file associated to the record being imported " + list[p].split("-")[0].toLowerCase() + " " + list[p].split("-").splice(-1).join("-").toLowerCase() + ".");
+							log.error("There was an issue in reading the data file associated to the record being imported, " + list[p].split("-")[0].toLowerCase() + " " + list[p].split("-").splice(-1).join("-").toLowerCase() + ".");
+							winEvent.sender.send("importReadFailure", list[p]);
 						}
+						// If no error popped up continue with the fetching process.
 						else {
+							// Define the current record data.
 							let curImport = JSON.parse(curImportData);
+							// Proceed if the current record corresponds to an anime record.
 							if(curImport.category == "Anime") {
-								// Fetch anime details.
+								// Fetch the anime details.
 							    aTool.getInfoFromName(curImport.name, true, "anime").then(animeData => {
-							        // Define the parameters which will be passed to the front-end based on the details received.
+							        // Define the parameters which need to be processed properly.
 							        let startDate = "",
 							            endDate = "";
 							        const directorsArr = [],
@@ -1583,9 +1599,7 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 							        if(animeData.aired != undefined) {
 							            let splitArr = animeData.aired.split("to");
 							            startDate = splitArr[0];
-							            if(splitArr.length > 1) {
-							                endDate = splitArr[1];
-							            }
+							            if(splitArr.length > 1) { endDate = splitArr[1]; }
 							        }
 							        // Properly define the lists of directors, producers, writers, and music directors associated to the anime listing on myanimelist.
 							        animeData.staff.forEach(person => {
@@ -1604,31 +1618,40 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 							                }
 							            });
 							        });
+							        // Modify the record japanese name.
 							        curImport.jname = animeData.japaneseTitle;
+							        // Modify the record synopsis.
 							        let synText = animeData.synopsis.replace("[Written by MAL Rewrite]", "");
 							        if(synText.includes("(Source:")) {
 							            synText = synText.substring(0, synText.indexOf("(Source:"));
 							        }
 							        synText = synText.trim();
 							        curImport.synopsis != "" ? curImport.synopsis += "\n" + synText : curImport.synopsis = synText;
+							        // Modify the record directors.
 							        if(directorsArr.length > 0) {
 							        	curImport.directors != "" ? curImport.directors += ", " + directorsArr.join(", ") : curImport.directors = directorsArr.join(", ");
 							        }
+							        // Modify the record producers.
 							        if(producersArr.length > 0) {
 							        	curImport.producers != "" ? curImport.producers += ", " + animeData.producers.concat(producersArr).join(", ") : curImport.producers = animeData.producers.concat(producersArr).join(", ");
 							        }
+							        // Modify the record writers.
 							        if(writersArr.length > 0) {
 							        	curImport.writers != "" ? curImport.writers += ", " + writersArr.join(", ") : curImport.writers = writersArr.join(", ");
 							        }
+							        // Modify the record musicians.
 							        if(musicArr.length > 0) {
 							        	curImport.musicians != "" ? curImport.musicians += ", " + musicArr.join(", ") : curImport.musicians = musicArr.join(", ");
 							        }
+							        // Modify the record studio.
 							        if(animeData.studios.length > 0) {
 							        	curImport.studio != "" ? curImport.studio += ", " + animeData.studios.join(", ") : curImport.studio = animeData.studios.join(", ");
 							        }
+							        // Modify the record season and year.
 							        let curSeason = animeData.premiered.split(" ");
 							        curImport.season = curSeason[0].toLowerCase();
 							        curImport.year = curSeason[1];
+							        // Modify the record genres.
 							        for(let s = 0; s < animeData.genres.length; s++) {
 								        let r = 0;
 								        for(; r < curImport.genres[0].length; r++) {
@@ -1642,6 +1665,7 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 								        	curImport.genres[2].sort();
 								        }
 							        }
+							        // Modify the record related content accordingly.
 							        if(animeData.type != "TV") {
 							        	if(curImport.content.length == 0) {
 								            curImport.content.push({
@@ -1681,60 +1705,46 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 							        }
 							        // Fetch all possible images associated to the anime record.
 							        aTool.getPictures(animeData.title).then(malImgArr => {
+							        	// Define the collection of image links.
 							            log.info("MyAnimeList-Scraper has finished getting the details associated to the anime " + curImport.name + ".");
 							            let allImgArr = malImgArr.map(pic => pic.imageLink);
 							            allImgArr.indexOf(animeData.picture) != -1 ? exports.arrayMove(allImgArr, allImgArr.indexOf(animeData.picture), 0) : allImgArr = [animeData.picture].concat(allImgArr);
+							        	// Modify the record images.
 							        	curImport.img = curImport.img.concat(exports.objCreationImgs(path, fs, require("https"), configDir, list[p], [false, allImgArr]));
 							        	if(curImport.img.length > 1) { curImport.img = curImport.img.filter(elem => elem != ""); }
-							        	// console.log(curImport);
+							        	// Write the data file associated the current record.
 							        	fs.writeFile(path.join(configDir, "Trak", "importTemp", list[p], "data.json"), JSON.stringify(curImport), "UTF8", fetchWriteErr => {
+							        		// If there was an issue writing the data file associated to the current record notify the user.
 							        		if(fetchWriteErr) {
-
+							        			log.error("There was an issue in writing the data file associated to the record being imported, " + curImport.category.toLowerCase() + " " + curImport.name);
+							        			winEvent.sender.send("importWriteFailure", list[p]);
+							        			curRej();
 							        		}
 							        		else { curRes(); }
 							        	});
-
-
-
-
-							            // console.log([
-							            //     animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, allImgArr], startDate, endDate,
-							            //     animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
-							            //     animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis, animeData.premiered
-							            // ]);
-							            // console.log("");
-							            // console.log(curImport);
-							            // new Date(data).toISOString().split("T")[0]
-
-
-							            // - path and fs provide the means to work with local files.
-										// - https provides the means to download files.
-										// - dir is the path to the local user data.
-										// - recordDir is the folder name associated to the record.
-										// - providedImgs is the image data provided by the front-end user submission for record save/update.
-										// - recPath is a string corresponding to the folder name under which the record exists.
-
-
 							        }).catch(err => {
+							        	// If there was an issue fetching all anime images then simply provide only the default one.
 							            log.error("There was an issue in obtaining the pictures associated to the anime record " + curImport.name + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
+							            // Modify the record images.
 							            curImport.img = curImport.img.concat(exports.objCreationImgs(path, fs, require("https"), configDir, list[p], [false, [animeData.picture]]));
 							            if(curImport.img.length > 1) { curImport.img = curImport.img.filter(elem => elem != ""); }
+							            // Write the data file associated the current record.
 							            fs.writeFile(path.join(configDir, "Trak", "importTemp", list[p], "data.json"), JSON.stringify(curImport), "UTF8", fetchWriteErr => {
+							        		// If there was an issue writing the data file associated to the current record notify the user.
 							        		if(fetchWriteErr) {
-
+							        			log.error("There was an issue in writing the data file associated to the record being imported, " + curImport.category.toLowerCase() + " " + curImport.name);
+							        			winEvent.sender.send("importWriteFailure", list[p]);
+							        			curRej();
 							        		}
 							        		else { curRes(); }
 							        	});
-
-
-
-							            // ev.sender.send("animeFetchDetailsResult", [
-							            //     animeData.englishTitle, animeData.japaneseTitle, [animeData.picture, [animeData.picture]], startDate, endDate,
-							            //     animeData.type, animeData.episodes, animeData.genres, animeData.studios, directorsArr,
-							            //     animeData.producers.concat(producersArr), writersArr, musicArr, animeData.synopsis, animeData.premiered
-							            // ]);
 							        });
-							    }).catch(err => log.error("There was an issue in obtaining the details associated to the anime name " + curImport.name + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
+							    }).catch(err => {
+							    	// If there was an issue in obtaining the details associated to the current record notify the user.
+							    	log.error("There was an issue in obtaining the details associated to the anime name " + curImport.name + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
+							    	winEvent.sender.send("importFetchFailure", list[p]);
+							    	curRej();
+							    });
 							}
 						}
 					});
@@ -1742,18 +1752,22 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 				fetchPromises.push(curPromise);
 			}
 			Promise.all(fetchPromises).then(() => {
-				// If there are records being imported simply copy them over.
+				// Proceed only if there are records being imported.
 				if(list.length > 0) {
+					// Copy the records.
 					log.info("The " + mode + " import process is copying over records into the library.");
 					list.forEach(elem => {
 						if(fs.existsSync(path.join(configDir, "Trak", "importTemp", elem))) {
 							fs.moveSync(path.join(configDir, "Trak", "importTemp", elem), path.join(dataDir, elem));
 						}
 					});
+					// Empty the importTemp folder.
 					log.info("Emptying the importTemp folder.");
 					fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
+					// Reload the primary window.
 					appWin.reload();
 					setTimeout(() => {
+						// Formally finish the import process.
 						promiseResolver();
 						appWin.webContents.send("importFileSuccess", impFile);
 						log.info("The " + mode + " import process has ended.");
@@ -1762,10 +1776,13 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 			});
 		}
 	});
+	// Proceed if the import process has been abandoned by the user.
 	ipc.on("importFetchDenial", denEvent => {
+		// Empty the importTemp folder.
 		log.info("Aborting the import process. Emptying the importTemp folder.");
 		fs.emptyDirSync(path.join(configDir, "Trak", "importTemp"));
 		setTimeout(() => {
+			// Formally finish the import process.
 			promiseResolver();
 			log.info("The " + mode + " import process has ended.");
 		}, 1000);

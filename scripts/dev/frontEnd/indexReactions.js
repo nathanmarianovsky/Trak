@@ -35,6 +35,27 @@ ipcRenderer.on("notificationsFileWriteFailure", event => {
 
 
 
+// Display a notification if there was an error in reading a data file being imported.
+ipcRenderer.on("importReadFailure", (event, response) => {
+    M.toast({"html": "There was an error in reading the data file associated to the record being imported, " + toastParse(response) + ".", "classes": "rounded"});
+});
+
+
+
+// Display a notification if there was an error in writing a data file being imported.
+ipcRenderer.on("importReadFailure", (event, response) => {
+    M.toast({"html": "There was an error in writing the data file associated to the record being imported, " + toastParse(response) + ".", "classes": "rounded"});
+});
+
+
+
+// Display a notification if there was an error in fetching details for a data file being imported.
+ipcRenderer.on("importFetchFailure", (event, response) => {
+    M.toast({"html": "There was an error in fetching details for the data file associated to the record being imported, " + toastParse(response) + ".", "classes": "rounded"});
+});
+
+
+
 // Display a notification for the successful removal of multiple records.
 ipcRenderer.on("recordsRemovalSuccess", (event, response) => {
     M.toast({"html": "The checked records have been removed.", "classes": "rounded"});
@@ -270,35 +291,13 @@ ipcRenderer.on("activeCategories", (event, activeArr) => {
 
 
 
-// Display the import modal in order to ask the user on whether an imported record should overwrite a record with the same name in the current library.
+// Display the import modal in order to ask the user on whether details should be fetched for records being imported from online sources.
 ipcRenderer.on("importFetchAsk", (event, response) => {
-    // // Define the form to which record checkboxes will be appended for user approval.
-    // const importModalForm = document.getElementById("importModalForm");
-    // // Clear the previous list of record checkboxes.
-    // importModalForm.innerHTML = "";
-    // // Iterate through each duplicate record and add a checkbox for it.
-    // response[0].forEach((elem, pos) => {
-    //     let div = document.createElement("div"),
-    //         label = document.createElement("label"),
-    //         input = document.createElement("input"),
-    //         span = document.createElement("span");
-    //     label.classList.add("col", "s12");
-    //     input.setAttribute("type", "checkbox");
-    //     input.setAttribute("id", elem);
-    //     input.classList.add("filled-in", "importModalCheckbox");
-    //     span.classList.add("checkboxText");
-    //     span.textContent = response[1][pos][0] + ": " + response[1][pos][1];
-    //     label.append(input, span);
-    //     div.append(label);
-    //     importModalForm.append(div);
-    // });
-    // Open the import modal to ask the user which library records should be overwritten.
+    // Open the import modal to ask the user how they wish to proceed.
     document.getElementById("databaseModalExit").click();
     M.Modal.init(document.getElementById("importModal"), { "onCloseStart": () => {
         document.getElementById("databasePreloader").style.display = "none";
     }}).open();
-    // // Adjust the height of the div containing the checkboxes.
-    // document.getElementById("importModalFormDiv").style.height = (document.getElementById("importModal").offsetHeight - 220) + "px";
 });
 
 
