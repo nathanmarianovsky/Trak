@@ -120,6 +120,7 @@ Updates a page text input.
 */
 const updateFetchedDataString = (elem, data, updateCheck, nameCheck = false, callback) => {
     // Update the record data if available.
+    data = String(data);
     if(data !== null && data.trim() != ""  && data != "None found, add some") {
         if(updateCheck == true) {
             elem.setAttribute("lastValue", elem.value);

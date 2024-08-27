@@ -1764,7 +1764,19 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 									            // Modify the book asin/isbn value.
 									            curImport.isbn = (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin);
 									            // Modify the book media type.
-									            curImport.media = bookData.media;
+									            let mediaHolder = bookData.media.toLowerCase();
+									            if(mediaHolder.includes("hardcover")) {
+								                    curImport.media = "hardcover";
+								                }
+								                else if(mediaHolder.includes("softcover") || mediaHolder.includes("paperback")) {
+								                    curImport.media = "softcover";
+								                }
+								                else if(mediaHolder.includes("ebook") || mediaHolder.includes("kindle")) {
+								                    curImport.media = "ebook";
+								                }
+								                else {
+								                    curImport.media = "audiobook";
+								                }
 									            // Modify the book authors.
 									            curImport.authors != "" ? curImport.authors += ", " + bookData.authors.join(", ") : curImport.authors = bookData.authors.join(", ");
 									            // Modify the book publisher.
@@ -1772,7 +1784,7 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 									            // Modify the book publication date.
 									            curImport.publicationDate = new Date(bookData.publicationDate).toISOString().split("T")[0];
 									            // Modify the number of pages associated to the book.
-									            curImport.pages = String(bookData.pages);
+									            curImport.pages = bookData.pages;
 									            // Modify the record synopsis.
 										        let synText = bookData.description.trim();
 										        curImport.synopsis != "" ? curImport.synopsis += "\n" + synText : curImport.synopsis = synText;
@@ -1877,6 +1889,8 @@ Reads a xlsx file and adds its content to the library records.
 
 */ 
 exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, zipper, ExcelJS, win, eve, dir, xlsxFile, full) => {
+	// Define the cell value checker.
+	const cellCheck = val => val != null && val != "" && val != "N/A";
 	log.info("The XLSX import process has started.");
 	// Define the file extensions which will correspond to an image.
 	const imgExtArr = [".jpg", ".jpeg", ".png"];
@@ -1940,24 +1954,24 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 									let animeObj = {
 										"category": "Anime",
 										"name": ((typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value),
-										"jname": (jnameHolder != null && jnameHolder != "N/A" ? jnameHolder : ""),
-										"review": (reviewHolder != null && reviewHolder != "N/A" ? reviewHolder : ""),
-										"directors": (directorsHolder != null && directorsHolder != "N/A" ? directorsHolder : ""),
-										"producers": (producersHolder != null && producersHolder != "N/A" ? producersHolder : ""),
-										"writers": (writersHolder != null && writersHolder != "N/A" ? writersHolder : ""),
-										"musicians": (musiciansHolder != null && musiciansHolder != "N/A" ? musiciansHolder : ""),
-										"studio": (studioHolder != null && studioHolder != "N/A" ? studioHolder : ""),
-										"license": (licenseHolder != null && licenseHolder != "N/A" ? licenseHolder : ""),
-										"season": (seasonHolder != null && seasonHolder != "N/A" ? seasonHolder.split(" ")[0].toLowerCase() : ""),
-										"year": (seasonHolder != null && seasonHolder != "N/A" ? seasonHolder.split(" ")[1] : ""),
+										"jname": (cellCheck(jnameHolder) ? jnameHolder : ""),
+										"review": (cellCheck(reviewHolder) ? reviewHolder : ""),
+										"directors": (cellCheck(directorsHolder) ? directorsHolder : ""),
+										"producers": (cellCheck(producersHolder) ? producersHolder : ""),
+										"writers": (cellCheck(writersHolder) ? writersHolder : ""),
+										"musicians": (cellCheck(musiciansHolder) ? musiciansHolder : ""),
+										"studio": (cellCheck(studioHolder) ? studioHolder : ""),
+										"license": (cellCheck(licenseHolder) ? licenseHolder : ""),
+										"season": (cellCheck(seasonHolder) ? seasonHolder.split(" ")[0].toLowerCase() : ""),
+										"year": (cellCheck(seasonHolder) ? seasonHolder.split(" ")[1] : ""),
 										"genres": [genreLst, new Array(genreLst.length).fill(false), []],
-										"synopsis": synopsisHolder != null && synopsisHolder != "N/A" ? synopsisHolder : "",
+										"synopsis": (cellCheck(synopsisHolder) ? synopsisHolder : ""),
 										"img": [],
 										"content": []
 									};
 									// Update the genres of the anime record object.
 									let genresHolder = elem.getCell("N" + q).value,
-										genresCellList = ((genresHolder != null && genresHolder != "" && genresHolder != "N/A") ? genresHolder.split(",").map(elem => elem.trim()) : []);
+										genresCellList = (cellCheck(genresHolder) ? genresHolder.split(",").map(elem => elem.trim()) : []);
 									for(let p = 0; p < genresCellList.length; p++) {
 										let compare = genresCellList[p];
 										if(compare == "Coming-of-Age") { compare = "ComingOfAge"; }
@@ -1979,31 +1993,39 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 												for(let l = 2; l < newElem.rowCount + 1; l++) {
 													// If the detailed worksheet has a season entry then iterate through all corresponding rows and add the season as an object to the related content array.
 													if(newElem.getCell("A" + l).value == "Season") {
+														let nameHolder = newElem.getCell("B" + l).value,
+															statusHolder = newElem.getCell("E" + l).value;
 														let seasonContentObj = {
 															"scenario": "Season",
-															"name": newElem.getCell("B" + l).value != "N/A" ? newElem.getCell("B" + l).value : "",
+															"name": (cellCheck(nameHolder) ? nameHolder : ""),
 															"start": "",
 															"end": "",
-															"status": newElem.getCell("E" + l).value != "N/A" ? newElem.getCell("E" + l).value : "",
+															"status": (cellCheck(statusHolder) ? statusHolder : ""),
 															"episodes": []
 														};
-														if(newElem.getCell("C" + l).value != "" && newElem.getCell("C" + l).value != "N/A") {
-															relDateArr = newElem.getCell("C" + l).value.split("-");
+														let startHolder = newElem.getCell("C" + l).value;
+														if(cellCheck(startHolder)) {
+															relDateArr = startHolder.split("-");
 															seasonContentObj.start = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 														}
-														if(newElem.getCell("D" + l).value != "" && newElem.getCell("D" + l).value != "N/A") {
-															relDateArr = newElem.getCell("D" + l).value.split("-");
+														let endHolder = newElem.getCell("D" + l).value;
+														if(cellCheck(endHolder)) {
+															relDateArr = endHolder.split("-");
 															seasonContentObj.end = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 														}
 														while(newElem.getCell("B" + l).value == seasonContentObj.name) {
+															let enameHolder = newElem.getCell("I" + l).value,
+																eratingHolder = newElem.getCell("G" + l).value,
+																ereviewHolder = newElem.getCell("J" + l).value;
 															let episodeContentObj = {
-																"name": newElem.getCell("I" + l).value != "N/A" ? newElem.getCell("I" + l).value : "",
+																"name": (cellCheck(enameHolder) ? enameHolder : ""),
 																"watched": "",
-																"rating": newElem.getCell("G" + l).value != "N/A" ? parseInt(newElem.getCell("G" + l).value) : "",
-																"review": newElem.getCell("J" + l).value != "N/A" ? newElem.getCell("J" + l).value : ""
+																"rating": (cellCheck(eratingHolder) ? parseInt(eratingHolder) : ""),
+																"review": (cellCheck(ereviewHolder) ? ereviewHolder : "")
 															};
-															if(newElem.getCell("F" + l).value != "" && newElem.getCell("F" + l).value != "N/A") {
-																relDateArr = newElem.getCell("F" + l).value.split("-");
+															let erelHolder = newElem.getCell("F" + l).value;
+															if(cellCheck(erelHolder)) {
+																relDateArr = erelHolder.split("-");
 																episodeContentObj.watched = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 															}
 															seasonContentObj.episodes.push(episodeContentObj);
@@ -2013,21 +2035,27 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 													}
 													// Otherwise if the detailed worksheet has a single entry then add the row information to a single object and add to the related content array.
 													else {
+														let snameHolder = newElem.getCell("B" + l).value,
+															stypeHolder = newElem.getCell("A" + l).value,
+															sratingHolder = newElem.getCell("G" + l).value,
+															sreviewHolder = newElem.getCell("J" + l).value;
 														let singleContentObj = {
 															"scenario": "Single",
-															"name": newElem.getCell("B" + l).value != "N/A" ? newElem.getCell("B" + l).value : "",
-															"type": newElem.getCell("A" + l).value != "N/A" ? newElem.getCell("A" + l).value : "",
+															"name": (cellCheck(snameHolder) ? snameHolder : ""),
+															"type": (cellCheck(stypeHolder) ? stypeHolder : ""),
 															"release": "",
 															"watched": "",
-															"rating": newElem.getCell("G" + l).value != "N/A" ? parseInt(newElem.getCell("G" + l).value) : "",
-															"review": newElem.getCell("J" + l).value != "N/A" ? newElem.getCell("J" + l).value : ""
+															"rating": (cellCheck(sratingHolder) ? parseInt(sratingHolder) : ""),
+															"review": (cellCheck(sreviewHolder) ? sreviewHolder : "")
 														};
-														if(newElem.getCell("C" + l).value != "" && newElem.getCell("C" + l).value != "N/A") {
-															relDateArr = newElem.getCell("C" + l).value.split("-");
+														let srelHolder = newElem.getCell("C" + l).value;
+														if(cellCheck(srelHolder)) {
+															relDateArr = srelHolder.split("-");
 															singleContentObj.release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 														}
-														if(newElem.getCell("F" + l).value != "" && newElem.getCell("F" + l).value != "N/A") {
-															relDateArr = newElem.getCell("F" + l).value.split("-");
+														let swatchHolder = newElem.getCell("F" + l).value;
+														if(cellCheck(swatchHolder)) {
+															relDateArr = swatchHolder.split("-");
 															singleContentObj.watched = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 														}
 														animeObj.content.push(singleContentObj);
@@ -2044,12 +2072,12 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 											"type": "",
 											"release": "",
 											"watched": "",
-											"rating": (ratingPlaceholder != null && ratingPlaceholder != "N/A" && ratingPlaceholder != "" ? elem.getCell("C" + q).value : ""),
+											"rating": (cellCheck(ratingPlaceholder) ? ratingPlaceholder : ""),
 											"review": ""
 										});
 										// Update the release date of the anime record object.
 										let releaseHolder = elem.getCell("L" + q).value;
-										if(releaseHolder != null && releaseHolder != "" && releaseHolder != "N/A") {
+										if(cellCheck(releaseHolder)) {
 											relDateArr = elem.getCell("L" + q).value.split("-");
 											animeObj.content[0].release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 										}
@@ -2102,29 +2130,29 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 										let bookObj = {
 											"category": "Book",
 											"name": elem.getCell("A" + q).value,
-											"originalName": (originalNameHolder != null && originalNameHolder != "N/A" ? originalNameHolder : ""), 
-											"rating": (ratingHolder != null && ratingHolder != "N/A" && ratingHolder != "" ? parseInt(ratingHolder) : ""),
-											"review": (reviewHolder != null && reviewHolder != "N/A" ? reviewHolder : ""),
-											"synopsis": (synopsisHolder != null && synopsisHolder != "N/A" ? synopsisHolder : ""),
-											"isbn": (isbnHolder != null && isbnHolder != "N/A" && isbnHolder != "" ? String(isbnHolder).replace(/-/g, "") : ""),
-											"authors": (authorsHolder != null && authorsHolder != "N/A" ? authorsHolder : ""),
-											"publisher": (publisherHolder != null && publisherHolder != "N/A" ? publisherHolder : ""),
+											"originalName": (cellCheck(originalNameHolder) ? originalNameHolder : ""), 
+											"rating": (cellCheck(ratingHolder) && ratingHolder != "" ? parseInt(ratingHolder) : ""),
+											"review": (cellCheck(reviewHolder) ? reviewHolder : ""),
+											"synopsis": (cellCheck(synopsisHolder) ? synopsisHolder : ""),
+											"isbn": (cellCheck(isbnHolder) && isbnHolder != "" ? String(isbnHolder).replace(/-/g, "") : ""),
+											"authors": (cellCheck(authorsHolder) ? authorsHolder : ""),
+											"publisher": (cellCheck(publisherHolder) ? publisherHolder : ""),
 											"publicationDate": "",
-											"pages": (pagesHolder != null && pagesHolder != "N/A" ? pagesHolder : ""),
-											"media": (mediaHolder != null && mediaHolder != "N/A" ? mediaHolder : ""),
+											"pages": (cellCheck(pagesHolder) ? pagesHolder : ""),
+											"media": (cellCheck(mediaHolder) ? mediaHolder : ""),
 											"read": "",
 											"genres": [genreLst, new Array(genreLst.length).fill(false), []],
 											"img": []
 										};
 										// Update the publication date of the book record object.
 										let pub = elem.getCell("I" + q).value;
-										if(pub != null && pub != "" && pub != "N/A") {
+										if(cellCheck(pub)) {
 											relDateArr = elem.getCell("I" + q).value.split("-");
 											bookObj.publicationDate = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 										}
 										// Update the last read date of the book record object.
 										let re = elem.getCell("L" + q).value;
-										if(re != null && re != "" && re != "N/A") {
+										if(cellCheck(re)) {
 											relDateArr = elem.getCell("L" + q).value.split("-");
 											bookObj.read = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 										}
@@ -2171,56 +2199,64 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 								// Iterate through all the rows of the film worksheet.
 								for(let q = 2; q < elem.rowCount + 1; q++) {
 									// Define the object which will correspond to a film record.
+									let alternateNameHolder = elem.getCell("B" + q).value,
+										ratingHolder = elem.getCell("C" + q).value,
+										reviewHolder = elem.getCell("D" + q).value,
+										synopsisHolder = elem.getCell("E" + q).value,
+										runTimeHolder = elem.getCell("F" + q).value,
+										directorsHolder = elem.getCell("G" + q).value,
+										editorsHolder = elem.getCell("H" + q).value,
+										writersHolder = elem.getCell("I" + q).value,
+										cinematographersHolder = elem.getCell("J" + q).value,
+										musiciansHolder = elem.getCell("K" + q).value,
+										distributorsHolder = elem.getCell("L" + q).value,
+										producersHolder = elem.getCell("M" + q).value,
+										productionCompaniesHolder = elem.getCell("N" + q).value,
+										starsHolder = elem.getCell("O" + q).value;
 									let filmObj = {
 										"category": "Film",
 										"name": elem.getCell("A" + q).value,
-										"alternateName": elem.getCell("B" + q).value != "N/A" ? elem.getCell("B" + q).value : "", 
-										"rating": elem.getCell("C" + q).value != "N/A" && elem.getCell("C" + q).value != "" ? parseInt(elem.getCell("C" + q).value) : "",
-										"review": elem.getCell("D" + q).value != "N/A" ? elem.getCell("D" + q).value : "",
-										"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "",
-										"runTime": elem.getCell("F" + q).value != "N/A" ? String(parseInt(elem.getCell("F" + q).value)) : "",
-										"directors": elem.getCell("G" + q).value != "N/A" ? elem.getCell("G" + q).value : "",
-										"editors": elem.getCell("H" + q).value != "N/A" ? elem.getCell("H" + q).value : "",
-										"writers": elem.getCell("I" + q).value != "N/A" ? elem.getCell("I" + q).value : "",
-										"cinematographers": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "",
-										"musicians": elem.getCell("K" + q).value != "N/A" ? elem.getCell("K" + q).value : "",
-										"distributors": elem.getCell("L" + q).value != "N/A" ? elem.getCell("L" + q).value : "",
-										"producers": elem.getCell("M" + q).value != "N/A" ? elem.getCell("M" + q).value : "",
-										"productionCompanies": elem.getCell("N" + q).value != "N/A" ? elem.getCell("N" + q).value : "",
-										"stars": elem.getCell("O" + q).value != "N/A" ? elem.getCell("O" + q).value : "",
+										"alternateName": (cellCheck(alternateNameHolder) ? alternateNameHolder : ""), 
+										"rating": (cellCheck(ratingHolder) && ratingHolder != "" ? parseInt(ratingHolder) : ""),
+										"review": (cellCheck(reviewHolder) ? reviewHolder : ""),
+										"synopsis": (cellCheck(synopsisHolder) ? synopsisHolder : ""),
+										"runTime": (cellCheck(runTimeHolder) ? String(parseInt(runTimeHolder)) : ""),
+										"directors": (cellCheck(directorsHolder) ? directorsHolder : ""),
+										"editors": (cellCheck(editorsHolder) ? editorsHolder : ""),
+										"writers": (cellCheck(writersHolder) ? writersHolder : ""),
+										"cinematographers": (cellCheck(cinematographersHolder) ? cinematographersHolder : ""),
+										"musicians": (cellCheck(musiciansHolder) ? musiciansHolder : ""),
+										"distributors": (cellCheck(distributorsHolder) ? distributorsHolder : ""),
+										"producers": (cellCheck(producersHolder) ? producersHolder : ""),
+										"productionCompanies": (cellCheck(productionCompaniesHolder) ? productionCompaniesHolder : ""),
+										"stars": (cellCheck(starsHolder) ? starsHolder : ""),
 										"release": "",
 										"watched": "",
 										"genres": [genreLst, new Array(genreLst.length).fill(false), []],
 										"img": []
 									};
 									// Update the release date of the film record object.
-									if(elem.getCell("P" + q).value != "" && elem.getCell("P" + q).value != "N/A") {
-										relDateArr = elem.getCell("P" + q).value.split("-");
+									let relHolder = elem.getCell("P" + q).value;
+									if(cellCheck(relHolder)) {
+										relDateArr = relHolder.split("-");
 										filmObj.release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 									}
 									// Update the last watched date of the film record object.
-									if(elem.getCell("Q" + q).value != "" && elem.getCell("Q" + q).value != "N/A") {
-										relDateArr = elem.getCell("Q" + q).value.split("-");
+									let watchHolder = elem.getCell("Q" + q).value;
+									if(cellCheck(watchHolder)) {
+										relDateArr = watchHolder.split("-");
 										filmObj.watched = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 									}
 									// Update the genres of the film record object.
 									let genresHolder = elem.getCell("R" + q).value,
-										genresCellList = ((genresHolder != null && genresHolder != "" && genresHolder != "N/A") ? genresHolder.split(",").map(elem => elem.trim()) : []);
+										genresCellList = (cellCheck(genresHolder) ? genresHolder.split(",").map(elem => elem.trim()) : []);
 									for(let p = 0; p < genresCellList.length; p++) {
 										let compare = genresCellList[p];
-										if(compare == "Post-Apocalyptic") {
-											compare = "PostApocalyptic";
-										}
-										else if(compare == "Sci-Fi") {
-											compare = "SciFi";
-										}
+										if(compare == "Post-Apocalyptic") { compare = "PostApocalyptic"; }
+										else if(compare == "Sci-Fi") { compare = "SciFi"; }
 										let genreIndex = genreLst.indexOf(compare);
-										if(genreIndex == -1) {
-											filmObj.genres[2].push(compare);
-										}
-										else {
-											filmObj.genres[1][genreIndex] = true;
-										}
+										if(genreIndex == -1) { filmObj.genres[2].push(compare); }
+										else { filmObj.genres[1][genreIndex] = true; }
 									}
 									let fldrName = exports.formatFolderName(filmObj.name),
 										fldrNum = (fs.readdirSync(path.join(dir, "Trak", "data")).filter(file => fs.statSync(path.join(dir, "Trak", "data", file)).isDirectory() && file.split("-").slice(0, -1).join("-").includes(fldrName)).length);
@@ -2254,56 +2290,54 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 								// Iterate through all the rows of the manga worksheet.
 								for(let q = 2; q < elem.rowCount + 1; q++) {
 									// Define the object which will correspond to a manga record.
+									let jnameHolder = elem.getCell("B" + q).value,
+										reviewHolder = elem.getCell("D" + q).value,
+										writersHolder = elem.getCell("F" + q).value,
+										illustratorsHolder = elem.getCell("G" + q).value,
+										publisherHolder = elem.getCell("H" + q).value,
+										jpublisherHolder = elem.getCell("I" + q).value,
+										demographicHolder = elem.getCell("J" + q).value,
+										synopsisHolder = elem.getCell("E" + q).value;
 									let mangaObj = {
 										"category": "Manga",
 										"name": (typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value,
-										"jname": elem.getCell("B" + q).value != "N/A" ? elem.getCell("B" + q).value : "", 
-										"review": elem.getCell("D" + q).value != "N/A" ? elem.getCell("D" + q).value : "", 
-										"writers": elem.getCell("F" + q).value != "N/A" ? elem.getCell("F" + q).value : "", 
-										"illustrators": elem.getCell("G" + q).value != "N/A" ? elem.getCell("G" + q).value : "", 
-										"publisher": elem.getCell("H" + q).value != "N/A" ? elem.getCell("H" + q).value : "", 
-										"jpublisher": elem.getCell("I" + q).value != "N/A" ? elem.getCell("I" + q).value : "", 
-										"demographic": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "", 
+										"jname": (cellCheck(jnameHolder) ? jnameHolder : ""), 
+										"review": (cellCheck(reviewHolder) ? reviewHolder : ""), 
+										"writers": (cellCheck(writersHolder) ? writersHolder : ""), 
+										"illustrators": (cellCheck(illustratorsHolder) ? illustratorsHolder : ""), 
+										"publisher": (cellCheck(publisherHolder) ? publisherHolder : ""), 
+										"jpublisher": (cellCheck(jpublisherHolder) ? jpublisherHolder : ""), 
+										"demographic": (cellCheck(demographicHolder) ? demographicHolder : ""), 
 										"start": "", 
 										"end": "", 
 										"genres": [genreLst, new Array(genreLst.length).fill(false), []],
-										"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "", 
+										"synopsis": (cellCheck(synopsisHolder) ? synopsisHolder : ""), 
 										"img": [],
 										"content": []
 									};
 									// Update the genres of the manga record object.
 									let genresHolder = elem.getCell("M" + q).value,
-										genresCellList = ((genresHolder != null && genresHolder != "" && genresHolder != "N/A") ? genresHolder.split(",").map(elem => elem.trim()) : []);
+										genresCellList = (cellCheck(genresHolder) ? genresHolder.split(",").map(elem => elem.trim()) : []);
 									for(let p = 0; p < genresCellList.length; p++) {
 										let compare = genresCellList[p];
-										if(compare == "Coming-of-Age") {
-											compare = "ComingOfAge";
-										}
-										else if(compare == "Post-Apocalyptic") {
-											compare = "PostApocalyptic";
-										}
-										else if(compare == "Sci-Fi") {
-											compare = "SciFi";
-										}
-										else if(compare == "Slice of Life") {
-											compare = "SliceOfLife";
-										}
+										if(compare == "Coming-of-Age") { compare = "ComingOfAge"; }
+										else if(compare == "Post-Apocalyptic") { compare = "PostApocalyptic"; }
+										else if(compare == "Sci-Fi") { compare = "SciFi"; }
+										else if(compare == "Slice of Life") { compare = "SliceOfLife"; }
 										let genreIndex = genreLst.indexOf(compare);
-										if(genreIndex == -1) {
-											mangaObj.genres[2].push(compare);
-										}
-										else {
-											mangaObj.genres[1][genreIndex] = true;
-										}
+										if(genreIndex == -1) { mangaObj.genres[2].push(compare); }
+										else { mangaObj.genres[1][genreIndex] = true; }
 									}
 									// Update the start date of the manga record object.
-									if(elem.getCell("K" + q).value != "" && elem.getCell("K" + q).value != "N/A") {
-										relDateArr = elem.getCell("K" + q).value.split("-");
+									let startHolder = elem.getCell("K" + q).value;
+									if(cellCheck(startHolder)) {
+										relDateArr = startHolder.split("-");
 										mangaObj.start = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 									}
 									// Update the end date of the manga record object.
-									if(elem.getCell("L" + q).value != "" && elem.getCell("L" + q).value != "N/A") {
-										relDateArr = elem.getCell("L" + q).value.split("-");
+									let endHolder = elem.getCell("L" + q).value;
+									if(cellCheck(endHolder)) {
+										relDateArr = endHolder.split("-");
 										mangaObj.end = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 									}
 									// If the user requests a detailed import then update the related content of the manga record object.
@@ -2314,25 +2348,33 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 											if(newElem.name == "Manga-" + mangaObj.name.split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1)).join("").replace(/\*|\?|\:|\\|\/|\[|\]/g, "-").substring(0, 25)) {
 												// Iterate through the detailed worksheet's rows.
 												for(let l = 2; l < newElem.rowCount + 1; l++) {
+													let scenarioHolder = newElem.getCell("A" + l).value,
+														vnameHolder = newElem.getCell("B" + l).value,
+														vratingHolder = newElem.getCell("F" + l).value,
+														vreviewHolder = newElem.getCell("H" + l).value;
 													let detailedObj = {
-														"scenario": newElem.getCell("A" + l).value != "N/A" ? newElem.getCell("A" + l).value : "Chapter",
-														"name": newElem.getCell("B" + l).value != "N/A" ? newElem.getCell("B" + l).value : "",
+														"scenario": (cellCheck(scenarioHolder) ? scenarioHolder : "Chapter"),
+														"name": (cellCheck(vnameHolder) ? vnameHolder : ""),
 														"release": "",
 														"read": "",
-														"rating": newElem.getCell("F" + l).value != "N/A" ? parseInt(newElem.getCell("F" + l).value) : "",
-														"review": newElem.getCell("H" + l).value != "N/A" ? newElem.getCell("H" + l).value : ""
+														"rating": (cellCheck(vratingHolder) ? parseInt(vratingHolder) : ""),
+														"review": (cellCheck(vreviewHolder) ? vreviewHolder : "")
 													};
-													if(newElem.getCell("D" + l).value != "" && newElem.getCell("D" + l).value != "N/A") {
-														relDateArr = newElem.getCell("D" + l).value.split("-");
+													let vreleaseHolder = newElem.getCell("D" + l).value;
+													if(cellCheck(vreleaseHolder)) {
+														relDateArr = vreleaseHolder.split("-");
 														detailedObj.release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 													}
-													if(newElem.getCell("E" + l).value != "" && newElem.getCell("E" + l).value != "N/A") {
-														relDateArr = newElem.getCell("E" + l).value.split("-");
+													let vreadHolder = newElem.getCell("E" + l).value;
+													if(cellCheck(vreadHolder)) {
+														relDateArr = vreadHolder.split("-");
 														detailedObj.read = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 													}
 													if(detailedObj.scenario == "Volume") {
-														detailedObj.isbn = newElem.getCell("C" + l).value != "N/A" ? exports.formatISBNString(newElem.getCell("C" + l).value) : "";
-														detailedObj.synopsis = newElem.getCell("G" + l).value != "N/A" ? newElem.getCell("G" + l).value : "";
+														let visbnHolder = newElem.getCell("C" + l).value,
+															vsynopsisHolder = newElem.getCell("G" + l).value;
+														detailedObj.isbn = (cellCheck(visbnHolder) ? exports.formatISBNString(visbnHolder) : "");
+														detailedObj.synopsis = (cellCheck(vsynopsisHolder) ? vsynopsisHolder : "");
 													}
 													mangaObj.content.push(detailedObj);
 												}
@@ -2340,7 +2382,15 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 										});
 									}
 									else {
-										mangaObj.content.push({"scenario": "Volume", "name": "Imported Data", "release": "", "read": "", "rating": (elem.getCell("C" + q).value != "N/A" ? elem.getCell("C" + q).value : ""), "review": ""})
+										let defRatingHolder = elem.getCell("C" + q).value;
+										mangaObj.content.push({
+											"scenario": "Volume",
+											"name": "Imported Data",
+											"release": "",
+											"read": "",
+											"rating": (cellCheck(defRatingHolder) ? parseInt(defRatingHolder) : ""),
+											"review": ""
+										});
 									}
 									let fldrName = exports.formatFolderName(mangaObj.name),
 										fldrNum = (fs.readdirSync(path.join(dir, "Trak", "data")).filter(file => fs.statSync(path.join(dir, "Trak", "data", file)).isDirectory() && file.split("-").slice(0, -1).join("-").includes(fldrName)).length);
@@ -2374,30 +2424,44 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 								// Iterate through all the rows of the show worksheet.
 								for(let q = 2; q < elem.rowCount + 1; q++) {
 									// Define the object which will correspond to a show record.
+									let alternateNameHolder = elem.getCell("B" + q).value,
+										reviewHolder = elem.getCell("D" + q).value,
+										synopsisHolder = elem.getCell("E" + q).value,
+										runTimeHolder = elem.getCell("F" + q).value,
+										directorsHolder = elem.getCell("G" + q).value,
+										editorsHolder = elem.getCell("H" + q).value,
+										writersHolder = elem.getCell("I" + q).value,
+										cinematographersHolder = elem.getCell("J" + q).value,
+										musiciansHolder = elem.getCell("K" + q).value,
+										distributorsHolder = elem.getCell("L" + q).value,
+										producersHolder = elem.getCell("M" + q).value,
+										productionCompaniesHolder = elem.getCell("N" + q).value,
+										starsHolder = elem.getCell("O" + q).value;
 									let showObj = {
 										"category": "Show",
-										"name": (typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value,
-										"alternateName": elem.getCell("B" + q).value != "N/A" ? elem.getCell("B" + q).value : "", 
-										"review": elem.getCell("D" + q).value != "N/A" ? elem.getCell("D" + q).value : "",
-										"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "",
-										"runTime": elem.getCell("F" + q).value != "N/A" ? String(parseInt(elem.getCell("F" + q).value)) : "",
-										"directors": elem.getCell("G" + q).value != "N/A" ? elem.getCell("G" + q).value : "",
-										"editors": elem.getCell("H" + q).value != "N/A" ? elem.getCell("H" + q).value : "",
-										"writers": elem.getCell("I" + q).value != "N/A" ? elem.getCell("I" + q).value : "",
-										"cinematographers": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "",
-										"musicians": elem.getCell("K" + q).value != "N/A" ? elem.getCell("K" + q).value : "",
-										"distributors": elem.getCell("L" + q).value != "N/A" ? elem.getCell("L" + q).value : "",
-										"producers": elem.getCell("M" + q).value != "N/A" ? elem.getCell("M" + q).value : "",
-										"productionCompanies": elem.getCell("N" + q).value != "N/A" ? elem.getCell("N" + q).value : "",
-										"stars": elem.getCell("O" + q).value != "N/A" ? elem.getCell("O" + q).value : "",
+										"name": ((typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value),
+										"alternateName": (cellCheck(alternateNameHolder) ? alternateNameHolder : ""), 
+										"review": (cellCheck(reviewHolder) ? reviewHolder : ""),
+										"synopsis": (cellCheck(synopsisHolder) ? synopsisHolder : ""),
+										"runTime": (cellCheck(runTimeHolder) ? String(parseInt(runTimeHolder)) : ""),
+										"directors": (cellCheck(directorsHolder) ? directorsHolder : ""),
+										"editors": (cellCheck(editorsHolder) ? editorsHolder : ""),
+										"writers": (cellCheck(writersHolder) ? writersHolder : ""),
+										"cinematographers": (cellCheck(cinematographersHolder) ? cinematographersHolder : ""),
+										"musicians": (cellCheck(musiciansHolder) ? musiciansHolder : ""),
+										"distributors": (cellCheck(distributorsHolder) ? distributorsHolder : ""),
+										"producers": (cellCheck(producersHolder) ? producersHolder : ""),
+										"productionCompanies": (cellCheck(productionCompaniesHolder) ? productionCompaniesHolder : ""),
+										"stars": (cellCheck(starsHolder) ? starsHolder : ""),
 										"release": "",
 										"genres": [genreLst, new Array(genreLst.length).fill(false), []],
 										"img": [],
 										"content": []
 									};
 									// Update the release date of the show record object.
-									if(elem.getCell("P" + q).value != "" && elem.getCell("P" + q).value != "N/A") {
-										relDateArr = elem.getCell("P" + q).value.split("-");
+									let releaseHolder = elem.getCell("P" + q).value;
+									if(cellCheck(releaseHolder)) {
+										relDateArr = releaseHolder.split("-");
 										showObj.release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 									}
 									// Update the genres of the show record object.
@@ -2405,19 +2469,11 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 										genresCellList = ((genresHolder != null && genresHolder != "" && genresHolder != "N/A") ? genresHolder.split(",").map(elem => elem.trim()) : []);
 									for(let p = 0; p < genresCellList.length; p++) {
 										let compare = genresCellList[p];
-										if(compare == "Post-Apocalyptic") {
-											compare = "PostApocalyptic";
-										}
-										else if(compare == "Sci-Fi") {
-											compare = "SciFi";
-										}
+										if(compare == "Post-Apocalyptic") { compare = "PostApocalyptic"; }
+										else if(compare == "Sci-Fi") { compare = "SciFi"; }
 										let genreIndex = genreLst.indexOf(compare);
-										if(genreIndex == -1) {
-											showObj.genres[2].push(compare);
-										}
-										else {
-											showObj.genres[1][genreIndex] = true;
-										}
+										if(genreIndex == -1) { showObj.genres[2].push(compare); }
+										else { showObj.genres[1][genreIndex] = true; }
 									}
 									// If the user requests a detailed import then update the related content of the show record object.
 									if(full == true) {
@@ -2429,31 +2485,39 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 												// Iterate through the detailed worksheet's rows.
 												for(let l = 2; l < newElem.rowCount + 1; l++) {
 													// Iterate through all corresponding rows and add the season as an object to the related content array.
+													let snameHolder = newElem.getCell("A" + l).value,
+														sstatusHolder = newElem.getCell("D" + l).value;
 													let seasonContentObj = {
 														"scenario": "Season",
-														"name": newElem.getCell("A" + l).value != "N/A" ? newElem.getCell("A" + l).value : "",
+														"name": (cellCheck(snameHolder) ? snameHolder : ""),
 														"start": "",
 														"end": "",
-														"status": newElem.getCell("D" + l).value != "N/A" ? newElem.getCell("D" + l).value : "",
+														"status": (cellCheck(sstatusHolder) ? sstatusHolder : ""),
 														"episodes": []
 													};
-													if(newElem.getCell("B" + l).value != "" && newElem.getCell("B" + l).value != "N/A") {
-														relDateArr = newElem.getCell("B" + l).value.split("-");
+													let sstartHolder = newElem.getCell("B" + l).value;
+													if(cellCheck(sstartHolder)) {
+														relDateArr = sstartHolder.split("-");
 														seasonContentObj.start = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 													}
-													if(newElem.getCell("C" + l).value != "" && newElem.getCell("C" + l).value != "N/A") {
-														relDateArr = newElem.getCell("C" + l).value.split("-");
+													let sendHolder = newElem.getCell("C" + l).value;
+													if(cellCheck(sendHolder)) {
+														relDateArr = sendHolder.split("-");
 														seasonContentObj.end = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 													}
 													while(newElem.getCell("A" + l).value == seasonContentObj.name) {
+														let enameHolder = newElem.getCell("H" + l).value,
+															eratingHolder = newElem.getCell("F" + l).value,
+															ereviewHolder = newElem.getCell("I" + l).value;
 														let episodeContentObj = {
-															"name": newElem.getCell("H" + l).value != "N/A" ? newElem.getCell("H" + l).value : "",
+															"name": (cellCheck(enameHolder) ? enameHolder : ""),
 															"watched": "",
-															"rating": newElem.getCell("F" + l).value != "N/A" ? parseInt(newElem.getCell("F" + l).value) : "",
-															"review": newElem.getCell("I" + l).value != "N/A" ? newElem.getCell("I" + l).value : ""
+															"rating": (cellCheck(eratingHolder) ? parseInt(eratingHolder) : ""),
+															"review": (cellCheck(ereviewHolder) ? ereviewHolder : "")
 														};
-														if(newElem.getCell("E" + l).value != "" && newElem.getCell("E" + l).value != "N/A") {
-															relDateArr = newElem.getCell("E" + l).value.split("-");
+														let ewatchHolder = newElem.getCell("E" + l).value;
+														if(cellCheck(ewatchHolder)) {
+															relDateArr = ewatchHolder.split("-");
 															episodeContentObj.watched = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 														}
 														seasonContentObj.episodes.push(episodeContentObj);
@@ -2465,12 +2529,20 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 										});
 									}
 									else {
-										showObj.content.push({"scenario": "Season", "name": "Imported Data", "start": showObj.release, "end": "", "status": "", "episodes": [{
+										let eratingHolder = elem.getCell("C" + q).value;
+										showObj.content.push({
+											"scenario": "Season",
 											"name": "Imported Data",
-											"watched": "",
-											"rating": (elem.getCell("C" + q).value != "N/A" ? elem.getCell("C" + q).value : ""),
-											"review": ""
-										}]});
+											"start": showObj.release,
+											"end": "",
+											"status": "",
+											"episodes": [{
+												"name": "Imported Data",
+												"watched": "",
+												"rating": (cellCheck(eratingHolder) ? eratingHolder : ""),
+												"review": ""
+											}]
+										});
 									}
 									let fldrName = exports.formatFolderName(showObj.name),
 										fldrNum = (fs.readdirSync(path.join(dir, "Trak", "data")).filter(file => fs.statSync(path.join(dir, "Trak", "data", file)).isDirectory() && file.split("-").slice(0, -1).join("-").includes(fldrName)).length);
