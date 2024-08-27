@@ -2054,6 +2054,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 											animeObj.content[0].release = relDateArr[2] + "-" + relDateArr[0] + "-" + relDateArr[1];
 										}
 									}
+									// Define the record folder name.
 									let fldrName = exports.formatFolderName(animeObj.name),
 										fldrNum = (fs.readdirSync(path.join(dir, "Trak", "data")).filter(file => fs.statSync(path.join(dir, "Trak", "data", file)).isDirectory() && file.split("-").slice(0, -1).join("-").includes(fldrName)).length);
 									// Create the assets folder.
@@ -2089,19 +2090,28 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 										isbnCheck = (isbnVal != "N/A" && isbnVal != "") ? isbnVal.replace(/\W/g, "") : isbnVal;
 									if(isbnCheck.length == 13 || isbnVal.length == 10) {
 										// Define the object which will correspond to a book record.
+										let originalNameHolder = elem.getCell("B" + q).value,
+											ratingHolder = elem.getCell("C" + q).value,
+											reviewHolder = elem.getCell("D" + q).value,
+											synopsisHolder = elem.getCell("E" + q).value,
+											isbnHolder = elem.getCell("F" + q).value,
+											authorsHolder = elem.getCell("G" + q).value,
+											publisherHolder = elem.getCell("H" + q).value,
+											pagesHolder = elem.getCell("J" + q).value,
+											mediaHolder = elem.getCell("K" + q).value;
 										let bookObj = {
 											"category": "Book",
 											"name": elem.getCell("A" + q).value,
-											"originalName": elem.getCell("B" + q).value != "N/A" ? elem.getCell("B" + q).value : "", 
-											"rating": elem.getCell("C" + q).value != "N/A" && elem.getCell("C" + q).value != "" ? parseInt(elem.getCell("C" + q).value) : "",
-											"review": elem.getCell("D" + q).value != "N/A" ? elem.getCell("D" + q).value : "",
-											"synopsis": elem.getCell("E" + q).value != "N/A" ? elem.getCell("E" + q).value : "",
-											"isbn": elem.getCell("F" + q).value != "N/A" && elem.getCell("F" + q).value != "" ? String(elem.getCell("F" + q).value).replace(/-/g, "") : "",
-											"authors": elem.getCell("G" + q).value != "N/A" ? elem.getCell("G" + q).value : "",
-											"publisher": elem.getCell("H" + q).value != "N/A" ? elem.getCell("H" + q).value : "",
+											"originalName": (originalNameHolder != null && originalNameHolder != "N/A" ? originalNameHolder : ""), 
+											"rating": (ratingHolder != null && ratingHolder != "N/A" && ratingHolder != "" ? parseInt(ratingHolder) : ""),
+											"review": (reviewHolder != null && reviewHolder != "N/A" ? reviewHolder : ""),
+											"synopsis": (synopsisHolder != null && synopsisHolder != "N/A" ? synopsisHolder : ""),
+											"isbn": (isbnHolder != null && isbnHolder != "N/A" && isbnHolder != "" ? String(isbnHolder).replace(/-/g, "") : ""),
+											"authors": (authorsHolder != null && authorsHolder != "N/A" ? authorsHolder : ""),
+											"publisher": (publisherHolder != null && publisherHolder != "N/A" ? publisherHolder : ""),
 											"publicationDate": "",
-											"pages": elem.getCell("J" + q).value != "N/A" ? elem.getCell("J" + q).value : "",
-											"media": elem.getCell("K" + q).value != "N/A" ? elem.getCell("K" + q).value : "",
+											"pages": (pagesHolder != null && pagesHolder != "N/A" ? pagesHolder : ""),
+											"media": (mediaHolder != null && mediaHolder != "N/A" ? mediaHolder : ""),
 											"read": "",
 											"genres": [genreLst, new Array(genreLst.length).fill(false), []],
 											"img": []
@@ -2123,17 +2133,12 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 										let	genresCellList = ((genresHolder != null && genresHolder != "" && genresHolder != "N/A") ? genresHolder.split(",").map(elem => elem.trim()) : []);
 										for(let p = 0; p < genresCellList.length; p++) {
 											let compare = genresCellList[p];
-											if(compare == "Sci-Fi") {
-												compare = "SciFi";
-											}
+											if(compare == "Sci-Fi") { compare = "SciFi"; }
 											let genreIndex = genreLst.indexOf(compare);
-											if(genreIndex == -1) {
-												bookObj.genres[2].push(compare);
-											}
-											else {
-												bookObj.genres[1][genreIndex] = true;
-											}
+											if(genreIndex == -1) { bookObj.genres[2].push(compare); }
+											else { bookObj.genres[1][genreIndex] = true; }
 										}
+										// Define the record folder name.
 										let fldrName = exports.formatFolderName(bookObj.name) + "-" + bookObj.isbn;
 										// Check the assets that were imported from the associated zip file and add the images to the book record object.
 										let assetsFolder = path.join(dir, "Trak", "importTemp", "Book-" + fldrName, "assets");
@@ -2148,9 +2153,6 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 											});
 										}
 										if(bookObj.img.length == 0) { bookObj.img.push(""); }
-										// Otherwise if no assets were found then create the assets folder.
-										else {
-										}
 										// Write data.json file associated to the book record.
 										log.info("Writing the data file associated to the book " + (bookObj.name != "" ? bookObj.name : bookObj.isbn));
 										fs.writeFileSync(path.join(dir, "Trak", "importTemp", "Book-" + fldrName, "data.json"), JSON.stringify(bookObj), "UTF8");
