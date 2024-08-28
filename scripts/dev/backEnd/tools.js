@@ -1746,8 +1746,9 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 									        	});
 									        });
 									    }).catch(err => {
-									    	// If there was an issue in obtaining the details associated to the current record notify the user.
+									    	// Continue the import process without the fetching of the current record's details.
 									    	log.error("There was an issue in obtaining the details associated to the anime name " + curImport.name + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
+									    	log.info("The above record will be imported without the fetching of online details.");
 									    	winEvent.sender.send("importFetchFailure", list[p]);
 									    	curRej();
 									    });
@@ -1815,8 +1816,94 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 									        		}
 									        		else { curRes(); }
 									        	});
-									        }).catch(err => log.error("There was an issue in obtaining the details associated to the book title " + curImport.name + " via the url " + bookLstItem.url + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
-									    }).catch(err => log.error("There was an issue in obtaining the details associated to the book title " + curImport.name + ". Error Type: " + err.name + ". Error Message: " + err.message + "."));
+									        }).catch(err => {
+									        	// Continue the import process without the fetching of the current record's details.
+									        	log.error("There was an issue in obtaining the details associated to the book title " + curImport.name + " via the url " + bookLstItem.url + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
+										    	log.info("The above record will be imported without the fetching of online details.");
+										    	winEvent.sender.send("importFetchFailure", list[p]);
+										    	curRes();
+									        });
+									    }).catch(err => {
+									    	// Continue the import process without the fetching of the current record's details.
+									    	log.error("There was an issue in obtaining the details associated to the book title " + curImport.name + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
+									    	log.info("The above record will be imported without the fetching of online details.");
+									    	winEvent.sender.send("importFetchFailure", list[p]);
+									    	curRes();
+									    });
+									}
+									// Proceed if the current record corresponds to a film record.
+									else if(curImport.category == "Film") {
+										// Fetch film details.
+									    mTool.getTitleDetailsByName(curImport.name).then(filmData => {
+									        log.info("Movier has finished getting the details associated to the film " + curImport.name + ".");
+									        // Modify the film alternate name.
+									        curImport.alternateName = filmData.otherNames.join(", ");
+									        // Modify the release date.
+									        curImport.release = new Date(filmData.dates.startDate).toISOString().split("T")[0];
+									        // Modify the runtime.
+									        curImport.runTime = String(parseInt(filmData.runtime.seconds / 60));
+									        // Modify the record directors.
+									        curImport.directors != ""
+									        	? curImport.directors += ", " + filmData.directors.map(director => director.name).join(", ")
+									        	: curImport.directors = filmData.directors.map(director => director.name).join(", ");
+									        // Modify the record writers.
+									        curImport.writers != ""
+									        	? curImport.writers += ", " + filmData.writers.map(director => director.name).join(", ")
+									        	: curImport.writers = filmData.writers.map(director => director.name).join(", ");
+									        // Modify the record producers.
+									        curImport.producers != ""
+									        	? curImport.producers += ", " + filmData.producers.map(producers => producers.name).join(", ")
+									        	: curImport.producers = filmData.producers.map(producers => producers.name).join(", ");
+									        // Modify the record starring list.
+									        curImport.stars != ""
+									        	? curImport.stars += ", " + filmData.casts.map(star => star.name).join(", ")
+									        	: curImport.stars = filmData.casts.map(star => star.name).join(", ");
+									        // Modify the record distributors.
+									        curImport.distributors != ""
+									        	? curImport.distributors += ", " + filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name).join(", ")
+									        	: curImport.distributors = filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name).join(", ");
+									        // Modify the record production companies.
+									        curImport.productionCompanies != ""
+									        	? curImport.productionCompanies += ", " + filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name).join(", ")
+									        	: curImport.productionCompanies = filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name).join(", ");
+									        // Modify the record synopsis.
+									        let synText = filmData.plot.trim();
+									        curImport.synopsis != "" ? curImport.synopsis += "\n" + synText : curImport.synopsis = synText;
+									        // Modify the record images.
+								        	curImport.img = curImport.img.concat(exports.objCreationImgs(path, fs, require("https"), configDir, list[p], [false, [filmData.posterImage.url].concat(filmData.allImages.slice(0, 9).map(elem => elem.url))]));
+								        	if(curImport.img.length > 1) { curImport.img = curImport.img.filter(elem => elem != ""); }
+								        	// Modify the record genres.
+								        	filmData.genres = filmData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1));
+									        for(let s = 0; s < filmData.genres.length; s++) {
+										        let r = 0;
+										        for(; r < curImport.genres[0].length; r++) {
+										        	if(filmData.genres[s] == curImport.genres[0][r]) {
+										        		curImport.genres[1][r] = true;
+										        		break;
+										        	}
+										        }
+										        if(r == curImport.genres[0].length && curImport.genres[2].indexOf(filmData.genres[s]) == -1) {
+										        	curImport.genres[2].push(filmData.genres[s]);
+										        	curImport.genres[2].sort();
+										        }
+									        }
+									        // Write the data file associated the current record.
+								            fs.writeFile(path.join(configDir, "Trak", "importTemp", list[p], "data.json"), JSON.stringify(curImport), "UTF8", fetchWriteErr => {
+								        		// If there was an issue writing the data file associated to the current record notify the user.
+								        		if(fetchWriteErr) {
+								        			log.error("There was an issue in writing the data file associated to the record being imported, " + curImport.category.toLowerCase() + " " + curImport.name);
+								        			winEvent.sender.send("importWriteFailure", list[p]);
+								        			curRej();
+								        		}
+								        		else { curRes(); }
+								        	});
+									    }).catch(err => {
+									    	// Continue the import process without the fetching of the current record's details.
+									    	log.error("There was an issue in obtaining the details associated to the film name " + curImport.name + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
+									    	log.info("The above record will be imported without the fetching of online details.");
+									    	winEvent.sender.send("importFetchFailure", list[p]);
+									    	curRes();
+									    });
 									}
 								}
 							});

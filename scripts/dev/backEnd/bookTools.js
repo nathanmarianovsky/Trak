@@ -138,7 +138,7 @@ exports.bookFetchDetailsByName = (log, GoodReadsScraper, tools, ev, name, index 
         let bookLst = bookSearchData.books.map(elem => elem.title),
             bookLstItem = bookSearchData.books[index == -1 ? bookLst.indexOf(name) : index];
         // Fetch book details.
-        GoodReadsScraper.getBook({ "url": "https://www.goodreads.com/en/book/show/" + bookLstItem.id }).then(bookData => {
+        GoodReadsScraper.getBook({ "url": bookLstItem.url }).then(bookData => {
             log.info("GoodReads-Scraper has finished getting the details for the name " + name + ".");
             ev.sender.send("bookFetchDetailsResult", [bookData.title, bookData.originalTitle, bookData.coverLarge,
                 (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin), bookData.authors.join(", "), bookData.publisher,
@@ -192,7 +192,7 @@ exports.bookFetchSearch = (log, GoodReadsScraper, ev, search) => {
             // Iterate through the search results.
             results.books.forEach(elem => {
                 // Fetch the anime details based on the URL.
-                GoodReadsScraper.getBook({ "url": "https://www.goodreads.com/en/book/show/" + elem.id }).then(elemData => {
+                GoodReadsScraper.getBook({ "url": elem.url }).then(elemData => {
                     elemData.genres = elemData.genres.map(str => str == "Sci-Fi" ? "SciFi" : str);
                     // Push the book details into the overall collection.
                     resultsArr.push([elemData.title, elemData.coverLarge, elemData.url, (elemData.rating * 2).toFixed(2), elemData.genres]);
