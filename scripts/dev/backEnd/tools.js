@@ -21,7 +21,9 @@ BASIC DETAILS: This file serves as the collection of tools utilized by the vario
    - formatISBNString: Formats a string into a proper ISBN by adding hyphens.
    - exportDataXLSX: Create a xlsx file containing the exported library records along with a zip of the associated assets.
    - exportDataZIP: Create a zip file containing the exported library records.
-   - importCompare: Finishes the application import process by checking whether the new records already exist in the library.
+   - checkDate: A check function for determining whether a given string corresponds to a valid date.
+   - checkNumber: A check function for determining whether a given string corresponds to a number.
+   - importCompare: Finishes the application import process by copying new records into the library.
    - importDataXLSX: Reads a xlsx file and adds its content to the library records.
    - importDriverXLSX: Iterates through the list of xlsx files to be imported by waiting for each one to finish prior to proceeding to the next one.
    - importDataZIP: Reads a zip file and adds its content to the library records.
@@ -1524,6 +1526,28 @@ exports.exportDataZIP = (fs, path, log, zipper, eve, dir, exportLocation, record
 
 /*
 
+A check function for determining whether a given string corresponds to a valid date.
+
+   - val is a string corresponding to a potential date value.
+
+*/
+exports.checkDate = val => (new Date(val) !== "Invalid Date") && !isNaN(new Date(val));
+
+
+
+/*
+
+A check function for determining whether a given string corresponds to a number.
+
+   - val is a string corresponding to a potential numeric value.
+
+*/
+exports.checkNumber = val => /^-?\d+$/.test(val);
+
+
+
+/*
+
 Finishes the application import process by copying new records into the library.
 
 	- fs and path provide the means to work with local files.
@@ -1537,9 +1561,10 @@ Finishes the application import process by copying new records into the library.
 	- dataDir is the directory where the user library records are stored.
 	- impFile is the zip file to be imported.
 	- mode is a string corresponding to which import process is being utilized.
+	- det is a boolean corresponding to whether the import is simple or detailed.
 
 */ 
-exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEvent, promiseResolver, configDir, dataDir, impFile, mode) => {
+exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEvent, promiseResolver, configDir, dataDir, impFile, mode, det = false) => {
 	// Send a request to the front-end to ask the user if they want to fetch details from online sources for the records being imported.
 	winEvent.sender.send("importFetchAsk");
 	// Proceed if the import process has not been abandoned by the user.
@@ -1554,7 +1579,8 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 					// Copy the records.
 					log.info("The " + mode + " import process is copying over records into the library.");
 					list.forEach(elem => {
-						if(fs.existsSync(path.join(configDir, "Trak", "importTemp", elem, "data.json"))) {
+						let curPath = path.join(configDir, "Trak", "importTemp", elem, "data.json");
+						if(fs.existsSync(curPath)) {
 							fs.moveSync(path.join(configDir, "Trak", "importTemp", elem), path.join(dataDir, elem));
 						}
 					});
@@ -1593,7 +1619,7 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 									// Proceed if the current record corresponds to an anime record.
 									if(curImport.category == "Anime") {
 										// Fetch the anime details.
-									    aTool.getInfoFromName(curImport.name, true, "anime").then(animeData => {
+										aTool[curImport.link != "" ? "getInfoFromURL" : "getInfoFromName"](curImport.link != "" ? curImport.link : curImport.name, true, "anime").then(animeData => {
 									        // Define the parameters which need to be processed properly.
 									        let startDate = "",
 									            endDate = "";
@@ -1678,7 +1704,7 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 										                "scenario": "Single",
 										                "name": "Fetched Data",
 										                "type": animeData.type,
-										                "release": new Date(startDate.trim()).toISOString().split("T")[0],
+										                "release": (exports.checkDate(startDate.trim()) ? new Date(startDate.trim()).toISOString().split("T")[0] : ""),
 										                "watched": "",
 										                "rating": "",
 										                "review": ""
@@ -1687,15 +1713,15 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 									        	else {
 									        		curImport.content[0].name = "Fetched Data";
 									        		curImport.content[0].type = animeData.type;
-									        		curImport.content[0].release = new Date(startDate.trim()).toISOString().split("T")[0];
+									        		curImport.content[0].release =  exports.checkDate(startDate.trim()) ? new Date(startDate.trim()).toISOString().split("T")[0] : "";
 									        	}
 									        }
 									        else {
 									        	let curRecordSeasonObj = {
 									                "scenario": "Season",
 									                "name": "Fetched Data",
-									                "start": new Date(startDate.trim()).toISOString().split("T")[0],
-									                "end": new Date(endDate.trim()).toISOString().split("T")[0],
+									                "start": (exports.checkDate(startDate.trim()) ? new Date(startDate.trim()).toISOString().split("T")[0] : ""),
+									                "end": (exports.checkDate(endDate.trim()) ? new Date(endDate.trim()).toISOString().split("T")[0] : ""),
 									                "status": "",
 									                "episodes": []
 									            };
@@ -1756,9 +1782,10 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 									// Proceed if the current record corresponds to a book record.
 									else if(curImport.category == "Book") {
 										// Fetch the book details.
-										bTool.searchBooks({ "q": curImport.name }).then(bookSearchData => {
+										(curImport.link != "" ? new Promise((defRes, defRej) => defRes([])) : bTool.searchBooks({ "q": curImport.name })).then(bookSearchData => {
+										// bTool.searchBooks({ "q": curImport.name }).then(bookSearchData => {
 									        // Fetch book details based on the best name match.
-									        bTool.getBook({ "url": bookSearchData.books[0].url }).then(bookData => {
+									        bTool.getBook({ "url": curImport.link != "" ? curImport.link : bookSearchData.books[0].url }).then(bookData => {
 									            log.info("GoodReads-Scraper has finished getting the details for the name " + curImport.name + ".");
 									            // Modify the book original name.
 									            curImport.originalName != "" ? curImport.originalName += ", " + bookData.originalTitle : curImport.originalName = bookData.originalTitle;
@@ -1783,7 +1810,9 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 									            // Modify the book publisher.
 									            curImport.publisher != "" ? curImport.publisher += ", " + bookData.publisher : curImport.publisher = bookData.publisher;
 									            // Modify the book publication date.
-									            curImport.publicationDate = new Date(bookData.publicationDate).toISOString().split("T")[0];
+									            if(exports.checkDate(bookData.publicationDate)) {
+									            	curImport.publicationDate =new Date(bookData.publicationDate).toISOString().split("T")[0];
+									            }
 									            // Modify the number of pages associated to the book.
 									            curImport.pages = bookData.pages;
 									            // Modify the record synopsis.
@@ -1818,7 +1847,8 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 									        	});
 									        }).catch(err => {
 									        	// Continue the import process without the fetching of the current record's details.
-									        	log.error("There was an issue in obtaining the details associated to the book title " + curImport.name + " via the url " + bookLstItem.url + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
+									        	log.error("There was an issue in obtaining the details associated to the book title " + curImport.name + " via the url "
+									        		+ (curImport.link != "" ? curImport.link : bookSearchData.books[0].url) + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
 										    	log.info("The above record will be imported without the fetching of online details.");
 										    	winEvent.sender.send("importFetchFailure", list[p]);
 										    	curRes();
@@ -1832,58 +1862,60 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 									    });
 									}
 									// Proceed if the current record corresponds to a film record.
-									else if(curImport.category == "Film") {
+									else if(curImport.category == "Film" || curImport.category == "Show") {
 										// Fetch film details.
-									    mTool.getTitleDetailsByName(curImport.name).then(filmData => {
-									        log.info("Movier has finished getting the details associated to the film " + curImport.name + ".");
+									    mTool[curImport.link != "" ? "getTitleDetailsByUrl" : "getTitleDetailsByName"](curImport.link != "" ? curImport.link : curImport.name).then(movierData => {
+									        log.info("Movier has finished getting the details associated to the " + curImport.category.toLowerCase() + curImport.name + ".");
 									        // Modify the film alternate name.
-									        curImport.alternateName = filmData.otherNames.join(", ");
+									        curImport.alternateName = movierData.otherNames.join(", ");
 									        // Modify the release date.
-									        curImport.release = new Date(filmData.dates.startDate).toISOString().split("T")[0];
+									        if(exports.checkDate(movierData.dates.startDate)) {
+									        	curImport.release = new Date(movierData.dates.startDate).toISOString().split("T")[0];
+									        }
 									        // Modify the runtime.
-									        curImport.runTime = String(parseInt(filmData.runtime.seconds / 60));
+									        curImport.runTime = String(parseInt(movierData.runtime.seconds / 60));
 									        // Modify the record directors.
 									        curImport.directors != ""
-									        	? curImport.directors += ", " + filmData.directors.map(director => director.name).join(", ")
-									        	: curImport.directors = filmData.directors.map(director => director.name).join(", ");
+									        	? curImport.directors += ", " + movierData.directors.map(director => director.name).join(", ")
+									        	: curImport.directors = movierData.directors.map(director => director.name).join(", ");
 									        // Modify the record writers.
 									        curImport.writers != ""
-									        	? curImport.writers += ", " + filmData.writers.map(director => director.name).join(", ")
-									        	: curImport.writers = filmData.writers.map(director => director.name).join(", ");
+									        	? curImport.writers += ", " + movierData.writers.map(director => director.name).join(", ")
+									        	: curImport.writers = movierData.writers.map(director => director.name).join(", ");
 									        // Modify the record producers.
 									        curImport.producers != ""
-									        	? curImport.producers += ", " + filmData.producers.map(producers => producers.name).join(", ")
-									        	: curImport.producers = filmData.producers.map(producers => producers.name).join(", ");
+									        	? curImport.producers += ", " + movierData.producers.map(producers => producers.name).join(", ")
+									        	: curImport.producers = movierData.producers.map(producers => producers.name).join(", ");
 									        // Modify the record starring list.
 									        curImport.stars != ""
-									        	? curImport.stars += ", " + filmData.casts.map(star => star.name).join(", ")
-									        	: curImport.stars = filmData.casts.map(star => star.name).join(", ");
+									        	? curImport.stars += ", " + movierData.casts.map(star => star.name).join(", ")
+									        	: curImport.stars = movierData.casts.map(star => star.name).join(", ");
 									        // Modify the record distributors.
 									        curImport.distributors != ""
-									        	? curImport.distributors += ", " + filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name).join(", ")
-									        	: curImport.distributors = filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name).join(", ");
+									        	? curImport.distributors += ", " + movierData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name).join(", ")
+									        	: curImport.distributors = movierData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("distributor")).map(elem => elem.name).join(", ");
 									        // Modify the record production companies.
 									        curImport.productionCompanies != ""
-									        	? curImport.productionCompanies += ", " + filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name).join(", ")
-									        	: curImport.productionCompanies = filmData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name).join(", ");
+									        	? curImport.productionCompanies += ", " + movierData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name).join(", ")
+									        	: curImport.productionCompanies = movierData.productionCompanies.filter(elem => elem.extraInfo.toLowerCase().includes("production")).map(elem => elem.name).join(", ");
 									        // Modify the record synopsis.
-									        let synText = filmData.plot.trim();
+									        let synText = movierData.plot.trim();
 									        curImport.synopsis != "" ? curImport.synopsis += "\n" + synText : curImport.synopsis = synText;
 									        // Modify the record images.
-								        	curImport.img = curImport.img.concat(exports.objCreationImgs(path, fs, require("https"), configDir, list[p], [false, [filmData.posterImage.url].concat(filmData.allImages.slice(0, 9).map(elem => elem.url))]));
+								        	curImport.img = curImport.img.concat(exports.objCreationImgs(path, fs, require("https"), configDir, list[p], [false, [movierData.posterImage.url].concat(movierData.allImages.slice(0, 9).map(elem => elem.url))]));
 								        	if(curImport.img.length > 1) { curImport.img = curImport.img.filter(elem => elem != ""); }
 								        	// Modify the record genres.
-								        	filmData.genres = filmData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1));
-									        for(let s = 0; s < filmData.genres.length; s++) {
+								        	movierData.genres = movierData.genres.map(gen => gen.charAt(0).toUpperCase() + gen.substring(1));
+									        for(let s = 0; s < movierData.genres.length; s++) {
 										        let r = 0;
 										        for(; r < curImport.genres[0].length; r++) {
-										        	if(filmData.genres[s] == curImport.genres[0][r]) {
+										        	if(movierData.genres[s] == curImport.genres[0][r]) {
 										        		curImport.genres[1][r] = true;
 										        		break;
 										        	}
 										        }
-										        if(r == curImport.genres[0].length && curImport.genres[2].indexOf(filmData.genres[s]) == -1) {
-										        	curImport.genres[2].push(filmData.genres[s]);
+										        if(r == curImport.genres[0].length && curImport.genres[2].indexOf(movierData.genres[s]) == -1) {
+										        	curImport.genres[2].push(movierData.genres[s]);
 										        	curImport.genres[2].sort();
 										        }
 									        }
@@ -1900,6 +1932,154 @@ exports.importCompare = (fs, path, log, ipc, aTool, bTool, mTool, appWin, winEve
 									    }).catch(err => {
 									    	// Continue the import process without the fetching of the current record's details.
 									    	log.error("There was an issue in obtaining the details associated to the film name " + curImport.name + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
+									    	log.info("The above record will be imported without the fetching of online details.");
+									    	winEvent.sender.send("importFetchFailure", list[p]);
+									    	curRes();
+									    });
+									}
+									// Proceed if the current record corresponds to a film record.
+									else if(curImport.category == "Manga") {
+										// Fetch manga details.
+										aTool[curImport.link != "" ? "getInfoFromURL" : "getInfoFromName"](curImport.link != "" ? curImport.link : curImport.name, true, "manga").then(animeData => {
+									        log.info("MyAnimeList-Scraper has finished getting the details associated to the manga " + curImport.name + ".");
+									        // Define the parameters which need to be processed properly.
+									        let startDate = "",
+									            endDate = "",
+									            volumePromiseArr = [];
+									        // Properly define the start and end date of a manga listing on myanimelist.
+									        if(mangaData.published != undefined) {
+									            let splitArr = mangaData.published.split("to");
+									            startDate = splitArr[0];
+									            if(splitArr.length > 1) {
+									                endDate = splitArr[1];
+									            }
+									        }
+									        // Modify the japanese name.
+									        curImport.jname = mangaData.japaneseTitle;
+									        // Modify the start date.
+									        if(exports.checkDate(startDate.trim())) {
+									        	curImport.start = new Date(startDate.trim()).toISOString().split("T")[0];
+									        }
+									        // Modify the end date.
+									        if(exports.checkDate(endDate.trim())) {
+									        	curImport.end = new Date(endDate.trim()).toISOString().split("T")[0];
+									        }
+									        // Modify the record synopsis.
+									        let synText = mangaData.synopsis.replace("[Written by MAL Rewrite]", "");
+									        if(synText.includes("(Source:")) {
+									            synText = synText.substring(0, synText.indexOf("(Source:"));
+									        }
+									        synText = synText.trim();
+									        curImport.synopsis != "" ? curImport.synopsis += "\n" + synText : curImport.synopsis = synText;
+											// Modify the record writers.
+									        if(mangaData.authors.length > 0) {
+									        	curImport.writers != "" ? curImport.writers += ", " + mangaData.authors.join(", ") : curImport.writers = mangaData.authors.join(", ");
+									        }
+											// Modify the record genres.
+									        for(let s = 0; s < mangaData.genres.length; s++) {
+										        let r = 0;
+										        for(; r < curImport.genres[0].length; r++) {
+										        	if(mangaData.genres[s] == curImport.genres[0][r]) {
+										        		curImport.genres[1][r] = true;
+										        		break;
+										        	}
+										        }
+										        if(r == curImport.genres[0].length && curImport.genres[2].indexOf(mangaData.genres[s]) == -1) {
+										        	curImport.genres[2].push(mangaData.genres[s]);
+										        	curImport.genres[2].sort();
+										        }
+									        }
+									        // Proceed only if proper volume information has been provided.
+								        	if(exports.checkNumber(mangaData.volumes)) {
+								        		// Iterate through the number of volumes.
+										        for(let k = 1; k <= parseInt(mangaData.volumes); k++) {
+										            // Fetch volume search results.
+										            volumePromiseArr.push(new Promise((resolve, reject) => {
+										                bTool.searchBooks({ "q": (mangaData.volumes == "1" ? mangaData.englishTitle : mangaData.englishTitle + ", Vol. " + k) }).then(bookSearchData => {
+										                    // Define the item in the search results matching the name provided.
+										                    let bookLst = bookSearchData.books,
+										                        index = 0;
+										                    for(; bookLst.length; index++) {
+										                        if(mangaData.volumes == "1" && bookLst[index].title.toLowerCase().includes(mangaData.englishTitle.toLowerCase())
+										                                && bookLst[index].author.toLowerCase().includes(mangaData.authors[0].split(", ")[0].toLowerCase())) { break; }
+										                        else if(bookLst[index].title.toLowerCase().includes(mangaData.englishTitle.toLowerCase())
+										                                && (bookLst[index].title.toLowerCase().includes("vol. " + k) || bookLst[index].title.toLowerCase().includes("#" + k))
+										                                && bookLst[index].author.toLowerCase().includes(mangaData.authors[0].split(", ")[0].toLowerCase())) { break; }
+										                    }
+										                	// Throw an error if no associated listing was found for the current volume.
+										                    if(index == bookLst.length) {
+										                        throw new Error("No associated volumes could be found on GoodReads for the manga " + curImport.name + ".");
+										                    }
+										                    // If no error was thrown define the listing most closely associated to the desired volume.
+										                    let bookLstItem = bookSearchData.books[index];
+										                    // Fetch volume details.
+										                    bTool.getBook({ "url": bookLstItem.url }).then(bookData => {
+										                    	// Define the volume listing for the manga record related content.
+								                    	        let curObj = {
+													                "scenario": "Volume",
+													                "name": bookData.title,
+													                "release": "",
+													                "read": "",
+													                "rating": "",
+													                "review": "",
+													                "isbn": (bookData.isbn13 !== null ? bookData.isbn13 : bookData.asin),
+													                "synopsis": bookData.description
+													            };
+													            // Modify the volume release date.
+													            if(exports.checkDate(bookData.publicationDate)) {
+													            	curObj.release = new Date(bookData.publicationDate).toISOString().split("T")[0];
+													            }
+													            // Push the current volume to the related content and resolve the associated promise.
+													            curImport.content.push(curObj);
+													            resolve(bookData.coverLarge.replace(".__SX50__", ""));
+										                    }).catch(err => {
+										                        log.warn("There was an issue in obtaining the details associated to volume #" + k + " of the manga " + curImport.name + " via the url " + bookLstItem.url + ".");
+										                        resolve("");
+										                    });
+										                }).catch(err => {
+										                    log.warn("There was an issue in obtaining the details associated to volume #" + k + " of the manga " + curImport.name + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
+										                    resolve("");
+										                });
+										            }));
+										        }
+										        Promise.all(volumePromiseArr).then(results => {
+										            log.info("GoodReads-Scraper has finished getting the details associated to the manga volumes of " + curImport.name + ".");
+										            // Modify the record images.
+										        	curImport.img = curImport.img.concat(exports.objCreationImgs(path, fs, require("https"), configDir, list[p], [false, [mangaData.picture].concat(results)]));
+										        	if(curImport.img.length > 1) { curImport.img = curImport.img.filter(elem => elem != ""); }
+										        	// Modify the manga related content chapters.
+										        	if(exports.checkNumber(mangaData.chapters)) {
+									        	        for(let j = 0; j < parseInt(mangaData.chapters); j++) {
+										        	        curImport.content.push({
+												                "scenario": "Chapter",
+												                "name": "Chapter " + (j + 1),
+												                "release": "",
+												                "read": "",
+												                "rating": "",
+												                "review": ""
+												            });
+									        	        }
+											        }
+											        // If this corresponds to a simple XLSX import where related content items were added, remove the default related content item added.
+										        	if(mode == "XLSX" && det == false && curImport.content.length > 1) {
+										        		curImport.content[1].rating = curImport.content[0].rating;
+										        		curImport.content.shift();
+										        	}
+										            // Write the data file associated the current record.
+										            fs.writeFile(path.join(configDir, "Trak", "importTemp", list[p], "data.json"), JSON.stringify(curImport), "UTF8", fetchWriteErr => {
+										        		// If there was an issue writing the data file associated to the current record notify the user.
+										        		if(fetchWriteErr) {
+										        			log.error("There was an issue in writing the data file associated to the record being imported, " + curImport.category.toLowerCase() + " " + curImport.name);
+										        			winEvent.sender.send("importWriteFailure", list[p]);
+										        			curRej();
+										        		}
+										        		else { curRes(); }
+										        	});
+										        });
+								        	}
+									    }).catch(err => {
+									    	// Continue the import process without the fetching of the current record's details.
+									    	log.error("There was an issue in obtaining the details associated to the manga " + curImport.name + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
 									    	log.info("The above record will be imported without the fetching of online details.");
 									    	winEvent.sender.send("importFetchFailure", list[p]);
 									    	curRes();
@@ -2038,7 +2218,8 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 											studioHolder = elem.getCell("J" + q).value,
 											licenseHolder = elem.getCell("K" + q).value,
 											seasonHolder = elem.getCell("M" + q).value,
-											synopsisHolder = elem.getCell("E" + q).value;
+											synopsisHolder = elem.getCell("E" + q).value,
+											linkHolder = elem.getCell("O" + q).value;
 										let animeObj = {
 											"category": "Anime",
 											"name": ((typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value),
@@ -2055,7 +2236,8 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 											"genres": [genreLst, new Array(genreLst.length).fill(false), []],
 											"synopsis": (cellCheck(synopsisHolder) ? synopsisHolder : ""),
 											"img": [],
-											"content": []
+											"content": [],
+											"link": (cellCheck(linkHolder) ? (typeof linkHolder === "object" ? linkHolder.hyperlink : linkHolder) : "")
 										};
 										// Update the genres of the anime record object.
 										let genresHolder = elem.getCell("N" + q).value,
@@ -2219,7 +2401,8 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 												authorsHolder = elem.getCell("G" + q).value,
 												publisherHolder = elem.getCell("H" + q).value,
 												pagesHolder = elem.getCell("J" + q).value,
-												mediaHolder = elem.getCell("K" + q).value;
+												mediaHolder = elem.getCell("K" + q).value,
+												linkHolder = elem.getCell("N" + q).value;
 											let bookObj = {
 												"category": "Book",
 												"name": elem.getCell("A" + q).value,
@@ -2235,7 +2418,8 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 												"media": (cellCheck(mediaHolder) ? mediaHolder : ""),
 												"read": "",
 												"genres": [genreLst, new Array(genreLst.length).fill(false), []],
-												"img": []
+												"img": [],
+												"link": (cellCheck(linkHolder) ? (typeof linkHolder === "object" ? linkHolder.hyperlink : linkHolder) : "")
 											};
 											// Update the publication date of the book record object.
 											let pub = elem.getCell("I" + q).value;
@@ -2310,7 +2494,8 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 											distributorsHolder = elem.getCell("L" + q).value,
 											producersHolder = elem.getCell("M" + q).value,
 											productionCompaniesHolder = elem.getCell("N" + q).value,
-											starsHolder = elem.getCell("O" + q).value;
+											starsHolder = elem.getCell("O" + q).value,
+											linkHolder = elem.getCell("S" + q).value;
 										let filmObj = {
 											"category": "Film",
 											"name": elem.getCell("A" + q).value,
@@ -2331,7 +2516,8 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 											"release": "",
 											"watched": "",
 											"genres": [genreLst, new Array(genreLst.length).fill(false), []],
-											"img": []
+											"img": [],
+											"link": (cellCheck(linkHolder) ? (typeof linkHolder === "object" ? linkHolder.hyperlink : linkHolder) : "")
 										};
 										// Update the release date of the film record object.
 										let relHolder = elem.getCell("P" + q).value;
@@ -2400,7 +2586,8 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 											publisherHolder = elem.getCell("H" + q).value,
 											jpublisherHolder = elem.getCell("I" + q).value,
 											demographicHolder = elem.getCell("J" + q).value,
-											synopsisHolder = elem.getCell("E" + q).value;
+											synopsisHolder = elem.getCell("E" + q).value,
+											linkHolder = elem.getCell("N" + q).value;
 										let mangaObj = {
 											"category": "Manga",
 											"name": (typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value,
@@ -2416,7 +2603,8 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 											"genres": [genreLst, new Array(genreLst.length).fill(false), []],
 											"synopsis": (cellCheck(synopsisHolder) ? synopsisHolder : ""), 
 											"img": [],
-											"content": []
+											"content": [],
+											"link": (cellCheck(linkHolder) ? (typeof linkHolder === "object" ? linkHolder.hyperlink : linkHolder) : "")
 										};
 										// Update the genres of the manga record object.
 										let genresHolder = elem.getCell("M" + q).value,
@@ -2492,7 +2680,9 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 												"release": "",
 												"read": "",
 												"rating": (cellCheck(defRatingHolder) ? parseInt(defRatingHolder) : ""),
-												"review": ""
+												"review": "",
+												"isbn": "",
+												"synopsis": ""
 											});
 										}
 										let fldrName = exports.formatFolderName(mangaObj.name),
@@ -2544,7 +2734,8 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 											distributorsHolder = elem.getCell("L" + q).value,
 											producersHolder = elem.getCell("M" + q).value,
 											productionCompaniesHolder = elem.getCell("N" + q).value,
-											starsHolder = elem.getCell("O" + q).value;
+											starsHolder = elem.getCell("O" + q).value,
+											linkHolder = elem.getCell("R" + q).value;
 										let showObj = {
 											"category": "Show",
 											"name": ((typeof elem.getCell("A" + q).value === "object" && elem.getCell("A" + q).value !== null) ? elem.getCell("A" + q).value.text : elem.getCell("A" + q).value),
@@ -2564,7 +2755,8 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 											"release": "",
 											"genres": [genreLst, new Array(genreLst.length).fill(false), []],
 											"img": [],
-											"content": []
+											"content": [],
+											"link": (cellCheck(linkHolder) ? (typeof linkHolder === "object" ? linkHolder.hyperlink : linkHolder) : "")
 										};
 										// Update the release date of the show record object.
 										let releaseHolder = elem.getCell("P" + q).value;
@@ -2683,7 +2875,7 @@ exports.importDataXLSX = async (fs, path, log, ipc, aniTool, bookTool, movTool, 
 						});
 					});
 					// Once all records have been imported into the temporary folder check them against the current ones to see which ones will be kept.
-					workbookPromise.then(() => exports.importCompare(fs, path, log, ipc, aniTool, bookTool, movTool, win, eve, res, dir, fileData, xlsxFile, "XLSX"))
+					workbookPromise.then(() => exports.importCompare(fs, path, log, ipc, aniTool, bookTool, movTool, win, eve, res, dir, fileData, xlsxFile, "XLSX", full))
 						.catch(wbErr => log.error("There was an issue in resolving the promise associated to importing the xlsx file " + xlsxFile + ". Error Type: " + wbErr.name + ". Error Message: " + wbErr.message + "."));
 				}).catch(xlsxReadErr => log.error("There was an issue in reading the xlsx file " + xlsxFile + ". Error Type: " + xlsxReadErr.name + ". Error Message: " + xlsxReadErr.message + "."));
 			}

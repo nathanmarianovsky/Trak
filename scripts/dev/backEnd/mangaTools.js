@@ -184,12 +184,12 @@ Handles the fetching of a manga record from myanimelist based on a name.
    - malScraper provides the means to attain anime and manga records from myanimelist.
    - tools provides a collection of local functions.
    - ev provides the means to interact with the front-end of the Electron app.
-   - name is a string representing the title of an anime record.
+   - name is a string representing the title of a manga record.
    - GoodReadsScraper provides the means to attain book records from goodreads.
 
 */
 exports.mangaFetchDetails = (log, malScraper, tools, ev, name, GoodReadsScraper) => {
-    // Fetch anime details.
+    // Fetch manga details.
     malScraper.getInfoFromName(name, true, "manga").then(mangaData => {
         // Define the parameters which will be passed to the front-end based on the details received.
         let startDate = "",
@@ -214,7 +214,6 @@ exports.mangaFetchDetails = (log, malScraper, tools, ev, name, GoodReadsScraper)
                 GoodReadsScraper.searchBooks({ "q": (mangaData.volumes == "1" ? mangaData.englishTitle : mangaData.englishTitle + ", Vol. " + k) }).then(bookSearchData => {
                     // Define the item in the search results matching the name provided.
                     let bookLst = bookSearchData.books,
-                        // index = bookLst.indexOf(mangaData.englishTitle + ", Vol. " + k),
                         index = 0;
                     for(; bookLst.length; index++) {
                         if(mangaData.volumes == "1" && bookLst[index].title.toLowerCase().includes(mangaData.englishTitle.toLowerCase())
@@ -236,7 +235,7 @@ exports.mangaFetchDetails = (log, malScraper, tools, ev, name, GoodReadsScraper)
                         resolve([]);
                     });
                 }).catch(err => {
-                    log.warn("There was an issue in obtaining the details associated to volume #" + k + " of the manga " + name + ".");
+                    log.warn("There was an issue in obtaining the details associated to volume #" + k + " of the manga " + name + ". Error Type: " + err.name + ". Error Message: " + err.message + ".");
                     resolve([]);
                 });
             }));
@@ -398,7 +397,7 @@ Provides the front-end with manga details associated to an item clicked in the m
 
 */
 exports.mangaRecordRequest = (BrowserWindow, ipc, path, fs, log, https, malScraper, tools, globalWin, win, usrDataPath, link, GoodReadsScraper) => {
-    // Fetch anime details.
+    // Fetch manga details.
     malScraper.getInfoFromURL(link).then(mangaData => {
         // Define the parameters which will be passed to the front-end based on the details received.
         let startDate = "",
