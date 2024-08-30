@@ -1,6 +1,6 @@
 {
     "name": "Trak",
-    "version": "0.8.1",
+    "version": "0.8.5",
     "description": "A tracker designed to display and maintain details of content read and/or watched.",
     "main": "index.js",
     "author": {
