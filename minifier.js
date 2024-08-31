@@ -32,6 +32,7 @@ const htmlSettingsList = ["index.html", "addRecord.html"],
 	htmlBookmark = fs.readFileSync(path.join(__dirname, "pages", "dev", "bookmark.html")),
 	htmlSynopsis = fs.readFileSync(path.join(__dirname, "pages", "dev", "synopsis.html")),
 	htmlImport = fs.readFileSync(path.join(__dirname, "pages", "dev", "import.html")),
+	htmlMerge = fs.readFileSync(path.join(__dirname, "pages", "dev", "merge.html")),
 	htmlIntroduction = fs.readFileSync(path.join(__dirname, "pages", "dev", "introduction.html")),
 	htmlDatabase = fs.readFileSync(path.join(__dirname, "pages", "dev", "database.html")),
 	htmlNotifications = fs.readFileSync(path.join(__dirname, "pages", "dev", "notifications.html")),
@@ -51,6 +52,7 @@ $("#iconModal").html(htmlIcon);
 $("#bookmarkModal").html(htmlBookmark);
 $("#synopsisModal").html(htmlSynopsis);
 $("#importModal").html(htmlImport);
+$("#mergeModal").html(htmlMerge);
 $("#introductionModal").html(htmlIntroduction);
 $("#databaseModal").html(htmlDatabase);
 $("#notificationsModal").html(htmlNotifications);

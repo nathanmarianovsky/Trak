@@ -97,6 +97,15 @@ const bottomScrollRequest = (animeSearch, bookSearch, filmSearch, mangaSearch, s
 
 
 
+/*
+
+Returns the list of checked items on the index home page.
+
+*/
+const checkList = () => Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
+
+
+
 // Wait for the window to finish loading.
 window.addEventListener("load", () => {
     // Define the buttons for all actions.
@@ -104,6 +113,8 @@ window.addEventListener("load", () => {
         remove = document.getElementById("removeConfirm"),
         open = document.getElementById("openRecords"),
         searchBar = document.getElementById("searchBar"),
+        merge = document.getElementById("merge"),
+        mergeConfirm = document.getElementById("mergeConfirm"),
         checkAll = document.getElementById("checkAll"),
         notificationsCheckAll = document.getElementById("notificationsCheckAll"),
         notificationsClear = document.getElementById("notificationsClear"),
@@ -173,12 +184,14 @@ window.addEventListener("load", () => {
         notificationsCollection = document.getElementById("notificationsCollection"),
         updateCurrentDiv = document.getElementById("updateCurrentDiv"),
         updateChangelogDiv = document.getElementById("updateChangelogDiv"),
-        updateBookmark = document.getElementById("updateBookmark");
+        updateBookmark = document.getElementById("updateBookmark"),
+        mergeDiv = document.getElementById("mergeListDiv");
+        mergePreloader = document.getElementById("mergePreloader");
     let submissionList = [],
         tabsLoader = false;
     // Listen for a click event on the add bookmark button in order to send a request to bookmark all checked records.
     addBookmark.addEventListener("click", e => {
-        const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
+        const list = checkList();
         if(list.length > 0) {
             ipcRenderer.send("addBookmark", checkAll.checked ? list.slice(1) : list);
         }
@@ -188,7 +201,7 @@ window.addEventListener("load", () => {
     });
     // Listen for a click event on the remove bookmark button in order to send a request to unbookmark all checked records.
     removeBookmark.addEventListener("click", e => {
-        const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
+        const list = checkList();
         if(list.length > 0) {
             ipcRenderer.send("removeBookmark", checkAll.checked ? list.slice(1) : list);
         }
@@ -455,14 +468,61 @@ window.addEventListener("load", () => {
     });
     // Listen for a click event on the remove button in order to send a request for the deletion of all checked records.
     remove.addEventListener("click", e => {
-        const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
+        const list = checkList();
         ipcRenderer.send("removeRecords", checkAll.checked ? list.slice(1) : list);
     });
     // Listen for a click event on the open button in order to send a request for the opening of all checked records.
     open.addEventListener("click", e => {
-        let openList = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
+        let openList = checkList();
         if(checkAll.checked == true) { openList = openList.slice(1); }
         openList.forEach(item => ipcRenderer.send("updateRecord", [false, item]));
+    });
+    merge.addEventListener("click", e => {
+        let mergeList = Array.from(document.querySelectorAll(".recordsChecks"))
+                .filter(elem => elem !== undefined && elem.checked)
+                .map(elem => [
+                    elem.parentNode.parentNode.parentNode.id,
+                    elem.parentNode.parentNode.parentNode.getAttribute("name"),
+                    elem.parentNode.parentNode.parentNode.getAttribute("category")]);
+        if(mergeList.every((val, i, arr) => val[2] === arr[0][2])) {
+            if(mergeList[0][2] != "Book" && mergeList[0][2] != "Film") {
+                mergeDiv.innerHTML = "";
+                for(let u = 0; u < mergeList.length; u++) {
+                    let par = document.createElement("p"),
+                        lab = document.createElement("label"),
+                        inp = document.createElement("input"),
+                        spa = document.createElement("span");
+                    inp.setAttribute("type", "radio");
+                    inp.setAttribute("name", "nameGroup");
+                    inp.setAttribute("value", mergeList[u][0]);
+                    inp.classList.add("with-gap");
+                    spa.textContent = mergeList[u][1];
+                    lab.append(inp, spa);
+                    par.append(lab);
+                    mergeDiv.append(par);
+                }
+                M.Modal.getInstance(document.getElementById("mergeModal")).open();
+            }
+            else if(mergeList[0][2] == "Book") {
+                M.toast({"html": "The merging of books is not supported.", "classes": "rounded"});
+            }
+            else if(mergeList[0][2] == "Film") {
+                M.toast({"html": "The merging of films is not supported.", "classes": "rounded"});
+            }
+        }
+        else {
+            M.toast({"html": "In order to merge library records the selected choices must be of the same category.", "classes": "rounded"});
+        }
+    });
+    mergeConfirm.addEventListener("click", e => {
+        let radioChoice = document.querySelector('input[name="nameGroup"]:checked');
+        if(radioChoice !== null) {
+            mergeDiv.style.display = "none";
+            mergePreloader.style.display = "block";
+        }
+        else {
+            M.toast({"html": "In order to proceed a choice must be made above for the merged record's name.", "classes": "rounded"});
+        }
     });
     // Listen for an input change event on the search bar in order to filter the records table.
     searchBar.addEventListener("input", e => {
@@ -878,7 +938,7 @@ window.addEventListener("load", () => {
     // Listen for a click event on the database export button in order to process an export of the chosen library records.
     databaseExportBtn.addEventListener("click", e => {
         // Define the list of records which the user desires to export.
-        const list = Array.from(document.querySelectorAll(".recordsChecks")).filter(elem => elem !== undefined && elem.checked).map(elem => elem.id.split("_-_")[1]);
+        const list = checkList();
         submissionList = checkAll.checked ? list.slice(1) : list;
         // Check that at least one record has been chosen by the user.
         if(submissionList.length > 0) {

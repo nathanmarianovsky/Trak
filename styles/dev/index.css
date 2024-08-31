@@ -101,6 +101,12 @@
 	overflow: hidden !important;
 }
 
+#mergePreloader {
+	left: 45%;
+    margin-top: 15%;
+    display: none;
+}
+
 #notifications, #updateAvailable {
 	display: none;
 }
