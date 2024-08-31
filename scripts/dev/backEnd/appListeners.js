@@ -641,6 +641,121 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 		}
 	});
 
+	ipc.on("mergeRequest", (event, sub) => {
+		const seasonCompare = (lhs, rhs) => {
+			const seasonNumeric = str => {
+				let val = 0;
+				if(str == "Winter") { val = 3; }
+				else if(str == "Spring") { val = 2; }
+				else if(str == "Summer") { val = 1; }
+				return val;
+			}
+			let checkVal = false;
+			lhs[0] = seasonNumeric(lhs[0]);
+			rhs[0] = seasonNumeric(rhs[0]);
+			lhs[1] = parseInt(lhs[1]);
+			rhs[1] = parseInt(rhs[1]);
+			if(rhs[1] - lhs[1] > 0) {
+				checkVal = true;
+			}
+			else if(rhs[1] - lhs[1] == 0) {
+				checkVal = rhs[0] - lhs[0] > 0;
+			}
+			return checkVal;
+		};
+		const keeper = sub[0],
+			removalList = sub[1];
+		fs.readFile(path.join(originalPath, "Trak", "data", keeper, "data.json"), "UTF8", (readErr, readContent) => {
+			if(readErr) {
+				log.error("There was an issue reading the data file associated to the " + tools.parseFolder(keeper) + ". Error Type: " + readErr.name + ". Error Message: " + readErr.message + ".");
+			}
+			else {
+				const baseData = JSON.parse(readContent),
+					mergePromises = [];
+				let logMessage = baseData.name;
+				for(let w = 0; w < removalList.length; w++) {
+					if(removalList[w] != keeper) {
+						mergePromises.push(new Promise((mergeRes, mergeRej) => {
+							fs.readFile(path.join(originalPath, "Trak", "data", removalList[w], "data.json"), "UTF8", (remErr, remContent) => {
+								if(remErr) {
+									log.error("There was an issue reading the data file associated to the " + tools.parseFolder(removalList[w]) + ". Error Type: " + remErr.name + ". Error Message: " + remErr.message + ".");
+								}
+								else {
+									let remData = JSON.parse(remContent);
+									baseData.synopsis += "\n" + remData.synopsis;
+									baseData.synopsis = baseData.synopsis.trim();
+									baseData.review += "\n" + remData.review;
+									baseData.review = baseData.review.trim();
+									for(let q = 0; q < remData.genres[1].length; q++) {
+										if(remData.genres[1][q] == true) {
+											baseData.genres[1][q] = true;
+										}
+									}
+									let combo = baseData.genres[2].concat(remData.genres[2]);
+									baseData.genres[2] = ([...new Set(combo)]);
+									baseData.img = baseData.img.concat(tools.objCreationImgs(path, fs, require("https"), originalPath, keeper, [false, remData.img]));
+									baseData.content = baseData.content.concat(remData.content);
+									if(baseData.category == "Anime") {
+										baseData.directors += baseData.directors != "" ? ", " + remData.directors : remData.directors;
+										baseData.producers += baseData.producers != "" ? ", " + remData.producers : remData.producers;
+										baseData.writers += baseData.writers != "" ? ", " + remData.writers : remData.writers;
+										baseData.musicians += baseData.musicians != "" ? ", " + remData.musicians : remData.musicians;
+										baseData.studio += baseData.studio != "" ? ", " + remData.studio : remData.studio;
+										baseData.license += baseData.license != "" ? ", " + remData.license : remData.license;
+										if(remData.season != "" && remData.year != "") {
+											if(seasonCompare([baseData.season, baseData.year], [remData.season, remData.year])) {
+												baseData.season = remData.season;
+												baseData.year = remData.year;
+											}
+										}
+									}
+									fs.copy(path.join(originalPath, "Trak", "data", removalList[w], "assets"), path.join(originalPath, "Trak", "data", keeper, "assets"), assetsCpErr => {
+										if(assetsCpErr) {
+											log.error("There was an issue copying the assets associated to the " + tools.parseFolder(removalList[w]) + ". Error Type: " + assetsCpErr.name + ". Error Message: " + assetsCpErr.message + ".");
+											mergeRej();
+										}
+										else {
+											logMessage += ", " + remData.name;
+											mergeRes();
+										}
+									})
+								}
+							});
+						}));
+					}
+				}
+				Promise.all(mergePromises).then(() => {
+					fs.writeFile(path.join(originalPath, "Trak", "data", keeper, "data.json"), JSON.stringify(baseData), "UTF8", finalErr => {
+						if(finalErr) {
+							log.error("There was an issue writing the data file associated to the " + tools.parseFolder(keeper) + ". Error Type: " + finalErr.name + ". Error Message: " + finalErr.message + ".");
+						}
+						else {
+							const delPromises = [];
+							for(let z = 0; z < removalList.length; z++) {
+								if(removalList[z] != keeper) {
+									delPromises.push(new Promise((delRes, delRej) => {
+										fs.remove(path.join(originalPath, "Trak", "data", removalList[z]), removalErr => {
+											if(removalErr) {
+												log.error("There was an issue deleting the folder associated to the " + tools.parseFolder(removalList[z]) + ". Error Type: " + removalErr.name + ". Error Message: " + removalErr.message + ".");
+												delRej();
+											}
+											else { delRes(); }
+										});
+									}));
+								}
+							}
+							Promise.all(delPromises).then(() => {
+								log.info("The merge of the " + baseData.category.toLowerCase() + " records " + logMessage + " has finished.");
+								mainWindow.reload();
+								setTimeout(() => { mainWindow.webContents.send("mergeCompletion", [baseData.category.toLowerCase(), logMessage]); }, 500);
+							});
+						}
+					});
+				});
+			}
+		});
+	});
+
 	// Define the list of categories and the associated object containing the library import methods.
 	const categoryArr = ["anime", "book", "film", "manga", "show"];
 	const requireObj = {

@@ -22,6 +22,13 @@ var { ipcRenderer } = require("electron");
 
 
 // Display a notification if there was an error opening the notifications configuration file.
+ipcRenderer.on("mergeCompletion", (event, arr) => {
+    M.toast({"html": "The merge of the " + arr[0] + " records " + arr[1] + " has finished.", "classes": "rounded"});
+});
+
+
+
+// Display a notification if there was an error opening the notifications configuration file.
 ipcRenderer.on("notificationsFileReadFailure", event => {
     M.toast({"html": "There was an error in reading the notifications configuration file.", "classes": "rounded"});
 });

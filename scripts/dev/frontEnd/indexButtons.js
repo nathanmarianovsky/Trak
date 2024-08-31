@@ -519,6 +519,7 @@ window.addEventListener("load", () => {
         if(radioChoice !== null) {
             mergeDiv.style.display = "none";
             mergePreloader.style.display = "block";
+            ipcRenderer.send("mergeRequest", [radioChoice.value, checkAll.checked ? checkList().slice(1) : checkList()]);
         }
         else {
             M.toast({"html": "In order to proceed a choice must be made above for the merged record's name.", "classes": "rounded"});
