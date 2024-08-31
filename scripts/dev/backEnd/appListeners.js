@@ -641,8 +641,11 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 		}
 	});
 
+	// Handles the process of merging multiple records of the same category into a single one.
 	ipc.on("mergeRequest", (event, sub) => {
+		// Define the function which will handle the comparison of anime season premieres.
 		const seasonCompare = (lhs, rhs) => {
+			// Define the function which will translate a season into a numerical value.
 			const seasonNumeric = str => {
 				let val = 0;
 				if(str == "Winter") { val = 3; }
@@ -650,42 +653,63 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 				else if(str == "Summer") { val = 1; }
 				return val;
 			}
+			// Define the boolean which will measure whether the season premiere on the right hand side is earlier than the left hand side.
 			let checkVal = false;
+			// Convert the seasons into a numerical value.
 			lhs[0] = seasonNumeric(lhs[0]);
 			rhs[0] = seasonNumeric(rhs[0]);
+			// Convert the years into integers.
 			lhs[1] = parseInt(lhs[1]);
 			rhs[1] = parseInt(rhs[1]);
-			if(rhs[1] - lhs[1] > 0) {
+			// Update the boolean accordingly if the right hand side corresponds to an earlier premier.
+			if(rhs[1] - lhs[1] < 0) {
 				checkVal = true;
 			}
 			else if(rhs[1] - lhs[1] == 0) {
-				checkVal = rhs[0] - lhs[0] > 0;
+				checkVal = rhs[0] - lhs[0] < 0;
 			}
+			// Return the boolean.
 			return checkVal;
 		};
+		// Define the base record to which all other records will be merged into.
 		const keeper = sub[0],
 			removalList = sub[1];
+		// Read the data file associated to the base record.
 		fs.readFile(path.join(originalPath, "Trak", "data", keeper, "data.json"), "UTF8", (readErr, readContent) => {
+			// If there was an error in reading the data file of the base record update the logs.
 			if(readErr) {
 				log.error("There was an issue reading the data file associated to the " + tools.parseFolder(keeper) + ". Error Type: " + readErr.name + ". Error Message: " + readErr.message + ".");
 			}
+			// If no error showed up in reading the data file of the base record proceed.
 			else {
+				// Define the data of the base record.
 				const baseData = JSON.parse(readContent),
 					mergePromises = [];
+				// Define the string to be used in notifying the logs on which records have been merged.
 				let logMessage = baseData.name;
+				// Iterate through the list of all records to be merged.
 				for(let w = 0; w < removalList.length; w++) {
+					// Proceed only if the current record does not correspond to the base record.
 					if(removalList[w] != keeper) {
+						// Create a promise which corresponds to the execution of reading the current record and copying over its contents.
 						mergePromises.push(new Promise((mergeRes, mergeRej) => {
+							// Read the data file of the current record.
 							fs.readFile(path.join(originalPath, "Trak", "data", removalList[w], "data.json"), "UTF8", (remErr, remContent) => {
+								// If there was an error in reading the data file of the current record update the logs.
 								if(remErr) {
 									log.error("There was an issue reading the data file associated to the " + tools.parseFolder(removalList[w]) + ". Error Type: " + remErr.name + ". Error Message: " + remErr.message + ".");
 								}
+								// If no error showed up in reading the data file of the current record proceed.
 								else {
+									// Define the data of the current record.
 									let remData = JSON.parse(remContent);
+									// Update the base record synopsis.
 									baseData.synopsis += "\n" + remData.synopsis;
 									baseData.synopsis = baseData.synopsis.trim();
+									// Update the base record review.
 									baseData.review += "\n" + remData.review;
 									baseData.review = baseData.review.trim();
+									// Update the base record genres.
 									for(let q = 0; q < remData.genres[1].length; q++) {
 										if(remData.genres[1][q] == true) {
 											baseData.genres[1][q] = true;
@@ -693,15 +717,25 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 									}
 									let combo = baseData.genres[2].concat(remData.genres[2]);
 									baseData.genres[2] = ([...new Set(combo)]);
+									// Update the base record images.
 									baseData.img = baseData.img.concat(tools.objCreationImgs(path, fs, require("https"), originalPath, keeper, [false, remData.img]));
+									// Update the base record related content.
 									baseData.content = baseData.content.concat(remData.content);
+									// For the remainder proceed only if dealing with anime records.
 									if(baseData.category == "Anime") {
+										// Update the base record directors.
 										baseData.directors += baseData.directors != "" ? ", " + remData.directors : remData.directors;
+										// Update the base record producers.
 										baseData.producers += baseData.producers != "" ? ", " + remData.producers : remData.producers;
+										// Update the base record writers.
 										baseData.writers += baseData.writers != "" ? ", " + remData.writers : remData.writers;
+										// Update the base record music directors.
 										baseData.musicians += baseData.musicians != "" ? ", " + remData.musicians : remData.musicians;
+										// Update the base record studio.
 										baseData.studio += baseData.studio != "" ? ", " + remData.studio : remData.studio;
+										// Update the base record license.
 										baseData.license += baseData.license != "" ? ", " + remData.license : remData.license;
+										// Update the base record season and year.
 										if(remData.season != "" && remData.year != "") {
 											if(seasonCompare([baseData.season, baseData.year], [remData.season, remData.year])) {
 												baseData.season = remData.season;
@@ -709,6 +743,7 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 											}
 										}
 									}
+									// Copy all current record assets to the base record assets folder.
 									fs.copy(path.join(originalPath, "Trak", "data", removalList[w], "assets"), path.join(originalPath, "Trak", "data", keeper, "assets"), assetsCpErr => {
 										if(assetsCpErr) {
 											log.error("There was an issue copying the assets associated to the " + tools.parseFolder(removalList[w]) + ". Error Type: " + assetsCpErr.name + ". Error Message: " + assetsCpErr.message + ".");
@@ -724,16 +759,25 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 						}));
 					}
 				}
+				// Once all desired records have been absorbed into the base record write the new data file and remove all other records.
 				Promise.all(mergePromises).then(() => {
+					// Write the base record data file.
 					fs.writeFile(path.join(originalPath, "Trak", "data", keeper, "data.json"), JSON.stringify(baseData), "UTF8", finalErr => {
+						// If there was an error in writing the data file of the base record update the logs.
 						if(finalErr) {
 							log.error("There was an issue writing the data file associated to the " + tools.parseFolder(keeper) + ". Error Type: " + finalErr.name + ". Error Message: " + finalErr.message + ".");
 						}
+						// If no error showed up in writing the data file of the base record proceed.
 						else {
+							// Define the list of promises used to account for the removal of all non-base records.
 							const delPromises = [];
+							// Iterate through the list of records.
 							for(let z = 0; z < removalList.length; z++) {
+								// Proceed only if the current record is not the base record.
 								if(removalList[z] != keeper) {
+									// Create a promise which corresponds to the deletion of the current record folder.
 									delPromises.push(new Promise((delRes, delRej) => {
+										// Remove the folder associated to the current record and all contents.
 										fs.remove(path.join(originalPath, "Trak", "data", removalList[z]), removalErr => {
 											if(removalErr) {
 												log.error("There was an issue deleting the folder associated to the " + tools.parseFolder(removalList[z]) + ". Error Type: " + removalErr.name + ". Error Message: " + removalErr.message + ".");
@@ -744,6 +788,7 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 									}));
 								}
 							}
+							// Once all non-base records have been deleted proceed to notify the user that the process has officially ended.
 							Promise.all(delPromises).then(() => {
 								log.info("The merge of the " + baseData.category.toLowerCase() + " records " + logMessage + " has finished.");
 								mainWindow.reload();

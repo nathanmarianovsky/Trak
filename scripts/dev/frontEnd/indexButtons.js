@@ -477,16 +477,22 @@ window.addEventListener("load", () => {
         if(checkAll.checked == true) { openList = openList.slice(1); }
         openList.forEach(item => ipcRenderer.send("updateRecord", [false, item]));
     });
+    // Listen for a click event on the merge button in order to start the process of merging multiple records together.
     merge.addEventListener("click", e => {
+        // Define the list of records the user wants to merge.
         let mergeList = Array.from(document.querySelectorAll(".recordsChecks"))
-                .filter(elem => elem !== undefined && elem.checked)
+                .filter(elem => elem !== undefined && elem.checked && elem.id != "checkAll")
                 .map(elem => [
                     elem.parentNode.parentNode.parentNode.id,
                     elem.parentNode.parentNode.parentNode.getAttribute("name"),
                     elem.parentNode.parentNode.parentNode.getAttribute("category")]);
+        // Proceed only if all checked records have the same category.
         if(mergeList.every((val, i, arr) => val[2] === arr[0][2])) {
+            // Proceed only if the checked records do not correspond to books and films.
             if(mergeList[0][2] != "Book" && mergeList[0][2] != "Film") {
+                // Reset the list of record names to choose from in the merge modal.
                 mergeDiv.innerHTML = "";
+                // Attach a radio button for each checked record.
                 for(let u = 0; u < mergeList.length; u++) {
                     let par = document.createElement("p"),
                         lab = document.createElement("label"),
@@ -501,26 +507,36 @@ window.addEventListener("load", () => {
                     par.append(lab);
                     mergeDiv.append(par);
                 }
+                // Open the merge modal.
                 M.Modal.getInstance(document.getElementById("mergeModal")).open();
             }
+            // If the user choose books to merge notify them that it is not supported.
             else if(mergeList[0][2] == "Book") {
                 M.toast({"html": "The merging of books is not supported.", "classes": "rounded"});
             }
+            // If the user choose films to merge notify them that it is not supported.
             else if(mergeList[0][2] == "Film") {
                 M.toast({"html": "The merging of films is not supported.", "classes": "rounded"});
             }
         }
+        // If there is at least one checked record with a different category notify the user of this.
         else {
             M.toast({"html": "In order to merge library records the selected choices must be of the same category.", "classes": "rounded"});
         }
     });
+    // Listen for a click event on the merge confirmation button in order to send a request to the back-end for a merger.
     mergeConfirm.addEventListener("click", e => {
+        // Define the currently selected record name choice, if it exists.
         let radioChoice = document.querySelector('input[name="nameGroup"]:checked');
+        // Proceed only if a name for the merged record has been chosen.
         if(radioChoice !== null) {
+            // Hide the list of record name choices and display the preloader to indicate that the process has officially started.
             mergeDiv.style.display = "none";
             mergePreloader.style.display = "block";
+            // Send a request to the back-end to merge the desired records.
             ipcRenderer.send("mergeRequest", [radioChoice.value, checkAll.checked ? checkList().slice(1) : checkList()]);
         }
+        // If no name has been chosen notify the user that it is required for the merge process.
         else {
             M.toast({"html": "In order to proceed a choice must be made above for the merged record's name.", "classes": "rounded"});
         }
