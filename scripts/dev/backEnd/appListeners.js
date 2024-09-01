@@ -721,16 +721,73 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 									baseData.img = baseData.img.concat(tools.objCreationImgs(path, fs, require("https"), originalPath, keeper, [false, remData.img]));
 									// Update the base record related content.
 									baseData.content = baseData.content.concat(remData.content);
+									// Update the base record writers.
+									baseData.writers += baseData.writers != "" ? ", " + remData.writers : remData.writers;
 									// For the remainder proceed only if dealing with anime records.
 									if(baseData.category == "Anime") {
 										// Update the base record directors.
 										baseData.directors += baseData.directors != "" ? ", " + remData.directors : remData.directors;
 										// Update the base record producers.
 										baseData.producers += baseData.producers != "" ? ", " + remData.producers : remData.producers;
-										// Update the base record writers.
-										baseData.writers += baseData.writers != "" ? ", " + remData.writers : remData.writers;
 										// Update the base record music directors.
 										baseData.musicians += baseData.musicians != "" ? ", " + remData.musicians : remData.musicians;
+										// Update the base record studio.
+										baseData.studio += baseData.studio != "" ? ", " + remData.studio : remData.studio;
+										// Update the base record license.
+										baseData.license += baseData.license != "" ? ", " + remData.license : remData.license;
+										// Update the base record season and year.
+										if(remData.season != "" && remData.year != "") {
+											if(seasonCompare([baseData.season, baseData.year], [remData.season, remData.year])) {
+												baseData.season = remData.season;
+												baseData.year = remData.year;
+											}
+										}
+									}
+									else if(baseData.category == "Manga") {
+										// Update the base record publisher.
+										baseData.publisher += baseData.publisher != "" ? ", " + remData.publisher : remData.publisher;
+										// Update the base record japanese publisher.
+										baseData.jpublisher += baseData.jpublisher != "" ? ", " + remData.jpublisher : remData.jpublisher;
+										// Update the base record illustrators.
+										baseData.illustrators += baseData.illustrators != "" ? ", " + remData.illustrators : remData.illustrators;
+										// Update the base record demographic.
+										if(baseData.demographic == "") {
+											baseData.demographic = remData.demographic;
+										}
+										// Update the base record start date.
+										if(new Date(baseData.start).getTime() > new Date(remData.start).getTime()) {
+											baseData.start = remData.start;
+										}
+										// Update the base record end date.
+										if(new Date(baseData.start).getTime() < new Date(remData.start).getTime()) {
+											baseData.end = remData.end;
+										}
+									}
+									else if(baseData.category == "Show") {
+										// Update the base record release.
+										if(new Date(baseData.release).getTime() > new Date(remData.release).getTime()) {
+											baseData.release = remData.release;
+										}
+										// Update the base record run time.
+										if(parseInt(baseData.runTime) < parseInt(remData.runTime)) {
+											baseData.runTime = remData.runTime;
+										}
+										// Update the base record directors.
+										baseData.directors += baseData.directors != "" ? ", " + remData.directors : remData.directors;
+										// Update the base record editors.
+										baseData.editors += baseData.editors != "" ? ", " + remData.editors : remData.editors;
+										// Update the base record cinematographers.
+										baseData.cinematographers += baseData.cinematographers != "" ? ", " + remData.cinematographers : remData.cinematographers;
+										// Update the base record producers.
+										baseData.producers += baseData.producers != "" ? ", " + remData.producers : remData.producers;
+										// Update the base record distributors.
+										baseData.distributors += baseData.distributors != "" ? ", " + remData.distributors : remData.distributors;
+										// Update the base record production companies.
+										baseData.productionCompanies += baseData.productionCompanies != "" ? ", " + remData.productionCompanies : remData.productionCompanies;
+										// Update the base record music directors.
+										baseData.musicians += baseData.musicians != "" ? ", " + remData.musicians : remData.musicians;
+										// Update the base record stars.
+										baseData.stars += baseData.stars != "" ? ", " + remData.stars : remData.stars;
 										// Update the base record studio.
 										baseData.studio += baseData.studio != "" ? ", " + remData.studio : remData.studio;
 										// Update the base record license.
