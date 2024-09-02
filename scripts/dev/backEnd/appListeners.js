@@ -322,7 +322,7 @@ exports.addBasicListeners = (app, shell, BrowserWindow, path, fs, log, dev, ipc,
         		// Define the list of current associations and the id of the primary record submitted.
         		const associationsFileList = JSON.parse(file).associations,
         			focusName = submissionArr[0] + "-" + tools.formatFolderName(submissionArr[1]);
-    			let focusItem = submissionArr[3] != "" ? submissionArr[3] : focusName
+    			let focusItem = submissionArr[3] != "" ? submissionArr[3] : focusName + "-"
     				+ (fs.readdirSync(path.join(originalPath, "Trak", "data")).filter(file => fs.statSync(path.join(originalPath, "Trak", "data", file)).isDirectory() && file.includes(focusName)).length - 1);
         		let w = 0;
         		// Iterate through the list of current associations.
@@ -826,30 +826,93 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 						}
 						// If no error showed up in writing the data file of the base record proceed.
 						else {
-							// Define the list of promises used to account for the removal of all non-base records.
-							const delPromises = [];
-							// Iterate through the list of records.
-							for(let z = 0; z < removalList.length; z++) {
-								// Proceed only if the current record is not the base record.
-								if(removalList[z] != keeper) {
-									// Create a promise which corresponds to the deletion of the current record folder.
-									delPromises.push(new Promise((delRes, delRej) => {
-										// Remove the folder associated to the current record and all contents.
-										fs.remove(path.join(originalPath, "Trak", "data", removalList[z]), removalErr => {
-											if(removalErr) {
-												log.error("There was an issue deleting the folder associated to the " + tools.parseFolder(removalList[z]) + ". Error Type: " + removalErr.name + ". Error Message: " + removalErr.message + ".");
-												delRej();
-											}
-											else { delRes(); }
-										});
-									}));
+							// Define the path to the associations file.
+							const assocPath = path.join(originalPath, "Trak", "data", "associations.json");
+							// Read the library associations file.
+							fs.readFile(assocPath, "UTF8", (assocErr, assocFile) => {
+								// If there was an error in reading the associations file update the logs.
+								if(assocErr) {
+									log.error("There was an issue in reading the associations file. Error Type: " + assocErr.name + ". Error Message: " + assocErr.message + ".");
 								}
-							}
-							// Once all non-base records have been deleted proceed to notify the user that the process has officially ended.
-							Promise.all(delPromises).then(() => {
-								log.info("The merge of the " + baseData.category.toLowerCase() + " records " + logMessage + " has finished.");
-								mainWindow.reload();
-								setTimeout(() => { mainWindow.webContents.send("mergeCompletion", [baseData.category.toLowerCase(), logMessage]); }, 500);
+								// If no error showed up in reading the associations file proceed.
+								else {
+									// Define the new association tied to the base record and the list of all current library associations.
+									const assocData = JSON.parse(assocFile),
+										associationsList = assocData.associations,
+										visited = [];
+									let newAssoc = [];
+									// Iterate through the list of records being merged.
+									for(let h = 0; h < removalList.length; h++) {
+										// Iterate through the list of all library associations.
+										for(let g = 0; g < associationsList.length; g++) {
+											// Proceed only if the current association contains the current merge record.
+											if(associationsList[g].indexOf(removalList[h]) != -1) {
+												// Keep track of the library associations which were visited.
+												visited.push(g);
+												// Concatenate the current library association to the new associations tied to the base record.
+												newAssoc = newAssoc.concat(associationsList[g]);
+												break;
+											}
+										}
+									}
+									// Add the base record to the new association.
+									newAssoc.push(keeper);
+									// Filter the new association of any duplicates.
+									newAssoc = [...new Set(newAssoc)];
+									// Remove all mentions of the merging records in the new association with the exception of the base record.
+									for(let x = 0; x < removalList.length; x++) {
+										if(removalList[x] != keeper) {
+											let curIndex = newAssoc.indexOf(removalList[x]);
+											if(curIndex != -1) {
+												newAssoc.splice(curIndex, 1);
+											}
+										}
+									}
+									// Sort the collection of indices visited in the library associations collection from highest to lowest.
+									visited.sort((a, b) => b - a);
+									// Remove all visited associations.
+									for(let r = 0; r < visited.length; r++) {
+										associationsList.splice(visited[r], 1);
+									}
+									// Add the new association tied to the base record into the library associations.
+									associationsList.push(newAssoc);
+									assocData.associations = associationsList;
+									// Write the new associations collection to the library associations file.
+									fs.writeFile(assocPath, JSON.stringify(assocData), "UTF8", assocWriteErr => {
+										// If there was an error in writing the associations file update the logs.
+										if(assocErr) {
+											log.error("There was an issue in writing the associations file. Error Type: " + assocWriteErr.name + ". Error Message: " + assocWriteErr.message + ".");
+										}
+										// If no error showed up in writing the associations file proceed.
+										else {
+											// Define the list of promises used to account for the removal of all non-base records.
+											const delPromises = [];
+											// Iterate through the list of records.
+											for(let z = 0; z < removalList.length; z++) {
+												// Proceed only if the current record is not the base record.
+												if(removalList[z] != keeper) {
+													// Create a promise which corresponds to the deletion of the current record folder.
+													delPromises.push(new Promise((delRes, delRej) => {
+														// Remove the folder associated to the current record and all contents.
+														fs.remove(path.join(originalPath, "Trak", "data", removalList[z]), removalErr => {
+															if(removalErr) {
+																log.error("There was an issue deleting the folder associated to the " + tools.parseFolder(removalList[z]) + ". Error Type: " + removalErr.name + ". Error Message: " + removalErr.message + ".");
+																delRej();
+															}
+															else { delRes(); }
+														});
+													}));
+												}
+											}
+											// Once all non-base records have been deleted proceed to notify the user that the process has officially ended.
+											Promise.all(delPromises).then(() => {
+												log.info("The merge of the " + baseData.category.toLowerCase() + " records " + logMessage + " has finished.");
+												mainWindow.reload();
+												setTimeout(() => { mainWindow.webContents.send("mergeCompletion", [baseData.category.toLowerCase(), logMessage]); }, 500);
+											});
+										}
+									});
+								}
 							});
 						}
 					});
