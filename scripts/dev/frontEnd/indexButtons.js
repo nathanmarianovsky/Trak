@@ -593,6 +593,20 @@ window.addEventListener("load", () => {
                                             }
                                             else { checkArrOR.push(false); }
                                         }
+                                        // Check if the japanese name of the record satisfied the current query.
+                                        else if(searchOption == "season") {
+                                            if(rowList[i].getAttribute("season") != null) {
+                                                orPushFunc(checkArrOR, rowList, "season", searchParamsOR);
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
+                                        // Check if the japanese name of the record satisfied the current query.
+                                        else if(searchOption == "year") {
+                                            if(rowList[i].getAttribute("year") != null) {
+                                                orPushFunc(checkArrOR, rowList, "year", searchParamsOR);
+                                            }
+                                            else { checkArrOR.push(false); }
+                                        }
                                         // Check if the original name of the record satisfied the current query.
                                         else if(searchOption == "ogname") {
                                             if(rowList[i].getAttribute("originalName") != null) {
@@ -732,8 +746,6 @@ window.addEventListener("load", () => {
         const checksArr = Array.from(document.querySelectorAll(".recordsChecks")),
             arrVisible = checksArr.filter(item => item.parentNode.parentNode.parentNode.style.display != "none" && item.id != "checkAll").map(filItem => filItem.id).sort().join(","),
             arrChecked = checksArr.filter(item => item.checked == true && item.id != "checkAll").map(filItem => filItem.id).sort().join(",");
-        console.log(arrVisible);
-        console.log(arrChecked);
         checkAll.checked = (arrVisible == arrChecked);
     });
     // Listen for a click event on the check all checkbox in order to check or uncheck all record checkboxes.

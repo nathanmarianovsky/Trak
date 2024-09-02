@@ -862,6 +862,7 @@ const associationCreation = (ipcApp, itemId, itemCategory, itemRel, itemTitle, i
             newLst.sort((lhs, rhs) => (new Date(lhs.getAttribute("associationRelease"))).getTime() - (new Date(rhs.getAttribute("associationRelease"))).getTime());
             associationsCollection.innerHTML = "";
             newLst.forEach(elem => associationsCollection.append(elem));
+            associationsListeners(ipcApp);
         }
     });
 };
