@@ -728,6 +728,13 @@ window.addEventListener("load", () => {
         });
         // Update the bottom message corresponding to record totals.
         updateCountString(rowList.length, countersFiltered);
+        // Update the checkAll checkbox accordingly.
+        const checksArr = Array.from(document.querySelectorAll(".recordsChecks")),
+            arrVisible = checksArr.filter(item => item.parentNode.parentNode.parentNode.style.display != "none" && item.id != "checkAll").map(filItem => filItem.id).sort().join(","),
+            arrChecked = checksArr.filter(item => item.checked == true && item.id != "checkAll").map(filItem => filItem.id).sort().join(",");
+        console.log(arrVisible);
+        console.log(arrChecked);
+        checkAll.checked = (arrVisible == arrChecked);
     });
     // Listen for a click event on the check all checkbox in order to check or uncheck all record checkboxes.
     checkAll.addEventListener("click", checkAllFunc);
