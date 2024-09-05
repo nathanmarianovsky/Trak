@@ -106,6 +106,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                             log.info("The settings configuration file has been successfully read.");
                             // Define the settings configuration data.
                             const configurationData = JSON.parse(file);
+                            if(dataArr[0] == "") { writeData.path = configurationData.original.path; }
                             // Delete the user records located in the previous location if requested.
                             ipc.on("dataOriginalDelete", (eve, resp) => {
                                 // Only delete the previous user records if the user wants to.
@@ -210,7 +211,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                 // If the provided options are not the same as the original parameters then write the configuration.json file and restart the app.
                                 else {
                                     // If the provided data path is the same then proceed by writing the configuration.json file and restarting the app.
-                                    if(configurationData.original.path == writeData.path) {
+                                    if(configurationData.original.path == writeData.path || writeData.path == "") {
                                         writeData.previousPrimaryColor = configurationData.original.primaryColor;
                                         writeData.previousSecondaryColor = configurationData.original.secondaryColor;
                                         configurationData.current = writeData;
@@ -277,7 +278,7 @@ exports.updateSettings = (fs, path, log, ipc, app, dataArr, appDirectory, win, e
                                 }
                                 // If the provided options are not the same as the current parameters then write the configuration.json file and restart the app.
                                 else {
-                                    if(configurationData.current.path == writeData.path) {
+                                    if(configurationData.current.path == writeData.path || writeData.path != "") {
                                         writeData.previousPrimaryColor = configurationData.current.primaryColor;
                                         writeData.previousSecondaryColor = configurationData.current.secondaryColor;
                                         configurationData.current = writeData;

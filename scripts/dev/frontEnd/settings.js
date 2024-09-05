@@ -192,8 +192,10 @@ window.addEventListener("load", () => {
             primaryColor.setAttribute("lastValue", "#2A2A8E");
     		secondaryColor.value = "#D9D9DB";
     		secondaryColor.setAttribute("lastValue", "#D9D9DB");
-    		appPath.value = localPath;
-    		appPath.setAttribute("lastValue", localPath);
+            if(appPath !== null) {
+        		appPath.value = localPath;
+        		appPath.setAttribute("lastValue", localPath);
+            }
     		primaryWindowWidth.value = "1000";
     		primaryWindowWidth.setAttribute("lastValue", "1000");
     		primaryWindowHeight.value = "800";
@@ -235,8 +237,10 @@ window.addEventListener("load", () => {
                 primaryColor.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryColor);
                 secondaryColor.value = configData[configData.current != undefined ? "current" : "original"].secondaryColor;
                 secondaryColor.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].secondaryColor);
-                appPath.value = configData[configData.current != undefined ? "current" : "original"].path;
-                appPath.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].path);
+                if(appPath !== null) {
+                    appPath.value = configData[configData.current != undefined ? "current" : "original"].path;
+                    appPath.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].path);
+                }
                 primaryWindowWidth.value = configData[configData.current != undefined ? "current" : "original"].primaryWindowWidth;
                 primaryWindowWidth.setAttribute("lastValue", configData[configData.current != undefined ? "current" : "original"].primaryWindowWidth);
                 primaryWindowHeight.value = configData[configData.current != undefined ? "current" : "original"].primaryWindowHeight;
@@ -279,10 +283,12 @@ window.addEventListener("load", () => {
                     secondaryColor.value = configData.original.secondaryColor;
                 });
                 // Listen for a click on the path reset button to restore the directory input to the original destination.
-                settingsDataReset.addEventListener("click", e => {
-                    appPath.value = configData.original.path;
-                    appPath.classList.remove("validate", "valid");
-                });
+                if(settingsDataReset !== null) {
+                    settingsDataReset.addEventListener("click", e => {
+                        appPath.value = configData.original.path;
+                        appPath.classList.remove("validate", "valid");
+                    });
+                }
                 // Listen for a click on the sizes reset button to restore the sizes of the windows to their original values.
                 settingsSizesReset.addEventListener("click", e => {
                     primaryWindowWidth.value = configData.original.primaryWindowWidth;
@@ -324,8 +330,10 @@ window.addEventListener("load", () => {
                     settingsDisplay.click();
         			primaryColor.value = primaryColor.getAttribute("lastValue");
     	    		secondaryColor.value = secondaryColor.getAttribute("lastValue");
-    	    		appPath.value = appPath.getAttribute("lastValue");
-    	    		appPath.classList.remove("validate", "valid");
+                    if(appPath !== null) {
+        	    		appPath.value = appPath.getAttribute("lastValue");
+        	    		appPath.classList.remove("validate", "valid");
+                    }
     	    		primaryWindowWidth.value = primaryWindowWidth.getAttribute("lastValue");
     	    		primaryWindowWidth.classList.remove("validate", "valid");
     	    		primaryWindowHeight.value = primaryWindowHeight.getAttribute("lastValue");
@@ -354,7 +362,7 @@ window.addEventListener("load", () => {
                     && Array.from(document.getElementsByClassName("categoryActiveCheckbox")).map(elem => elem.children[0].checked).reduce((accum, cur) => accum || cur, false)) {
             		// Submit a back-end request to update the configuration files.
                     ipcRenderer.send("settingsSave", [
-            			appPath.value,
+            			appPath !== null ? appPath.value : "",
         				primaryColor.value,
         				secondaryColor.value,
         				primaryWindowWidth.value,
@@ -399,7 +407,7 @@ window.addEventListener("load", () => {
         	});
             // Listen for a change in the path input in order to highlight it accordingly.
         	const btnFunc = e => e.target.value == e.target.getAttribute("lastValue") ? e.target.classList.remove("validate", "valid") : e.target.classList.add("validate", "valid");
-            appPath.addEventListener("change", btnFunc);
+            if(appPath !== null) { appPath.addEventListener("change", btnFunc); }
             // Listen for a change in the primary window width input in order to highlight it accordingly.
         	primaryWindowWidth.addEventListener("change", btnFunc);
             // Listen for a change in the primary window height input in order to highlight it accordingly.

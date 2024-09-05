@@ -47,6 +47,7 @@ if(!fs.existsSync(path.join(__dirname, "pages", "dev", "sectionsAttached"))) {
 }
 else { fs.emptyDirSync(path.join(__dirname, "pages", "dev", "sectionsAttached")); }
 $("#settingsModal").html(htmlSettings);
+if(store == true) { $(".snapRemoval").remove(); }
 $("#updateModal").html(htmlUpdate);
 $("#iconModal").html(htmlIcon);
 $("#bookmarkModal").html(htmlBookmark);
