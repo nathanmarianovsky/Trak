@@ -133,6 +133,11 @@ exports.addBasicListeners = (app, shell, BrowserWindow, path, fs, log, dev, ipc,
 		}, 1000);
 	});
 
+	// Provide an export location if requested,
+	ipc.on("exportPathRequest", ptEve => {
+		ptEve.sender.send("exportPathValue", path.join(originalPath, "Trak", "exportTemp"));
+	});
+
 	// Send a request to the front-end to initialize the application tutorial.
 	ipc.once("tutorialReady", ev => {
 		tools.tutorialLoad(fs, path, log, BrowserWindow.getFocusedWindow(), originalPath);

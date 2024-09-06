@@ -47,7 +47,6 @@ if(!fs.existsSync(path.join(__dirname, "pages", "dev", "sectionsAttached"))) {
 }
 else { fs.emptyDirSync(path.join(__dirname, "pages", "dev", "sectionsAttached")); }
 $("#settingsModal").html(htmlSettings);
-if(store == true) { $(".snapRemoval").remove(); }
 $("#updateModal").html(htmlUpdate);
 $("#iconModal").html(htmlIcon);
 $("#bookmarkModal").html(htmlBookmark);
@@ -56,6 +55,10 @@ $("#importModal").html(htmlImport);
 $("#mergeModal").html(htmlMerge);
 $("#introductionModal").html(htmlIntroduction);
 $("#databaseModal").html(htmlDatabase);
+if(store == true) {
+	$(".snapRemoval").remove();
+	$("#exportPath").attr("disabled", true);
+}
 $("#notificationsModal").html(htmlNotifications);
 $("#filterModal").html(htmlFilter);
 $("#titleBar").html(htmlTitlebar);

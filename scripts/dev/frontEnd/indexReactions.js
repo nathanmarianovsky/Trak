@@ -425,6 +425,13 @@ ipcRenderer.on("introduction", (event, response) => {
 
 // Load all of the records as rows in the table once the page has loaded.
 ipcRenderer.on("loadRows", (event, diff) => {
+    const exportPathElem = document.getElementById("exportPath");
+    if(exportPathElem.getAttribute("disabled") == "true") {
+        ipcRenderer.send("exportPathRequest");
+        ipcRenderer.once("exportPathValue", (exportEvent, exportValue) => {
+            exportPathElem.value = exportValue;
+        });
+    }
     // Define the current date, notifications array, and an accumulation function.
     const curTime = (new Date()).getTime(),
         notificationsArr = document.getElementById("notificationsCollection"),
