@@ -5,7 +5,8 @@
 
 
 #add, #animeSearchSubmission, #bookSearchSubmission,
-#filmSearchSubmission, #mangaSearchSubmission, #showSearchSubmission {
+#filmSearchSubmission, #mangaSearchSubmission,
+#showSearchSubmission {
 	position: fixed;
   	bottom: 23px;
   	right: 23px;
@@ -60,6 +61,10 @@
 
 #contentSearchDiv .select-dropdown span {
 	text-align: left;
+}
+
+#exportPath {
+	margin-left: 2%;
 }
 
 #headersTableDiv, #tableDiv {
