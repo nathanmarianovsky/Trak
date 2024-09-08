@@ -18,12 +18,16 @@ const htmlMinify = require("html-minifier").minify,
 	fs = require("fs-extra"),
 	path = require("path"),
 	cheerio = require("cheerio"),
+	log = require("electron-log"),
 	store = process.argv.includes("--store");
 
 
 
+log.info("The minification process for the application has initiated.");
+
+
 // Append the appropriate sections to the html files.
-console.log("Adding Sections to Appropriate HTML Files.");
+log.info("Adding sections to appropriate html Files.");
 const htmlSettingsList = ["index.html", "addRecord.html"],
 	htmlList = ["splash.html"],
 	htmlSettings = fs.readFileSync(path.join(__dirname, "pages", "dev", "settings.html")),
@@ -73,7 +77,7 @@ fs.writeFileSync(path.join(__dirname, "pages", "dev", "sectionsAttached", "secti
 
 
 // Compress the html files.
-console.log("Starting Compression of HTML Files without Sections:");
+log.info("Starting compression of html files without sections:");
 if(!fs.existsSync(path.join(__dirname, "pages", "dist"))) {
 	fs.mkdirSync(path.join(__dirname, "pages", "dist"));
 }
@@ -95,7 +99,7 @@ for(let r = 0; r < htmlList.length; r++) {
 	settingsHtmlBarRow.update(1);
 }
 htmlBar.stop();
-console.log("Starting Compression of HTML Files with Sections:");
+log.info("Starting compression of html files with sections:");
 const settingsHtmlBar = new cliProgress.MultiBar({}, cliProgress.Presets.rect);
 for(let r = 0; r < htmlSettingsList.length; r++) {
 	let file = htmlSettingsList[r],
@@ -117,7 +121,7 @@ settingsHtmlBar.stop();
 
 
 // Compress the css files.
-console.log("Starting Compression of CSS Files:");
+log.info("Starting compression of css files:");
 if(!fs.existsSync(path.join(__dirname, "styles", "dist"))) {
 	fs.mkdirSync(path.join(__dirname, "styles", "dist"));
 }
@@ -132,7 +136,7 @@ minify({
 	"output": path.join(__dirname, "styles", "dist", "styles.css"),
 	"callback": (err, result) => {
 		if(err) {
-			console.log("Minifying the styles css file threw an error: " + err.stack);
+			log.info("Minifying the styles css file threw an error: " + err.stack);
 		}
 	}
 });
@@ -145,7 +149,7 @@ minify({
 	"output": path.join(__dirname, "styles", "dist", "splash.css"),
 	"callback": (err, result) => {
 		if(err) {
-			console.log("Minifying the splash css file threw an error: " + err.stack);
+			log.info("Minifying the splash css file threw an error: " + err.stack);
 		}
 	}
 });
@@ -155,7 +159,7 @@ cssBar.stop();
 
 
 // Compress the js back-end files.
-console.log("Starting Compression of BackEnd JS Files:");
+log.info("Starting compression of back-end js files:");
 if(!fs.existsSync(path.join(__dirname, "scripts", "dist"))) {
 	fs.mkdirSync(path.join(__dirname, "scripts", "dist"));
 }
@@ -183,7 +187,7 @@ for(let k = 0; k < jsEndList.length; k++) {
 			"output": path.join(__dirname, "scripts", "dist", "backEnd", file),
 			"callback": (err, result) => {
 				if(err) {
-					console.log("Minifying the js file " + file + " threw an error: " + err.stack);
+					log.info("Minifying the js file " + file + " threw an error: " + err.stack);
 				}
 			}
 		});
@@ -195,7 +199,7 @@ jsEndBar.stop();
 
 
 // Compress the js front-end files.
-console.log("Starting Compression of FrontEnd JS Files:");
+log.info("Starting compression of front-end js files:");
 for(let l = 0; l < jsFrontList.length; l++) {
 	let file = jsFrontList[l];
 	if(!file.includes(".js")) {
@@ -214,7 +218,7 @@ for(let l = 0; l < jsFrontList.length; l++) {
 				"output": path.join(__dirname, "scripts", "dist", "frontEnd", file, subFile),
 				"callback": (err, result) => {
 					if(err) {
-						console.log("Minifying the js file " + subFile + " threw an error: " + err.stack);
+						log.info("Minifying the js file " + subFile + " threw an error: " + err.stack);
 					}
 				}
 			});
@@ -230,7 +234,7 @@ for(let l = 0; l < jsFrontList.length; l++) {
 			"output": path.join(__dirname, "scripts", "dist", "frontEnd", file),
 			"callback": (err, result) => {
 				if(err) {
-					console.log("Minifying the js file " + file + " threw an error: " + err.stack);
+					log.info("Minifying the js file " + file + " threw an error: " + err.stack);
 				}
 			}
 		});
@@ -247,4 +251,4 @@ fs.rmSync(path.join(__dirname, "pages", "dev", "sectionsAttached"), {"recursive"
 
 
 // Notify that all tasks have been handled.
-console.log("All CSS, HTML, and JS Files have been minified!");
+log.info("All css, html, and js files have been minified, finishing the minification process.");
