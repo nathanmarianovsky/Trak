@@ -33,10 +33,18 @@ else {
 
 
 
+/*
+
+Processes the throwing of an error by reading the logs file and providing the front end with it.
+
+   - err is an any error object thrown by the application load.
+
+*/
 const errHandle = err => {
 	if(err) { log.error("The application failed to start. Error Type: " + err.name + ". Error Message: " + err.message + "."); }
-	let curWin = BrowserWindow.getFocusedWindow();
-	fs.readFile(path.join(basePath, "Trak", "logs", "main.log"), "UTF8", (logErr, logFle) => {
+	let curWin = BrowserWindow.getFocusedWindow(),
+		logPth = path.join(basePath, "Trak", "logs", "main.log");
+	fs.readFile(logPth, "UTF8", (logErr, logFle) => {
 		if(logErr == null) {
 			let lgArr = logFle.split("\n");
 			// Remove the last element which is an empty string.
@@ -46,7 +54,7 @@ const errHandle = err => {
             for(; ind >= 0; ind--) {
                 if(lgArr[ind].includes("The application is starting.")) { break; }
             }
-			curWin.webContents.send("loadFail", lgArr.slice(ind));
+			curWin.webContents.send("loadFail", [lgArr.slice(ind), logPth]);
 		}
 		else {
 			curWin.webContents.send("loadFail", []);

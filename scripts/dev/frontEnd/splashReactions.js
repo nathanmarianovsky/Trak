@@ -36,12 +36,22 @@ const windowControls = () => {
 
 
 
+/*
+
+Handles the typewriter effect for the splash screen logs terminal.
+
+   - elem is the document element for which the text content is being updated.
+   - str is a string corresponding to the new text content of the page element.
+
+*/
 const typeWriter = (elem, str) => {
+    // Define the function which will write a single character with delay.
     const iterFunc = (iterElem, iterStr, iter) => {
         setTimeout(() => {
             iterElem.textContent += iterStr.charAt(iter);
         }, iter * 25);
     }
+    // Iterate through all characters of the string.
     for(let w = 0; w < str.length; w++) {
         iterFunc(elem, str, w);
     }
@@ -80,34 +90,53 @@ ipcRenderer.on("loadBlink", (event, step) => {
 
 
 
-ipcRenderer.on("loadFail", (event, logs) => {
+// If the application failed to load update the splash screen accordingly.
+ipcRenderer.on("loadFail", (event, logSub) => {
+    // Define the page elements which will be hidden/shown.
+    const splashMessage = document.getElementById("splashMessage"),
+        splashLoadContainer = document.getElementById("splashLoadContainer"),
+        logsTerminal = document.getElementById("logsTerminalSplash");
+    // Reset the logs terminal.
+    logsTerminal.innerHTML = "";
+    // Hide the splash screen load components.
+    splashMessage.style.display = "none";
+    splashLoadContainer.style.display = "none";
+    // Display the close button and the logs terminal.
+    document.getElementById("dragRegion").style.visibility = "visible";
+    document.getElementById("splashTerminalContainer").style.display = "block";
+    // Proceed only if the logs were provided by the back end.
+    const logs = logSub[0];
     if(logs.length > 0) {
-        const splashMessage = document.getElementById("splashMessage"),
-            splashLoadContainer = document.getElementById("splashLoadContainer"),
-            logsTerminal = document.getElementById("logsTerminalSplash");
-        logsTerminal.innerHTML = "";
-        splashMessage.style.display = "none";
-        splashLoadContainer.style.display = "none";
-        document.getElementById("dragRegion").style.visibility = "visible";
-        document.getElementById("splashTerminalContainer").style.display = "block";
+        // Iterate through all the logs/
         for(let c = 0; c < logs.length; c++) {
+            // Define the page element which will display the current log.
             let logSpan = document.createElement("span");
+            // Handle the case of a log info message.
             if(logs[c].includes("[info]")) {
-                // logSpan.textContent = logs[c].replace(" [info]", "");
                 typeWriter(logSpan, logs[c].replace(" [info]", ""))
             }
+            // Handle the case of a log error message.
             else if(logs[c].includes("[error]")) {
-                // logSpan.textContent = logs[c].replace(" [error]", "");
                 typeWriter(logSpan, logs[c].replace(" [error]", ""));
                 logSpan.style.color = "red";
             }
+            // Handle the case of a log warning message.
             else if(logs[c].includes("[warn]")) {
-                // logSpan.textContent = logs[c].replace(" [warn]", "");
                 typeWriter(logSpan, logs[c].replace(" [warn]", ""));
                 logSpan.style.color = "blue";
             }
+            // Append the page element to the splash screen logs terminal.
             logsTerminal.append(logSpan, document.createElement("br"));
         }
+    }
+    // Otherwise notify the user that the logs could not be read properly.
+    else {
+        // Define the page element which will display the current log.
+        let logSpan = document.createElement("span");
+        // Write the default message.
+        typeWriter(logSpan, "The application failed to load and was unable to read the logs file located at " + logSub[1] + ".");
+        // Append the page element to the splash screen logs terminal.
+        logsTerminal.append(logSpan, document.createElement("br"));
     }
     windowControls();
 });
