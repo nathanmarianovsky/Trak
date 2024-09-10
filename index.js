@@ -34,25 +34,23 @@ else {
 
 
 const errHandle = err => {
-	log.error("The application failed to start. Error Type: " + err.name + ". Error Message: " + err.message + ".");
+	if(err) { log.error("The application failed to start. Error Type: " + err.name + ". Error Message: " + err.message + "."); }
 	let curWin = BrowserWindow.getFocusedWindow();
-	curWin.webContents.on("did-finish-load", () => {
-		fs.readFile(path.join(basePath, "Trak", "logs", "main.log"), "UTF8", (logErr, logFle) => {
-			if(logErr == null) {
-				let lgArr = logFle.split("\n");
-				// Remove the last element which is an empty string.
-	            lgArr.pop();
-	            // Iterate through the lines to determine the last application load.
-	            let ind = lgArr.length - 1;
-	            for(; ind >= 0; ind--) {
-	                if(lgArr[ind].includes("The application is starting.")) { break; }
-	            }
-				curWin.webContents.send("loadFail", lgArr.slice(ind));
-			}
-			else {
-				curWin.webContents.send("loadFail", []);
-			}
-		});
+	fs.readFile(path.join(basePath, "Trak", "logs", "main.log"), "UTF8", (logErr, logFle) => {
+		if(logErr == null) {
+			let lgArr = logFle.split("\n");
+			// Remove the last element which is an empty string.
+            lgArr.pop();
+            // Iterate through the lines to determine the last application load.
+            let ind = lgArr.length - 1;
+            for(; ind >= 0; ind--) {
+                if(lgArr[ind].includes("The application is starting.")) { break; }
+            }
+			curWin.webContents.send("loadFail", lgArr.slice(ind));
+		}
+		else {
+			curWin.webContents.send("loadFail", []);
+		}
 	});
 	// Handles the closing of the splash window.
 	ipc.on("closeSplash", event => curWin.close());

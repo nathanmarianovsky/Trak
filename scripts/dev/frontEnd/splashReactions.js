@@ -36,6 +36,19 @@ const windowControls = () => {
 
 
 
+const typeWriter = (elem, str) => {
+    const iterFunc = (iterElem, iterStr, iter) => {
+        setTimeout(() => {
+            iterElem.textContent += iterStr.charAt(iter);
+        }, iter * 25);
+    }
+    for(let w = 0; w < str.length; w++) {
+        iterFunc(elem, str, w);
+    }
+};
+
+
+
 // Update the page blinkers in order to indicate the application load percentage and display the associated message.
 ipcRenderer.on("loadBlink", (event, step) => {
     // Define the page blinkers and splash message.
@@ -73,25 +86,28 @@ ipcRenderer.on("loadFail", (event, logs) => {
             splashLoadContainer = document.getElementById("splashLoadContainer"),
             logsTerminal = document.getElementById("logsTerminalSplash");
         logsTerminal.innerHTML = "";
-        for(let c = 0; c < logs.length; c++) {
-            let logSpan = document.createElement("span");
-            if(logs[c].includes("[info]")) {
-                logSpan.textContent = logs[c].replace(" [info]", "");
-            }
-            else if(logs[c].includes("[error]")) {
-                logSpan.textContent = logs[c].replace(" [error]", "");
-                logSpan.style.color = "red";
-            }
-            else if(logs[c].includes("[warn]")) {
-                logSpan.textContent = logs[c].replace(" [warn]", "");
-                logSpan.style.color = "blue";
-            }
-            logsTerminal.append(logSpan, document.createElement("br"));
-        }
         splashMessage.style.display = "none";
         splashLoadContainer.style.display = "none";
         document.getElementById("dragRegion").style.visibility = "visible";
         document.getElementById("splashTerminalContainer").style.display = "block";
+        for(let c = 0; c < logs.length; c++) {
+            let logSpan = document.createElement("span");
+            if(logs[c].includes("[info]")) {
+                // logSpan.textContent = logs[c].replace(" [info]", "");
+                typeWriter(logSpan, logs[c].replace(" [info]", ""))
+            }
+            else if(logs[c].includes("[error]")) {
+                // logSpan.textContent = logs[c].replace(" [error]", "");
+                typeWriter(logSpan, logs[c].replace(" [error]", ""));
+                logSpan.style.color = "red";
+            }
+            else if(logs[c].includes("[warn]")) {
+                // logSpan.textContent = logs[c].replace(" [warn]", "");
+                typeWriter(logSpan, logs[c].replace(" [warn]", ""));
+                logSpan.style.color = "blue";
+            }
+            logsTerminal.append(logSpan, document.createElement("br"));
+        }
     }
     windowControls();
 });
