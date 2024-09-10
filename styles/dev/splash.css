@@ -6,6 +6,21 @@
 
 body {
 	background-color: black;
+    overflow-y: hidden;
+}
+
+#dragRegion {
+    width: 100%;
+    height: 100%;
+    -webkit-app-region: drag;
+    display: grid;
+    grid-template-columns: auto 138px;
+    visibility: hidden;
+}
+
+#logsTerminalSplash {
+    padding: 1%;
+    overflow-y: auto;
 }
 
 #splashContainer {
@@ -33,6 +48,42 @@ body {
     position: relative;
     bottom: 45px;
     font-size: 20px;
+}
+
+#splashTerminalContainer {
+    color: white;
+    position: relative;
+    bottom: 225px;
+    display: none;
+    width: 90%;
+    height: 80%;
+    margin: 0 auto;
+    border: 5px solid white;
+    border-radius: 15px;
+}
+
+#splashTerminalTitle {
+    text-decoration: underline;
+}
+
+#windowControls {
+    display: grid;
+    grid-template-columns: repeat(1, 46px);
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 5%;
+    cursor: pointer;
+}
+
+#windowControls .button {
+    grid-row: 1 / span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    -webkit-app-region: no-drag
 }
 
 .loadBlink {

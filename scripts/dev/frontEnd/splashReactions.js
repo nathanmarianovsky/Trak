@@ -21,6 +21,21 @@ const { ipcRenderer } = require("electron");
 
 
 
+/*
+
+Initializes the listeners associated to the minimize, maximize, restore, and close buttons.
+
+*/
+const windowControls = () => {
+    const closeButton = document.getElementById("splashClose");
+    // Listen for a click event on the close button in order to close an application window.
+    closeButton.addEventListener("click", event => {
+        ipcRenderer.send("closeSplash");
+    });
+};
+
+
+
 // Update the page blinkers in order to indicate the application load percentage and display the associated message.
 ipcRenderer.on("loadBlink", (event, step) => {
     // Define the page blinkers and splash message.
@@ -48,4 +63,41 @@ ipcRenderer.on("loadBlink", (event, step) => {
         splashLoadContainer[4].classList.remove("loadBlink");
         splashLoadContainer[4].style.opacity = 1;
     }
+});
+
+
+
+ipcRenderer.on("loadFail", (event, logs) => {
+    if(logs.length > 0) {
+        const splashMessage = document.getElementById("splashMessage"),
+            splashLoadContainer = document.getElementById("splashLoadContainer"),
+            logsTerminal = document.getElementById("logsTerminalSplash");
+        logsTerminal.innerHTML = "";
+        for(let c = 0; c < logs.length; c++) {
+            let logSpan = document.createElement("span");
+            if(logs[c].includes("[info]")) {
+                logSpan.textContent = logs[c].replace(" [info]", "");
+            }
+            else if(logs[c].includes("[error]")) {
+                logSpan.textContent = logs[c].replace(" [error]", "");
+                logSpan.style.color = "red";
+            }
+            else if(logs[c].includes("[warn]")) {
+                logSpan.textContent = logs[c].replace(" [warn]", "");
+                logSpan.style.color = "blue";
+            }
+            logsTerminal.append(logSpan, document.createElement("br"));
+        }
+        splashMessage.style.display = "none";
+        splashLoadContainer.style.display = "none";
+        document.getElementById("dragRegion").style.visibility = "visible";
+        document.getElementById("splashTerminalContainer").style.display = "block";
+    }
+    windowControls();
+});
+
+
+
+// Initialize the listeners only once the page is ready.
+window.addEventListener("load", () => {
 });

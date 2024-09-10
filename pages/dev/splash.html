@@ -11,8 +11,19 @@
         <script type="text/javascript" src="../../scripts/dist/frontEnd/splashReactions.js" async></script>
     </head>
     <body>
+        <div id="dragRegion">
+            <div id="windowControls">
+                <a class="button btn-flat waves-effect waves-light" id="splashClose">
+                    <img class="icon" srcset="../../assets/titlebarIcons/close-w-10.png 1x, ../../assets/titlebarIcons/close-w-12.png 1.25x, ../../assets/titlebarIcons/close-w-15.png 1.5x, ../../assets/titlebarIcons/close-w-15.png 1.75x, ../../assets/titlebarIcons/close-w-20.png 2x, ../../assets/titlebarIcons/close-w-20.png 2.25x, ../../assets/titlebarIcons/close-w-24.png 2.5x, ../../assets/titlebarIcons/close-w-30.png 3x, ../../assets/titlebarIcons/close-w-30.png 3.5x" draggable="false" />
+                </a>
+            </div>
+        </div>
         <div id="splashContainer">
             <img id="splashImg" src="../../assets/whiteLogo.png">
+        </div>
+        <div id="splashTerminalContainer">
+            <h6 class="center settingsHeaders" id="splashTerminalTitle">Application Logs</h6>
+            <div id="logsTerminalSplash"></div>
         </div>
         <div id="splashMessage"></div>
         <div id="splashLoadContainer">
