@@ -41,11 +41,16 @@ Processes the throwing of an error by reading the logs file and providing the fr
 
 */
 const errHandle = err => {
+	// If an error has been provided report it to the logs.
 	if(err) { log.error("The application failed to start. Error Type: " + err.name + ". Error Message: " + err.message + "."); }
+	// Define the splash screen and the path to the logs file.
 	let curWin = BrowserWindow.getFocusedWindow(),
 		logPth = path.join(basePath, "Trak", "logs", "main.log");
+	// Read the logs file.
 	fs.readFile(logPth, "UTF8", (logErr, logFle) => {
+		// Proceed only if there was no issue in reading the logs file.
 		if(logErr == null) {
+			// Split the logs text by lines.
 			let lgArr = logFle.split("\n");
 			// Remove the last element which is an empty string.
             lgArr.pop();
@@ -54,9 +59,12 @@ const errHandle = err => {
             for(; ind >= 0; ind--) {
                 if(lgArr[ind].includes("The application is starting.")) { break; }
             }
+            // Send a request to the front end in order to update the splash screen with the logs.
 			curWin.webContents.send("loadFail", [lgArr.slice(ind), logPth]);
 		}
+		// 
 		else {
+            // Send a request to the front end in order to update the splash screen without the logs.
 			curWin.webContents.send("loadFail", []);
 		}
 	});

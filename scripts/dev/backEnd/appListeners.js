@@ -979,19 +979,12 @@ exports.addRecordListeners = (shell, BrowserWindow, path, fs, log, dev, ipc, too
 
 Driver function for adding all anime listeners.
 
-	- BrowserWindow and ipc provide the means to operate the Electron app.
-	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
-	- dev is a boolean representing whether the app is being run in a development mode.
-	- tools provides a collection of local functions.
+	- ipc provides the means to operate the Electron app.
 	- malScraper provides the means to obtain record details from myanimelist.
-	- mainWindow is an object referencing the primary window of the Electron app.
-	- dataPath is the current path to the local user data.
-	- originalPath is the original path to the local user data.
-	- secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addAnimeListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, malScraper, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addAnimeListeners = (log, ipc, malScraper) => {
 	// Handles the fetching of anime releases based on the season.
 	ipc.on("animeFetchSeason", (event, submissionArr) => {
 		require("./animeTools").animeFetchSeason(log, malScraper, event, submissionArr);
@@ -1004,19 +997,13 @@ exports.addAnimeListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, malS
 
 Driver function for adding all book listeners.
 
-	- BrowserWindow and ipc provide the means to operate the Electron app.
-	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
-	- dev is a boolean representing whether the app is being run in a development mode.
+	- ipc provides the means to operate the Electron app.
 	- tools provides a collection of local functions.
 	- goodreadsScraper provides the means to obtain record details from goodreads.
-	- mainWindow is an object referencing the primary window of the Electron app.
-	- dataPath is the current path to the local user data.
-	- originalPath is the original path to the local user data.
-	- secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addBookListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, goodreadsScraper, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addBookListeners = (log, ipc, tools, goodreadsScraper) => {
 	// Handles the fetching of details for a given book via its ISBN.
 	ipc.on("bookFetchDetailsByISBN", (event, submission) => {
 		require("./bookTools").bookFetchDetailsByISBN(log, goodreadsScraper, event, submission);
@@ -1034,19 +1021,12 @@ exports.addBookListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, goodr
 
 Driver function for adding all manga listeners.
 
-	- BrowserWindow and ipc provide the means to operate the Electron app.
-	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
-	- dev is a boolean representing whether the app is being run in a development mode.
-	- tools provides a collection of local functions.
+	- ipc provides the means to operate the Electron app.
 	- goodreadsScraper provides the means to obtain record details from goodreads.
-	- mainWindow is an object referencing the primary window of the Electron app.
-	- dataPath is the current path to the local user data.
-	- originalPath is the original path to the local user data.
-	- secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addMangaListeners = (BrowserWindow, path, fs, log, dev, ipc, tools, goodreadsScraper, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
+exports.addMangaListeners = (log, ipc, goodreadsScraper) => {
 	// Handles the fetching of details for a given manga volume via its ISBN.
 	ipc.on("mangaVolumeFetchDetailsByISBN", (event, submission) => {
 		require("./mangaTools").mangaVolumeFetchDetailsByISBN(log, goodreadsScraper, event, submission[0], submission[1]);
@@ -1302,11 +1282,11 @@ exports.addListeners = (app, shell, BrowserWindow, path, fs, log, dev, ipc, tool
 	// Add the listeners associated to all types of records.
 	exports.addRecordListeners(shell, BrowserWindow, path, fs, log, dev, ipc, tools, hiddenArr, goodreadsScraper, malScraper, movier, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
 	// Add the listeners associated to anime records.
-	exports.addAnimeListeners(BrowserWindow, path, fs, log, dev, ipc, tools, malScraper, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+	exports.addAnimeListeners(log, ipc, malScraper);
 	// Add the listeners associated to book records.
-	exports.addBookListeners(BrowserWindow, path, fs, log, dev, ipc, tools, goodreadsScraper, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+	exports.addBookListeners(log, ipc, tools, goodreadsScraper);
 	// Add the listeners associated to manga records.
-	exports.addMangaListeners(BrowserWindow, path, fs, log, dev, ipc, tools, goodreadsScraper, mainWindow, dataPath, originalPath, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen);
+	exports.addMangaListeners(log, ipc, goodreadsScraper);
 	// Add the listeners associated to exporting and importing data.
 	exports.addDatabaseListeners(shell, path, fs, log, ipc, goodreadsScraper, malScraper, movier, tools, mainWindow, originalPath);
 	// Add the listeners associated to all settings actions.
