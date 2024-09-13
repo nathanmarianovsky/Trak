@@ -1,0 +1,38 @@
+<div class="modal-content">
+    <div class="navbar">
+        <nav id="accountNav" class="z-depth-2">
+            <div class="nav-wrapper">
+                <ul id="accountSelection">
+                    <li class="tooltipped" data-position="below" data-tooltip="Application Profile"><a id="accountProfile" class="accountSelectionItems"><i class="material-icons">person</i></a></li>
+                    <li class="tooltipped" data-position="below" data-tooltip="Online Interface"><a id="accountManage" class="accountSelectionItems"><i class="material-icons">manage_accounts</i></a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <div id="accountProfileContainer" class="accountContainer">
+        <h5 class="center settingsHeaders">Application Lock</h5>
+        <p>The application supports a locking feature which would require a password upon launch. To enable simply provide a password below, or to disable keep the password input empty and click apply. If given, the password must consist of a lower case letter, an upper case letter, a digit, and be of minimal length eight.</p>
+        <div class="row accountWindowDiv">
+            <!-- <form class="col s12">
+                <div class="row fullScreenRow">
+                    <label class="col s6">
+                        <input type="checkbox" id="tutorialLoad" class="filled-in" checked>
+                        <span class="checkboxText">Show Tutorial</span>
+                    </label>
+                </div>
+            </form> -->
+            <form class="col s12">
+                <div class="row">
+                    <div id="profilePasswordDiv" class="input-field col s10">
+                        Password:
+                        <input id="profilePassword" type="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" class="settingsDataInput">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <a class="modal-close waves-effect waves-light btn-flat modalButtons">Exit</a>
+    <a id="accountApply" class="waves-effect waves-light btn-flat modalButtons">Apply</a>
+</div>

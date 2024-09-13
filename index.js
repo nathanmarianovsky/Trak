@@ -18,6 +18,7 @@ const { app, BrowserWindow, Menu, shell, Tray } = require("electron"),
 	path = require("path"),
 	fs = require("fs-extra"),
 	log = require("electron-log"),
+	jfe = require("json-file-encrypt");
 	tools = require("./scripts/dist/backEnd/tools"),
 	linuxHome = process.env.HOME.split("/snap/")[0],
 	basePath = process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : linuxHome + (process.env.HOME.includes("snap") ? "/snap/trak/common" : "/.local/share"));
@@ -100,6 +101,9 @@ app.whenReady().then(() => {
 				errHandle(assetsDirErr);
 			}
 			else {
+				if(!fs.existsSync(path.join(basePath, "Trak", "config", "profile.json"))) {
+					fs.writeFileSync(path.join(basePath, "Trak", "config", "profile.json"), JSON.stringify({"pass": "", "encrypt": false}), "UTF8");
+				}
 				log.info("The configuration folders have been successfully created.");
 				// If the data folder does not exist, then create it.
 				const dataDir = path.join(basePath, "Trak", "data");
@@ -362,7 +366,7 @@ app.whenReady().then(() => {
 																									  	let tray = new Tray(path.join(__dirname, "assets", iconChoice + "Logo.png"));
 																										tools.createTrayMenu("h", primaryWindow, tray, Menu);
 																										// Add all of the back-end listeners.
-																										require("./scripts/dist/backEnd/appListeners").addListeners(app, shell, BrowserWindow, path, fs, log, dev, ipc, tools, categoryActiveArr, goodreadsScraper, malScraper, movier,
+																										require("./scripts/dist/backEnd/appListeners").addListeners(app, shell, BrowserWindow, path, fs, log, jfe, dev, ipc, tools, categoryActiveArr, goodreadsScraper, malScraper, movier,
 																											updateCheck, primaryWindow, splashWindow, localPath, basePath, primWinWidth, primWinHeight, primWinFullscreen, secWinWidth, secWinHeight, secWinFullscreen);
 																									}
 																								});

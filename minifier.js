@@ -31,6 +31,7 @@ log.info("Adding sections to appropriate html Files.");
 const htmlSettingsList = ["index.html", "addRecord.html"],
 	htmlList = ["splash.html"],
 	htmlSettings = fs.readFileSync(path.join(__dirname, "pages", "dev", "settings.html")),
+	htmlAccount = fs.readFileSync(path.join(__dirname, "pages", "dev", "account.html")),
 	htmlUpdate = fs.readFileSync(path.join(__dirname, "pages", "dev", "update.html")),
 	htmlIcon = fs.readFileSync(path.join(__dirname, "pages", "dev", "icon.html")),
 	htmlBookmark = fs.readFileSync(path.join(__dirname, "pages", "dev", "bookmark.html")),
@@ -51,6 +52,7 @@ if(!fs.existsSync(path.join(__dirname, "pages", "dev", "sectionsAttached"))) {
 }
 else { fs.emptyDirSync(path.join(__dirname, "pages", "dev", "sectionsAttached")); }
 $("#settingsModal").html(htmlSettings);
+$("#accountModal").html(htmlAccount);
 $("#updateModal").html(htmlUpdate);
 $("#iconModal").html(htmlIcon);
 $("#bookmarkModal").html(htmlBookmark);
