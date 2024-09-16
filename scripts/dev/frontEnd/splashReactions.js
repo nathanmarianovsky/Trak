@@ -143,6 +143,62 @@ ipcRenderer.on("loadFail", (event, logSub) => {
 
 
 
-// Initialize the listeners only once the page is ready.
-window.addEventListener("load", () => {
+ipcRenderer.on("passwordRequest", event => {
+    // Define the page elements which will be hidden/shown.
+    const splashMessage = document.getElementById("splashMessage"),
+        splashLoadContainer = document.getElementById("splashLoadContainer"),
+        dragRegion = document.getElementById("dragRegion"),
+        splashPasswordContainer = document.getElementById("splashPasswordContainer");
+    // Hide the splash screen load components.
+    splashMessage.style.display = "none";
+    splashLoadContainer.style.display = "none";
+    // Display the close button and the password.
+    dragRegion.style.visibility = "visible";
+    splashPasswordContainer.style.display = "block";
+    const password = document.getElementById("loadPassword"),
+        passwordIcon = document.getElementById("loadPasswordIcon");
+    password.addEventListener("input", e => {
+        passwordIcon.classList.remove("active");
+        event.sender.send("passwordCheck", e.target.value);
+        ipcRenderer.on("passwordCheckResponse", (eve, proceed) => {
+            if(proceed == true) {
+                password.classList.add("valid");
+                password.classList.remove("invalid");
+                setTimeout(() => {
+                    // Hide the close button and the password.
+                    dragRegion.style.visibility = "hidden";
+                    splashPasswordContainer.style.display = "none";
+                    // Display the splash screen load components.
+                    splashMessage.style.display = "block";
+                    splashLoadContainer.style.display = "flex";
+                }, 1000);
+            }
+            else {
+                password.classList.remove("valid");
+                password.classList.add("invalid");
+            }
+        });
+        // if(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(e.target.value)) {
+        //     password.classList.remove("invalid");
+        //     password.classList.add("valid");
+        // }
+        // else if(e.target.value == "") {
+        //     password.classList.remove("invalid", "valid");
+        // }
+        // else {
+        //     password.classList.add("invalid");
+        //     password.classList.remove("valid");
+        // }
+    });
+    passwordIcon.addEventListener("click", e => {
+        if(passwordIcon.textContent == "visibility") {
+            passwordIcon.textContent = "visibility_off";
+            password.setAttribute("type", "text");
+        }
+        else if(passwordIcon.textContent == "visibility_off") {
+            passwordIcon.textContent = "visibility";
+            password.setAttribute("type", "password");
+        }
+    });
+    windowControls();
 });

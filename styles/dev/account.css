@@ -4,6 +4,21 @@
 
 
 
+.input-field input[type=password]:focus {
+	border-bottom: 1px solid #000;
+	box-shadow: 0 1px 0 0 #000;
+}
+
+.input-field input[type=password].valid {
+	border-bottom: 1px solid green;
+	box-shadow: 0 1px 0 0 #000;
+}
+
+.input-field input[type=password].invalid {
+	border-bottom: 1px solid red;
+	box-shadow: 0 1px 0 0 #000;
+}
+
 #accountModal {
 	width: 75%;
 	height: 70%;
@@ -16,6 +31,14 @@
 	overflow-y: hidden;
 }
 
+#accountModal h5, #accountModal h6 {
+	text-decoration: underline;
+}
+
+#accountModal p {
+	line-height: 35px;
+}
+
 #accountNav {
 	border-top-right-radius: 30px;
 	border-top-left-radius: 30px;
@@ -26,6 +49,23 @@
     text-align: center;
 }
 
+#profilePassword {
+	margin-left: 2%;
+}
+
+#profilePasswordDiv {
+	margin-top: 0;
+}
+
+#profilePasswordIcon {
+    width: 25px;
+    right: 1%;
+    font-size: 25px;
+    top: 15px;
+    color: white;
+    cursor: pointer;
+}
+
 .accountContainer {
 	display: none;
 }
@@ -34,4 +74,8 @@
 	margin-left: 30px;
 	margin-right: 30px;
 	line-height: 15px;
+}
+
+.accountWindowDiv {
+    margin-left: 20px !important;
 }

@@ -1158,12 +1158,12 @@ Driver function for adding all profile listeners.
 	- app and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
-	- jfe provides the means to decrypt/encrypt strings.
+	- crypto provides the means to decrypt/encrypt strings.
 	- originalPath is the original path to the local user data.
 	- mainWindow is an object referencing the primary window of the Electron app.
 
 */
-exports.addProfileListeners = (app, path, fs, log, jfe, ipc, originalPath, mainWindow) => {
+exports.addProfileListeners = (app, path, fs, log, crypto, ipc, originalPath, mainWindow) => {
 	// // Handles the saving of the tutorial.json file.
    	// ipc.on("introductionFileSave", (event, launchIntro) => {
     // 	if(!fs.existsSync(path.join(originalPath, "Trak", "config", "tutorial.json"))) {
@@ -1191,16 +1191,35 @@ exports.addProfileListeners = (app, path, fs, log, jfe, ipc, originalPath, mainW
     // 	}
    	// });
 
+	const profilePath = path.join(originalPath, "Trak", "config", "profile.json");
    	// Handles the saving of all options in the user settings.
 	ipc.on("getProfile", event => {
-		fs.readFile(path.join(originalPath, "Trak", "config", "profile.json"), "UTF8", (err, prof) => {
+		fs.readFile(profilePath, "UTF8", (err, prof) => {
     		if(err) { 
     			log.error("There was an issue in reading the profile configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
     			event.sender.send("profileFileReadFailure");
+    			event.sender.send("sentProfile", "");
     		}
     		else {
     			log.info("The profile configuration file has been successfully read.");
     			event.sender.send("sentProfile", prof);
+    		}
+    	});
+	});
+
+	ipc.on("accountSave", (event, subPass) => {
+		fs.writeFile(profilePath, JSON.stringify({"pass": (subPass != "" ? crypto.createHash("sha256", subPass).update(subPass).digest("hex") : "")}), "UTF8", (err, prof) => {
+    		if(err) { 
+    			log.error("There was an issue in writing the profile configuration file. Error Type: " + err.name + ". Error Message: " + err.message + ".");
+    			event.sender.send("profileFileWritingFailure");
+    		}
+    		else {
+    			log.info("The profile configuration file has been successfully written.");
+    			event.sender.send("profileFileWritingSuccess");
+    			setTimeout(() => {
+                    app.relaunch();
+                    app.exit();
+                }, 2000);
     		}
     	});
 	});
@@ -1316,7 +1335,7 @@ Driver function for adding all app listeners.
 	- app, BrowserWindow, and ipc provide the means to operate the Electron app.
 	- path and fs provide the means to work with local files.
 	- log provides the means to create application logs to keep track of what is going on.
-	- jfe provides the means to decrypt/encrypt strings.
+	- crypto provides the means to decrypt/encrypt strings.
 	- dev is a boolean representing whether the app is being run in a development mode.
 	- tools provides a collection of local functions.
 	- hiddenArr is an array containing booleans which indicate whether a category type is to be hidden in the application.
@@ -1329,7 +1348,7 @@ Driver function for adding all app listeners.
 	- primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, and secondaryWindowFullscreen are the window parameters.
 
 */
-exports.addListeners = (app, shell, BrowserWindow, path, fs, log, jfe, dev, ipc, tools, hiddenArr, goodreadsScraper, malScraper, movier, updateCondition, mainWindow, loadWindow,
+exports.addListeners = (app, shell, BrowserWindow, path, fs, log, crypto, dev, ipc, tools, hiddenArr, goodreadsScraper, malScraper, movier, updateCondition, mainWindow, loadWindow,
 	dataPath, originalPath, primaryWindowWidth, primaryWindowHeight, primaryWindowFullscreen, secondaryWindowWidth, secondaryWindowHeight, secondaryWindowFullscreen) => {
 	// Add the configuration listeners.
 	exports.addConfigurationListeners(path, fs, log, ipc, originalPath);
@@ -1350,7 +1369,7 @@ exports.addListeners = (app, shell, BrowserWindow, path, fs, log, jfe, dev, ipc,
 	// Add the listeners associated to all settings actions.
 	exports.addSettingsListeners(app, path, fs, log, ipc, originalPath, mainWindow);
 	// Add the listeners associated to all profile actions.
-	exports.addProfileListeners(app, path, fs, log, jfe, ipc, originalPath, mainWindow);
+	exports.addProfileListeners(app, path, fs, log, crypto, ipc, originalPath, mainWindow);
 	// Add the listeners associated to all update actions.
 	exports.addUpdateListeners(app, path, fs, log, ipc);
 	// Add the listeners associated to log actions.

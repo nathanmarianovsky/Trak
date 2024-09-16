@@ -9,6 +9,24 @@ body {
     overflow-y: hidden;
 }
 
+.input-field input[type=password]:focus,
+.input-field input[type=text]:focus {
+    border-bottom: 1px solid #000;
+    box-shadow: 0 1px 0 0 #000;
+}
+
+.input-field input[type=password].valid,
+.input-field input[type=text].valid {
+    border-bottom: 1px solid green;
+    box-shadow: 0 1px 0 0 #000;
+}
+
+.input-field input[type=password].invalid,
+.input-field input[type=text].invalid {
+    border-bottom: 1px solid red;
+    box-shadow: 0 1px 0 0 #000;
+}
+
 #dragRegion {
     width: 100%;
     height: 100%;
@@ -16,6 +34,20 @@ body {
     display: grid;
     grid-template-columns: auto 138px;
     visibility: hidden;
+}
+
+#loadPassword {
+    width: 165%;
+    color: white;
+}
+
+#loadPasswordIcon {
+    width: 25px;
+    right: -150px;
+    font-size: 25px;
+    top: 15px;
+    color: white;
+    cursor: pointer;
 }
 
 #logsTerminalSplash {
@@ -51,6 +83,15 @@ body {
     position: relative;
     bottom: 45px;
     font-size: 20px;
+}
+
+#splashPasswordContainer {
+    display: none;
+    position: relative;
+    bottom: 200px;
+    width: 400px;
+    margin: auto;
+    color: white;
 }
 
 #splashTerminalContainer {

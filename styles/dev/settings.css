@@ -12,6 +12,10 @@ footer {
 	text-align: center;
 }
 
+#appPath {
+	margin-left: 2%;
+}
+
 #appVersion {
 	margin: 30px;
     position: absolute;
