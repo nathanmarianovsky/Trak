@@ -157,6 +157,9 @@ ipcRenderer.on("passwordRequest", event => {
     splashPasswordContainer.style.display = "block";
     const password = document.getElementById("loadPassword"),
         passwordIcon = document.getElementById("loadPasswordIcon");
+    password.addEventListener("click", e => {
+        passwordIcon.classList.remove("active");
+    });
     password.addEventListener("input", e => {
         passwordIcon.classList.remove("active");
         event.sender.send("passwordCheck", e.target.value);

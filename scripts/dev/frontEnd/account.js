@@ -61,6 +61,7 @@ window.addEventListener("load", () => {
     //     ["settingsInterfaceButtons"], ["settingsDisplayButtons", "settingsLogsButtons", "settingsDataButtons"]);
 	// Define the inputs on the account modal.
 	const password = document.getElementById("profilePassword");
+        passwordIcon = document.getElementById("profilePasswordIcon");
     // encrypt.value = configData.encrypt;
     // encrypt.setAttribute("lastValue", configData.encrypt);
     // By default load the options section of the settings modal.
@@ -71,7 +72,11 @@ window.addEventListener("load", () => {
 			// encrypt.value = encrypt.getAttribute("lastValue");
 		}
 	});
+    password.addEventListener("click", e => {
+        passwordIcon.classList.remove("active");
+    });
     password.addEventListener("input", e => {
+        passwordIcon.classList.remove("active");
         if(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(e.target.value)) {
             password.classList.remove("invalid");
             password.classList.add("valid");
@@ -82,6 +87,16 @@ window.addEventListener("load", () => {
         else {
             password.classList.add("invalid");
             password.classList.remove("valid");
+        }
+    });
+    passwordIcon.addEventListener("click", e => {
+        if(passwordIcon.textContent == "visibility") {
+            passwordIcon.textContent = "visibility_off";
+            password.setAttribute("type", "text");
+        }
+        else if(passwordIcon.textContent == "visibility_off") {
+            passwordIcon.textContent = "visibility";
+            password.setAttribute("type", "password");
         }
     });
     // Listen for a click on the apply button in order to submit a back-end request to update the configuration files.
