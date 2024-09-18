@@ -52,6 +52,43 @@
     text-align: center;
 }
 
+#messageOuterDiv1, #messageOuterDiv2 {
+	width: 13%;
+}
+
+#messageOuterDiv2 {
+	width: 15%;
+}
+
+#messageOuterDiv3 {
+	width: 23%;
+}
+
+#messageOuterDiv4 {
+	width: 24%;
+}
+
+#profilePasswordMessage {
+	margin-left: 30px;
+	font-size: 12px;
+	text-align: center;
+}
+
+#profilePasswordMessage div {
+	display: inline-block;
+}
+
+#profilePasswordMessage p {
+	margin-left: 5%;
+	display: inline;
+}
+
+#profilePasswordMessage .messageIcon {
+	color: red;
+	position: relative;
+    top: 7px;
+}
+
 #profilePassword {
 	margin-left: 2%;
 }

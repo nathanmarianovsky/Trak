@@ -178,20 +178,10 @@ ipcRenderer.on("passwordRequest", event => {
             }
             else {
                 password.classList.remove("valid");
-                password.classList.add("invalid");
+                if(e.target.value != "") { password.classList.add("invalid"); }
+                else { password.classList.remove("invalid"); }
             }
         });
-        // if(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(e.target.value)) {
-        //     password.classList.remove("invalid");
-        //     password.classList.add("valid");
-        // }
-        // else if(e.target.value == "") {
-        //     password.classList.remove("invalid", "valid");
-        // }
-        // else {
-        //     password.classList.add("invalid");
-        //     password.classList.remove("valid");
-        // }
     });
     passwordIcon.addEventListener("click", e => {
         if(passwordIcon.textContent == "visibility") {

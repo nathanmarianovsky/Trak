@@ -13,14 +13,6 @@
         <h5 class="center settingsHeaders">Application Lock</h5>
         <p>The application supports a locking feature which would require a password upon launch. To enable simply provide a password below, or to disable keep the password input empty and click apply. If given, the password must consist of a lower case letter, an upper case letter, a digit, and be of minimal length eight.</p>
         <div class="row accountWindowDiv">
-            <!-- <form class="col s12">
-                <div class="row fullScreenRow">
-                    <label class="col s6">
-                        <input type="checkbox" id="tutorialLoad" class="filled-in" checked>
-                        <span class="checkboxText">Show Tutorial</span>
-                    </label>
-                </div>
-            </form> -->
             <form class="col s12">
                 <div class="row">
                     <div id="profilePasswordDiv" class="input-field col s10">
@@ -31,8 +23,12 @@
                 </div>
             </form>
         </div>
-        <!-- <h5 class="center settingsHeaders">Data Encryption</h5>
-        <p>The application also supports an encryption feature which would encrypt all library records.</p> -->
+        <div id="profilePasswordMessage">
+            <div id="messageOuterDiv1"><i id="profilePasswordDigitIcon" class="material-icons messageIcon">cancel</i><p id="profilePasswordDigit" class="invalid">Digit</p></div>
+            <div id="messageOuterDiv2"><i id="profilePasswordLengthIcon" class="material-icons messageIcon">cancel</i><p id="profilePasswordLength" class="invalid">Length</p></div>
+            <div id="messageOuterDiv3"><i id="profilePasswordLowercaseIcon" class="material-icons messageIcon">cancel</i><p id="profilePasswordLowercase" class="invalid">Lowercase Letter</p></div>
+            <div id="messageOuterDiv4"><i id="profilePasswordUppercaseIcon" class="material-icons messageIcon">cancel</i><p id="profilePasswordUppercase" class="invalid">Uppercase Letter</p></div>
+        </div>
     </div>
 </div>
 <div class="modal-footer">
